@@ -89,28 +89,21 @@ function main {
     yarn -s start
     echo ""
 
-    ##
-    # The syncer can take a lot of time to actually sync correctly.
-    # This is a poor man approach to make it a little more robust,
-    # but there is still chances of missing some synchronization blocks.
-    #
-    # Could we know the current state of synchronization and work
-    # from there? I think we could fetch last block num from `miner`
-    # somehow and then use that to match a specific log line that
-    # would contain the block num in the syncer log. That would probably
-    # be a good way of doing it.
-    #
+    blockNumHex=`curl -s -X POST -H 'Content-Type: application/json' localhost:8545 --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r .result | sed s/0x//`
+    blockNum=`printf "%d" $blockNumHex`
+
+    echo "Waiting for syncer to reach block #$blockNum"
 
     set +e
     while true; do
-        echo "Giving 10s for syncer to complete syncing"
-        sleep 10
-
-        result=`cat "$syncer_log" | grep "Imported new chain segment"`
+        result=`cat "$syncer_log" | grep -E "Imported new chain segment.*number=$blockNum"`
         if [[ $result != "" ]]; then
             echo ""
             break
         fi
+
+        echo "Giving 5s for syncer to complete syncing"
+        sleep 5
     done
 
     echo "Statistics"

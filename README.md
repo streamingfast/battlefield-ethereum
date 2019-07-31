@@ -8,6 +8,8 @@ globally through your terminal:
 
 - geth (Deep mind enabled)
 - yarn (1.13+)
+- curl
+- jq
 
 ### Running
 
