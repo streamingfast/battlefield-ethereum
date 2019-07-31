@@ -1,0 +1,4 @@
+/contract/build/
+/data
+/node_modules
+*.log
