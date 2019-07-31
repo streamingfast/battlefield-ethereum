@@ -89,8 +89,34 @@ function main {
     yarn -s start
     echo ""
 
-    echo "Giving 15s for syncer to complete syncing"
-    sleep 15
+    ##
+    # The syncer can take a lot of time to actually sync correctly.
+    # This is a poor man approach to make it a little more robust,
+    # but there is still chances of missing some synchronization blocks.
+    #
+    # Could we know the current state of synchronization and work
+    # from there? I think we could fetch last block num from `miner`
+    # somehow and then use that to match a specific log line that
+    # would contain the block num in the syncer log. That would probably
+    # be a good way of doing it.
+    #
+
+    set +e
+    while true; do
+        echo "Giving 10s for syncer to complete syncing"
+        sleep 10
+
+        result=`cat "$syncer_log" | grep "Imported new chain segment"`
+        if [[ $result != "" ]]; then
+            echo ""
+            break
+        fi
+    done
+
+    echo "Statistics"
+    echo " Blocks: `cat "$deep_mind_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
+    echo " Trxs: `cat "$deep_mind_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
+    echo " Calls: `cat "$deep_mind_log" | grep "EVM END_CALL" | wc -l | tr -d ' '`"
     echo ""
 
     echo "Inspect log files"
