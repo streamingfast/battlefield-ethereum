@@ -1,0 +1,17 @@
+{
+  "name": "@dfuse/ethereum-genesis-network",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn run ts-node main.ts"
+  },
+  "dependencies": {
+    "web3": "^1.0.0-beta.55"
+  },
+  "devDependencies": {
+    "@types/node": "^11.13.7",
+    "ts-node": "^8.1.0",
+    "typescript": "^3.4.5"
+  },
+  "version": "0.0.0"
+}
