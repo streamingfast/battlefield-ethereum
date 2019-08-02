@@ -67,7 +67,7 @@ function main {
         --miner.threads=1 \
         --networkid=1515 \
         --nodiscover \
-        --nousb 2> $miner_log) &
+        --nousb $@ 2> $miner_log) &
     miner_pid=$!
 
     echo "Starting syncer process"
@@ -78,19 +78,18 @@ function main {
         --port=30313 \
         --networkid=1515 \
         --nodiscover \
-        --nousb 1> $deep_mind_log 2> $syncer_log) &
+        --nousb $@ 1> $deep_mind_log 2> $syncer_log) &
     syncer_pid=$!
 
     echo "Giving 5s for miner to be ready"
     sleep 5
     echo ""
 
-    cd $ROOT
     yarn -s start
     echo ""
 
     blockNumHex=`curl -s -X POST -H 'Content-Type: application/json' localhost:8545 --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r .result | sed s/0x//`
-    blockNum=`printf "%d" $blockNumHex`
+    blockNum=`to_dec $blockNumHex`
 
     echo "Waiting for syncer to reach block #$blockNum"
 
@@ -117,6 +116,11 @@ function main {
     echo " Miner logs: cat `realpath --relative-to="$current_dir" "$miner_log"`"
     echo " Syncer logs: cat `realpath --relative-to="$current_dir" "$syncer_log"`"
     echo ""
+}
+
+function to_dec {
+    value=`echo $1 | awk '{print toupper($0)}'`
+    echo "ibase=16; ${value}" | bc
 }
 
 main $@
