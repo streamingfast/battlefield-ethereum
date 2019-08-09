@@ -41,7 +41,7 @@ function main {
     # Trap exit signal and clean up
     trap cleanup EXIT
 
-    sh $ROOT/contract/build.sh
+    $ROOT/contract/build.sh
     echo ""
 
     rm -rf "$miner_data_dir" "$syncer_data_dir"
