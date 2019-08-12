@@ -26,7 +26,7 @@ export async function deployContract(
     const receipt = await promisifyOnFirstConfirmation(
         contract
             .deploy({ arguments: [], data: contractBin })
-            .send({from: fromAddress, gas: 2000000, gasPrice: "1" })
+            .send({from: fromAddress, gas: 93999999, gasPrice: "1" })
     )
 
     return {

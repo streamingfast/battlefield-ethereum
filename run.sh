@@ -108,7 +108,7 @@ function main {
     echo "Statistics"
     echo " Blocks: `cat "$deep_mind_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
     echo " Trxs: `cat "$deep_mind_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
-    echo " Calls: `cat "$deep_mind_log" | grep "EVM END_CALL" | wc -l | tr -d ' '`"
+    echo " Calls: `cat "$deep_mind_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
     echo ""
 
     echo "Inspect log files"

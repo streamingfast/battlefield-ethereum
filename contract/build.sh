@@ -28,5 +28,8 @@ mkdir -p $ROOT/build
 
 echo "Compiling contracts"
 
-solc_args="-o ./build --overwrite --abi --bin src/main.sol"
-docker run --rm -it -v "$ROOT:/contract" -w /contract "${image_id}" $solc_args
+solc_args="-o ./build --overwrite --abi --bin"
+
+docker run --rm -it -v "$ROOT:/contract" -w /contract "${image_id}" $solc_args src/main.sol
+docker run --rm -it -v "$ROOT:/contract" -w /contract "${image_id}" $solc_args src/child.sol
+docker run --rm -it -v "$ROOT:/contract" -w /contract "${image_id}" $solc_args src/grandchild.sol
