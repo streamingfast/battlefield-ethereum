@@ -11,6 +11,12 @@ export async function deployContract(
     web3: Web3,
     fromAddress: string,
     contractName: string,
+    options: {
+        value?: string,
+        contractArguments: any[],
+    } = {
+        contractArguments: []
+    }
 ): Promise<DeploymentResult> {
     await unlockAccount(web3.eth, fromAddress);
 
@@ -25,8 +31,8 @@ export async function deployContract(
     console.log(`Deploying contract '${contractName}'`)
     const receipt = await promisifyOnFirstConfirmation(
         contract
-            .deploy({ arguments: [], data: contractBin })
-            .send({from: fromAddress, gas: 93999999, gasPrice: "1" })
+            .deploy({ arguments: options.contractArguments || [], data: contractBin })
+            .send({from: fromAddress, gas: 93999999, gasPrice: "1", value: options.value })
     )
 
     return {

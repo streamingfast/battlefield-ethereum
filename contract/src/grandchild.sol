@@ -5,6 +5,10 @@ contract GrandChild {
     uint callerGasLeft;
     uint gasLeft;
 
+    constructor(address payable to) public payable {
+        to.transfer(msg.value);
+    }
+
     function recordGasLeft(uint _callerGas, uint _callerGasLeft) public {
         callerGas = _callerGas;
         callerGasLeft = _callerGasLeft;

@@ -17,7 +17,10 @@ async function main() {
     console.log("Deploying contracts...")
     const mainDeployment = await deployContract(web3, defaultAddress, "Main")
     const childDeployment = await deployContract(web3, defaultAddress, "Child")
-    const grandChildDeployment = await deployContract(web3, defaultAddress, "Grandchild")
+    const grandChildDeployment = await deployContract(web3, defaultAddress, "Grandchild", {
+        contractArguments: ["0x0000000000000000000000000000000000000330"],
+        value: "25000",
+    })
 
     const mainContract = await getContract("Main", mainDeployment.contractAddress)
     const childContract = await getContract("Child", childDeployment.contractAddress)
