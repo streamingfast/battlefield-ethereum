@@ -13,7 +13,11 @@ contract GrandChild {
         callerGas = _callerGas;
         callerGasLeft = _callerGasLeft;
         gasLeft = gasleft();
+
+        emit eventGasLeft(gasleft(), msg.sender);
     }
 
     function emptyCallForLowestGas() public pure {}
+
+    event eventGasLeft(uint gas, address sender);
 }

@@ -1,6 +1,8 @@
 pragma solidity >=0.4.0 <0.7.0;
 
 contract Child {
+    event eventGasLeft(uint gas, address sender);
+
     uint callerGas;
     uint callerGasLeft;
     uint gasLeft;
@@ -22,6 +24,8 @@ contract Child {
 
         (bool success, ) = grandchild.call.gas(callGasLimit)(abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft()));
         require(success, "should have succeed");
+
+        emit eventGasLeft(gasleft(), msg.sender);
     }
 
     function nestedEmptyCallForLowestGas(address grandchild) public view {

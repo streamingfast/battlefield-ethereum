@@ -61,6 +61,8 @@ contract Main {
     function completeCallTree(address child, address grandChild) public {
         callTreeIndex = 0xca110001;
 
+        emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
+
         uint callGasLimit = 0x30000;
         (bool success, ) = child.call.gas(callGasLimit)(abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft()));
         require(success, "should have succeed");
@@ -85,6 +87,8 @@ contract Main {
         child.delegatecall(abi.encodeWithSignature("emptyCallForLowestGas()"));
         child.staticcall(abi.encodeWithSignature("emptyCallForLowestGas()"));
         new ContractEmpty();
+
+        emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
     }
 
     uint asserValue;
