@@ -18,18 +18,25 @@ async function main() {
   const mainDeployment = await deployContract(web3, defaultAddress, "Main")
   const childDeployment = await deployContract(web3, defaultAddress, "Child")
   const grandChildDeployment = await deployContract(web3, defaultAddress, "Grandchild", {
-    contractArguments: ["0x0000000000000000000000000000000000000330"],
+    contractArguments: ["0x0000000000000000000000000000000000000330", false],
     value: "25000"
   })
+  const suicidal1Deployment = await deployContract(web3, defaultAddress, "Suicidal")
+  const suicidal2Deployment = await deployContract(web3, defaultAddress, "Suicidal")
 
   const mainContract = await getContract("Main", mainDeployment.contractAddress)
   const childContract = await getContract("Child", childDeployment.contractAddress)
   const grandChildContract = await getContract("Grandchild", grandChildDeployment.contractAddress)
+  const suicidal1Contract = await getContract("Suicidal", suicidal1Deployment.contractAddress)
+  const suicidal2Contract = await getContract("Suicidal", suicidal2Deployment.contractAddress)
 
   console.log("Contracts")
   console.log(` Main: ${mainDeployment.contractAddress}`)
   console.log(` Child: ${childDeployment.contractAddress}`)
   console.log(` Grand Child: ${grandChildDeployment.contractAddress}`)
+  console.log(` Suicidal1: ${suicidal1Deployment.contractAddress}`)
+  console.log(` Suicidal2: ${suicidal2Deployment.contractAddress}`)
+
   console.log()
 
   console.log("Performing 'transfer' transactions")
@@ -141,6 +148,20 @@ async function main() {
   await okSend(mainContract.methods.logAllIndexed())
   await okSend(mainContract.methods.logAllMixed())
   await okSend(mainContract.methods.logMulti())
+
+  console.log("Performing 'suicide' transactions")
+  // A suicide where the contract does **not** hold any Ether
+  await okSend(suicidal1Contract.methods.kill())
+
+  // A suicide where the contract does hold some Ether, and refund owner on destruct
+  await promisifyOnFirstConfirmation(
+    web3.eth.sendTransaction({
+      from: defaultAddress,
+      to: suicidal2Deployment.contractAddress,
+      value: 1e18
+    })
+  )
+  await okSend(suicidal2Contract.methods.kill())
 
   // Close eagerly as there is a bunch of pending not fully resolved promises due to PromiEvent
   console.log("Completed battlefield tests")
