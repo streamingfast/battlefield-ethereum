@@ -124,3 +124,9 @@ function to_dec {
 }
 
 main $@
+
+realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+
+realpath "$0"

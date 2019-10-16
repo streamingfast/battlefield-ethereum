@@ -40,6 +40,7 @@ async function main() {
   console.log()
 
   console.log("Performing 'transfer' transactions")
+
   // Transfer native between two existing accounts
   await promisifyOnFirstConfirmation(
     web3.eth.sendTransaction({
@@ -162,6 +163,19 @@ async function main() {
     })
   )
   await okSend(suicidal2Contract.methods.kill())
+
+  // Nested transfer to new address
+  await okSend(
+      mainContract.methods.nestedFailtNativeTransfer(
+          childContract.address,
+          "0x0000000000000000000000000000000000003003"
+      ),
+      {
+        from: defaultAddress,
+        value: "0xdeff"
+      }
+  )
+
 
   // Close eagerly as there is a bunch of pending not fully resolved promises due to PromiEvent
   console.log("Completed battlefield tests")

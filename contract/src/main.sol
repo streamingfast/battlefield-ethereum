@@ -31,6 +31,13 @@ contract Main {
         require(success, "should have succeed");
     }
 
+    function nestedFailtNativeTransfer(address child, address payable to) public payable {
+        (bool success, ) = child.call.value(msg.value -1)(abi.encodeWithSignature("nativeFailTransfer(address)", to));
+        require(!success, "should have failed");
+        (bool success2, ) = child.call.value(msg.value -2)(abi.encodeWithSignature("nativeTransfer(address)", to));
+        require(success2, "should have succeed");
+    }
+
     //
     /// Calls & Constructors
     //

@@ -37,6 +37,11 @@ contract Child {
         to.transfer(msg.value);
     }
 
+    function failNativeTransfer(address payable to) public payable {
+        to.transfer(msg.value);
+        to.transfer(msg.value+900000000000000);
+    }
+
     uint asserValue;
     uint revertValue;
 
