@@ -50,6 +50,17 @@ async function main() {
     })
   )
 
+  // Transfer native between two existing accounts with custom gas limit
+  await promisifyOnFirstConfirmation(
+    web3.eth.sendTransaction({
+      from: defaultAddress,
+      to: "0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
+      value: 1e18,
+      gas: "75000",
+      gasPrice: "2000000000"
+    })
+  )
+
   // Transfer native of to an inexistant address creates it and has an EVM call
   await promisifyOnFirstConfirmation(
     web3.eth.sendTransaction({

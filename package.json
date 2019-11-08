@@ -3,9 +3,13 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "yarn run ts-node main.ts"
+    "start": "yarn run ts-node main.ts",
+    "r": "yarn run ts-node"
   },
   "dependencies": {
+    "@types/levelup": "^3.1.1",
+    "level": "^6.0.0",
+    "level-ts": "^1.11.0",
     "web3": "^1.0.0-beta.55"
   },
   "devDependencies": {
