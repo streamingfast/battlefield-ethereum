@@ -142,6 +142,13 @@ function main {
     echo " Trxs: `cat "$deep_mind_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
     echo " Calls: `cat "$deep_mind_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
     echo ""
+    echo " Balance Changes: `cat "$deep_mind_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
+    echo " Event Logs: `cat "$deep_mind_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
+    echo " Gas Changes: `cat "$deep_mind_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
+    echo " Gas Events: `cat "$deep_mind_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
+    echo " Nonce Changes: `cat "$deep_mind_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
+    echo " Storage Changes: `cat "$deep_mind_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
+    echo ""
 
     echo "Inspect log files"
     echo " Deep Mind logs: cat `realpath --relative-to="$current_dir" "$deep_mind_log"`"
