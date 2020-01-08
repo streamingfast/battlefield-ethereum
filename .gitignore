@@ -1,3 +1,4 @@
+.envrc
 /contract/build/
 /data
 /node_modules

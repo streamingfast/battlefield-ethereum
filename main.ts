@@ -1,15 +1,25 @@
 import { join as pathJoin } from "path"
 import Web3 from "web3"
 import { HttpProvider } from "web3-providers"
-import { addressOrDefault, readContract, promisifyOnFirstConfirmation } from "./common"
+import {
+  readContract,
+  promisifyOnFirstConfirmation,
+  initialDefaultAddress,
+  getDefaultAddress,
+  getDefaultGasConfig,
+  setDefaultGasConfig
+} from "./common"
 import { deployContract } from "./deploy"
 import { ContractSendMethod, SendOptions } from "web3-eth-contract"
 
 let web3 = new Web3(new HttpProvider("http://localhost:8545"))
-let defaultAddress = ""
 
 async function main() {
-  defaultAddress = await addressOrDefault(web3.eth, process.env["FROM_ADDRESS"])
+  setDefaultGasConfig(93999999, "1")
+  await initialDefaultAddress(web3.eth, process.env["FROM_ADDRESS"])
+
+  const defaultAddress = getDefaultAddress()
+
   console.log("Configuration")
   console.log(` Default address: ${defaultAddress}`)
   console.log()
@@ -177,16 +187,15 @@ async function main() {
 
   // Nested transfer to new address
   await okSend(
-      mainContract.methods.nestedFailtNativeTransfer(
-          childContract.address,
-          "0x0000000000000000000000000000000000003003"
-      ),
-      {
-        from: defaultAddress,
-        value: "0xdeff"
-      }
+    mainContract.methods.nestedFailtNativeTransfer(
+      childContract.address,
+      "0x0000000000000000000000000000000000003003"
+    ),
+    {
+      from: defaultAddress,
+      value: "0xdeff"
+    }
   )
-
 
   // Close eagerly as there is a bunch of pending not fully resolved promises due to PromiEvent
   console.log("Completed battlefield tests")
@@ -254,20 +263,20 @@ async function koSend(trx: any, sendOptions?: SendOptions) {
 function send(trx: ContractSendMethod, sendOptions?: SendOptions) {
   if (sendOptions === undefined) {
     sendOptions = {
-      from: defaultAddress
+      from: getDefaultAddress()
     }
   }
 
   if (sendOptions.gas == undefined) {
-    sendOptions.gas = 93999999
+    sendOptions.gas = getDefaultGasConfig().gasLimit
   }
 
   if (sendOptions.gasPrice == undefined) {
-    sendOptions.gasPrice = "1"
+    sendOptions.gasPrice = getDefaultGasConfig().gasPrice
   }
 
   if (sendOptions.from == undefined) {
-    sendOptions.from = defaultAddress
+    sendOptions.from = getDefaultAddress()
   }
 
   return {
