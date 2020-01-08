@@ -19,13 +19,13 @@ with the chain):
 
     yarn install
 
-Then, you run the `run.sh` script which will compile the
+Then, you run the `generate.sh` script which will compile the
 smart contracts, launch a miner and syncer Geth processes,
 execute a bunch of transactions and collect the logs of
 all this and more specially, the deep mind logs for future
 analysis:
 
-    ./run.sh
+    ./generate.sh
 
 ### Explanation
 
@@ -55,3 +55,5 @@ The syncer then simply sync from the miner each time new
 blocks are propagated through the network. The syncer is
 deep mind aware and generates the deep mind log and
 saves them
+
+###

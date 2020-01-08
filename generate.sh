@@ -10,7 +10,7 @@ syncer_init_log="$ROOT/syncer.init.log"
 
 miner_log="$ROOT/miner.log"
 syncer_log="$ROOT/syncer.log"
-deep_mind_log="$ROOT/deep-mind.dmlog"
+deep_mind_log="$ROOT/miner.dmlog"
 
 miner_data_dir="$ROOT/data/miner"
 syncer_data_dir="$ROOT/data/syncer"
@@ -23,7 +23,7 @@ syncer_pid=""
 current_dir=`pwd`
 
 function usage() {
-    echo "./run.sh [all|syncer_only|miner_only] [--wait-forever]"
+    echo "./generate.sh [all|syncer_only|miner_only] [--wait-forever]"
     exit 0
 }
 
@@ -176,5 +176,3 @@ main $@
 realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
-
-realpath "$0"

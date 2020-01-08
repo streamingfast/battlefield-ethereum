@@ -1,6 +1,8 @@
 .envrc
 /contract/build/
-/data
+/data/miner
+/data/syncer
 /node_modules
 *.log
 *.dmlog
+!oracle.dmlog
