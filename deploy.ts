@@ -1,12 +1,14 @@
 import { join as pathJoin } from "path"
 import Web3 from "web3"
+import { ContractSendMethod } from "web3-eth-contract"
 import {
   promisifyOnFirstConfirmation,
   readContract,
   readContractBin,
   unlockAccount,
   createRawTx,
-  sendRawTx
+  sendRawTx,
+  getDefaultGasConfig
 } from "./common"
 
 type DeploymentResult = {
@@ -29,13 +31,8 @@ export async function deployContract(
     await unlockAccount(web3.eth, fromAddress)
   }
 
-  const contract = await readContract(
-    web3.eth,
-    pathJoin(__dirname, `./contract/build/${contractName}.abi`)
-  )
-  const contractBin = await readContractBin(
-    pathJoin(__dirname, `./contract/build/${contractName}.bin`)
-  )
+  const contractMethod = await readContractInfo(web3, contractName, options.contractArguments)
+  const { gasLimit, gasPrice } = getDefaultGasConfig()
 
   // FIXME: It's not possible to cancel a PromiEvent in between of the confirmation, it continues
   //        until it completes (`receipt` event) or error out. We want to quit fast, so we will
@@ -44,9 +41,12 @@ export async function deployContract(
   //        events to the `PromiEvent`.
   console.log(`Deploying contract '${contractName}'`)
   const receipt = await promisifyOnFirstConfirmation(
-    contract
-      .deploy({ arguments: options.contractArguments || [], data: contractBin })
-      .send({ from: fromAddress, gas: 93999999, gasPrice: "1", value: options.value })
+    contractMethod.send({
+      from: fromAddress,
+      gas: gasLimit,
+      gasPrice: gasPrice,
+      value: options.value
+    })
   )
 
   return {
@@ -67,13 +67,10 @@ export async function deployContractRaw(
     contractArguments: []
   }
 ): Promise<DeploymentResult> {
-  const contractBin = await readContractBin(
-    pathJoin(__dirname, `./contract/build/${contractName}.bin`)
-  )
-
+  const contractMethod = await readContractInfo(web3, contractName, options.contractArguments)
   const tx = await createRawTx(web3, fromAddress, privateKey, {
     from: fromAddress,
-    data: contractBin,
+    data: contractMethod.encodeABI(),
     value: options.value
   })
 
@@ -84,4 +81,15 @@ export async function deployContractRaw(
     contractAddress: receipt.contractAddress!,
     transactionHash: receipt.transactionHash
   }
+}
+
+export async function readContractInfo(
+  web3: Web3,
+  name: string,
+  args: any[] = []
+): Promise<ContractSendMethod> {
+  const contract = await readContract(web3.eth, pathJoin(__dirname, `./contract/build/${name}.abi`))
+  const contractBin = await readContractBin(pathJoin(__dirname, `./contract/build/${name}.bin`))
+
+  return contract.deploy({ arguments: args, data: contractBin })
 }

@@ -6,6 +6,11 @@ import { Eth } from "web3-eth"
 import { Transaction, BufferLike, TxData, TransactionOptions } from "ethereumjs-tx"
 import Web3 from "web3"
 
+export type GasOptions = {
+  gasPrice?: string
+  gas?: number
+}
+
 let defaultAddress = ""
 
 export const getDefaultAddress = () => defaultAddress
@@ -28,6 +33,14 @@ export const setDefaultTxOptions = (options: TransactionOptions) => {
   defaultTxOptions = options
 }
 
+export const getDefaultSendOptions = (): SendOptions => {
+  return {
+    from: defaultAddress,
+    gas: defaultGasConfig.gasLimit,
+    gasPrice: defaultGasConfig.gasPrice
+  }
+}
+
 const asyncReadFile = promisify(readFile)
 
 export function requireProcessEnv(name: string): string {
@@ -43,8 +56,10 @@ export function requireProcessEnv(name: string): string {
 export async function initialDefaultAddress(
   eth: Eth,
   input: string | null | undefined
-): Promise<void> {
+): Promise<string> {
   setDefaultAddress(await addressOrDefault(eth, input))
+
+  return defaultAddress
 }
 
 export async function addressOrDefault(
