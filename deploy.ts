@@ -11,19 +11,21 @@ import {
   getDefaultGasConfig
 } from "./common"
 
-type DeploymentResult = {
+export type DeploymentResult = {
   contractAddress: string
   transactionHash: string
+}
+
+export type DeployerOptions = {
+  value?: string
+  contractArguments: any[]
 }
 
 export async function deployContract(
   web3: Web3,
   fromAddress: string,
   contractName: string,
-  options: {
-    value?: string
-    contractArguments: any[]
-  } = {
+  options: DeployerOptions = {
     contractArguments: []
   }
 ): Promise<DeploymentResult> {
@@ -60,10 +62,7 @@ export async function deployContractRaw(
   fromAddress: string,
   privateKey: Buffer,
   contractName: string,
-  options: {
-    value?: string
-    contractArguments: any[]
-  } = {
+  options: DeployerOptions = {
     contractArguments: []
   }
 ): Promise<DeploymentResult> {

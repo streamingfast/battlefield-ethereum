@@ -25,7 +25,7 @@ execute a bunch of transactions and collect the logs of
 all this and more specially, the deep mind logs for future
 analysis:
 
-    ./generate.sh
+    ./generate_local.sh
 
 ### Explanation
 

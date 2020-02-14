@@ -111,7 +111,7 @@ function main {
 
     if [[ $component == "all" || $component == "miner_only" ]]; then
         echo "Executing transactions contained in script 'main.ts'"
-        yarn -s start
+        yarn -s local
         echo ""
     fi
 

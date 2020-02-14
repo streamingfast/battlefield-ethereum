@@ -26,6 +26,13 @@ export const setDefaultGasConfig = (gasLimit: number, gasPrice: string) => {
   defaultGasConfig = { gasLimit, gasPrice }
 }
 
+export const unsetDefaultGasConfig = () => {
+  defaultGasConfig = { gasLimit: 0, gasPrice: "" }
+}
+
+export const isUnsetDefaultGasConfig = () =>
+  defaultGasConfig.gasLimit === 0 && defaultGasConfig.gasPrice === ""
+
 let defaultTxOptions: TransactionOptions = { chain: "mainnet", hardfork: "muirglacier" }
 
 export const getDefaultTxOptions = () => defaultTxOptions

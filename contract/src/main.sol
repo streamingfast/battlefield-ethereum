@@ -4,18 +4,18 @@ contract Main {
     string shortString;
     string flushLongString;
     string longString;
-    uint[] uintList;
+    uint256[] uintList;
     point myPoint;
 
     mapping(string => point) stringToPointMap;
     mapping(string => string) stringMap;
     mapping(string => mapping(string => string)) nestedStringMap;
-    mapping(uint => string) intToStringMap;
-    mapping(string => uint[]) stringToIntListMap;
+    mapping(uint256 => string) intToStringMap;
+    mapping(string => uint256[]) stringToIntListMap;
 
     struct point {
-        uint x;
-        uint y;
+        uint256 x;
+        uint256 y;
     }
 
     //
@@ -27,14 +27,20 @@ contract Main {
     }
 
     function nestedNativeTransfer(address child, address payable to) public payable {
-        (bool success, ) = child.call.value(msg.value)(abi.encodeWithSignature("nativeTransfer(address)", to));
+        (bool success, ) = child.call.value(msg.value)(
+            abi.encodeWithSignature("nativeTransfer(address)", to)
+        );
         require(success, "should have succeed");
     }
 
     function nestedFailtNativeTransfer(address child, address payable to) public payable {
-        (bool success, ) = child.call.value(msg.value -1)(abi.encodeWithSignature("nativeFailTransfer(address)", to));
+        (bool success, ) = child.call.value(msg.value - 1)(
+            abi.encodeWithSignature("failNativeTransfer(address)", to)
+        );
         require(!success, "should have failed");
-        (bool success2, ) = child.call.value(msg.value -2)(abi.encodeWithSignature("nativeTransfer(address)", to));
+        (bool success2, ) = child.call.value(msg.value - 2)(
+            abi.encodeWithSignature("nativeTransfer(address)", to)
+        );
         require(success2, "should have succeed");
     }
 
@@ -42,7 +48,7 @@ contract Main {
     /// Calls & Constructors
     //
 
-    uint callTreeIndex;
+    uint256 callTreeIndex;
 
     function contractWithConstructor() public {
         new ContractConstructor(bytes32("testing"));
@@ -70,21 +76,32 @@ contract Main {
 
         emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
 
-        uint callGasLimit = 0x30000;
-        (bool success, ) = child.call.gas(callGasLimit)(abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft()));
+        uint256 callGasLimit = 0x30000;
+        (bool success, ) = child.call.gas(callGasLimit)(
+            abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
+        );
         require(success, "should have succeed");
 
         callTreeIndex = 0xca110002;
 
         callGasLimit = 0x40000;
 
-        (success, ) = child.call.gas(callGasLimit)(abi.encodeWithSignature("nestedRecordGasLeft(address,uint256,uint256)", grandChild, callGasLimit, gasleft()));
+        (success, ) = child.call.gas(callGasLimit)(
+            abi.encodeWithSignature(
+                "nestedRecordGasLeft(address,uint256,uint256)",
+                grandChild,
+                callGasLimit,
+                gasleft()
+            )
+        );
         require(success, "should have succeed");
 
         callTreeIndex = 0xca110003;
 
         callGasLimit = 0x50000;
-        (success, ) = child.call.gas(callGasLimit)(abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft()));
+        (success, ) = child.call.gas(callGasLimit)(
+            abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
+        );
         require(success, "should have succeed");
 
         callTreeIndex = 0xca110004;
@@ -98,8 +115,8 @@ contract Main {
         emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
     }
 
-    uint asserValue;
-    uint revertValue;
+    uint256 asserValue;
+    uint256 revertValue;
 
     function assertFailure() public {
         asserValue += asserValue + 1;
@@ -144,26 +161,37 @@ contract Main {
     }
 
     function nestedLowGas(address child) public {
-        uint callGasLimit = 2500000;
+        uint256 callGasLimit = 2500000;
 
-        (bool success, ) = child.call.gas(callGasLimit)(abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft()));
+        (bool success, ) = child.call.gas(callGasLimit)(
+            abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
+        );
         require(success, "should have succeed");
     }
 
     function deepNestedCallForLowestGas(address child, address grandChild) public view {
-        (bool success, ) = child.staticcall(abi.encodeWithSignature("nestedEmptyCallForLowestGas(address)", grandChild));
+        (bool success, ) = child.staticcall(
+            abi.encodeWithSignature("nestedEmptyCallForLowestGas(address)", grandChild)
+        );
         require(success, "should have succeed");
     }
 
     function deepNestedLowGas(address child, address grandChild) public {
-        uint callGasLimit = 2500000;
+        uint256 callGasLimit = 2500000;
 
-        (bool success, ) = child.call.gas(callGasLimit)(abi.encodeWithSignature("nestedRecordGasLeft(address,uint256,uint256)", grandChild, callGasLimit, gasleft()));
+        (bool success, ) = child.call.gas(callGasLimit)(
+            abi.encodeWithSignature(
+                "nestedRecordGasLeft(address,uint256,uint256)",
+                grandChild,
+                callGasLimit,
+                gasleft()
+            )
+        );
         require(success, "should have succeed");
     }
 
     function consumeAllGas() public {
-        uint counter = 0;
+        uint256 counter = 0;
         while (true) {
             if (counter % 2 == 0) {
                 gasConsumedStorage = "realy long string larger than 32 bytes to test out solidity splitting stuff";
@@ -177,7 +205,7 @@ contract Main {
     /// Storages & Inputs
     //
 
-    function setLongString() public returns (uint) {
+    function setLongString() public returns (uint256) {
         stringToPointMap["a"].x = 10;
         stringToPointMap["a"].y = 20;
 
@@ -210,7 +238,9 @@ contract Main {
         longString = "really long string larger than 32 bytes to test out solidity splitting stuff";
     }
 
-    function longStringInput(string memory /* input */) public pure returns (uint) {
+    function longStringInput(
+        string memory /* input */
+    ) public pure returns (uint256) {
         return 0;
     }
 
@@ -223,7 +253,10 @@ contract Main {
     }
 
     function logSingle() public {
-        emit eventLogSingle("payload as string", "really long string larger than 32 bytes to test out solidity splitting stuff");
+        emit eventLogSingle(
+            "payload as string",
+            "really long string larger than 32 bytes to test out solidity splitting stuff"
+        );
     }
 
     function logAll() public payable {
@@ -240,7 +273,10 @@ contract Main {
 
     function logMulti() public payable {
         emit eventLogEmpty();
-        emit eventLogSingle("payload as string", "really long string larger than 32 bytes to test out solidity splitting stuff");
+        emit eventLogSingle(
+            "payload as string",
+            "really long string larger than 32 bytes to test out solidity splitting stuff"
+        );
         emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, msg.value);
         emit eventLogAllIndexed(msg.data, gasleft(), msg.sender);
         emit eventLogMixedIndexed(msg.data, gasleft(), msg.sender, msg.sig, msg.value);
@@ -248,14 +284,19 @@ contract Main {
 
     event eventLogEmpty();
     event eventLogSingle(string indexed payload, string secondPayload);
-    event eventLogAll(bytes data, uint gas, address sender, bytes4 sig, uint value);
-    event eventLogAllIndexed(bytes indexed data, uint indexed gas, address indexed sender);
-    event eventLogMixedIndexed(bytes indexed data, uint indexed gas, address indexed sender, bytes4 sig, uint value);
+    event eventLogAll(bytes data, uint256 gas, address sender, bytes4 sig, uint256 value);
+    event eventLogAllIndexed(bytes indexed data, uint256 indexed gas, address indexed sender);
+    event eventLogMixedIndexed(
+        bytes indexed data,
+        uint256 indexed gas,
+        address indexed sender,
+        bytes4 sig,
+        uint256 value
+    );
 }
 
 contract ContractEmpty {
-    constructor() public {
-    }
+    constructor() public {}
 }
 
 contract ContractConstructor {

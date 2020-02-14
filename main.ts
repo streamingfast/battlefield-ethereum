@@ -1,204 +1,258 @@
-import { join as pathJoin } from "path"
-import Web3 from "web3"
-import { HttpProvider } from "web3-providers"
-import {
-  readContract,
-  promisifyOnFirstConfirmation,
-  initialDefaultAddress,
-  getDefaultAddress,
-  getDefaultGasConfig,
-  setDefaultGasConfig
-} from "./common"
-import { deployContract } from "./deploy"
-import { ContractSendMethod, SendOptions } from "web3-eth-contract"
+import BN from "bn.js"
+import { requireProcessEnv, setDefaultGasConfig } from "./common"
+import { BattlefieldRunner, Network } from "./runner"
 
-let web3 = new Web3(new HttpProvider("http://localhost:8545"))
+const randomHex6chars = () => ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0")
+const randomHex = () =>
+  randomHex6chars() + randomHex6chars() + randomHex6chars() + randomHex6chars()
+
+const oneWei = new BN(1)
+const threeWei = new BN(3)
+
+const knownExistingAddress = "0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd"
+const randomAddress1 = `0xdead1000${randomHex()}0002beef`
+const randomAddress2 = `0xdead2000${randomHex()}0001beef`
+const randomAddress3 = `0xdead3000${randomHex()}0004beef`
+const randomAddress4 = `0xdead4000${randomHex()}0003beef`
+const randomAddress5 = `0xdead5000${randomHex()}0006beef`
 
 async function main() {
-  setDefaultGasConfig(93999999, "1")
-  await initialDefaultAddress(web3.eth, process.env["FROM_ADDRESS"])
+  const network = requireProcessEnv("NETWORK")
+  const only = process.env["ONLY"]
 
-  const defaultAddress = getDefaultAddress()
+  const runner = new BattlefieldRunner(network as Network)
+  if (only) {
+    runner.only = new RegExp(only)
+  }
 
-  console.log("Configuration")
-  console.log(` Default address: ${defaultAddress}`)
-  console.log()
+  await runner.initialize()
+  runner.printConfiguration()
 
   console.log("Deploying contracts...")
-  const mainDeployment = await deployContract(web3, defaultAddress, "Main")
-  const childDeployment = await deployContract(web3, defaultAddress, "Child")
-  const grandChildDeployment = await deployContract(web3, defaultAddress, "Grandchild", {
-    contractArguments: ["0x0000000000000000000000000000000000000330", false],
-    value: "25000"
-  })
-  const suicidal1Deployment = await deployContract(web3, defaultAddress, "Suicidal")
-  const suicidal2Deployment = await deployContract(web3, defaultAddress, "Suicidal")
+  setDefaultGasConfig(3566000, runner.web3.utils.toWei("50", "gwei"))
 
-  const mainContract = await getContract("Main", mainDeployment.contractAddress)
-  const childContract = await getContract("Child", childDeployment.contractAddress)
-  const grandChildContract = await getContract("Grandchild", grandChildDeployment.contractAddress)
-  const suicidal1Contract = await getContract("Suicidal", suicidal1Deployment.contractAddress)
-  const suicidal2Contract = await getContract("Suicidal", suicidal2Deployment.contractAddress)
+  await runner.deployContracts()
+  runner.printContracts()
 
-  console.log("Contracts")
-  console.log(` Main: ${mainDeployment.contractAddress}`)
-  console.log(` Child: ${childDeployment.contractAddress}`)
-  console.log(` Grand Child: ${grandChildDeployment.contractAddress}`)
-  console.log(` Suicidal1: ${suicidal1Deployment.contractAddress}`)
-  console.log(` Suicidal2: ${suicidal2Deployment.contractAddress}`)
+  const mainContract = runner.contracts["main"]
+  const childContract = runner.contracts["child"]
+  const grandChildContract = runner.contracts["grandChild"]
+  const suicidal1Contract = runner.contracts["suicidal1"]
+  const suicidal2Contract = runner.contracts["suicidal2"]
 
   console.log()
+  console.log("Performing pure 'transfer' transactions")
+  setDefaultGasConfig(21000, runner.web3.utils.toWei("50", "gwei"))
 
-  console.log("Performing 'transfer' transactions")
-
-  // Transfer native between two existing accounts
-  await promisifyOnFirstConfirmation(
-    web3.eth.sendTransaction({
-      from: defaultAddress,
-      to: "0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
-      value: 1e18
-    })
+  await runner.okTransfer(
+    "pure transfer: existing address",
+    "default",
+    knownExistingAddress,
+    oneWei
   )
 
-  // Transfer native between two existing accounts with custom gas limit
-  await promisifyOnFirstConfirmation(
-    web3.eth.sendTransaction({
-      from: defaultAddress,
-      to: "0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
-      value: 1e18,
-      gas: "75000",
-      gasPrice: "2000000000"
-    })
-  )
-
-  // Transfer native of to an inexistant address creates it and has an EVM call
-  await promisifyOnFirstConfirmation(
-    web3.eth.sendTransaction({
-      from: defaultAddress,
-      to: "0x0000000000000000000000000000000000001001",
-      value: 1e18
-    })
-  )
-
-  // Transfer native of 0 value to an inexistant address which genrates a transaction without an EVM call
-  await promisifyOnFirstConfirmation(
-    web3.eth.sendTransaction({
-      from: defaultAddress,
-      to: "0x0000000000000000000000000000000000005005",
-      value: 0
-    })
-  )
-
-  // Transfer to existing address
-  await okSend(mainContract.methods.nativeTransfer("0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd"), {
-    from: defaultAddress,
-    value: "0x1234"
-  })
-
-  // Transfer to new address
-  await okSend(mainContract.methods.nativeTransfer("0x0000000000000000000000000000000000002002"), {
-    from: defaultAddress,
-    value: "0x5678"
-  })
-
-  // Nested transfer to existing address
-  await okSend(
-    mainContract.methods.nestedNativeTransfer(
-      childContract.address,
-      "0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd"
-    ),
+  await runner.okTransfer(
+    "pure transfer: existing address with custom gas limit & price",
+    "default",
+    knownExistingAddress,
+    oneWei,
     {
-      from: defaultAddress,
-      value: "0x9abc"
+      gas: 75000,
+      gasPrice: runner.web3.utils.toWei("1", "gwei")
+    }
+  )
+
+  await runner.okTransfer(
+    "pure transfer: inexistant address creates account and has an EVM call",
+    "default",
+    randomAddress1,
+    oneWei
+  )
+
+  await runner.okTransfer(
+    "pure transfer: transfer of 0 ETH to inexistant address generates a transaction with no EVM call",
+    "default",
+    randomAddress2,
+    0
+  )
+
+  console.log()
+  console.log("Performing 'transfer' through contract transactions")
+  setDefaultGasConfig(75000, runner.web3.utils.toWei("50", "gwei"))
+
+  await runner.okContractSend(
+    "transfer through contract: existing addresss",
+    "main",
+    mainContract.methods.nativeTransfer(knownExistingAddress),
+    {
+      from: "default",
+      value: oneWei
+    }
+  )
+
+  await runner.okContractSend(
+    "transfer through contract: inexistant address creates account and has an EVM call",
+    "main",
+    mainContract.methods.nativeTransfer(randomAddress3),
+    {
+      from: "default",
+      value: oneWei
+    }
+  )
+
+  await runner.okContractSend(
+    "nested transfer through contract: existing addresss",
+    "main",
+    mainContract.methods.nestedNativeTransfer(childContract.address, knownExistingAddress),
+    {
+      from: "default",
+      value: oneWei
     }
   )
 
   // Nested transfer to new address
-  await okSend(
-    mainContract.methods.nestedNativeTransfer(
-      childContract.address,
-      "0x0000000000000000000000000000000000003003"
-    ),
+  await runner.okContractSend(
+    "nested transfer through contract: inexistant address creates account and has an EVM call",
+    "main",
+    mainContract.methods.nestedNativeTransfer(childContract.address, randomAddress4),
     {
-      from: defaultAddress,
-      value: "0xdeff"
+      from: "default",
+      value: oneWei
     }
   )
 
-  console.log("Performing 'call' transactions")
-  await okSend(
-    mainContract.methods.completeCallTree(childContract.address, grandChildContract.address)
-  )
-  await okSend(mainContract.methods.contractWithConstructor())
-  await okSend(mainContract.methods.contractWithEmptyConstructor())
+  console.log()
+  console.log("Performing 'log' transactions")
+  setDefaultGasConfig(95000, runner.web3.utils.toWei("50", "gwei"))
 
-  // FIXME: Enabling any other make the full suite go hairy, either never ending
-  //        straight in the now un-commented transaction or later in the first
-  //        `gas` transaction. Really not clear why, but I don't get it ... yet!
-  // await koSend(mainContract.methods.assertFailure())
-  await koSend(mainContract.methods.revertFailure())
-  // await koSend(mainContract.methods.nestedAssertFailure(childContract.address))
-  // await okSend(mainContract.methods.nestedRevertFailure(childContract.address))
+  await runner.okContractSend("log: empty", "main", mainContract.methods.logEmpty())
+  await runner.okContractSend("log: single", "main", mainContract.methods.logSingle())
+  await runner.okContractSend("log: all", "main", mainContract.methods.logAll())
+  await runner.okContractSend("log: all indexed", "main", mainContract.methods.logAllIndexed())
+  await runner.okContractSend("log: all mixed", "main", mainContract.methods.logAllMixed())
+  await runner.okContractSend("log: multi", "main", mainContract.methods.logMulti())
 
-  console.log("Performing 'gas' transactions")
-  await okSend(
-    mainContract.methods.deepNestedCallForLowestGas(
-      childContract.address,
-      grandChildContract.address
-    )
-  )
-  await okSend(
-    mainContract.methods.deepNestedLowGas(childContract.address, grandChildContract.address)
-  )
-  await okSend(mainContract.methods.nestedCallForLowestGas(childContract.address))
-  await okSend(mainContract.methods.nestedLowGas(childContract.address))
-  await okSend(mainContract.methods.emptyCallForLowestGas())
-
+  console.log()
   console.log("Performing 'storage & input' transactions")
-  await okSend(mainContract.methods.setLongString())
-  await okSend(mainContract.methods.setAfter())
-  await okSend(
+  setDefaultGasConfig(966000, runner.web3.utils.toWei("50", "gwei"))
+
+  await runner.okContractSend("storage: long string", "main", mainContract.methods.setLongString())
+  await runner.okContractSend("storage: array update", "main", mainContract.methods.setAfter())
+  await runner.okContractSend(
+    "storage: long string input",
+    "main",
     mainContract.methods.longStringInput(
       "realy long string larger than 32 bytes to test out solidity splitting stuff"
     )
   )
 
-  console.log("Performing 'log' transactions")
-  await okSend(mainContract.methods.logEmpty())
-  await okSend(mainContract.methods.logSingle())
-  await okSend(mainContract.methods.logAll())
-  await okSend(mainContract.methods.logAllIndexed())
-  await okSend(mainContract.methods.logAllMixed())
-  await okSend(mainContract.methods.logMulti())
+  console.log()
+  console.log("Performing 'call' transactions")
+  setDefaultGasConfig(300000, runner.web3.utils.toWei("50", "gwei"))
 
-  console.log("Performing 'suicide' transactions")
-  // A suicide where the contract does **not** hold any Ether
-  await okSend(suicidal1Contract.methods.kill())
-
-  // A suicide where the contract does hold some Ether, and refund owner on destruct
-  await promisifyOnFirstConfirmation(
-    web3.eth.sendTransaction({
-      from: defaultAddress,
-      to: suicidal2Deployment.contractAddress,
-      value: 1e18
-    })
+  await runner.okContractSend(
+    "call: complete call tree",
+    "main",
+    mainContract.methods.completeCallTree(childContract.address, grandChildContract.address)
   )
-  await okSend(suicidal2Contract.methods.kill())
 
-  // Nested transfer to new address
-  await okSend(
-    mainContract.methods.nestedFailtNativeTransfer(
-      childContract.address,
-      "0x0000000000000000000000000000000000003003"
-    ),
+  await runner.okContractSend(
+    "call: contract creation from call, without a constructor",
+    "main",
+    mainContract.methods.contractWithEmptyConstructor()
+  )
+
+  await runner.okContractSend(
+    "call: contract creation from call, with constructor",
+    "main",
+    mainContract.methods.contractWithConstructor()
+  )
+
+  await runner.okContractSend(
+    "call: nested fail with native transfer",
+    "main",
+    mainContract.methods.nestedFailtNativeTransfer(childContract.address, randomAddress5),
     {
-      from: defaultAddress,
-      value: "0xdeff"
+      value: threeWei
     }
   )
 
+  await runner.okContractSend(
+    "call: nested call revert state changes",
+    "main",
+    mainContract.methods.nestedRevertFailure(childContract.address)
+  )
+
+  // FIXME: Enabling any other make the full suite go hairy, either never ending
+  //        straight in the now un-commented transaction or later in the first
+  //        `gas` transaction. Really not clear why, but I don't get it ... yet!
+  // await koSend(mainContract.methods.assertFailure())
+
+  // FIXME: Port me to new runner!
+  // await koSend(mainContract.methods.revertFailure())
+  // await koSend(mainContract.methods.nestedAssertFailure(childContract.address))
+
+  console.log()
+  console.log("Performing 'gas' transactions")
+  await runner.okContractSend(
+    "gas: empty call for lowest gas",
+    "main",
+    mainContract.methods.emptyCallForLowestGas()
+  )
+
+  await runner.okContractSend(
+    "gas: nested low gas",
+    "main",
+    mainContract.methods.nestedLowGas(childContract.address)
+  )
+
+  await runner.okContractSend(
+    "gas: deep nested nested call for lowest gas",
+    "main",
+    mainContract.methods.nestedCallForLowestGas(childContract.address)
+  )
+
+  await runner.okContractSend(
+    "gas: deep nested low gas",
+    "main",
+    mainContract.methods.deepNestedLowGas(childContract.address, grandChildContract.address)
+  )
+
+  await runner.okContractSend(
+    "gas: deep nested call for lowest gas",
+    "main",
+    mainContract.methods.deepNestedCallForLowestGas(
+      childContract.address,
+      grandChildContract.address
+    )
+  )
+
+  console.log()
+  console.log("Performing 'suicide' transactions")
+
+  await runner.okContractSend(
+    "suicide: contract does not hold any Ether",
+    "suicidal1",
+    suicidal1Contract.methods.kill()
+  )
+
+  // A suicide where the contract does hold some Ether, and refund owner on destruct
+  await runner.okTransfer(
+    "suicide: transfer some Ether to contract that's about to suicide itself",
+    "default",
+    runner.contracts.suicidal2.address,
+    oneWei
+  )
+
+  await runner.okContractSend(
+    "suicide: contract does hold some Ether, and refund owner on destruct",
+    "suicidal2",
+    suicidal2Contract.methods.kill()
+  )
+
   // Close eagerly as there is a bunch of pending not fully resolved promises due to PromiEvent
-  console.log("Completed battlefield tests")
+  console.log()
+  console.log(`Completed battlefield deployment (${network})`)
   process.exit(0)
 }
 
@@ -206,83 +260,6 @@ async function waitFor(timeInMs: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, timeInMs)
   })
-}
-
-async function getContract(contractName: string, address: string) {
-  const contract = await readContract(
-    web3.eth,
-    pathJoin(__dirname, `./contract/build/${contractName}.abi`)
-  )
-  contract.address = address
-
-  return contract
-}
-
-async function okSend(trx: any, sendOptions?: SendOptions) {
-  try {
-    const result = send(trx, sendOptions)
-    sendOptions = result.sendOptions
-
-    const receipt = await promisifyOnFirstConfirmation(result.promiEvent)
-
-    // See https://ethereum.stackexchange.com/a/6003
-    if (receipt.gasUsed == sendOptions!.gas) {
-      console.log(`Transaction '${receipt.transactionHash}' failed`)
-      throw new Error(`Unexpected transaction ${receipt.transactionHash} failure`)
-    }
-  } catch (error) {
-    console.log(`Transaction failed`, error)
-    throw new Error(`Unexpected transaction failure`)
-  }
-
-  return
-}
-
-async function koSend(trx: any, sendOptions?: SendOptions) {
-  let receipt
-  try {
-    const result = send(trx, sendOptions)
-    sendOptions = result.sendOptions
-
-    receipt = await promisifyOnFirstConfirmation(result.promiEvent)
-  } catch (error) {
-    // Expected failure, do nothing
-    return
-  }
-
-  if (receipt.gasUsed != sendOptions!.gas) {
-    console.log(
-      `Transaction '${receipt.transactionHash}' expected to failed, but succeed?`,
-      receipt,
-      sendOptions!.gas
-    )
-    throw new Error(`Unexpected transaction ${receipt.transactionHash} success`)
-  }
-}
-
-function send(trx: ContractSendMethod, sendOptions?: SendOptions) {
-  if (sendOptions === undefined) {
-    sendOptions = {
-      from: getDefaultAddress()
-    }
-  }
-
-  if (sendOptions.gas == undefined) {
-    sendOptions.gas = getDefaultGasConfig().gasLimit
-  }
-
-  if (sendOptions.gasPrice == undefined) {
-    sendOptions.gasPrice = getDefaultGasConfig().gasPrice
-  }
-
-  if (sendOptions.from == undefined) {
-    sendOptions.from = getDefaultAddress()
-  }
-
-  return {
-    sendOptions,
-    promiEvent: trx.send(sendOptions)
-  }
 }
 
 main()

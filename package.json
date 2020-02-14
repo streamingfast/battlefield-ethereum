@@ -3,7 +3,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "yarn run ts-node main.ts",
+    "local": "NETWORK=local yarn run ts-node main.ts",
+    "ropsten": "NETWORK=ropsten yarn run ts-node main.ts",
     "r": "yarn run ts-node"
   },
   "dependencies": {
