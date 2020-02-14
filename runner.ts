@@ -99,6 +99,11 @@ export class BattlefieldRunner {
         this.deploymentStateFile = pathJoin(__dirname, `./${this.network}-deployment-state.json`)
         this.defaultAddress = requireProcessEnv("FROM_ADDRESS")
         this.privateKey = Buffer.from(requireProcessEnv("PRIVATE_KEY"), "hex")
+
+        if (this.privateKey.length != 64) {
+          console.error(`private key '${this.privateKey}' should have 64 characters`)
+          process.exit(1)
+        }
       }
     })
 
