@@ -12,14 +12,14 @@ import {
   createRawTx,
   setDefaultTxOptions,
   getDefaultGasConfig,
-  isUnsetDefaultGasConfig
+  isUnsetDefaultGasConfig,
 } from "./common"
 import { ContractSendMethod, Contract } from "web3-eth-contract"
 import { deployContract, deployContractRaw, DeploymentResult, DeployerOptions } from "./deploy"
 import { readFileSync, writeFileSync, existsSync } from "fs"
-import { throws } from "assert"
+import Common from "ethereumjs-common"
 
-export type Network = "local" | "ropsten"
+export type Network = "local" | "dev1" | "ropsten"
 
 type Doer<T> = (() => T) | (() => Promise<T>)
 
@@ -28,7 +28,7 @@ const emptyDeploymentState = () => ({
   child: { contractAddress: "", transactionHash: "" },
   grandChild: { contractAddress: "", transactionHash: "" },
   suicidal1: { contractAddress: "", transactionHash: "" },
-  suicidal2: { contractAddress: "", transactionHash: "" }
+  suicidal2: { contractAddress: "", transactionHash: "" },
 })
 
 type DeploymentState = {
@@ -59,7 +59,7 @@ export class BattlefieldRunner {
     child: null as any,
     grandChild: null as any,
     suicidal1: null as any,
-    suicidal2: null as any
+    suicidal2: null as any,
   }
 
   deployer: (name: string, options?: DeployerOptions) => Promise<DeploymentResult>
@@ -78,33 +78,34 @@ export class BattlefieldRunner {
     this.deployer = this.deployRpcContract
 
     this.rpcEndpoint = process.env["RPC_ENDPOINT"] || ""
-    if (this.network == "local") {
-      this.rpcEndpoint = "http://localhost:8545"
-    }
 
     if (!this.rpcEndpoint) {
       this.rpcEndpoint = this.forNetwork({
         local: "http://localhost:8545",
-        ropsten: "https://ropsten.infura.io/json-rpc/"
+        dev1: "http://localhost:8545",
+        ropsten: "https://ropsten.infura.io/json-rpc/",
       })
+    }
+
+    const setupExternalNetwork = () => {
+      this.deployer = this.deployRawContract
+
+      this.deploymentStateFile = pathJoin(__dirname, `./${this.network}-deployment-state.json`)
+      this.defaultAddress = requireProcessEnv("FROM_ADDRESS")
+      this.privateKey = Buffer.from(requireProcessEnv("PRIVATE_KEY"), "hex")
+
+      if (this.privateKey.length != 32) {
+        console.error(`private key '${this.privateKey.toString("hex")}' should have 64 characters`)
+        process.exit(1)
+      }
     }
 
     this.doForNetwork({
       local: () => {
         this.deployer = this.deployRpcContract
       },
-      ropsten: () => {
-        this.deployer = this.deployRawContract
-
-        this.deploymentStateFile = pathJoin(__dirname, `./${this.network}-deployment-state.json`)
-        this.defaultAddress = requireProcessEnv("FROM_ADDRESS")
-        this.privateKey = Buffer.from(requireProcessEnv("PRIVATE_KEY"), "hex")
-
-        if (this.privateKey.length != 64) {
-          console.error(`private key '${this.privateKey}' should have 64 characters`)
-          process.exit(1)
-        }
-      }
+      dev1: setupExternalNetwork,
+      ropsten: setupExternalNetwork,
     })
 
     this.web3 = new Web3(new HttpProvider(this.rpcEndpoint))
@@ -118,9 +119,22 @@ export class BattlefieldRunner {
           process.env["FROM_ADDRESS"]
         )
       },
+      dev1: async () => {
+        setDefaultTxOptions({
+          common: Common.forCustomChain(
+            "mainnet",
+            {
+              name: "dev1",
+              networkId: 1,
+              chainId: 123,
+            },
+            "byzantium"
+          ),
+        })
+      },
       ropsten: async () => {
         setDefaultTxOptions({ chain: "ropsten", hardfork: "istanbul" })
-      }
+      },
     })
 
     this.deploymentState = await this.loadDeploymentState()
@@ -129,7 +143,8 @@ export class BattlefieldRunner {
   async loadDeploymentState(): Promise<DeploymentState> {
     return await this.doForNetwork({
       local: async () => this.deploymentState,
-      ropsten: this.loadDeploymentStateFromFile
+      dev1: this.loadDeploymentStateFromFile,
+      ropsten: this.loadDeploymentStateFromFile,
     })
   }
 
@@ -162,10 +177,10 @@ export class BattlefieldRunner {
       child: await this.deployContract("child", "Child"),
       grandChild: await this.deployContract("grandChild", "Grandchild", {
         contractArguments: ["0x0000000000000000000000000000000000000330", false],
-        value: "25000"
+        value: "25000",
       }),
       suicidal1: await this.deployContract("suicidal1", "Suicidal"),
-      suicidal2: await this.deployContract("suicidal2", "Suicidal")
+      suicidal2: await this.deployContract("suicidal2", "Suicidal"),
     }
 
     if (isAnyDeployed(this.deploymentState)) {
@@ -198,7 +213,7 @@ export class BattlefieldRunner {
       suicidal2: await this.getContract(
         "Suicidal",
         this.deploymentState["suicidal2"].contractAddress
-      )
+      ),
     }
   }
 
@@ -241,7 +256,7 @@ export class BattlefieldRunner {
       const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
         ...resolvedOptions,
         to: this.contracts[contract].address,
-        data: trx.encodeABI()
+        data: trx.encodeABI(),
       })
 
       return { txHash: tx.hash(), promiEvent: sendRawTx(this.web3, tx) }
@@ -303,7 +318,7 @@ export class BattlefieldRunner {
 
   mergeSendOptionsWithDefaults(options?: TransactionConfig): ResolvedSendOptions {
     const defaults: TransactionConfig = {
-      from: this.defaultAddress
+      from: this.defaultAddress,
     }
 
     if (!isUnsetDefaultGasConfig()) {
@@ -324,9 +339,9 @@ export class BattlefieldRunner {
     console.log(` Network: ${this.network}`)
     console.log(
       ` Default address: ${
-        this.network === "local"
-          ? this.defaultAddress
-          : this.etherscanLink("/address/" + this.defaultAddress)
+        this.network === "ropsten"
+          ? this.etherscanLink("/address/" + this.defaultAddress)
+          : this.defaultAddress
       }`
     )
     console.log(` RPC Endpoint: ${this.rpcEndpoint}`)

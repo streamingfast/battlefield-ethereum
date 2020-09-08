@@ -5,11 +5,11 @@ set -e
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 current_dir=`pwd`
-log_file="$ROOT/ropsten-active.md"
+log_file="$ROOT/dev1-active.md"
 
 function usage() {
-    echo "./generate_ropsten.sh"
-    echo "Generate Battlefield transaction on the ETH Ropsten network"
+    echo "./generate_dev1.sh"
+    echo "Generate Battlefield transaction on dfuse Ethereum Tesnet (dev1)"
     echo ""
     echo "To correctly work, you will need to have those environment variables"
     echo "defined:"
@@ -39,11 +39,11 @@ function main {
     echo ""
 
     echo "Executing transactions contained in script 'main.ts'"
-    echo "## Ropsten Last Run Log (`date`)" > $log_file
+    echo "## Dev1 Last Run Log (`date`)" > $log_file
     echo "" >> $log_file
     echo "\`\`\`" >> $log_file
 
-    yarn -s run ropsten | tee -a $log_file
+    yarn -s run dev1 | tee -a $log_file
     echo ""
 
     # The `cleanup` function is going to add the ending ``` backticks

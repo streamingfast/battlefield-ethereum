@@ -5,6 +5,9 @@ import { Contract, SendOptions } from "web3-eth-contract"
 import { Eth } from "web3-eth"
 import { Transaction, BufferLike, TxData, TransactionOptions } from "ethereumjs-tx"
 import Web3 from "web3"
+import debugFactory from "debug"
+
+const debug = debugFactory("battlefield:common")
 
 export type GasOptions = {
   gasPrice?: string
@@ -44,7 +47,7 @@ export const getDefaultSendOptions = (): SendOptions => {
   return {
     from: defaultAddress,
     gas: defaultGasConfig.gasLimit,
-    gasPrice: defaultGasConfig.gasPrice
+    gasPrice: defaultGasConfig.gasPrice,
   }
 }
 
@@ -140,7 +143,7 @@ export function promisifyOnFirstConfirmation<T>(event: PromiEvent<T>): Promise<T
 export function configureDefaultSendOptions(options?: SendOptions): SendOptions {
   if (options === undefined) {
     options = {
-      from: defaultAddress
+      from: defaultAddress,
     }
   }
 
@@ -177,7 +180,7 @@ export async function createRawTx(
     gasLimit: web3.utils.toHex(sendOptions.gas!),
     gasPrice: web3.utils.toHex(sendOptions.gasPrice!),
     to: sendOptions.to,
-    data: sendOptions.data
+    data: sendOptions.data,
   }
 
   if (sendOptions.value) {
@@ -186,6 +189,14 @@ export async function createRawTx(
 
   // The second parameter is not necessary if these values are used
   const tx = new Transaction(txData, sendOptions.txOptions || defaultTxOptions)
+  debug("About to sign transaction %o", {
+    nonce: tx.nonce.toString("number"),
+    gasLimit: tx.gasLimit.toString("hex"),
+    gasPrice: tx.gasPrice.toString("hex"),
+    to: tx.to.toString("hex"),
+    options: sendOptions.txOptions || defaultTxOptions,
+  })
+
   tx.sign(privateKey)
 
   return tx

@@ -8,8 +8,11 @@ import {
   unlockAccount,
   createRawTx,
   sendRawTx,
-  getDefaultGasConfig
+  getDefaultGasConfig,
 } from "./common"
+import debugFactory from "debug"
+
+const debug = debugFactory("battlefield:deploy")
 
 export type DeploymentResult = {
   contractAddress: string
@@ -26,7 +29,7 @@ export async function deployContract(
   fromAddress: string,
   contractName: string,
   options: DeployerOptions = {
-    contractArguments: []
+    contractArguments: [],
   }
 ): Promise<DeploymentResult> {
   if (unlockAccount) {
@@ -47,13 +50,13 @@ export async function deployContract(
       from: fromAddress,
       gas: gasLimit,
       gasPrice: gasPrice,
-      value: options.value
+      value: options.value,
     })
   )
 
   return {
     contractAddress: receipt.contractAddress!,
-    transactionHash: receipt.transactionHash
+    transactionHash: receipt.transactionHash,
   }
 }
 
@@ -63,14 +66,19 @@ export async function deployContractRaw(
   privateKey: Buffer,
   contractName: string,
   options: DeployerOptions = {
-    contractArguments: []
+    contractArguments: [],
   }
 ): Promise<DeploymentResult> {
   const contractMethod = await readContractInfo(web3, contractName, options.contractArguments)
   const tx = await createRawTx(web3, fromAddress, privateKey, {
     from: fromAddress,
     data: contractMethod.encodeABI(),
-    value: options.value
+    value: options.value,
+  })
+
+  debug("Deploying raw contract %o", {
+    from: fromAddress,
+    value: options.value,
   })
 
   console.log(`Deploying contract '${contractName}'`)
@@ -78,7 +86,7 @@ export async function deployContractRaw(
 
   return {
     contractAddress: receipt.contractAddress!,
-    transactionHash: receipt.transactionHash
+    transactionHash: receipt.transactionHash,
   }
 }
 

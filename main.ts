@@ -58,7 +58,7 @@ async function main() {
     oneWei,
     {
       gas: 75000,
-      gasPrice: runner.web3.utils.toWei("1", "gwei")
+      gasPrice: runner.web3.utils.toWei("1", "gwei"),
     }
   )
 
@@ -86,7 +86,7 @@ async function main() {
     mainContract.methods.nativeTransfer(knownExistingAddress),
     {
       from: "default",
-      value: oneWei
+      value: oneWei,
     }
   )
 
@@ -96,7 +96,7 @@ async function main() {
     mainContract.methods.nativeTransfer(randomAddress3),
     {
       from: "default",
-      value: oneWei
+      value: oneWei,
     }
   )
 
@@ -106,7 +106,7 @@ async function main() {
     mainContract.methods.nestedNativeTransfer(childContract.address, knownExistingAddress),
     {
       from: "default",
-      value: oneWei
+      value: oneWei,
     }
   )
 
@@ -117,7 +117,7 @@ async function main() {
     mainContract.methods.nestedNativeTransfer(childContract.address, randomAddress4),
     {
       from: "default",
-      value: oneWei
+      value: oneWei,
     }
   )
 
@@ -173,7 +173,7 @@ async function main() {
     "main",
     mainContract.methods.nestedFailtNativeTransfer(childContract.address, randomAddress5),
     {
-      value: threeWei
+      value: threeWei,
     }
   )
 
