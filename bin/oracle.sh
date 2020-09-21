@@ -22,13 +22,15 @@ main() {
 
   recreate_data_directories oracle
 
+  echo ""
   echo "Copying references file (data, .dmlog) to oracle files..."
   rm -rf $oracle_data_dir/geth &> /dev/null || true
   cp -a $miner_data_dir/geth $oracle_data_dir
-  cp $syncer_log $oracle_log
   cp $syncer_deep_mind_log $oracle_deep_mind_log
 
-  # TODO: Generate dfuse blocks log (check how it's done in nodeos-cloudbuild/deep-mind/compare)
+  echo "Launching blocks generation task (and compiling Go code)"
+  go run battlefield.go generate
+  echo ""
 }
 
 usage_error() {

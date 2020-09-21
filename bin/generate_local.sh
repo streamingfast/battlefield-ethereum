@@ -127,7 +127,6 @@ cleanup() {
 
   # Let's kill everything else
   kill $( jobs -p ) &> /dev/null
-  exit 0
 }
 
 usage_error() {

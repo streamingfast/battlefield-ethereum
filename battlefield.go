@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -26,8 +27,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{Use: "battlefield", Short: "Battlefield binary"}
-var generateCmd = &cobra.Command{Use: "generate", Short: "From the oracle deep mind log file, generate the oracle dfuse blocks"}
-var compareCmd = &cobra.Command{Use: "compare", Short: "From a new actual deep mind log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks"}
+var generateCmd = &cobra.Command{Use: "generate", Short: "From the oracle deep mind log file, generate the oracle dfuse blocks", RunE: generateE}
+var compareCmd = &cobra.Command{Use: "compare", Short: "From a new actual deep mind log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks", RunE: compareE}
 
 var fixedTimestamp *pbts.Timestamp
 var zlog = zap.NewNop()
@@ -40,24 +41,46 @@ func init() {
 }
 
 func main() {
-
-}
-
-func main() {
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(compareCmd)
 
-	rootCmd.Execute()
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
+}
 
+func generateE(cmd *cobra.Command, args []string) error {
 	currentDir, err := os.Getwd()
 	noError(err, "unable to get working directory")
 
-	if len(os.Args) >= 2 {
-		currentDir = os.Args[1]
+	if len(args) > 1 {
+		currentDir = args[0]
 	}
 
-	actualDmlogFile := filepath.Join(currentDir, "run", "data", "syncer", "actual.dmlog")
-	actualJSONFile := filepath.Join(currentDir, "run", "data", "syncer", "actual.json")
+	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
+	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
+
+	oracleBlocks := readActualBlocks(oracleDmlogFile)
+	zlog.Info("read all blocks from dmlog file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleDmlogFile))
+
+	fmt.Printf("Writing oracle blocks to disk...")
+	writeActualBlocks(oracleJSONFile, oracleBlocks)
+
+	fmt.Println(" done")
+	return nil
+}
+
+func compareE(cmd *cobra.Command, args []string) error {
+	currentDir, err := os.Getwd()
+	noError(err, "unable to get working directory")
+
+	if len(args) > 1 {
+		currentDir = args[0]
+	}
+
+	actualDmlogFile := filepath.Join(currentDir, "run", "syncer.dmlog")
+	actualJSONFile := filepath.Join(currentDir, "run", "syncer.json")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
 
 	actualBlocks := readActualBlocks(actualDmlogFile)
@@ -71,18 +94,18 @@ func main() {
 		os.Exit(0)
 	}
 
-	cmd := exec.Command("bash", "-c", fmt.Sprintf("diff -C 5 %s %s | less", oracleJSONFile, actualJSONFile))
+	diffCmd := exec.Command("bash", "-c", fmt.Sprintf("diff -C 5 %s %s | less", oracleJSONFile, actualJSONFile))
 
 	showDiff, wasAnswered := askQuestion(`File %q and %q differs, do you want to see the difference now`, oracleJSONFile, actualJSONFile)
 	if wasAnswered && showDiff {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		diffCmd.Stdout = os.Stdout
+		diffCmd.Stderr = os.Stderr
 
-		noError(cmd.Run(), "Diff command failed to run properly")
+		noError(diffCmd.Run(), "Diff command failed to run properly")
 	} else {
 		fmt.Println("Not showing diff between files, run the following command to see it manually:")
 		fmt.Println()
-		fmt.Printf("    %s\n", makeSingleLineDiffCmd(cmd))
+		fmt.Printf("    %s\n", makeSingleLineDiffCmd(diffCmd))
 		fmt.Println("")
 	}
 
@@ -107,7 +130,7 @@ func main() {
 		fmt.Println("")
 	}
 
-	os.Exit(1)
+	return errors.New("failed")
 }
 
 func makeSingleLineDiffCmd(cmd *exec.Cmd) string {
