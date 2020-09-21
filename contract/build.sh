@@ -43,13 +43,6 @@ main() {
 
    mkdir -p ./build
 
-#     # build_contract main
-#     # build_contract child
-#     # build_contract grandchild
-#     # build_contract suicide
-
-#     build_contract UniswapV2ERC20
-
   echo "Compiling contracts"
   for contract in $contracts; do
     name=`printf $contract | sed 's/^\.\///g' | sed 's/^src\///g' | sed 's/.sol$//g'`
@@ -57,6 +50,8 @@ main() {
     solc_version=${SOLC_VERSION}
     if [[ $name =~ Uniswap* ]]; then
       solc_version="0.5.16"
+    elif [[ $name =~ EIP* ]]; then
+      solc_version="0.4.21"
     fi
 
     build_contract $name $solc_version

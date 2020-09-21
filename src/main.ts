@@ -29,7 +29,7 @@ async function main() {
   runner.printConfiguration()
 
   console.log("Deploying contracts...")
-  setDefaultGasConfig(3566000, runner.web3.utils.toWei("50", "gwei"))
+  setDefaultGasConfig(4566000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.deployContracts()
   runner.printContracts()

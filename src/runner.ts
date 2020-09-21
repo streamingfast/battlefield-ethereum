@@ -23,23 +23,39 @@ export type Network = "local" | "dev1" | "ropsten"
 
 type Doer<T> = (() => T) | (() => Promise<T>)
 
-const emptyDeploymentState = () => ({
-  main: { contractAddress: "", transactionHash: "" },
-  child: { contractAddress: "", transactionHash: "" },
-  grandChild: { contractAddress: "", transactionHash: "" },
-  suicidal1: { contractAddress: "", transactionHash: "" },
-  suicidal2: { contractAddress: "", transactionHash: "" },
-})
-
-type DeploymentState = {
-  main: DeploymentResult
-  child: DeploymentResult
-  grandChild: DeploymentResult
-  suicidal1: DeploymentResult
-  suicidal2: DeploymentResult
+const Contracts = {
+  main: { name: "main", source: "Main" },
+  child: { name: "child", source: "Child" },
+  grandChild: { name: "grandChild", source: "Grandchild" },
+  suicidal1: { name: "suicidal1", source: "Suicidal" },
+  suicidal2: { name: "suicidal2", source: "Suicidal" },
+  uniswap: { name: "uniswap", source: "UniswapV2Factory" },
+  erc20: { name: "erc20", source: "EIP20Factory" },
 }
 
-type DeploymentContracts = Record<keyof DeploymentState, Contract>
+const contractIds = Object.keys(Contracts) as ContractID[]
+
+type ContractID = keyof typeof Contracts
+type DeploymentState = Record<ContractID, DeploymentResult>
+type DeploymentContracts = Record<ContractID, Contract>
+
+const emptyDeploymentState = () => {
+  const state = {} as DeploymentState
+  contractIds.forEach((contractId: ContractID) => {
+    state[contractId] = { contractAddress: "", transactionHash: "" }
+  })
+
+  return state
+}
+
+const emptyDeploymentContracts = () => {
+  const state = {} as DeploymentContracts
+  contractIds.forEach((contractId: ContractID) => {
+    state[contractId] = null as any
+  })
+
+  return state
+}
 
 interface ResolvedSendOptions {
   from: string
@@ -54,13 +70,7 @@ export class BattlefieldRunner {
   // Going to be fully initialize in the `initialize` call
   defaultAddress: string = ""
   deploymentState: DeploymentState = emptyDeploymentState()
-  contracts: DeploymentContracts = {
-    main: null as any,
-    child: null as any,
-    grandChild: null as any,
-    suicidal1: null as any,
-    suicidal2: null as any,
-  }
+  contracts: DeploymentContracts = emptyDeploymentContracts()
 
   deployer: (name: string, options?: DeployerOptions) => Promise<DeploymentResult>
 
@@ -176,17 +186,22 @@ export class BattlefieldRunner {
 
   async deployContracts(): Promise<DeploymentState> {
     this.deploymentState = {
-      main: await this.deployContract("main", "Main"),
-      child: await this.deployContract("child", "Child"),
-      grandChild: await this.deployContract("grandChild", "Grandchild", {
+      main: await this.deployContract("main", Contracts["main"].source),
+      child: await this.deployContract("child", Contracts["child"].source),
+      grandChild: await this.deployContract("grandChild", Contracts["grandChild"].source, {
         contractArguments: ["0x0000000000000000000000000000000000000330", false],
         value: "25000",
       }),
-      suicidal1: await this.deployContract("suicidal1", "Suicidal"),
-      suicidal2: await this.deployContract("suicidal2", "Suicidal"),
+      suicidal1: await this.deployContract("suicidal1", Contracts["suicidal1"].source),
+      suicidal2: await this.deployContract("suicidal2", Contracts["suicidal2"].source),
+
+      uniswap: await this.deployContract("uniswap", Contracts["uniswap"].source, {
+        contractArguments: [this.defaultAddress],
+      }),
+      erc20: await this.deployContract("erc20", Contracts["erc20"].source),
     }
 
-    if (isAnyDeployed(this.deploymentState)) {
+    if (isAnyDeployed(this.deploymentState) && this.network != "local") {
       console.log(
         `(Delete or edit file '${this.deploymentStateFile}' to force a re-deploy to new addresses)`
       )
@@ -202,22 +217,15 @@ export class BattlefieldRunner {
   }
 
   async initializeContracts() {
-    this.contracts = {
-      main: await this.getContract("Main", this.deploymentState["main"].contractAddress),
-      child: await this.getContract("Child", this.deploymentState["child"].contractAddress),
-      grandChild: await this.getContract(
-        "Grandchild",
-        this.deploymentState["grandChild"].contractAddress
-      ),
-      suicidal1: await this.getContract(
-        "Suicidal",
-        this.deploymentState["suicidal1"].contractAddress
-      ),
-      suicidal2: await this.getContract(
-        "Suicidal",
-        this.deploymentState["suicidal2"].contractAddress
-      ),
-    }
+    const promises = contractIds.map(async (contractId: ContractID) => {
+      this.contracts[contractId] = await this.getContract(
+        Contracts[contractId].source,
+        this.deploymentState[contractId].contractAddress
+      )
+      return
+    })
+
+    await Promise.all(promises)
   }
 
   async okTransfer(
@@ -359,26 +367,19 @@ export class BattlefieldRunner {
   printContracts() {
     console.log()
     console.log("Contracts")
-    console.log(`- main       | ${this.contracts["main"].address}`)
-    console.log(`- child      | ${this.contracts["child"].address}`)
-    console.log(`- grandChild | ${this.contracts["grandChild"].address}`)
-    console.log(`- suicidal1  | ${this.contracts["suicidal1"].address}`)
-    console.log(`- suicidal2  | ${this.contracts["suicidal2"].address}`)
+    Object.entries(this.contracts).forEach((entry) => {
+      console.log(`- ${entry[0]} => ${entry[1].address}`)
+    })
+    console.log("")
 
     if (this.network != "local") {
       console.log("")
       console.log("Transaction Links")
-      console.log(`- main       | ${this.ethqTxLink(this.deploymentState.main.transactionHash)}`)
-      console.log(`- child      | ${this.ethqTxLink(this.deploymentState.child.transactionHash)}`)
-      console.log(
-        `- grandChild | ${this.ethqTxLink(this.deploymentState.grandChild.transactionHash)}`
-      )
-      console.log(
-        `- suicidal1  | ${this.ethqTxLink(this.deploymentState.suicidal1.transactionHash)}`
-      )
-      console.log(
-        `- suicidal2  | ${this.ethqTxLink(this.deploymentState.suicidal2.transactionHash)}`
-      )
+      Object.entries(this.contracts).forEach((entry) => {
+        console.log(
+          `- ${entry[0]} => ${this.ethqTxLink(this.deploymentState.main.transactionHash)}`
+        )
+      })
     }
   }
 
