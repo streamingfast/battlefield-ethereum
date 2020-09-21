@@ -1,0 +1,22 @@
+{
+  "main": {
+    "contractAddress": "0x09c467442a9bcb471C7B00924b971E8B1bAaF206",
+    "transactionHash": "0x6c6aeacdfea29a744c155297282d28299cd629c9f1c1da8c43300f77025287f8"
+  },
+  "child": {
+    "contractAddress": "0x8C29b3635A221d2fA34cC07E305Cd93fD7099C78",
+    "transactionHash": "0x104669ee429a632f569d4a7ab0c7e24cf7c1931e6ba6ccd12680f38cde20b0ac"
+  },
+  "grandChild": {
+    "contractAddress": "0xa7Ba8e4eA7Fdaf8388d7a0E4f46C07647AB435Fc",
+    "transactionHash": "0xb63405fd38ca89ef6ea0c6e441553abd3363331875aa6d12339d29917da7f1ee"
+  },
+  "suicidal1": {
+    "contractAddress": "0x5526cfcdAd01cCBC8684efF2072330f0BAc49b31",
+    "transactionHash": "0xb5959b204e99cc4acdc52f5584c5930da438aab9c6bedfe807601e46ef5bedcd"
+  },
+  "suicidal2": {
+    "contractAddress": "0x45946BbFFb8b30A51D6bF2AC96cac68E649F427f",
+    "transactionHash": "0x31ceb75424bc4890f75937796370c9524024b40320987d24b4e814e52d049bb2"
+  }
+}

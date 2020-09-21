@@ -1,7 +1,8 @@
 .envrc
+/boot/genesis/keystore
 /contract/build/
-/data/miner
-/data/syncer
+/run/data/miner
+/run/data/syncer
 /node_modules
 *.log
 *.dmlog

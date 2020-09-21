@@ -19,13 +19,13 @@ with the chain):
 
     yarn install
 
-Then, you run the `generate.sh` script which will compile the
+Then, you run the `generate_local.sh` script which will compile the
 smart contracts, launch a miner and syncer Geth processes,
 execute a bunch of transactions and collect the logs of
 all this and more specially, the deep mind logs for future
 analysis:
 
-    ./generate_local.sh
+    ./bin/generate_local.sh
 
 ### Explanation
 
@@ -53,7 +53,12 @@ file that tells it how to talk to the miner process.
 
 The syncer then simply sync from the miner each time new
 blocks are propagated through the network. The syncer is
-deep mind aware and generates the deep mind log and
-saves them
+deep mind aware and generates the deep mind log.
 
-###
+#### Private Keys
+
+The current boot addresses and their respective private key are:
+
+- Address `ea143138dab9a14e11d1ae91e669851e6cc72131` => Private Key `4941116954b6ced5ead503a2fa8c04a0d8fed6377278437f06f6915760fd3af9`
+- Address `d549d2fd4b177767b84ab2fd17423cee1cf1d7bd` => Private Key `1386e4d24a11a739e3afee0b57cb23c0685114ac2a4e648298d317ab386804e8`
+- Address `545594058eb1dcb59add9ca2a0b13657122147ea` => Private Key `5f80b870cb5aeda4b4b10a5aadd27d0f9d53eddd47fe54520c47d55adbae6b04`

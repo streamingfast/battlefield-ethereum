@@ -2,76 +2,128 @@
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+
 BROWN='\033[0;33m'
 NC='\033[0m'
-
 SOLC_CONTAINER=${SOLC_CONTAINER:-"ethereum/solc"}
-SOLC_VERSION=${SOLC_VERSION:-"0.5.4"}
+SOLC_VERSION=${SOLC_VERSION:-"0.5.16"}
 
-image_id="${SOLC_CONTAINER}:${SOLC_VERSION}"
-solc_args="-o ./build --overwrite --abi --bin"
+main() {
+  pushd "$ROOT" &> /dev/null
 
-function main {
-    debug "Building contracts with image id $image_id and solc args $solc_args"
+  clean=
 
-    set +e
-    images=`docker images | grep -E "${SOLC_CONTAINER}\s+${SOLC_VERSION}"`
-    exit_code=$?
-    if [[ $exit_code != 0 ]]; then
-        echo "Docker image [${image_id}] does not exist yet, pulling it..."
-        docker pull ${image_id}
+  while getopts "hc" opt; do
+    case $opt in
+      h) usage && exit 0;;
+      c) clean=true;;
+      \?) usage_error "Invalid option: -$OPTARG";;
+    esac
+  done
+  shift $((OPTIND-1))
+
+  contracts="$@"
+  if [[ $# -lt 1 ]]; then
+    contracts=`cd src; find . -type f -maxdepth 1 -name '*.sol'`
+  fi
+
+  set +e
+  images=`docker images | grep -E "${SOLC_CONTAINER}\s+${SOLC_VERSION}"`
+  exit_code=$?
+  if [[ $exit_code != 0 ]]; then
+      echo "Docker image [${image_id}] does not exist yet, pulling it..."
+      docker pull ${image_id}
+  fi
+  set -e
+
+  if [[ $clean == true ]]; then
+    ./clean.sh
+    echo ""
+  fi
+
+   mkdir -p ./build
+
+#     # build_contract main
+#     # build_contract child
+#     # build_contract grandchild
+#     # build_contract suicide
+
+#     build_contract UniswapV2ERC20
+
+  echo "Compiling contracts"
+  for contract in $contracts; do
+    name=`printf $contract | sed 's/^\.\///g' | sed 's/^src\///g' | sed 's/.sol$//g'`
+
+    solc_version=${SOLC_VERSION}
+    if [[ $name =~ Uniswap* ]]; then
+      solc_version="0.5.16"
     fi
-    set -e
 
-    if [[ $1 == "clean" ]]; then
-        $ROOT/clean.sh
-        echo ""
-    fi
-
-    mkdir -p $ROOT/build
-
-    echo "Compiling contracts"
-
-    build_contract main
-    build_contract child
-    build_contract grandchild
-    build_contract suicide
+    build_contract $name $solc_version
+  done
 }
 
-function build_contract {
-    echo "Compiling contract $1"
+build_contract() {
+  name="$1"
+  solc_version="${2:-$SOLC_VERSION}"
 
-    build_sum="contract/build/$1.sum"
-    src_file="contract/src/$1.sol"
+  build_sum="./build/$1.sum"
+  src_file="./src/$1.sol"
 
-    debug "Building contract $1 (Source $src_file, Checksum $build_sum)"
+  debug "Building contract $name (Source $src_file, Checksum $build_sum)"
 
-    source_checksum=`cat $build_sum 2>/dev/null || echo "<File not found>"`
-    actual_checksum=`revision $src_file`
+  source_checksum=`cat $build_sum 2>/dev/null || echo "<File not found>"`
+  actual_checksum=`revision $src_file`
 
-    debug "Source $source_checksum | ($build_sum)"
-    debug "Actual $actual_checksum | ($src_file)"
+  debug "Source $source_checksum | ($build_sum)"
+  debug "Actual $actual_checksum | ($src_file)"
 
-    if [[ "$source_checksum" != "$actual_checksum" ]]; then
-        docker run --rm -it -v "$ROOT:/contract" -w /contract "${image_id}" $solc_args src/$1.sol
-        echo $actual_checksum > $build_sum
-    fi
+  if [[ "$source_checksum" != "$actual_checksum" ]]; then
+    echo "Compiling contract $1 (with solc ${solc_version})"
+    image_id="${SOLC_CONTAINER}:${solc_version}"
+    solc_args="-o ./build --overwrite --abi --bin"
+
+    docker run --rm -it -v "`pwd`:/contract" -w /contract "${image_id}" $solc_args src/$1.sol
+    echo $actual_checksum > $build_sum
+  else
+    echo "Contract $name source checksum is same as built one, skipping"
+  fi
 }
 
-function revision {
-    cmd=shasum256
-    if [[ ! -x "$(command -v $cmd)" ]]; then
-        cmd="shasum -a 256"
-    fi
+revision() {
+  cmd=shasum256
+  if [[ ! -x "$(command -v $cmd)" ]]; then
+    cmd="shasum -a 256"
+  fi
 
-    debug "Command for checksum will be '$cmd $@'"
-    echo `$cmd $1 | cut -f 1 -d ' '`
+  debug "Command for checksum will be '$cmd $@'"
+  echo `$cmd $1 | cut -f 1 -d ' '`
 }
 
-function debug {
-    if [[ $DEBUG != "" ]]; then
-        >&2 echo "$@"
-    fi
+debug() {
+  if [[ $DEBUG != "" ]]; then
+    >&2 echo "$@"
+  fi
+}
+
+usage_error() {
+  message="$1"
+  exit_code="$2"
+
+  echo "ERROR: $message"
+  echo ""
+  usage
+  exit ${exit_code:-1}
+}
+
+usage() {
+  echo "usage: build.sh [-c] [<contract> ...]"
+  echo ""
+  echo "Build all (or specific) contracts found within this folder."
+  echo ""
+  echo "Options"
+  echo "    -c          Clean prior building contracts"
+  echo "    -h          Display help about this script"
 }
 
 main "$@"

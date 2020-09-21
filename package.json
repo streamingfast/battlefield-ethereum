@@ -3,9 +3,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "local": "NETWORK=local yarn run ts-node main.ts",
-    "ropsten": "NETWORK=ropsten yarn run ts-node main.ts",
-    "dev1": "NETWORK=dev1 yarn run ts-node main.ts",
+    "local": "NETWORK=local yarn run ts-node src/main.ts",
+    "ropsten": "NETWORK=ropsten yarn run ts-node src/main.ts",
+    "dev1": "NETWORK=dev1 yarn run ts-node src/main.ts",
     "r": "yarn run ts-node"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
     "@types/levelup": "^3.1.1",
     "debug": "^4.1.1",
     "ethereumjs-tx": "^2.1.2",
+    "keythereum-node": "^2.0.0",
     "level": "^6.0.0",
     "level-ts": "^1.11.0",
     "web3": "^1.0.0-beta.55"
