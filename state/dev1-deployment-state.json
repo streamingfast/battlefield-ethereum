@@ -1,22 +1,30 @@
 {
   "main": {
-    "contractAddress": "0x09c467442a9bcb471C7B00924b971E8B1bAaF206",
-    "transactionHash": "0x6c6aeacdfea29a744c155297282d28299cd629c9f1c1da8c43300f77025287f8"
+    "contractAddress": "0x7d94115A1076706b14baF4844299068E3BCcB681",
+    "transactionHash": "0xbd1975b8b690adb4442de7c16b54cce7b807a56564a2e3fa9760932b78b8b75b"
   },
   "child": {
-    "contractAddress": "0x8C29b3635A221d2fA34cC07E305Cd93fD7099C78",
-    "transactionHash": "0x104669ee429a632f569d4a7ab0c7e24cf7c1931e6ba6ccd12680f38cde20b0ac"
+    "contractAddress": "0x43D805dfa103974acB21F7e6cd51a7da6fcA7903",
+    "transactionHash": "0x8a4d61763cf54f4a86f207e379a09fa504845f73c6cbdfb1e7cdb3bc9f415be7"
   },
   "grandChild": {
-    "contractAddress": "0xa7Ba8e4eA7Fdaf8388d7a0E4f46C07647AB435Fc",
-    "transactionHash": "0xb63405fd38ca89ef6ea0c6e441553abd3363331875aa6d12339d29917da7f1ee"
+    "contractAddress": "0xFc5A09983760EB83CfF1DE491EC7242BCf60C1e9",
+    "transactionHash": "0x4b8eb087c38f307493fc4faed69f6f3c221706244fa7cbba89252632da208faa"
   },
   "suicidal1": {
-    "contractAddress": "0x5526cfcdAd01cCBC8684efF2072330f0BAc49b31",
-    "transactionHash": "0xb5959b204e99cc4acdc52f5584c5930da438aab9c6bedfe807601e46ef5bedcd"
+    "contractAddress": "0x40Ecf831a50C24955752B02d2A95B680930f432C",
+    "transactionHash": "0x069b2aaf0503a492710190a5d4940f3840a7c149f061d8705e6bf5a640a53647"
   },
   "suicidal2": {
-    "contractAddress": "0x45946BbFFb8b30A51D6bF2AC96cac68E649F427f",
-    "transactionHash": "0x31ceb75424bc4890f75937796370c9524024b40320987d24b4e814e52d049bb2"
+    "contractAddress": "0x396b07D76ce13F0283B37246593ce7a08B582E23",
+    "transactionHash": "0xd97053c7a58d59a3616aab64bd3ba147d19f5b7a604af9ed3ded717c84372615"
+  },
+  "uniswap": {
+    "contractAddress": "0xcf1Fd245D77764Cefaa70dEcC1E8D1FDE38feCB6",
+    "transactionHash": "0xcf6d7c89a1bee8135fcf0d60d59df444dabda790565322d8e0a475f268fa9825"
+  },
+  "erc20": {
+    "contractAddress": "0x8223c666495e586A9C47DFe0746eAbCC2fa209f7",
+    "transactionHash": "0x530961bc335dd5c329764b2967ff8fc0e0f5700a7ba84a971f088e4933cfb539"
   }
 }

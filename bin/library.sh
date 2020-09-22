@@ -5,9 +5,11 @@ export GENESIS_DIR=${BOOT_DIR}/genesis
 export RUN_DIR=${ROOT}/run
 
 export geth_bin=${GETH_BIN:-"geth"}
+export bootnode_bin=${BOOTNODE_BIN:-"bootnode"}
 
 export genesis_log="$GENESIS_DIR/genesis.log"
 export genesis_json="$BOOT_DIR/genesis.json"
+export genesis_alloc_json="$GENESIS_DIR/alloc.json"
 
 export miner_data_dir="$RUN_DIR/data/miner"
 export miner_log="$RUN_DIR/miner.log"
@@ -24,18 +26,6 @@ export syncer_data_dir="$RUN_DIR/data/syncer"
 export syncer_log="$RUN_DIR/syncer.log"
 export syncer_deep_mind_log="$RUN_DIR/syncer.dmlog"
 export syncer_cmd="$geth_bin --datadir ${syncer_data_dir}"
-
-recreate_boot_directories() {
-  genesis_block=$1
-
-  rm -rf "$GENESIS_DIR" &&  mkdir -p "$GENESIS_DIR" &> /dev/null
-  if [[ $genesis_block == "" ]]; then
-    rm -rf "$KEYSTORE_DIR" && mkdir -p "$KEYSTORE_DIR" &> /dev/null
-  fi
-
-  # This one might already exist
-  mkidr -p "$RUN_DIR" &> /dev/null || true
-}
 
 recreate_data_directories() {
   local component

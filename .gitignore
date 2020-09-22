@@ -9,3 +9,6 @@
 *.json
 !oracle.dmlog
 !oracle.json
+!boot/genesis/genesis.log
+!boot/genesis.json
+!boot/static-nodes.json

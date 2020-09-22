@@ -27,40 +27,70 @@ main() {
       exit 0
   fi
 
-  recreate_boot_directories $genesis_block
-  echo "" > $genesis_log
-
   if [[ $genesis_block == "" ]]; then
+    recreate_boot_directories $genesis_block
+    echo "" > $genesis_log
+
     echo "Generating public keys"
     printf "" > "$KEYSTORE_DIR"/passphrase.txt
 
-    log "Account #1"
-    $geth_bin account new --keystore "$KEYSTORE_DIR" --password "$KEYSTORE_DIR/passphrase.txt" >> $genesis_log 2>&1
+    echo "{" > $genesis_alloc_json
+    accounts=( "matt" "alex" "stepd" "charles" "julian" "fp" "matb" "josh" "anthony" "marc" )
+    for account in "${accounts[@]}"; do
+      $geth_bin account new --keystore "$KEYSTORE_DIR" --password "$KEYSTORE_DIR/passphrase.txt" >> $genesis_log 2>&1
 
-    log "Account #2"
-    $geth_bin account new --keystore "$KEYSTORE_DIR" --password "$KEYSTORE_DIR/passphrase.txt" >> $genesis_log 2>&1
+      address=`tail -n8 $genesis_log | grep $KEYSTORE_DIR | cut -d '-' -f9`
+      log "Account $account (address $address)"
 
-    log "Account #3"
-    $geth_bin account new --keystore "$KEYSTORE_DIR" --password "$KEYSTORE_DIR/passphrase.txt" >> $genesis_log 2>&1
+      printf "  \"${address}\": { \"balance\": \"0x100000000000000000000000000000000000000000000000000000000000000\" }" >> $genesis_alloc_json
+      if [[ $account == ${accounts[${#accounts[@]} - 1]} ]]; then
+        printf "\n" >> $genesis_alloc_json
+      else
+        printf ",\n" >> $genesis_alloc_json
+      fi
+    done
+    echo "}" >> $genesis_alloc_json
 
     echo ""
-    echo "Edit $BOOT_DIR/genesis.json 'alloc' structure the three new addresses:"
-    echo "You will need also to change the 'extraData' address, which is 20 bytes"
-    echo "long starting at offset 32 (so skip the first 64 characters) with the new first account"
-    ls "$KEYSTORE_DIR" | grep -v 'passphrase' | cut -d '-' -f9
+    echo "Edit $BOOT_DIR/genesis.json 'alloc' structure with this one:"
+    echo ""
+    cat $genesis_alloc_json
+    echo ""
+    echo "You will need also to change the 'extraData' field value with the new miner address, which"
+    echo "is 20 bytes long starting at offset 32 (so skip the first 64 characters, it's right"
+    echo "after '...656c6420436861696e') with this value:"
+    echo ""
+    cat $genesis_alloc_json | jq -r 'keys_unsorted[0]'
+    echo ""
 
-    echo -n "Press any key when done..."
+    echo -n "Press any key when you have finished editing 'genesis.json'..."
     read answer
+  else
+    mkdir -p "$GENESIS_DIR" &> /dev/null
+    rm -rf $GENESIS_DIR/geth &> /dev/null || true
+    echo "" > $genesis_log
   fi
 
-  log "Generating genesis block"
+  log "Generating genesis block & node information"
+  coinbase_address=`cat $genesis_alloc_json | jq -r 'keys_unsorted[0]'`
+  coinbase_private=`yarn -s r src/keys.ts $coinbase_address | tail -n1`
+  coinbase_enode=`$bootnode_bin -nodekeyhex $coinbase_private -writeaddress`
+
+  echo "$coinbase_private" > $BOOT_DIR/nodekey
+  echo "[\"enode://${coinbase_enode}@127.0.0.1:30303\"]" > $BOOT_DIR/static-nodes.json
   $geth_bin --datadir $GENESIS_DIR init "$BOOT_DIR/genesis.json" >> $genesis_log 2>&1
 
   echo "Completed"
 }
 
 log() {
+  echo "$@"
   echo "$@" >> $genesis_log
+}
+
+recreate_boot_directories() {
+  rm -rf "$GENESIS_DIR" && mkdir -p "$GENESIS_DIR" &> /dev/null
+  rm -rf "$KEYSTORE_DIR" && mkdir -p "$KEYSTORE_DIR" &> /dev/null
 }
 
 usage_error() {
@@ -74,7 +104,7 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: bootstrap <option>"
+  echo "usage: bootstrap [-b]"
   echo ""
   echo "Generate all necessary data to boostrap a node process for this chain."
   echo "The bootstrap phase generates keys for all hardcoded account as well as the"

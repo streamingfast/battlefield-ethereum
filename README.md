@@ -59,6 +59,13 @@ deep mind aware and generates the deep mind log.
 
 The current boot addresses and their respective private key are:
 
-- Address `ea143138dab9a14e11d1ae91e669851e6cc72131` => Private Key `4941116954b6ced5ead503a2fa8c04a0d8fed6377278437f06f6915760fd3af9`
-- Address `d549d2fd4b177767b84ab2fd17423cee1cf1d7bd` => Private Key `1386e4d24a11a739e3afee0b57cb23c0685114ac2a4e648298d317ab386804e8`
-- Address `545594058eb1dcb59add9ca2a0b13657122147ea` => Private Key `5f80b870cb5aeda4b4b10a5aadd27d0f9d53eddd47fe54520c47d55adbae6b04`
+- Address `a3c4119cb3e8b8863ffbc8f2895ad96dfd34c559` => Private Key `1fc0f6d5b1cb394cc2c537ed24f417d29d146b958df46c6bf8a6cc7aa9a5f80b`
+- Address `e3a046465d119d0cd35faaed34930ddb323b00d7` => Private Key `bfb451713ddf9e92ad21907ef12c0d0357d6e0afd6b9009d3a8c015cccad2ad8`
+- Address `71089c8752f2423c0ac967712d677b10bbcf7291` => Private Key `f140a3c91ff64bfa736914cb96f68199948906761d8b3428580130f3daf59306`
+- Address `0795853d36c94783226adf0860ecc22c873fffd8` => Private Key `c7f201fce5331ac5c797a9512f88e35d8a132945da380aa7ec6accad6c6d4528`
+- Address `c1479b59bc69aaa678d6ae38bcd6d63408595128` => Private Key `7272d95333e12b22a889df3d03cc4db1a91d05ee6392de529858615c73f7bac6`
+- Address `c524cd3859ab79232e472d721e1184b9f286c101` => Private Key `b327f85809cca492250c611bd74c7a5532043aaa616ccebd87dd6cde717510ad`
+- Address `c3b23d133bdb5badc20ce5f6c8bf1830c2202f68` => Private Key `05e0c929c0d45e514db7b49482f41709c7e15a016829410972714ef0ced64727`
+- Address `509ae3311881a61d2a86ff5a2d5ebe3c78d88c3e` => Private Key `42a9b088a0e86d72eec4c7394b29b6685f33a136a94ddb0ae22779eb37275243`
+- Address `d70c06459f0837621ad74be1b2f364528d066ebb` => Private Key `eabfd1c8ac58986a8984163443eb6aefb79bb6947f989410d92984af0e3b444d`
+- Address `dbe42dd0686c78dda413cdae7777977bf99725af` => Private Key `4ead778de9df54ce749fa38b7df97c3d664067bb5af2bfe5cf03320582786472`

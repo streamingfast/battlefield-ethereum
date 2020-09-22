@@ -1,0 +1,163 @@
+
+INFO [09-21|23:49:37.686] Initializing deep mind 
+INFO [09-21|23:49:37.686] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:37.687] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0x62d9AD344366c268C3062764BBF67d318ec2C8fD
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-37.688325000Z--62d9ad344366c268c3062764bbf67d318ec2c8fd
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account matt (address 62d9ad344366c268c3062764bbf67d318ec2c8fd)
+INFO [09-21|23:49:39.711] Initializing deep mind 
+INFO [09-21|23:49:39.711] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:39.712] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0x510416BBC94efD6DF59BDEcC3fa7dB3b4C9fb188
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-39.712904000Z--510416bbc94efd6df59bdecc3fa7db3b4c9fb188
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account alex (address 510416bbc94efd6df59bdecc3fa7db3b4c9fb188)
+INFO [09-21|23:49:41.829] Initializing deep mind 
+INFO [09-21|23:49:41.829] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:41.830] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0xaadF939f53a1b9A3DF7082Bdc47d01083E8eBFAd
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-41.831165000Z--aadf939f53a1b9a3df7082bdc47d01083e8ebfad
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account stepd (address aadf939f53a1b9a3df7082bdc47d01083e8ebfad)
+INFO [09-21|23:49:43.747] Initializing deep mind 
+INFO [09-21|23:49:43.747] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:43.748] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0x6B37CD0e93C15a00Ab4dBA8EF400B86BA41ecF26
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-43.748902000Z--6b37cd0e93c15a00ab4dba8ef400b86ba41ecf26
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account charles (address 6b37cd0e93c15a00ab4dba8ef400b86ba41ecf26)
+INFO [09-21|23:49:45.914] Initializing deep mind 
+INFO [09-21|23:49:45.914] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:45.915] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0xa9f5305752680406b1556235aA333aBC34125414
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-45.915878000Z--a9f5305752680406b1556235aa333abc34125414
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account julian (address a9f5305752680406b1556235aa333abc34125414)
+INFO [09-21|23:49:48.123] Initializing deep mind 
+INFO [09-21|23:49:48.123] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:48.124] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0x2Ab0416d94Cf6EB7eF617466bd027fe6CDDA0079
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-48.125008000Z--2ab0416d94cf6eb7ef617466bd027fe6cdda0079
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account fp (address 2ab0416d94cf6eb7ef617466bd027fe6cdda0079)
+INFO [09-21|23:49:50.273] Initializing deep mind 
+INFO [09-21|23:49:50.273] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:50.274] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0xb7F2DcF6D9205fC15BB31dc09A7CE9D0279650d3
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-50.275081000Z--b7f2dcf6d9205fc15bb31dc09a7ce9d0279650d3
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account matb (address b7f2dcf6d9205fc15bb31dc09a7ce9d0279650d3)
+INFO [09-21|23:49:52.327] Initializing deep mind 
+INFO [09-21|23:49:52.328] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:52.329] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0x8d8afF0301C00D4501E3E5d1Affac10CC9bc5da5
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-52.329377000Z--8d8aff0301c00d4501e3e5d1affac10cc9bc5da5
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account josh (address 8d8aff0301c00d4501e3e5d1affac10cc9bc5da5)
+INFO [09-21|23:49:54.397] Initializing deep mind 
+INFO [09-21|23:49:54.397] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:54.398] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0x3F19E98ae43c673112445c9e4a0038eE8Fa4C721
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-54.399330000Z--3f19e98ae43c673112445c9e4a0038ee8fa4c721
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account anthony (address 3f19e98ae43c673112445c9e4a0038ee8fa4c721)
+INFO [09-21|23:49:56.649] Initializing deep mind 
+INFO [09-21|23:49:56.649] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:49:56.650] Maximum peer count                       ETH=50 LES=0 total=50
+
+Your new key was generated
+
+Public address of the key:   0xa8016f1af8268Eb39e414015dfD87b2a5a92adED
+Path of the secret key file: /Users/maoueh/work/dfuse/ethereum.battlefield/boot/keystore/UTC--2020-09-22T03-49-56.651176000Z--a8016f1af8268eb39e414015dfd87b2a5a92aded
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+
+Account marc (address a8016f1af8268eb39e414015dfd87b2a5a92aded)
+Generating genesis block & node information
+INFO [09-21|23:51:42.964] Initializing deep mind 
+INFO [09-21|23:51:42.964] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
+INFO [09-21|23:51:42.968] Maximum peer count                       ETH=50 LES=0 total=50
+INFO [09-21|23:51:43.004] Allocated cache and file handles         database=/Users/maoueh/work/dfuse/ethereum.battlefield/boot/genesis/geth/chaindata cache=16.00MiB handles=16
+INFO [09-21|23:51:43.077] Writing custom genesis block 
+INFO [09-21|23:51:43.082] Persisted trie from memory database      nodes=14 size=2.28KiB time=257.04µs gcnodes=0 gcsize=0.00B gctime=0s livenodes=1 livesize=0.00B
+INFO [09-21|23:51:43.083] Successfully wrote genesis state         database=chaindata hash=c13c41…958126
+INFO [09-21|23:51:43.083] Allocated cache and file handles         database=/Users/maoueh/work/dfuse/ethereum.battlefield/boot/genesis/geth/lightchaindata cache=16.00MiB handles=16
+INFO [09-21|23:51:43.136] Writing custom genesis block 
+INFO [09-21|23:51:43.137] Persisted trie from memory database      nodes=14 size=2.28KiB time=257.911µs gcnodes=0 gcsize=0.00B gctime=0s livenodes=1 livesize=0.00B
+INFO [09-21|23:51:43.138] Successfully wrote genesis state         database=lightchaindata hash=c13c41…958126

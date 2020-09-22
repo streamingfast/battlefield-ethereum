@@ -164,8 +164,9 @@ export class BattlefieldRunner {
   loadDeploymentStateFromFile = async (): Promise<DeploymentState> => {
     if (existsSync(this.deploymentStateFile)) {
       const content = readFileSync(this.deploymentStateFile)
+      const actualState = JSON.parse(content.toString())
 
-      return JSON.parse(content.toString())
+      return { ...this.deploymentState, ...actualState }
     }
 
     return this.deploymentState
@@ -185,20 +186,56 @@ export class BattlefieldRunner {
   }
 
   async deployContracts(): Promise<DeploymentState> {
-    this.deploymentState = {
-      main: await this.deployContract("main", Contracts["main"].source),
-      child: await this.deployContract("child", Contracts["child"].source),
-      grandChild: await this.deployContract("grandChild", Contracts["grandChild"].source, {
-        contractArguments: ["0x0000000000000000000000000000000000000330", false],
-        value: "25000",
-      }),
-      suicidal1: await this.deployContract("suicidal1", Contracts["suicidal1"].source),
-      suicidal2: await this.deployContract("suicidal2", Contracts["suicidal2"].source),
+    // FIXME: Only local do it in parallel for now as foreign network needs to have an update nonce after each transaction!
+    // FIXME: At least, we should get rid of the enormous duplication in there...
+    if (this.network === "local") {
+      const promises: Record<ContractID, Promise<DeploymentResult>> = {
+        main: this.deployContract("main", Contracts["main"].source),
+        child: this.deployContract("child", Contracts["child"].source),
+        grandChild: this.deployContract("grandChild", Contracts["grandChild"].source, {
+          contractArguments: ["0x0000000000000000000000000000000000000330", false],
+          value: "25000",
+        }),
+        suicidal1: this.deployContract("suicidal1", Contracts["suicidal1"].source),
+        suicidal2: this.deployContract("suicidal2", Contracts["suicidal2"].source),
 
-      uniswap: await this.deployContract("uniswap", Contracts["uniswap"].source, {
-        contractArguments: [this.defaultAddress],
-      }),
-      erc20: await this.deployContract("erc20", Contracts["erc20"].source),
+        uniswap: this.deployContract("uniswap", Contracts["uniswap"].source, {
+          contractArguments: [this.defaultAddress],
+        }),
+        erc20: this.deployContract("erc20", Contracts["erc20"].source),
+      }
+
+      Promise.all(Object.values(promises))
+
+      // TODO: Avoid the duplicate here, but the Promises.all is only an array it's not easy
+      // to create necessary code to make it "work".
+      //
+      // This is all very quick since each promise is already resolved
+      this.deploymentState = {
+        main: await promises["main"],
+        child: await promises["child"],
+        grandChild: await promises["grandChild"],
+        suicidal1: await promises["suicidal1"],
+        suicidal2: await promises["suicidal2"],
+        uniswap: await promises["uniswap"],
+        erc20: await promises["erc20"],
+      }
+    } else {
+      this.deploymentState = {
+        main: await this.deployContract("main", Contracts["main"].source),
+        child: await this.deployContract("child", Contracts["child"].source),
+        grandChild: await this.deployContract("grandChild", Contracts["grandChild"].source, {
+          contractArguments: ["0x0000000000000000000000000000000000000330", false],
+          value: "25000",
+        }),
+        suicidal1: await this.deployContract("suicidal1", Contracts["suicidal1"].source),
+        suicidal2: await this.deployContract("suicidal2", Contracts["suicidal2"].source),
+
+        uniswap: await this.deployContract("uniswap", Contracts["uniswap"].source, {
+          contractArguments: [this.defaultAddress],
+        }),
+        erc20: await this.deployContract("erc20", Contracts["erc20"].source),
+      }
     }
 
     if (isAnyDeployed(this.deploymentState) && this.network != "local") {
@@ -226,6 +263,24 @@ export class BattlefieldRunner {
     })
 
     await Promise.all(promises)
+  }
+
+  async parallelize<T = any>(...promiseFactories: Array<() => Promise<T>>): Promise<void> {
+    if (this.network == "local") {
+      return Promise.all(promiseFactories.map((promiseFactory) => promiseFactory())).then(() => {
+        return
+      })
+    }
+
+    // Sequential for now because on non-local network, we need to actually fetch the current nonce and each parallel execution need to get the nonce for which it will work
+    var result = Promise.resolve<T>(undefined as any)
+    promiseFactories.forEach((promiseFactory) => {
+      result = result.then(() => promiseFactory() as Promise<T>)
+    })
+
+    return result.then(() => {
+      return
+    })
   }
 
   async okTransfer(
@@ -367,18 +422,15 @@ export class BattlefieldRunner {
   printContracts() {
     console.log()
     console.log("Contracts")
-    Object.entries(this.contracts).forEach((entry) => {
-      console.log(`- ${entry[0]} => ${entry[1].address}`)
+    Object.entries(this.deploymentState).forEach((entry) => {
+      console.log(`- ${entry[0]} => ${entry[1].contractAddress}`)
     })
-    console.log("")
 
     if (this.network != "local") {
       console.log("")
       console.log("Transaction Links")
-      Object.entries(this.contracts).forEach((entry) => {
-        console.log(
-          `- ${entry[0]} => ${this.ethqTxLink(this.deploymentState.main.transactionHash)}`
-        )
+      Object.entries(this.deploymentState).forEach((entry) => {
+        console.log(`- ${entry[0]} => ${this.ethqTxLink(entry[1].transactionHash)}`)
       })
     }
   }
@@ -459,8 +511,8 @@ export class BattlefieldRunner {
   doNothing: any = () => {}
 }
 
-function isDeployed(contract: keyof DeploymentState, deploymentState: DeploymentState): boolean {
-  return deploymentState[contract].contractAddress != ""
+function isDeployed(contract: ContractID, deploymentState: DeploymentState): boolean {
+  return deploymentState[contract].contractAddress !== ""
 }
 
 function isAnyDeployed(deploymentState: DeploymentState): boolean {

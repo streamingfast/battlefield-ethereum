@@ -29,7 +29,7 @@ async function main() {
   runner.printConfiguration()
 
   console.log("Deploying contracts...")
-  setDefaultGasConfig(4566000, runner.web3.utils.toWei("50", "gwei"))
+  setDefaultGasConfig(5566000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.deployContracts()
   runner.printContracts()
@@ -44,107 +44,129 @@ async function main() {
   console.log("Performing pure 'transfer' transactions")
   setDefaultGasConfig(21000, runner.web3.utils.toWei("50", "gwei"))
 
-  await runner.okTransfer(
-    "pure transfer: existing address",
-    "default",
-    knownExistingAddress,
-    oneWei
-  )
-
-  await runner.okTransfer(
-    "pure transfer: existing address with custom gas limit & price",
-    "default",
-    knownExistingAddress,
-    oneWei,
-    {
-      gas: 75000,
-      gasPrice: runner.web3.utils.toWei("1", "gwei"),
-    }
-  )
-
-  await runner.okTransfer(
-    "pure transfer: inexistant address creates account and has an EVM call",
-    "default",
-    randomAddress1,
-    oneWei
-  )
-
-  await runner.okTransfer(
-    "pure transfer: transfer of 0 ETH to inexistant address generates a transaction with no EVM call",
-    "default",
-    randomAddress2,
-    0
+  await runner.parallelize(
+    () =>
+      runner.okTransfer("pure transfer: existing address", "default", knownExistingAddress, oneWei),
+    () =>
+      runner.okTransfer(
+        "pure transfer: existing address with custom gas limit & price",
+        "default",
+        knownExistingAddress,
+        oneWei,
+        {
+          gas: 75000,
+          gasPrice: runner.web3.utils.toWei("1", "gwei"),
+        }
+      ),
+    () =>
+      runner.okTransfer(
+        "pure transfer: inexistant address creates account and has an EVM call",
+        "default",
+        randomAddress1,
+        oneWei
+      ),
+    () =>
+      runner.okTransfer(
+        "pure transfer: transfer of 0 ETH to inexistant address generates a transaction with no EVM call",
+        "default",
+        randomAddress2,
+        0
+      )
   )
 
   console.log()
   console.log("Performing 'transfer' through contract transactions")
   setDefaultGasConfig(75000, runner.web3.utils.toWei("50", "gwei"))
 
-  await runner.okContractSend(
-    "transfer through contract: existing addresss",
-    "main",
-    mainContract.methods.nativeTransfer(knownExistingAddress),
-    {
-      from: "default",
-      value: oneWei,
-    }
-  )
-
-  await runner.okContractSend(
-    "transfer through contract: inexistant address creates account and has an EVM call",
-    "main",
-    mainContract.methods.nativeTransfer(randomAddress3),
-    {
-      from: "default",
-      value: oneWei,
-    }
-  )
-
-  await runner.okContractSend(
-    "nested transfer through contract: existing addresss",
-    "main",
-    mainContract.methods.nestedNativeTransfer(childContract.address, knownExistingAddress),
-    {
-      from: "default",
-      value: oneWei,
-    }
-  )
-
-  // Nested transfer to new address
-  await runner.okContractSend(
-    "nested transfer through contract: inexistant address creates account and has an EVM call",
-    "main",
-    mainContract.methods.nestedNativeTransfer(childContract.address, randomAddress4),
-    {
-      from: "default",
-      value: oneWei,
-    }
+  await runner.parallelize(
+    () =>
+      runner.okContractSend(
+        "transfer through contract: existing addresss",
+        "main",
+        mainContract.methods.nativeTransfer(knownExistingAddress),
+        {
+          from: "default",
+          value: oneWei,
+        }
+      ),
+    () =>
+      runner.okContractSend(
+        "transfer through contract: inexistant address creates account and has an EVM call",
+        "main",
+        mainContract.methods.nativeTransfer(randomAddress3),
+        {
+          from: "default",
+          value: oneWei,
+        }
+      ),
+    () =>
+      runner.okContractSend(
+        "nested transfer through contract: existing addresss",
+        "main",
+        mainContract.methods.nestedNativeTransfer(childContract.address, knownExistingAddress),
+        {
+          from: "default",
+          value: oneWei,
+        }
+      ),
+    () =>
+      runner.okContractSend(
+        "nested transfer through contract: inexistant address creates account and has an EVM call",
+        "main",
+        mainContract.methods.nestedNativeTransfer(childContract.address, randomAddress4),
+        {
+          from: "default",
+          value: oneWei,
+        }
+      )
   )
 
   console.log()
   console.log("Performing 'log' transactions")
   setDefaultGasConfig(95000, runner.web3.utils.toWei("50", "gwei"))
 
-  await runner.okContractSend("log: empty", "main", mainContract.methods.logEmpty())
-  await runner.okContractSend("log: single", "main", mainContract.methods.logSingle())
-  await runner.okContractSend("log: all", "main", mainContract.methods.logAll())
-  await runner.okContractSend("log: all indexed", "main", mainContract.methods.logAllIndexed())
-  await runner.okContractSend("log: all mixed", "main", mainContract.methods.logAllMixed())
-  await runner.okContractSend("log: multi", "main", mainContract.methods.logMulti())
+  await runner.parallelize(
+    () => runner.okContractSend("log: empty", "main", mainContract.methods.logEmpty()),
+    () => runner.okContractSend("log: single", "main", mainContract.methods.logSingle()),
+    () => runner.okContractSend("log: all", "main", mainContract.methods.logAll()),
+    () => runner.okContractSend("log: all indexed", "main", mainContract.methods.logAllIndexed()),
+    () => runner.okContractSend("log: all mixed", "main", mainContract.methods.logAllMixed()),
+    () => runner.okContractSend("log: multi", "main", mainContract.methods.logMulti())
+  )
 
   console.log()
   console.log("Performing 'storage & input' transactions")
   setDefaultGasConfig(966000, runner.web3.utils.toWei("50", "gwei"))
 
-  await runner.okContractSend("storage: long string", "main", mainContract.methods.setLongString())
-  await runner.okContractSend("storage: array update", "main", mainContract.methods.setAfter())
-  await runner.okContractSend(
-    "storage: long string input",
-    "main",
-    mainContract.methods.longStringInput(
-      "realy long string larger than 32 bytes to test out solidity splitting stuff"
-    )
+  const stringTests = [
+    ["string equal 0", ""],
+    ["string equal 15", "just 15 chars!!"],
+    ["string equal 30", "equal directly 30 bytes fillin"],
+    ["string equal 31", "equal directly 30 bytes fillin"],
+    ["string equal 32", "equal directly 32 bytes filling!"],
+    [
+      "string longer than 32",
+      "really long string larger than 32 bytes to test out solidity splitting stuff",
+    ],
+  ]
+
+  await runner.parallelize(
+    ...stringTests.map((input) => {
+      return () =>
+        runner.okContractSend(
+          `input: ${input[0]}`,
+          "main",
+          mainContract.methods.longStringInput(input[1])
+        )
+    })
   )
+
+  await runner.okContractSend(
+    "storage: set long string",
+    "main",
+    mainContract.methods.setLongString()
+  )
+  await runner.okContractSend("storage: array update", "main", mainContract.methods.setAfter())
 
   console.log()
   console.log("Performing 'call' transactions")

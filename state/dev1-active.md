@@ -1,10 +1,10 @@
-## Dev1 Last Run Log (Fri Sep 18 16:52:26 EDT 2020)
+## Dev1 Last Run Log (Tue Sep 22 01:10:09 EDT 2020)
 
 ```
 $ /Users/maoueh/work/dfuse/ethereum.battlefield/node_modules/.bin/ts-node src/main.ts
 Configuration
  Network: dev1
- Default address: 0xea143138dab9a14e11d1ae91e669851e6cc72131
+ Default address: ea143138dab9a14e11d1ae91e669851e6cc72131
  RPC Endpoint: http://localhost:8545
  Private key: 4941116954b6ced5ead503a2fa8c04a0...
 
@@ -14,65 +14,76 @@ Contract child already deployed for network dev1
 Contract grandChild already deployed for network dev1
 Contract suicidal1 already deployed for network dev1
 Contract suicidal2 already deployed for network dev1
+Contract uniswap already deployed for network dev1
+Contract erc20 already deployed for network dev1
 (Delete or edit file '/Users/maoueh/work/dfuse/ethereum.battlefield/state/dev1-deployment-state.json' to force a re-deploy to new addresses)
 
 Contracts
-- main       | 0x09c467442a9bcb471C7B00924b971E8B1bAaF206
-- child      | 0x8C29b3635A221d2fA34cC07E305Cd93fD7099C78
-- grandChild | 0xa7Ba8e4eA7Fdaf8388d7a0E4f46C07647AB435Fc
-- suicidal1  | 0x5526cfcdAd01cCBC8684efF2072330f0BAc49b31
-- suicidal2  | 0x45946BbFFb8b30A51D6bF2AC96cac68E649F427f
+- main => 0x7d94115A1076706b14baF4844299068E3BCcB681
+- child => 0x43D805dfa103974acB21F7e6cd51a7da6fcA7903
+- grandChild => 0xFc5A09983760EB83CfF1DE491EC7242BCf60C1e9
+- suicidal1 => 0x40Ecf831a50C24955752B02d2A95B680930f432C
+- suicidal2 => 0x396b07D76ce13F0283B37246593ce7a08B582E23
+- uniswap => 0xcf1Fd245D77764Cefaa70dEcC1E8D1FDE38feCB6
+- erc20 => 0x8223c666495e586A9C47DFe0746eAbCC2fa209f7
 
 Transaction Links
-- main       | https://dev1-eth.ethq.dfuse.dev/tx/0x6c6aeacdfea29a744c155297282d28299cd629c9f1c1da8c43300f77025287f8
-- child      | https://dev1-eth.ethq.dfuse.dev/tx/0x104669ee429a632f569d4a7ab0c7e24cf7c1931e6ba6ccd12680f38cde20b0ac
-- grandChild | https://dev1-eth.ethq.dfuse.dev/tx/0xb63405fd38ca89ef6ea0c6e441553abd3363331875aa6d12339d29917da7f1ee
-- suicidal1  | https://dev1-eth.ethq.dfuse.dev/tx/0xb5959b204e99cc4acdc52f5584c5930da438aab9c6bedfe807601e46ef5bedcd
-- suicidal2  | https://dev1-eth.ethq.dfuse.dev/tx/0x31ceb75424bc4890f75937796370c9524024b40320987d24b4e814e52d049bb2
+- main => https://dev1-eth.ethq.dfuse.dev/tx/0xbd1975b8b690adb4442de7c16b54cce7b807a56564a2e3fa9760932b78b8b75b
+- child => https://dev1-eth.ethq.dfuse.dev/tx/0x8a4d61763cf54f4a86f207e379a09fa504845f73c6cbdfb1e7cdb3bc9f415be7
+- grandChild => https://dev1-eth.ethq.dfuse.dev/tx/0x4b8eb087c38f307493fc4faed69f6f3c221706244fa7cbba89252632da208faa
+- suicidal1 => https://dev1-eth.ethq.dfuse.dev/tx/0x069b2aaf0503a492710190a5d4940f3840a7c149f061d8705e6bf5a640a53647
+- suicidal2 => https://dev1-eth.ethq.dfuse.dev/tx/0xd97053c7a58d59a3616aab64bd3ba147d19f5b7a604af9ed3ded717c84372615
+- uniswap => https://dev1-eth.ethq.dfuse.dev/tx/0xcf6d7c89a1bee8135fcf0d60d59df444dabda790565322d8e0a475f268fa9825
+- erc20 => https://dev1-eth.ethq.dfuse.dev/tx/0x530961bc335dd5c329764b2967ff8fc0e0f5700a7ba84a971f088e4933cfb539
 
 Performing pure 'transfer' transactions
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x160529b6a240662467c86f714d365464b4a9c381be2aff10bd1c1d5197251cb4' (pure transfer: existing address)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x113d73f90716c3d5af86da8301710aa43ec9515f3f9ba66ba105211f0c60bc24' (pure transfer: existing address with custom gas limit & price)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x6c93203ec90104322486699e4a2a7147e70e6c0c12e33f7f04612cc3d3ca4de9' (pure transfer: inexistant address creates account and has an EVM call)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x930a24fdde8fd351f1c5baaf407f7c3946cd2af41af2b8715f1f652d588b9b03' (pure transfer: transfer of 0 ETH to inexistant address generates a transaction with no EVM call)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x3e154dbddc7cc439104dd34e928d9d3f1b0f6a5d52f5b3efe6f6ed4a6b949c84' (pure transfer: existing address)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x2567799f9baeddb4c78ea8d95472dea466e84a67d9b4fb5f28eac520bce95b44' (pure transfer: existing address with custom gas limit & price)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xadd34e3a318a6c728928adf532361dde244ab02387ad265aac491f72ac261185' (pure transfer: inexistant address creates account and has an EVM call)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x3545257d7891878f4b8ad6c43f1e439ab3939d0ec26a0f5f746ef3ecded15a68' (pure transfer: transfer of 0 ETH to inexistant address generates a transaction with no EVM call)
 
 Performing 'transfer' through contract transactions
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xa2e25207e7ddc90ee5c2d639245cfeecfa652da80063615ca6b442e6ca82db94' (transfer through contract: existing addresss)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xd5b26a059857af2db6d857770747fe33ade30fc1c88e47b7519b87e1bc155172' (transfer through contract: inexistant address creates account and has an EVM call)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x75825f002c66eb57dea32372a9eb0190b42e43a80487c4a6b16e19c7416ff5ae' (nested transfer through contract: existing addresss)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x57ff8622281805d964d23f5c76ba7ffe89fc9c2b248dfdb0d29c6829a01b88df' (nested transfer through contract: inexistant address creates account and has an EVM call)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x57308c3668e91ccf4a0827aa226d06faeb1cbf4951a50c0e24358d751725cb54' (transfer through contract: existing addresss)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x77cf50aebc40378316c1628cdc8707e37149778cde0fd2fbce199331884c92de' (transfer through contract: inexistant address creates account and has an EVM call)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xaae099d8460cbedba7945c0cae571fc5ade61e7ba2007a11600315bad3e105fb' (nested transfer through contract: existing addresss)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xe856b3d229bf48e2bbf3aed46ec9c3100131791fd99f80d1724b184b3c1752e1' (nested transfer through contract: inexistant address creates account and has an EVM call)
 
 Performing 'log' transactions
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x6e926f27a3ff64b2ecd0353d4a5224962e1a8b8f4f9f70193d4d19ba97301a17' (log: empty)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x4cc2c6a56a4fdacacc3bf18dbd07283a8bdb76aa3075061457e6957c680f12f8' (log: single)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xbe78523bc90f679af4d345f95fa90999877769d52b4c2aec3df44bdc92231023' (log: all)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xf950b3873f8712016ebc99c31ffe89c2d122fe74ffcc3b889204fca2d5a8d86e' (log: all indexed)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xbe431cadf2c37a33704b0b03c4b4e5fa6d4e341c73092ff5259165f3756db6e7' (log: all mixed)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xc7e4ce4bcab80b6cc5feb9234cc671b936c5b2f8fece05178b1730644a55aae4' (log: multi)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x503a70bf38be1bb74a7d4b561385c0df4c80edb9e3566f2e71afd36dff3c1ee8' (log: empty)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xf6ff9801a4e2a4a4b01419491df30792df9aa8b32f9caf571a354ede355fbd42' (log: single)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x39637c7d7756c1d6fe83cf2dd946073ba1557a5f3551a43285870cf176837bff' (log: all)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x1b885041d7751d6d2a12920aae58cd54dd17526dad1992ab985e422b64536d7d' (log: all indexed)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x9871e3c86aa769a4780f5ee8771cf651ad48789558103f44e9a47c31ea68fcbf' (log: all mixed)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x9dc7a666a18ae2507a66f99d587f73ad3c9dd77ce662ce2df2c5f1d0f43e6558' (log: multi)
 
 Performing 'storage & input' transactions
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x77eee6622bb2bac7d833d0e2f6ab8c3db271cd7f7fc04b8201ecbbe3c19461e5' (storage: long string)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x9e7538d8941bd6689a0cfbc36833ee7955f27bc9942d2e29455d6ea673929954' (storage: array update)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x5b1e140fe88cf55946ebadf67e39574814d4f44050695833738ced9d1dad23e0' (storage: long string input)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x93456b3f64f687f7e64c06d7c0e3978b212174640416f9bb8a07e7aed9a4ce72' (input: string equal 0)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xf94452462fc271a4e7aca015dd7a8c53f980ecb3a8c3ebcf875b5472f7c3f299' (input: string equal 15)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x53b1979945d9c80a8618026e3d2699b77537c64ef5abd487176eb40619cd5758' (input: string equal 30)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x018e4cd7f176ffb9777b55592bf3911d5ba811a46116a1184c5b73b2da7818c0' (input: string equal 31)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xd7a822674917f5574ab374d8ca8706028420e341d0f5c53dc5def2a86383f993' (input: string equal 32)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xd9b056494fecf9ef0683116d245745011321a2c3f363ed2fc857df1c947d117e' (input: string longer than 32)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xd60a8c9aaaade09f60188525792f776c188e80e092c93aa23c99af28c4027f88' (storage: set long string)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xdec612e8b9281f16f31e13b96ea328588054553ca8c9b788fee90060d634c277' (storage: array update)
 
 Performing 'call' transactions
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x8a9461c87b9044fce9ed9c749608214e5895ee3fd2b899b2c2c63cf84e6a7188' (call: complete call tree)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xea350c0da9f50ae510a47db2af4f3e29ac8bd31b08c4e057312e8e9c404c808e' (call: contract creation from call, without a constructor)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x3bed94c0d16478fed659ff929e1ae8cb9fc6c16a0ee4acca1dc226aea045742c' (call: contract creation from call, with constructor)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xa6c08dbf923dc2aea62f3788df7e24987aed734e8d2970631206bfda8a6efd16' (call: nested fail with native transfer)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x496939df36838145f39cfe3b1f2b22ce6f396f12fe516a4f6b0e9d2439a43f35' (call: nested call revert state changes)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x4f7b7154f8eb27bb1349f22011bf7377c02af89ed3ed68d1ba18c23fc6a0086b' (call: complete call tree)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xd5f9088d292044e5a2f716c2767493a0c03fcc087ad99f4a53e96218f15eaa5a' (call: contract creation from call, without a constructor)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xaa2709cced9f68ac78b63baadde5804d25433682d3072c4d410eff09714f2318' (call: contract creation from call, with constructor)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x555cda840826d4eec570bcec685002018348e76b294acfae759079b4268d7b15' (call: nested fail with native transfer)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xedbb30b1214a9604958de5b45cafb8f5b83167e5084c0cc405099be7ef0530d1' (call: nested call revert state changes)
 
 Performing 'gas' transactions
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xea40903faa87c678a0502b93a0fb20c9eaa16f292e402cfce1bbc0a59669929f' (gas: empty call for lowest gas)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xbded682b5059d8d3b8c011685dc534bda47a9215e3f8af03155d64b8a249ea27' (gas: nested low gas)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x78efe0afdb747a3e699cc64a355af83e54ae3cbf5a8eaf1e4f42f44c89203656' (gas: deep nested nested call for lowest gas)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x3ea143e1c475de6722bce76055f285fc175d45cbe1f2f02f8ec143a87f67684c' (gas: deep nested low gas)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xd1f0f97213de4e778d58d58d1645fec12236fea9dee4d66faafe140e313584f3' (gas: deep nested call for lowest gas)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x5a42c7a83439ae728ca7a7af066e1509fe5238144024b6dc9f3dc09fd7de1030' (gas: empty call for lowest gas)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xfafb5e23c81b3df2147a63be93e180f8662d2580b6a4365f2df3884a71348b2e' (gas: nested low gas)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xda30cbd12dc709e59daf2ade7e30f9beb01a7a4eba5ffbf3b8122114e5e0210f' (gas: deep nested nested call for lowest gas)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xeccb47bbc8dcf9adf804456a304bdf38e814a3bac041b191409264d1145010e4' (gas: deep nested low gas)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x7a351bb129e558c7da6dd0e4f89af57330984ffb09ac0dd7fd2e4444f6b97dee' (gas: deep nested call for lowest gas)
 
 Performing 'suicide' transactions
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xbd0239baa8607b757a98785b69885527a28ed4a98a049dd594b418c0c40a605c' (suicide: contract does not hold any Ether)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x90dd29e59dd188ac3970c1d668516e1ddab71153bf32b07eded39a8d08b5ddb5' (suicide: transfer some Ether to contract that's about to suicide itself)
-Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x4e83156665dff41044b798225346b80181468a49e6945dab88ff9461b3dd5055' (suicide: contract does hold some Ether, and refund owner on destruct)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0xcba4f7e3686458bc255b830cd425fce1cc2e49910a7dc4bd029badec9b865334' (suicide: contract does not hold any Ether)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x2a5bd13e80baf18628341cf899f905e26e00d3196372551e2ab24df61af9329e' (suicide: transfer some Ether to contract that's about to suicide itself)
+Pushed transaction 'https://dev1-eth.ethq.dfuse.dev/tx/0x227b28c8703885cf4cc85f84e2e5f8c7ac2e1de8947e4cab9ea1019f0bf7a678' (suicide: contract does hold some Ether, and refund owner on destruct)
 
 Completed battlefield deployment (dev1)
 ```
