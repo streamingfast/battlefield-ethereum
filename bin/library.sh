@@ -33,11 +33,16 @@ recreate_data_directories() {
     # Dynamically access one of `miner_data_dir`, `syncer_data_dir` or `oracle_data_dir`
     data_dir=`dynamic_var_name=${component}_data_dir; echo ${!dynamic_var_name}`
 
-    rm -rf "$data_dir"
+    if [[ $component != "oracle" ]]; then
+      rm -rf "$data_dir"
+    fi
+
     mkdir -p "$data_dir" &> /dev/null
 
-    cp -a "$KEYSTORE_DIR" "$data_dir/keystore"
-    cp -a "$GENESIS_DIR/geth" "$data_dir/geth"
+    if [[ $component == "miner" || $component == "syncer" ]]; then
+      cp -a "$KEYSTORE_DIR" "$data_dir/keystore"
+      cp -a "$GENESIS_DIR/geth" "$data_dir/geth"
+    fi
 
     if [[ $component == "miner" || $component == "oracle" ]]; then
       cp -a "$BOOT_DIR/nodekey" "$data_dir/geth"

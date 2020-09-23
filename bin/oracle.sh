@@ -23,8 +23,11 @@ main() {
   recreate_data_directories oracle
 
   echo ""
-  echo "Copying references file (data, .dmlog) to oracle files..."
+  echo "Copying references file (genesis, data, .dmlog) to oracle files..."
   rm -rf $oracle_data_dir/geth &> /dev/null || true
+  rm -rf $oracle_data_dir/genesis &> /dev/null || true
+
+  cp -a "$GENESIS_DIR/geth" "$oracle_data_dir/genesis"
   cp -a $miner_data_dir/geth $oracle_data_dir
   cp $syncer_deep_mind_log $oracle_deep_mind_log
 

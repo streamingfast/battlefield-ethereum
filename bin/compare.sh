@@ -26,8 +26,13 @@ main() {
   killall $geth_bin &> /dev/null || true
 
   if [[ $skip_generation == "" ]]; then
-    # Only re-create syncer otherwise we would loose our committed data
-    recreate_data_directories syncer
+    recreate_data_directories oracle syncer
+
+    # For the syncer to correctly work, it must uses the same genesis block `geth` data as what `oracle` uses
+    # so let's ensure it's the case here.
+    rm -rf "$syncer_data_dir/geth" &> /dev/null || true
+    cp -a "$oracle_data_dir/genesis" "$syncer_data_dir/geth"
+    cp -a "$BOOT_DIR/static-nodes.json" "$syncer_data_dir/geth"
 
     echo "Starting oracle (log `realpath $oracle_log`)"
     ($oracle_cmd \
@@ -39,6 +44,7 @@ main() {
         --miner.threads=0 \
         --networkid=1515 \
         --nodiscover \
+        --nocompaction \
         --nousb $@ 1> /dev/null 2> $oracle_log) &
     oracle_pid=$!
 

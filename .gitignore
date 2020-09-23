@@ -3,6 +3,7 @@
 /contract/build/
 /run/data/miner
 /run/data/syncer
+/run/data/oracle/geth/nodekey
 /node_modules
 *.dmlog
 *.log
