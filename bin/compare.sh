@@ -63,13 +63,17 @@ main() {
 
     monitor "syncer" $syncer_pid $parent_pid "$syncer_log" &
 
-    # TODO Replace by a while loop that check when we have a block num != 0
-    echo "Giving 15s for oracle to be ready"
-    sleep 15
-    echo ""
+    while true; do
+      blockNumHex=`curl -s -X POST -H 'Content-Type: application/json' localhost:8545 --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r .result | sed s/0x//`
+      blockNum=`to_dec $blockNumHex`
+      if [[ $blockNum -gt "0" ]]; then
+        echo "Oracle ready"
+        break
+      fi
 
-    blockNumHex=`curl -s -X POST -H 'Content-Type: application/json' localhost:8545 --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r .result | sed s/0x//`
-    blockNum=`to_dec $blockNumHex`
+      echo "Giving 5s for oracle to start completely"
+      sleep 5
+    done
 
     echo "Waiting for syncer to reach block #$blockNum"
 
@@ -115,6 +119,10 @@ main() {
 cleanup() {
   kill_pid "oracle" $oracle_pid
   kill_pid "syncer" $syncer_pid
+
+  # Clean up oracle changes
+  git clean -xfd $oracle_data_dir/geth > /dev/null
+  git restore $oracle_data_dir/geth
 
   # Let's kill everything else
   kill $( jobs -p ) &> /dev/null
