@@ -40,6 +40,12 @@ async function main() {
   const suicidal1Contract = runner.contracts["suicidal1"]
   const suicidal2Contract = runner.contracts["suicidal2"]
 
+  const mainContractAddress = mainContract.options.address
+  const childContractAddress = childContract.options.address
+  const grandChildContractAddress = grandChildContract.options.address
+  const suicidal1ContractAddress = suicidal1Contract.options.address
+  const suicidal2ContractAddress = suicidal2Contract.options.address
+
   console.log()
   console.log("Performing pure 'transfer' transactions")
   setDefaultGasConfig(21000, runner.web3.utils.toWei("50", "gwei"))
@@ -103,7 +109,7 @@ async function main() {
       runner.okContractSend(
         "nested transfer through contract: existing addresss",
         "main",
-        mainContract.methods.nestedNativeTransfer(childContract.address, knownExistingAddress),
+        mainContract.methods.nestedNativeTransfer(childContractAddress, knownExistingAddress),
         {
           from: "default",
           value: oneWei,
@@ -113,7 +119,7 @@ async function main() {
       runner.okContractSend(
         "nested transfer through contract: inexistant address creates account and has an EVM call",
         "main",
-        mainContract.methods.nestedNativeTransfer(childContract.address, randomAddress4),
+        mainContract.methods.nestedNativeTransfer(childContractAddress, randomAddress4),
         {
           from: "default",
           value: oneWei,
@@ -150,7 +156,7 @@ async function main() {
     ],
   ]
 
-  await runner.parallelize(
+  const promises = [
     ...stringTests.map((input) => {
       return () =>
         runner.okContractSend(
@@ -158,51 +164,62 @@ async function main() {
           "main",
           mainContract.methods.longStringInput(input[1])
         )
-    })
-  )
+    }),
+    () =>
+      runner.okContractSend(
+        "storage: set long string",
+        "main",
+        mainContract.methods.setLongString()
+      ),
+  ]
 
-  await runner.okContractSend(
-    "storage: set long string",
-    "main",
-    mainContract.methods.setLongString()
-  )
+  await runner.parallelize(...promises)
+
+  // Depends on `setLongString` being set, so it's better to perform it on its own
   await runner.okContractSend("storage: array update", "main", mainContract.methods.setAfter())
 
   console.log()
   console.log("Performing 'call' transactions")
   setDefaultGasConfig(300000, runner.web3.utils.toWei("50", "gwei"))
 
-  await runner.okContractSend(
-    "call: complete call tree",
-    "main",
-    mainContract.methods.completeCallTree(childContract.address, grandChildContract.address)
-  )
+  await runner.parallelize(
+    () =>
+      runner.okContractSend(
+        "call: complete call tree",
+        "main",
+        mainContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
+      ),
 
-  await runner.okContractSend(
-    "call: contract creation from call, without a constructor",
-    "main",
-    mainContract.methods.contractWithEmptyConstructor()
-  )
+    () =>
+      runner.okContractSend(
+        "call: contract creation from call, without a constructor",
+        "main",
+        mainContract.methods.contractWithEmptyConstructor()
+      ),
 
-  await runner.okContractSend(
-    "call: contract creation from call, with constructor",
-    "main",
-    mainContract.methods.contractWithConstructor()
-  )
+    () =>
+      runner.okContractSend(
+        "call: contract creation from call, with constructor",
+        "main",
+        mainContract.methods.contractWithConstructor()
+      ),
 
-  await runner.okContractSend(
-    "call: nested fail with native transfer",
-    "main",
-    mainContract.methods.nestedFailtNativeTransfer(childContract.address, randomAddress5),
-    {
-      value: threeWei,
-    }
-  )
+    () =>
+      runner.okContractSend(
+        "call: nested fail with native transfer",
+        "main",
+        mainContract.methods.nestedFailtNativeTransfer(childContractAddress, randomAddress5),
+        {
+          value: threeWei,
+        }
+      ),
 
-  await runner.okContractSend(
-    "call: nested call revert state changes",
-    "main",
-    mainContract.methods.nestedRevertFailure(childContract.address)
+    () =>
+      runner.okContractSend(
+        "call: nested call revert state changes",
+        "main",
+        mainContract.methods.nestedRevertFailure(childContractAddress)
+      )
   )
 
   // FIXME: Enabling any other make the full suite go hairy, either never ending
@@ -212,60 +229,73 @@ async function main() {
 
   // FIXME: Port me to new runner!
   // await koSend(mainContract.methods.revertFailure())
-  // await koSend(mainContract.methods.nestedAssertFailure(childContract.address))
+  // await koSend(mainContract.methods.nestedAssertFailure(childContractAddress))
 
   console.log()
   console.log("Performing 'gas' transactions")
-  await runner.okContractSend(
-    "gas: empty call for lowest gas",
-    "main",
-    mainContract.methods.emptyCallForLowestGas()
-  )
 
-  await runner.okContractSend(
-    "gas: nested low gas",
-    "main",
-    mainContract.methods.nestedLowGas(childContract.address)
-  )
+  await runner.parallelize(
+    () =>
+      runner.okContractSend(
+        "gas: empty call for lowest gas",
+        "main",
+        mainContract.methods.emptyCallForLowestGas()
+      ),
 
-  await runner.okContractSend(
-    "gas: deep nested nested call for lowest gas",
-    "main",
-    mainContract.methods.nestedCallForLowestGas(childContract.address)
-  )
+    () =>
+      runner.okContractSend(
+        "gas: nested low gas",
+        "main",
+        mainContract.methods.nestedLowGas(childContractAddress)
+      ),
 
-  await runner.okContractSend(
-    "gas: deep nested low gas",
-    "main",
-    mainContract.methods.deepNestedLowGas(childContract.address, grandChildContract.address)
-  )
+    () =>
+      runner.okContractSend(
+        "gas: deep nested nested call for lowest gas",
+        "main",
+        mainContract.methods.nestedCallForLowestGas(childContractAddress)
+      ),
 
-  await runner.okContractSend(
-    "gas: deep nested call for lowest gas",
-    "main",
-    mainContract.methods.deepNestedCallForLowestGas(
-      childContract.address,
-      grandChildContract.address
-    )
+    () =>
+      runner.okContractSend(
+        "gas: deep nested low gas",
+        "main",
+        mainContract.methods.deepNestedLowGas(childContractAddress, grandChildContractAddress)
+      ),
+
+    () =>
+      runner.okContractSend(
+        "gas: deep nested call for lowest gas",
+        "main",
+        mainContract.methods.deepNestedCallForLowestGas(
+          childContractAddress,
+          grandChildContractAddress
+        )
+      )
   )
 
   console.log()
   console.log("Performing 'suicide' transactions")
 
-  await runner.okContractSend(
-    "suicide: contract does not hold any Ether",
-    "suicidal1",
-    suicidal1Contract.methods.kill()
+  await runner.parallelize(
+    () =>
+      runner.okContractSend(
+        "suicide: contract does not hold any Ether",
+        "suicidal1",
+        suicidal1Contract.methods.kill()
+      ),
+
+    // A suicide where the contract does hold some Ether, and refund owner on destruct
+    () =>
+      runner.okTransfer(
+        "suicide: transfer some Ether to contract that's about to suicide itself",
+        "default",
+        suicidal2ContractAddress,
+        oneWei
+      )
   )
 
-  // A suicide where the contract does hold some Ether, and refund owner on destruct
-  await runner.okTransfer(
-    "suicide: transfer some Ether to contract that's about to suicide itself",
-    "default",
-    runner.contracts.suicidal2.address,
-    oneWei
-  )
-
+  // Depends on transfer some Ether to contract transaction above, so let's run it only afterwards
   await runner.okContractSend(
     "suicide: contract does hold some Ether, and refund owner on destruct",
     "suicidal2",
@@ -276,12 +306,6 @@ async function main() {
   console.log()
   console.log(`Completed battlefield deployment (${network})`)
   process.exit(0)
-}
-
-async function waitFor(timeInMs: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, timeInMs)
-  })
 }
 
 main()

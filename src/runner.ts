@@ -2,7 +2,6 @@ import { join as pathJoin } from "path"
 import Web3 from "web3"
 import { PromiEvent, TransactionReceipt, TransactionConfig } from "web3-core"
 import BN from "bn.js"
-import { HttpProvider } from "web3-providers"
 import {
   readContract,
   promisifyOnFirstConfirmation,
@@ -121,7 +120,7 @@ export class BattlefieldRunner {
       ropsten: setupExternalNetwork,
     })
 
-    this.web3 = new Web3(new HttpProvider(this.rpcEndpoint))
+    this.web3 = new Web3(this.rpcEndpoint)
   }
 
   async initialize() {
@@ -321,7 +320,7 @@ export class BattlefieldRunner {
 
       const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
         ...resolvedOptions,
-        to: this.contracts[contract].address,
+        to: this.contracts[contract].options.address,
         data: trx.encodeABI(),
       })
 
@@ -465,7 +464,7 @@ export class BattlefieldRunner {
     const abiPath = pathJoin(__dirname, `../contract/build/${contractName}.abi`)
 
     const contract = await readContract(this.web3.eth, abiPath)
-    contract.address = address
+    contract.options.address = address
 
     return contract
   }

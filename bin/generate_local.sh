@@ -28,6 +28,7 @@ main() {
     component=$1; shift
   fi
 
+  set -e
   killall $geth_bin &> /dev/null || true
 
   recreate_data_directories miner syncer
@@ -86,8 +87,9 @@ main() {
 
   set +e
   while true; do
-    result=`cat "$syncer_log" | grep -E "Imported new chain segment.*number=$blockNum"`
-    if [[ $result != "" ]]; then
+    # Sometimes, syncing group blocks together so we miss our wanted value, let's use arithmetic to be sure
+    latest=`cat "$syncer_log" | grep -E "Imported new chain segment" | tail -n1 | grep -Eo number=[0-9]+ | grep -Eo [0-9]+`
+    if [[ $latest -ge $blockNum ]]; then
       echo ""
       break
     fi
