@@ -2,11 +2,11 @@ pragma solidity =0.6.6;
 
 import '../libraries/SafeMath.sol';
 
-contract ERC20 {
+contract DeflatingERC20 {
     using SafeMath for uint;
 
-    string public constant name = 'Test Token';
-    string public constant symbol = 'TT';
+    string public constant name = 'Deflating Test Token';
+    string public constant symbol = 'DTT';
     uint8 public constant decimals = 18;
     uint  public totalSupply;
     mapping(address => uint) public balanceOf;
@@ -55,9 +55,12 @@ contract ERC20 {
     }
 
     function _transfer(address from, address to, uint value) private {
-        balanceOf[from] = balanceOf[from].sub(value);
-        balanceOf[to] = balanceOf[to].add(value);
-        emit Transfer(from, to, value);
+        uint burnAmount = value / 100;
+        _burn(from, burnAmount);
+        uint transferAmount = value.sub(burnAmount);
+        balanceOf[from] = balanceOf[from].sub(transferAmount);
+        balanceOf[to] = balanceOf[to].add(transferAmount);
+        emit Transfer(from, to, transferAmount);
     }
 
     function approve(address spender, uint value) external returns (bool) {

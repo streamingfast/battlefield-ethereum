@@ -301,6 +301,7 @@ contract ContractEmpty {
 
 contract ContractConstructor {
     bytes32 public Name;
+
     constructor(bytes32 name) public {
         Name = name;
     }
