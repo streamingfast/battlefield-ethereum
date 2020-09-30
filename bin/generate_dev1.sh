@@ -59,7 +59,7 @@ execute_bootstrap() {
   echo "## Dev1 Bootstrap Log (`date`)" > $bootstrap_state_file
   echo "" >> $bootstrap_state_file
   echo "\`\`\`" >> $bootstrap_state_file
-  ETHQ_URL=https://dev1-eth.ethq.dfuse.dev yarn -s local
+  ETHQ_URL=https://dev1-eth.ethq.dfuse.dev yarn -s local | tee -a $bootstrap_state_file
   echo "\`\`\`" >> $bootstrap_state_file
 
   kill -s TERM $monitor_pid

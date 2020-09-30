@@ -1,3 +1,5 @@
+.DS_Store
+
 .envrc
 /boot/genesis/alloc.json
 /boot/genesis/keystore

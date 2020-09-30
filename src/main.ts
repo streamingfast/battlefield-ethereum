@@ -19,9 +19,11 @@ const randomAddress5 = `0xdead5000${randomHex()}0006beef`
 async function main() {
   const network = requireProcessEnv("NETWORK")
   const only = process.env["ONLY"]
-  const ethqUrl = process.env["ETHQ_URL"]
 
-  const runner = new BattlefieldRunner(network as Network)
+  const runner = new BattlefieldRunner(network as Network, {
+    ethqUrl: process.env["ETHQ_URL"],
+  })
+
   if (only) {
     runner.only = new RegExp(only)
   }
