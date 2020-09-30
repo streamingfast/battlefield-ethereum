@@ -65,6 +65,10 @@ interface ResolvedSendOptions {
   data?: string
 }
 
+interface RunnerOptions {
+  ethqUrl?: string
+}
+
 export class BattlefieldRunner {
   // Going to be fully initialize in the `initialize` call
   defaultAddress: string = ""
@@ -80,12 +84,14 @@ export class BattlefieldRunner {
   web3: Web3
 
   only?: RegExp
+  options: RunnerOptions
 
-  constructor(network: Network) {
+  constructor(network: Network, options: RunnerOptions = {}) {
     this.network = network
     this.deploymentStateFile = ""
     this.deployer = this.deployRpcContract
 
+    this.options = options
     this.rpcEndpoint = process.env["RPC_ENDPOINT"] || ""
 
     if (!this.rpcEndpoint) {
@@ -374,7 +380,7 @@ export class BattlefieldRunner {
   }
 
   trxHashAsString(hash: string) {
-    if (this.network == "local") {
+    if (this.network == "local" && !this.options.ethqUrl) {
       return hash
     }
 
@@ -425,7 +431,7 @@ export class BattlefieldRunner {
       console.log(`- ${entry[0]} => ${entry[1].contractAddress}`)
     })
 
-    if (this.network != "local") {
+    if (this.network != "local" || this.options.ethqUrl) {
       console.log("")
       console.log("Transaction Links")
       Object.entries(this.deploymentState).forEach((entry) => {
@@ -442,6 +448,11 @@ export class BattlefieldRunner {
 
     if (this.network === "ropsten") {
       baseUrl = "https://ropsten.ethq.app"
+    }
+
+    // Override any value when explicitely provided
+    if (this.options.ethqUrl) {
+      baseUrl = this.options.ethqUrl
     }
 
     return `${baseUrl}${path}`

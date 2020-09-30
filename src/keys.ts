@@ -20,7 +20,7 @@ async function main() {
 
   const results = await Promise.all(promises)
   results.forEach((result) => {
-    console.log(`Address ${result.address}: ${result.privateKey}`)
+    console.log(`- Address \`${result.address}\` => Private key \`${result.privateKey}\``)
   })
 }
 

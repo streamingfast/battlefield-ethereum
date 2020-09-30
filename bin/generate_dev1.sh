@@ -8,7 +8,9 @@ main() {
   pushd "$ROOT" &> /dev/null
 
   mkdir -p $ROOT/state &> /dev/null || true
-  state_file="$ROOT/state/dev1-active.md"
+
+  bootstrap_state_file="$ROOT/state/dev1-bootstrap-active.md"
+  remote_state_file="$ROOT/state/dev1-active.md"
 
   while getopts "hw" opt; do
     case $opt in
@@ -53,7 +55,12 @@ execute_bootstrap() {
   set -e
   echo "Executing transactions contained in script 'main.ts'"
   unset FROM_ADDRESS RPC_ENDPOINT PRIVATE_KEY
-  yarn -s local
+
+  echo "## Dev1 Bootstrap Log (`date`)" > $bootstrap_state_file
+  echo "" >> $bootstrap_state_file
+  echo "\`\`\`" >> $bootstrap_state_file
+  ETHQ_URL=https://dev1-eth.ethq.dfuse.dev yarn -s local
+  echo "\`\`\`" >> $bootstrap_state_file
 
   kill -s TERM $monitor_pid
   kill_pid "miner" $miner_pid
@@ -61,11 +68,20 @@ execute_bootstrap() {
 
   echo ""
   echo "Compression bootstrap data and sending it to remote storage"
+
+  pushd $KEYSTORE_DIR &> /dev/null
+    zip $miner_data_dir/keystore.zip * &> /dev/null
+  popd &> /dev/null
+
   cd $miner_data_dir
   tar -cf bootstrap.tar --exclude nodekey * > /dev/null
   zstd -14 bootstrap.tar &> /dev/null
 
+  gsutil cp $bootstrap_state_file gs://dfuseio-global-seed-us/eth-dev1/bootstrap-state.md &> /dev/null
   gsutil cp bootstrap.tar.zst gs://dfuseio-global-seed-us/eth-dev1/bootstrap.tar.zst &> /dev/null
+  gsutil cp keystore.zip gs://dfuseio-global-seed-us/eth-dev1/keystore.zip &> /dev/null
+  gsutil cp $BOOT_DIR/genesis.json gs://dfuseio-global-seed-us/eth-dev1/genesis.json &> /dev/null
+  gsutil cp $BOOT_DIR/keystore.md gs://dfuseio-global-seed-us/eth-dev1/keystore.md &> /dev/null
 }
 
 execute_remote() {
@@ -75,11 +91,11 @@ execute_remote() {
   echo ""
 
   echo "Executing transactions contained in script 'main.ts'"
-  echo "## Dev1 Last Run Log (`date`)" > $state_file
-  echo "" >> $state_file
-  echo "\`\`\`" >> $state_file
+  echo "## Dev1 Last Run Log (`date`)" > $remote_state_file
+  echo "" >> $remote_state_file
+  echo "\`\`\`" >> $remote_state_file
 
-  yarn -s run dev1 | tee -a $state_file
+  yarn -s run dev1 | tee -a $remote_state_file
   echo ""
 }
 
@@ -91,10 +107,10 @@ cleanup_bootstrap() {
 }
 
 cleanup_remote() {
-  echo "\`\`\`" >> $state_file
+  echo "\`\`\`" >> $remote_state_file
 
   echo ""
-  echo "Last run output has been saved to '$state_file' file."
+  echo "Last run output has been saved to '$remote_state_file' file."
 }
 
 usage_error() {

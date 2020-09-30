@@ -35,6 +35,7 @@ main() {
     printf "" > "$KEYSTORE_DIR"/passphrase.txt
 
     echo "{" > $genesis_alloc_json
+    first=true
     accounts=( "matt" "alex" "stepd" "charles" "julian" "fp" "matb" "josh" "anthony" "marc" )
     for account in "${accounts[@]}"; do
       $geth_bin account new --keystore "$KEYSTORE_DIR" --password "$KEYSTORE_DIR/passphrase.txt" >> $genesis_log 2>&1
@@ -42,7 +43,13 @@ main() {
       address=`tail -n8 $genesis_log | grep $KEYSTORE_DIR | cut -d '-' -f9`
       log "Account $account (address $address)"
 
-      printf "  \"${address}\": { \"balance\": \"0x100000000000000000000000000000000000000000000000000000000000000\" }" >> $genesis_alloc_json
+      balance="0x52B7D2DCC80CD2E4000000"
+      if [[ $first == true ]]; then
+        balance="0x2863C1F5CDAE42F9540000000"
+        first=false
+      fi
+
+      printf "  \"${address}\": { \"balance\": \"$balance\" }" >> $genesis_alloc_json
       if [[ $account == ${accounts[${#accounts[@]} - 1]} ]]; then
         printf "\n" >> $genesis_alloc_json
       else
@@ -65,6 +72,10 @@ main() {
 
     echo -n "Press any key when you have finished editing 'genesis.json'..."
     read answer
+
+    echo "\`\`\`" > $BOOT_DIR/keystore.md
+    (yarn -s r src/keys.ts | tail -n1) >> $BOOT_DIR/keystore.md
+    echo "\`\`\`" >> $BOOT_DIR/keystore.md
   else
     mkdir -p "$GENESIS_DIR" &> /dev/null
     rm -rf $GENESIS_DIR/geth &> /dev/null || true
