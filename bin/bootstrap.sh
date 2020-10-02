@@ -74,7 +74,7 @@ main() {
     read answer
 
     echo "\`\`\`" > $BOOT_DIR/keystore.md
-    (yarn -s r src/keys.ts | tail -n1) >> $BOOT_DIR/keystore.md
+    (yarn -s r src/keys.ts | tail -n +3) >> $BOOT_DIR/keystore.md
     echo "\`\`\`" >> $BOOT_DIR/keystore.md
   else
     mkdir -p "$GENESIS_DIR" &> /dev/null
