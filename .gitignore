@@ -4,6 +4,7 @@
 /boot/genesis/alloc.json
 /boot/genesis/keystore
 /contract/build/
+/run/data/bootstrap
 /run/data/miner
 /run/data/syncer
 /run/data/oracle/geth/nodekey

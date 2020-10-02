@@ -27,6 +27,8 @@ export syncer_log="$RUN_DIR/syncer.log"
 export syncer_deep_mind_log="$RUN_DIR/syncer.dmlog"
 export syncer_cmd="$geth_bin --datadir ${syncer_data_dir}"
 
+export bootstrap_data_dir="$RUN_DIR/data/bootstrap"
+
 recreate_data_directories() {
   local component
   for component in "$@"; do

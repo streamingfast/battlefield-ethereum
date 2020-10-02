@@ -3,6 +3,7 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 source "$ROOT/bin/library.sh"
 
 miner_pid=""
+skip_upload=
 
 main() {
   pushd "$ROOT" &> /dev/null
@@ -12,9 +13,10 @@ main() {
   bootstrap_state_file="$ROOT/state/dev1-bootstrap-active.md"
   remote_state_file="$ROOT/state/dev1-active.md"
 
-  while getopts "hw" opt; do
+  while getopts "hs" opt; do
     case $opt in
       h) usage && exit 0;;
+      s) skip_upload=true;;
       \?) usage_error "Invalid option: -$OPTARG";;
     esac
   done
@@ -30,7 +32,7 @@ main() {
 execute_bootstrap() {
   trap cleanup_bootstrap EXIT
 
-  recreate_data_directories miner
+  recreate_data_directories miner bootstrap
 
   echo "Starting miner process (log `realpath $miner_log`)"
   ($miner_cmd \
@@ -67,7 +69,7 @@ execute_bootstrap() {
   miner_pid=
 
   echo ""
-  echo "Compression bootstrap data and sending it to remote storage"
+  echo "Compression bootstrap data"
 
   pushd $KEYSTORE_DIR &> /dev/null
     zip $miner_data_dir/keystore.zip * &> /dev/null
@@ -77,11 +79,16 @@ execute_bootstrap() {
   tar -cf bootstrap.tar --exclude nodekey * > /dev/null
   zstd -14 bootstrap.tar &> /dev/null
 
-  gsutil cp $bootstrap_state_file gs://dfuseio-global-seed-us/eth-dev1/bootstrap-state.md &> /dev/null
-  gsutil cp bootstrap.tar.zst gs://dfuseio-global-seed-us/eth-dev1/bootstrap.tar.zst &> /dev/null
-  gsutil cp keystore.zip gs://dfuseio-global-seed-us/eth-dev1/keystore.zip &> /dev/null
-  gsutil cp $BOOT_DIR/genesis.json gs://dfuseio-global-seed-us/eth-dev1/genesis.json &> /dev/null
-  gsutil cp $BOOT_DIR/keystore.md gs://dfuseio-global-seed-us/eth-dev1/keystore.md &> /dev/null
+  cp $bootstrap_state_file "$bootstrap_data_dir" &> /dev/null
+  cp bootstrap.tar.zst "$bootstrap_data_dir" &> /dev/null
+  cp keystore.zip "$bootstrap_data_dir" &> /dev/null
+  cp $BOOT_DIR/genesis.json "$bootstrap_data_dir" &> /dev/null
+  cp $BOOT_DIR/keystore.md "$bootstrap_data_dir" &> /dev/null
+
+  if [[ $skip_upload == "" ]]; then
+    echo "Uploading bootstrap data "
+    gsutil cp * gs://dfuseio-global-seed-us/eth-dev1/ &> /dev/null
+  fi
 }
 
 execute_remote() {
@@ -124,7 +131,7 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: generate_dev1.sh [bootstrap]"
+  echo "usage: generate_dev1.sh [-s] [bootstrap]"
   echo ""
   echo "Generate Battlefield transaction on dfuse Ethereum Tesnet (dev1). If the"
   echo "'bootstrap' option is used, we generate transaction locally, package that"
@@ -137,6 +144,7 @@ usage() {
   echo ""
   echo "Options"
   echo "    -h              Display help about this script"
+  echo "    -s              Skip upload of files when bootstrapping, keep them local for later consumption"
 }
 
 main $@
