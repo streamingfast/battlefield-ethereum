@@ -11,7 +11,7 @@ main() {
 
   genesis_block=
 
-  while getopts "ho:b" opt; do
+  while getopts "hb" opt; do
     case $opt in
       h) usage && exit 0;;
       b) genesis_block=true;;

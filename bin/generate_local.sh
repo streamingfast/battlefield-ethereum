@@ -6,17 +6,21 @@ parent_pid="$$"
 miner_pid=""
 syncer_pid=""
 current_dir=`pwd`
+log_file=""
 
 main() {
   pushd "$ROOT" &> /dev/null
 
+  local_state_file="$ROOT/state/dev1-bootstrap-active.md"
+
   component="all"
   wait_forever=
 
-  while getopts "hw" opt; do
+  while getopts "hwl:" opt; do
     case $opt in
       h) usage && exit 0;;
       w) wait_forever=true;;
+      l) log_file="$OPTARG";;
       \?) usage_error "Invalid option: -$OPTARG";;
     esac
   done
@@ -71,7 +75,20 @@ main() {
 
   if [[ $component == "all" || $component == "miner_only" ]]; then
     echo "Executing transactions contained in script 'main.ts'"
-    yarn -s local
+
+    if [[ "$log_file" != "" ]]; then
+      echo "## Transaction Log (`date`)" > $log_file
+      echo "" >> $log_file
+      echo "\`\`\`" >> $log_file
+    fi
+
+    if [[ "$log_file" != "" ]]; then
+      ETHQ_URL=http://localhost:8080 yarn -s local | tee -a $log_file
+      echo "\`\`\`" >> $log_file
+    else
+      yarn -s local
+    fi
+
     echo ""
   fi
 
@@ -142,12 +159,13 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: generate_local.sh"
+  echo "usage: generate_local.sh [-w] [-l <logFile>]"
   echo ""
   echo ""
   echo "Options"
   echo "    -h          Display help about this script"
   echo "    -w          Wait forever once all transactions have been included instead of quitting, useful for debugging purposes"
+  echo "    -l <file>   The execution log file to produce when locally executing the transaction"
 }
 
 main "$@"

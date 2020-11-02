@@ -17,7 +17,7 @@ main() {
   shift $((OPTIND-1))
 
   if [[ $copy_only == "" ]]; then
-    ./bin/generate_local.sh
+    ./bin/generate_local.sh -l "$oracle_transaction_log"
   fi
 
   recreate_data_directories oracle
