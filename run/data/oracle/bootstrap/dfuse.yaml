@@ -1,0 +1,25 @@
+start:
+  args:
+  - apiproxy
+  - blockmeta
+  - dashboard
+  - dgraphql
+  - dweb3
+  - ethq
+  - merger
+  - mindreader-node
+  - miner-node
+  - relayer
+  - search-archive
+  - search-indexer
+  - search-live
+  - search-router
+  - statedb
+  - trx-state-tracker
+  - trxdb-loader
+  flags:
+    common-network-id: "123"
+    miner-node-bootstrap-data-url: ./bootstrap.tar.zst
+    miner-node-extra-arguments: --allow-insecure-unlock --password=/dev/null --miner.etherbase=0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab --unlock=0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab
+    mindreader-bootstrap-static-nodes: miner
+    mindreader-node-extra-arguments: "--ipcpath /tmp/geth.ipc"

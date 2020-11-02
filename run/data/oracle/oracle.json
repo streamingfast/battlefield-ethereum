@@ -5209,7 +5209,7 @@
           ],
           "statusFailed": true,
           "statusReverted": true,
-          "failureReason": "evm: execution reverted",
+          "failureReason": "execution reverted",
           "stateReverted": true
         }
       ]
@@ -5409,7 +5409,7 @@
           ],
           "statusFailed": true,
           "statusReverted": true,
-          "failureReason": "evm: execution reverted",
+          "failureReason": "execution reverted",
           "stateReverted": true
         },
         {

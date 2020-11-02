@@ -41,6 +41,9 @@ func init() {
 }
 
 func main() {
+	rootCmd.SilenceErrors = true
+	rootCmd.SilenceUsage = true
+
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(compareCmd)
 
@@ -81,6 +84,7 @@ func compareE(cmd *cobra.Command, args []string) error {
 
 	actualDmlogFile := filepath.Join(currentDir, "run", "syncer.dmlog")
 	actualJSONFile := filepath.Join(currentDir, "run", "syncer.json")
+	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
 
 	actualBlocks := readActualBlocks(actualDmlogFile)
@@ -111,30 +115,28 @@ func compareE(cmd *cobra.Command, args []string) error {
 
 	acceptDiff, wasAnswered := askQuestion(`Do you want to accept %q as the new %q right now`, actualJSONFile, oracleJSONFile)
 	if wasAnswered && acceptDiff {
-		inFile, err := os.Open(actualJSONFile)
-		noError(err, "Unable to open actual file %q", actualJSONFile)
-		defer inFile.Close()
+		copyFile(actualJSONFile, oracleJSONFile)
+		copyFile(actualDmlogFile, oracleDmlogFile)
 
-		outFile, err := os.Create(oracleJSONFile)
-		noError(err, "Unable to open epected file %q", oracleJSONFile)
-		defer outFile.Close()
-
-		_, err = io.Copy(outFile, inFile)
-		noError(err, "Unable to copy file %q to %q", actualJSONFile, oracleJSONFile)
-
-		fmt.Printf("The file %q is now the new oracle file\n", actualJSONFile)
-	} else {
-		fmt.Printf("You can make actual file %q the new oracle file manually by doing:\n", actualJSONFile)
-		fmt.Println("")
-		fmt.Printf("    cp %s %s\n", actualJSONFile, oracleJSONFile)
-		fmt.Println("")
+		fmt.Printf("The file %q (and its '.dmlog' sibling) is now the new active oracle data\n", actualJSONFile)
+		return nil
 	}
+
+	fmt.Printf("You can make actual file %q the new oracle file manually by doing:\n", actualJSONFile)
+	fmt.Println("")
+	fmt.Printf("    cp %s %s\n", actualJSONFile, oracleJSONFile)
+	fmt.Println("")
 
 	return errors.New("failed")
 }
 
-func makeSingleLineDiffCmd(cmd *exec.Cmd) string {
-	return strings.Replace(strings.Replace(strings.Replace(cmd.String(), "diff -C", `"diff -C`, 1), "| less", `| less"`, 1), "\n", ", ", -1)
+func makeSingleLineDiffCmd(cmd *exec.Cmd) (out string) {
+	out = cmd.String()
+	out = strings.Replace(out, "diff -C", `"diff -C`, 1)
+	out = strings.Replace(out, "| less", `| less"`, 1)
+	out = strings.Replace(out, "\n", ", ", -1)
+
+	return
 }
 
 func writeActualBlocks(actualFile string, blocks []*pbcodec.Block) {
@@ -205,6 +207,14 @@ func readActualBlocks(filePath string) []*pbcodec.Block {
 }
 
 func sanitizeBlock(block *pbcodec.Block) *pbcodec.Block {
+	for _, trxTrace := range block.TransactionTraces {
+		for _, call := range trxTrace.Calls {
+			if strings.HasPrefix(call.FailureReason, "evm: ") {
+				call.FailureReason = strings.TrimPrefix(call.FailureReason, "evm: ")
+			}
+		}
+	}
+
 	return block
 }
 
@@ -248,6 +258,19 @@ func askQuestion(label string, args ...interface{}) (answeredYes bool, wasAnswer
 	wasAnswered = true
 	answeredYes = strings.ToLower(result) == "y" || strings.ToLower(result) == "yes"
 	return
+}
+
+func copyFile(inPath, outPath string) {
+	inFile, err := os.Open(inPath)
+	noError(err, "Unable to open actual file %q", inPath)
+	defer inFile.Close()
+
+	outFile, err := os.Create(outPath)
+	noError(err, "Unable to open expected file %q", outPath)
+	defer outFile.Close()
+
+	_, err = io.Copy(outFile, inFile)
+	noError(err, "Unable to copy file %q to %q", inPath, outPath)
 }
 
 func fileExists(path string) bool {

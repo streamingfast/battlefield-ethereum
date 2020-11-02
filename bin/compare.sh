@@ -68,6 +68,7 @@ main() {
       blockNum=`to_dec $blockNumHex`
       if [[ $blockNum -gt "0" ]]; then
         echo "Oracle ready"
+        echo ""
         break
       fi
 
