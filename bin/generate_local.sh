@@ -11,8 +11,6 @@ log_file=""
 main() {
   pushd "$ROOT" &> /dev/null
 
-  local_state_file="$ROOT/state/dev1-bootstrap-active.md"
-
   component="all"
   wait_forever=
 

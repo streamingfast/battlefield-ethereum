@@ -17,6 +17,7 @@ export miner_deep_mind_log="$RUN_DIR/miner.dmlog"
 export miner_cmd="$geth_bin --datadir ${miner_data_dir}"
 
 export oracle_data_dir="$RUN_DIR/data/oracle"
+export oracle_bootstrap_dir="$RUN_DIR/data/oracle/bootstrap"
 export oracle_log="$RUN_DIR/oracle.log"
 export oracle_deep_mind_log="$oracle_data_dir/oracle.dmlog"
 export oracle_transaction_log="$oracle_data_dir/oracle.md"

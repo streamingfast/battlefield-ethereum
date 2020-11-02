@@ -34,6 +34,22 @@ main() {
   echo "Launching blocks generation task (and compiling Go code)"
   go run battlefield.go generate
   echo ""
+
+  echo "Compressing oracle bootstrap data"
+
+  pushd $KEYSTORE_DIR &> /dev/null
+    zip $miner_data_dir/keystore.zip * &> /dev/null
+  popd &> /dev/null
+
+  cd $miner_data_dir
+  tar -cf bootstrap.tar --exclude nodekey * > /dev/null
+  zstd -14 bootstrap.tar &> /dev/null
+
+  mkdir -p "$oracle_bootstrap_dir" &> /dev/null
+  cp bootstrap.tar.zst "$oracle_bootstrap_dir" &> /dev/null
+  cp keystore.zip "$oracle_bootstrap_dir" &> /dev/null
+  cp $BOOT_DIR/genesis.json "$oracle_bootstrap_dir" &> /dev/null
+  cp $BOOT_DIR/keystore.md "$oracle_bootstrap_dir" &> /dev/null
 }
 
 usage_error() {
