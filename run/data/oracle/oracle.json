@@ -6291,12 +6291,6 @@
               "reason": "REASON_GAS_BUY"
             },
             {
-              "address": "9a77f7b94488d24eca50fa0d144212ae48300a71",
-              "oldValue": "",
-              "newValue": "00",
-              "reason": "REASON_SUICIDE_WITHDRAW"
-            },
-            {
               "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
               "oldValue": "02863c1f5cdaaee529985e1e4e",
               "newValue": "02863c1f5cdae1b5aa4a970e4e",
@@ -6498,7 +6492,7 @@
             {
               "address": "71940c77ccadaea1238cea27674e6253128ca177",
               "oldValue": "01",
-              "newValue": "00",
+              "newValue": "",
               "reason": "REASON_SUICIDE_WITHDRAW"
             },
             {
