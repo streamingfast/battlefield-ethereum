@@ -1,16 +1,16 @@
-pragma solidity >=0.4.0 <0.7.0;
+pragma solidity >=0.6.6 <0.7.0;
 
 contract Owned {
-  address payable owner;
+    address payable owner;
 
-  constructor() public {
-    owner = msg.sender;
-  }
+    constructor() public {
+        owner = msg.sender;
+    }
 
-  modifier onlyOwner() {
-      require(msg.sender == owner, "not owner");
-      _;
-  }
+    modifier onlyOwner() {
+        require(msg.sender == owner, "not owner");
+        _;
+    }
 }
 
 contract Mortal is Owned {
@@ -20,5 +20,5 @@ contract Mortal is Owned {
 }
 
 contract Suicidal is Owned, Mortal {
-  function() external payable {}
+    receive() external payable {}
 }

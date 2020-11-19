@@ -6,7 +6,7 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BROWN='\033[0;33m'
 NC='\033[0m'
 SOLC_CONTAINER=${SOLC_CONTAINER:-"ethereum/solc"}
-SOLC_VERSION=${SOLC_VERSION:-"0.5.16"}
+SOLC_VERSION=${SOLC_VERSION:-"0.6.6"}
 
 main() {
   pushd "$ROOT" &> /dev/null

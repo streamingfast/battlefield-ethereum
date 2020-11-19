@@ -222,7 +222,10 @@ async function main() {
         "call: nested call revert state changes",
         "main",
         mainContract.methods.nestedRevertFailure(childContractAddress)
-      )
+      ),
+
+    () =>
+      runner.okContractSend("call: all pre-compiled", "main", mainContract.methods.allPrecompiled())
   )
 
   // FIXME: Enabling any other make the full suite go hairy, either never ending
