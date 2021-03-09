@@ -27,6 +27,42 @@ analysis:
 
     ./bin/generate_local.sh
 
+### Comparing New Version of Geth
+
+If you want to ensure that a new version of our Geth Deep Mind
+aware binary is valid against the previously saved valid baseline
+version called the `oracle`, ensure that `geth` in your `PATH` points
+to the new version to test then run:
+
+    ./bin/compare_vs_oracle.sh
+
+If there is any diff, you will be asked to check the differences using
+`diff`.
+
+You will also prompted to accept the changes as the new oracle data files,
+which you can answer `Yes` to update the oracle with the newly generated run.
+
+**Important** Great care must be taken when accepting a new version to ensure the
+changes are correct. Think about previous versions and other supported Geth forks when
+taking your decision
+
+### Regenerating Oracle Data
+
+When you update the battlefield transactions process by the oracle data, you will
+need to accept the differences since all transaction ids will be different than before.
+
+To re-generate, we will use the latest Geth tagged version that was known to have pass
+the compare step above. By using this latest known version, we ensure to generate the
+same set of deep mind logs but with extended transactions.
+
+**Important** If you are updating the coverage to test untested part of some deep mind
+instrumentation, you should manually inspect the generated logs to ensure they fit the
+expectations.
+
+Ensure that `geth` in your `PATH` points to the latest known version to work then run:
+
+    ./bin/regenerate_oracle.sh
+
 ### Explanation
 
 To correctly work, the process is as follow. First, all
