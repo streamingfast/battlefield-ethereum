@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -140,11 +141,8 @@ func makeSingleLineDiffCmd(cmd *exec.Cmd) (out string) {
 }
 
 func writeActualBlocks(actualFile string, blocks []*pbcodec.Block) {
-	file, err := os.Create(actualFile)
-	noError(err, "Unable to write file %q", actualFile)
-	defer file.Close()
-
-	_, err = file.WriteString("[\n")
+	buffer := bytes.NewBuffer(nil)
+	_, err := buffer.WriteString("[\n")
 	noError(err, "Unable to write list start")
 
 	blockCount := len(blocks)
@@ -154,18 +152,28 @@ func writeActualBlocks(actualFile string, blocks []*pbcodec.Block) {
 			out, err := jsonpb.MarshalIndentToString(block, "  ")
 			noError(err, "Unable to marshal block %q", block.AsRef())
 
-			_, err = file.WriteString(out)
+			_, err = buffer.WriteString(out)
 			noError(err, "Unable to write block %q", block.AsRef())
 
 			if i != lastIndex {
-				_, err = file.WriteString(",\n")
+				_, err = buffer.WriteString(",\n")
 				noError(err, "Unable to write block delimiter %q", block.AsRef())
 			}
 		}
 	}
 
-	_, err = file.WriteString("]\n")
+	_, err = buffer.WriteString("]\n")
 	noError(err, "Unable to write list end")
+
+	var unormalizedStruct []interface{}
+	err = json.Unmarshal(buffer.Bytes(), &unormalizedStruct)
+	noError(err, "Unable to unmarshal JSON for normalization")
+
+	normalizedJSON, err := json.MarshalIndent(unormalizedStruct, "", "  ")
+	noError(err, "Unable to normalize JSON")
+
+	err = ioutil.WriteFile(actualFile, normalizedJSON, os.ModePerm)
+	noError(err, "Unable to write file %q", actualFile)
 }
 
 func readActualBlocks(filePath string) []*pbcodec.Block {
