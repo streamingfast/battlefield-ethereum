@@ -9,7 +9,7 @@ Configuration
 
 Deploying contracts...
 Deploying contract 'UniswapV2Factory'
-Deploying contract 'Grandchild'
+Deploying contract 'GrandChild'
 Deploying contract 'Suicidal'
 Deploying contract 'Main'
 Deploying contract 'Child'

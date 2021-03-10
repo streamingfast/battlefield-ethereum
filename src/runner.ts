@@ -25,7 +25,7 @@ type Doer<T> = (() => T) | (() => Promise<T>)
 const Contracts = {
   main: { name: "main", source: "Main" },
   child: { name: "child", source: "Child" },
-  grandChild: { name: "grandChild", source: "Grandchild" },
+  grandChild: { name: "grandChild", source: "GrandChild" },
   suicidal1: { name: "suicidal1", source: "Suicidal" },
   suicidal2: { name: "suicidal2", source: "Suicidal" },
   uniswap: { name: "uniswap", source: "UniswapV2Factory" },

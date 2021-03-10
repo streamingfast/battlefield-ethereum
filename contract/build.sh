@@ -48,7 +48,7 @@ main() {
     name=`printf $contract | sed 's/^\.\///g' | sed 's/^src\///g' | sed 's/.sol$//g'`
 
     solc_version=${SOLC_VERSION}
-    if [[ $name =~ UniswapV2Factory* || $name =~ UniswapV2Pair* ]]; then
+    if [[ $name =~ UniswapV2Factory* || $name =~ UniswapV2Pair* || $name =~ UniswapV2ERC20* ]]; then
       solc_version="0.5.16"
     elif [[ $name =~ UniswapV2* ]]; then
       solc_version="0.6.6"
