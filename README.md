@@ -19,6 +19,13 @@ with the chain):
 
     yarn install
 
+Second step is to build all contracts. We uses various Docker instances
+with different version of the `solc` compiler. This is all automated, if
+the Docker image is not found on your machine, it will be downloaded
+automatically. To compile all contracts, run:
+
+    ./contract/build.sh
+
 Then, you run the `generate_local.sh` script which will compile the
 smart contracts, launch a miner and syncer Geth processes,
 execute a bunch of transactions and collect the logs of
