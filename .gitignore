@@ -6,11 +6,12 @@
 /contract/build/
 /run/data/bootstrap
 /run/data/miner
-/run/data/syncer
+/run/data/syncer*
 /run/data/oracle/geth/nodekey
+/run/data/oracle/history
 /run/miner.dmlog
-/run/syncer.dmlog
-/run/syncer.json
+/run/syncer*.dmlog
+/run/syncer*.json
 /run/*.log
 /node_modules
 yarn-error.log

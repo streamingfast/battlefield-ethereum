@@ -36,7 +36,7 @@ execute_bootstrap() {
 
   recreate_data_directories miner bootstrap
 
-  echo "Starting miner process (log `realpath $miner_log`)"
+  echo "Starting miner process (log `relpath $miner_log`)"
   ($miner_cmd \
         --rpc --rpcapi="personal,eth,net,web3,txpool,miner" \
         --allow-insecure-unlock \

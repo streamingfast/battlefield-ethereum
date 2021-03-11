@@ -29,7 +29,11 @@ import (
 
 var rootCmd = &cobra.Command{Use: "battlefield", Short: "Battlefield binary"}
 var generateCmd = &cobra.Command{Use: "generate", Short: "From the oracle deep mind log file, generate the oracle dfuse blocks", RunE: generateE}
-var compareCmd = &cobra.Command{Use: "compare", Short: "From a new actual deep mind log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks", RunE: compareE}
+var compareCmd = &cobra.Command{
+	Use:   "compare <syncer_deepmind_log> [<file_dir>]",
+	Short: "From a new actual deep mind log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks",
+	RunE:  compareE,
+}
 
 var fixedTimestamp *pbts.Timestamp
 var zlog = zap.NewNop()
@@ -58,10 +62,6 @@ func generateE(cmd *cobra.Command, args []string) error {
 	currentDir, err := os.Getwd()
 	noError(err, "unable to get working directory")
 
-	if len(args) > 1 {
-		currentDir = args[0]
-	}
-
 	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
 
@@ -79,12 +79,8 @@ func compareE(cmd *cobra.Command, args []string) error {
 	currentDir, err := os.Getwd()
 	noError(err, "unable to get working directory")
 
-	if len(args) > 1 {
-		currentDir = args[0]
-	}
-
-	actualDmlogFile := filepath.Join(currentDir, "run", "syncer.dmlog")
-	actualJSONFile := filepath.Join(currentDir, "run", "syncer.json")
+	actualDmlogFile := args[0]
+	actualJSONFile := strings.ReplaceAll(actualDmlogFile, ".dmlog", ".json")
 	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
 

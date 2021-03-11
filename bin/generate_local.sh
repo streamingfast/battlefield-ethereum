@@ -6,7 +6,7 @@ source "$ROOT/bin/library.sh"
 
 parent_pid="$$"
 miner_pid=""
-syncer_pid=""
+syncer_geth_pid=""
 current_dir=`pwd`
 log_file=""
 
@@ -35,9 +35,9 @@ main() {
   set -e
   killall $geth_bin &> /dev/null || true
 
-  recreate_data_directories miner syncer
+  recreate_data_directories miner syncer_geth syncer_oe
 
-  echo "Starting miner process (log `realpath $miner_log`)"
+  echo "Starting miner process (log `relpath $miner_log`)"
   if [[ $component == "all" || $component == "miner_only" ]]; then
     ($miner_cmd \
       --rpc --rpcapi="personal,db,eth,net,web3,txpool,miner" \
@@ -54,19 +54,19 @@ main() {
     monitor "miner" $miner_pid $parent_pid "$miner_log" &
   fi
 
-  echo "Starting syncer process (log `realpath $syncer_log`)"
+  echo "Starting Geth syncer process (log `relpath $syncer_geth_log`)"
   if [[ $component == "all" || $component == "syncer_only" ]]; then
-    ($syncer_cmd \
+    ($syncer_geth_cmd \
       --deep-mind \
       --rpc --rpcapi="personal,db,eth,net,web3" \
       --rpcport=8555 \
       --port=30313 \
       --networkid=1515 \
       --nodiscover \
-      --nousb $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
-    syncer_pid=$!
+      --nousb $@ 1> $syncer_geth_deep_mind_log 2> $syncer_geth_log) &
+    syncer_geth_pid=$!
 
-    monitor "syncer" $syncer_pid $parent_pid "$syncer_log" &
+    monitor "syncer_geth" $syncer_geth_pid $parent_pid "$syncer_geth_log" &
   fi
 
   echo "Giving 5s for miner to be ready"
@@ -105,7 +105,7 @@ main() {
   set +e
   while true; do
     # Sometimes, syncing group blocks together so we miss our wanted value, let's use arithmetic to be sure
-    latest=`cat "$syncer_log" | grep -E "Imported new chain segment" | tail -n1 | grep -Eo number=[0-9]+ | grep -Eo [0-9]+`
+    latest=`cat "$syncer_geth_log" | grep -E "Imported new chain segment" | tail -n1 | grep -Eo number=[0-9]+ | grep -Eo [0-9]+`
     if [[ $latest -ge $blockNum ]]; then
       echo ""
       break
@@ -116,22 +116,22 @@ main() {
   done
 
   echo "Statistics"
-  echo " Blocks: `cat "$syncer_deep_mind_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
-  echo " Trxs: `cat "$syncer_deep_mind_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
-  echo " Calls: `cat "$syncer_deep_mind_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
+  echo " Blocks: `cat "$syncer_geth_deep_mind_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
+  echo " Trxs: `cat "$syncer_geth_deep_mind_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
+  echo " Calls: `cat "$syncer_geth_deep_mind_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
   echo ""
-  echo " Balance Changes: `cat "$syncer_deep_mind_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Event Logs: `cat "$syncer_deep_mind_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
-  echo " Gas Changes: `cat "$syncer_deep_mind_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
-  echo " Gas Events: `cat "$syncer_deep_mind_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
-  echo " Nonce Changes: `cat "$syncer_deep_mind_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Storage Changes: `cat "$syncer_deep_mind_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Balance Changes: `cat "$syncer_geth_deep_mind_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Event Logs: `cat "$syncer_geth_deep_mind_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
+  echo " Gas Changes: `cat "$syncer_geth_deep_mind_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
+  echo " Gas Events: `cat "$syncer_geth_deep_mind_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
+  echo " Nonce Changes: `cat "$syncer_geth_deep_mind_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Storage Changes: `cat "$syncer_geth_deep_mind_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
   echo ""
 
   echo "Inspect log files"
-  echo " Deep Mind logs: cat `realpath "$syncer_deep_mind_log"`"
-  echo " Miner logs: cat `realpath "$miner_log"`"
-  echo " Syncer logs: cat `realpath "$syncer_log"`"
+  echo " Deep Mind logs: cat `relpath "$syncer_geth_deep_mind_log"`"
+  echo " Miner logs: cat `relpath "$miner_log"`"
+  echo " Syncer logs: cat `relpath "$syncer_geth_log"`"
   echo ""
 
   if [[ $wait_forever == "true" ]]; then
@@ -142,7 +142,7 @@ main() {
 
 cleanup() {
   kill_pid "miner" $miner_pid
-  kill_pid "syncer" $syncer_pid
+  kill_pid "syncer" $syncer_geth_pid
 
   # Let's kill everything else
   kill $( jobs -p ) &> /dev/null
