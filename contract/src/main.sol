@@ -65,7 +65,7 @@ contract Main {
      *
      * Trx
      *  Call 1        (root, success)
-     *    Call2       (call, success)
+     *    Call 2      (call, success)
      *    Call 3      (call, success)
      *      Call 4    (static call, success)
      *    Call 5      (call, success)

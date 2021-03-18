@@ -12,12 +12,14 @@ current_dir=`pwd`
 main() {
   pushd "$ROOT" &> /dev/null
 
-  skip_generation=
+  skip_comparison=false
+  skip_generation=false
 
-  while getopts "hs" opt; do
+  while getopts "hsn" opt; do
     case $opt in
       h) usage && exit 0;;
       s) skip_generation=true;;
+      n) skip_comparison=true;;
       \?) usage_error "Invalid option: -$OPTARG";;
     esac
   done
@@ -37,7 +39,7 @@ main() {
   killall $geth_bin &> /dev/null || true
   killall $oe_bin &> /dev/null || true
 
-  if [[ $skip_generation == "" ]]; then
+  if [[ $skip_generation == false ]]; then
     recreate_data_directories oracle syncer_geth syncer_oe
 
     if [[ $chain == "geth" ]]; then
@@ -88,6 +90,7 @@ main() {
 
       echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"
       ($syncer_oe_cmd \
+          --deep-mind \
           --chain="$syncer_oe_data_dir/chainspec.json" \
           --port=30313 \
           --network-id=1515 \
@@ -132,11 +135,16 @@ main() {
   echo " Trxs: `cat "$syncer_deep_mind_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
   echo " Calls: `cat "$syncer_deep_mind_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
   echo ""
+  echo " Account w/o Code: `cat "$syncer_deep_mind_log" | grep "ACCOUNT_WITHOUT_CODE" | wc -l | tr -d ' '`"
   echo " Balance Changes: `cat "$syncer_deep_mind_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Created Accounts: `cat "$syncer_deep_mind_log" | grep "CREATED_ACCOUNT" | wc -l | tr -d ' '`"
+  echo " Code Changes: `cat "$syncer_deep_mind_log" | grep "CODE_CHANGE" | wc -l | tr -d ' '`"
   echo " Event Logs: `cat "$syncer_deep_mind_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
   echo " Gas Changes: `cat "$syncer_deep_mind_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
   echo " Gas Events: `cat "$syncer_deep_mind_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
+  echo " Keccak Operations: `cat "$syncer_deep_mind_log" | grep "EVM_KECCAK" | wc -l | tr -d ' '`"
   echo " Nonce Changes: `cat "$syncer_deep_mind_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Suicide Changes: `cat "$syncer_deep_mind_log" | grep "SUICIDE_CHANGE" | wc -l | tr -d ' '`"
   echo " Storage Changes: `cat "$syncer_deep_mind_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
   echo ""
 
@@ -148,8 +156,10 @@ main() {
   echo " Syncer logs (geth): cat `relpath "$syncer_log"`"
   echo ""
 
-  echo "Launching blocks comparison task (and compiling Go code)"
-  go run battlefield.go compare "$syncer_deep_mind_log"
+  if [[ $skip_comparison == false ]]; then
+    echo "Launching blocks comparison task (and compiling Go code)"
+    go run battlefield.go compare "$syncer_deep_mind_log"
+  fi
 }
 
 cleanup() {
@@ -175,7 +185,7 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: compare_vs_oracle.sh [-s] <chain>"
+  echo "usage: compare_vs_oracle.sh [-s] [-n] <chain>"
   echo ""
   echo "The <chain> parameter must be either 'geth' (Geth) or 'oe' (OpenEthereum)."
   echo ""
@@ -193,6 +203,7 @@ usage() {
   echo ""
   echo "Options"
   echo "    -s          Skip syncer/miner launching and only run comparison (useful when developing battlefield)"
+  echo "    -n          Dry-run by not running any comparison code, exit right away once syncing has completed"
   echo "    -h          Display help about this script"
 }
 
