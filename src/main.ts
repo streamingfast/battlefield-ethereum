@@ -15,6 +15,7 @@ const randomAddress2 = `0xdead2000${randomHex()}0001beef`
 const randomAddress3 = `0xdead3000${randomHex()}0004beef`
 const randomAddress4 = `0xdead4000${randomHex()}0003beef`
 const randomAddress5 = `0xdead5000${randomHex()}0006beef`
+const randomAddress6 = `0xdead5000${randomHex()}0007beef`
 
 async function main() {
   const network = requireProcessEnv("NETWORK")
@@ -131,6 +132,23 @@ async function main() {
   )
 
   console.log()
+  console.log("Performing failing 'transfer' through contract transactions")
+  setDefaultGasConfig(75000, runner.web3.utils.toWei("50", "gwei"))
+
+  await runner.parallelize(() =>
+    runner.koContractSend(
+      "transfer through contract: existing addresss",
+      "main",
+      mainContract.methods.nativeTransfer(knownExistingAddress),
+      {
+        from: "default",
+        value: oneWei,
+        gas: 22000,
+      }
+    )
+  )
+
+  console.log()
   console.log("Performing 'log' transactions")
   setDefaultGasConfig(95000, runner.web3.utils.toWei("50", "gwei"))
 
@@ -225,17 +243,33 @@ async function main() {
       ),
 
     () =>
-      runner.okContractSend("call: all pre-compiled", "main", mainContract.methods.allPrecompiled())
+      runner.okContractSend(
+        "call: all pre-compiled",
+        "main",
+        mainContract.methods.allPrecompiled()
+      ),
+
+    () =>
+      runner.koContractSend(
+        "call: assert failure root call",
+        "main",
+        mainContract.methods.assertFailure()
+      ),
+
+    () =>
+      runner.koContractSend(
+        "call: revert failure root call",
+        "main",
+        mainContract.methods.revertFailure()
+      ),
+
+    () =>
+      runner.koContractSend(
+        "call: assert failure on child call",
+        "main",
+        mainContract.methods.nestedAssertFailure(childContractAddress)
+      )
   )
-
-  // FIXME: Enabling any other make the full suite go hairy, either never ending
-  //        straight in the now un-commented transaction or later in the first
-  //        `gas` transaction. Really not clear why, but I don't get it ... yet!
-  // await koSend(mainContract.methods.assertFailure())
-
-  // FIXME: Port me to new runner!
-  // await koSend(mainContract.methods.revertFailure())
-  // await koSend(mainContract.methods.nestedAssertFailure(childContractAddress))
 
   console.log()
   console.log("Performing 'gas' transactions")

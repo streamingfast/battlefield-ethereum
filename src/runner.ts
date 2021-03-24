@@ -313,6 +313,31 @@ export class BattlefieldRunner {
     })
   }
 
+  async koTransfer(
+    tag: string,
+    from: string | "default",
+    to: string,
+    value: string | number | BN,
+    options?: TransactionConfig
+  ) {
+    options = { ...options, from, value, to }
+
+    return this.koSend(tag, options, async (resolvedOptions) => {
+      if (this.network == "local") {
+        return { promiEvent: this.web3.eth.sendTransaction(resolvedOptions) }
+      }
+
+      const tx = await createRawTx(
+        this.web3,
+        resolvedOptions.from,
+        this.privateKey!,
+        resolvedOptions
+      )
+
+      return { txHash: tx.hash(), promiEvent: sendRawTx(this.web3, tx) }
+    })
+  }
+
   async okContractSend(
     tag: string,
     contract: keyof DeploymentState,
@@ -320,6 +345,27 @@ export class BattlefieldRunner {
     options?: TransactionConfig
   ) {
     return this.okSend(tag, options, async (resolvedOptions) => {
+      if (this.network == "local") {
+        return { promiEvent: (trx.send(resolvedOptions) as any) as PromiEvent<TransactionReceipt> }
+      }
+
+      const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
+        ...resolvedOptions,
+        to: this.contracts[contract].options.address,
+        data: trx.encodeABI(),
+      })
+
+      return { txHash: tx.hash(), promiEvent: sendRawTx(this.web3, tx) }
+    })
+  }
+
+  async koContractSend(
+    tag: string,
+    contract: keyof DeploymentState,
+    trx: ContractSendMethod,
+    options?: TransactionConfig
+  ) {
+    return this.koSend(tag, options, async (resolvedOptions) => {
       if (this.network == "local") {
         return { promiEvent: (trx.send(resolvedOptions) as any) as PromiEvent<TransactionReceipt> }
       }
@@ -376,6 +422,66 @@ export class BattlefieldRunner {
     } catch (error) {
       console.log(`Transaction '${trxHashString}' (${tag}) failed`, error)
       throw new Error(`Unexpected transaction failure`)
+    }
+  }
+
+  async koSend(
+    tag: string,
+    options: TransactionConfig | undefined,
+    eventFactory: (
+      options: ResolvedSendOptions
+    ) => Promise<{
+      txHash?: Buffer
+      promiEvent: PromiEvent<TransactionReceipt>
+    }>
+  ) {
+    if (this.only && !tag.match(this.only)) {
+      return ""
+    }
+
+    const resolvedOptions = this.mergeSendOptionsWithDefaults(options)
+
+    let trxHashString: string = ""
+    try {
+      const { txHash, promiEvent } = await eventFactory(resolvedOptions)
+      if (txHash && (process.env["DEBUG"] === "true" || process.env["DEBUG"] === "*")) {
+        trxHashString = this.trxHashAsString(txHash.toString("hex"))
+        console.log(`Pending transaction hash '${trxHashString}' (${tag})`)
+      }
+
+      const receipt = await promisifyOnFirstConfirmation(promiEvent)
+      trxHashString = this.trxHashAsString(receipt.transactionHash)
+
+      // See https://ethereum.stackexchange.com/a/6003
+      //
+      // The lowest value of gas for a pure transfer is 21000. Since we do some of them,
+      // let's not count equal gas for this value as an error, while it could still be
+      // an error, Gosh!
+      if (receipt.gasUsed == resolvedOptions.gas && resolvedOptions.gas != 21000) {
+        console.log(
+          `Pushed transaction '${trxHashString}' (${tag} correctly failed deduced by gasUsed == gas)`
+        )
+        return trxHashString
+      }
+
+      throw new Error(`Unexpected transaction success, expecting a failure`)
+    } catch (error) {
+      if (error.receipt) {
+        trxHashString = this.trxHashAsString(error.receipt.transactionHash)
+      }
+
+      let reason = "unknown"
+      if (error.message && error.message.match(/Transaction has been reverted by the EVM/)) {
+        // web3 actually JSON stringify the receipt right in the message, a real pain for console output, so we use a britle Regex to catch those
+        reason = "EVM reverted without reason"
+      } else if (error.reason) {
+        reason = error.reason
+      } else if (error.message) {
+        reason = error.message
+      }
+
+      console.log(`Pushed transaction '${trxHashString}' (${tag} correctly failed with ${reason})`)
+      return trxHashString
     }
   }
 

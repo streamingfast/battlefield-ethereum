@@ -124,7 +124,7 @@ export function fullyExecuteAndLog<T>(event: PromiEvent<T>): Promise<Transaction
 
 export function promisifyOnReceipt<T>(event: PromiEvent<T>): Promise<TransactionReceipt> {
   return new Promise((resolve, reject) => {
-    event.once("receipt", resolve).once("error", reject)
+    event.once("receipt", resolve).catch(reject)
   })
 }
 
@@ -132,11 +132,19 @@ export function promisifyOnFirstConfirmation<T>(event: PromiEvent<T>): Promise<T
   return new Promise((resolve, reject) => {
     event
       .once("confirmation", (_, receipt) => {
+        if (receipt.status) {
+          // @ts-ignore
+          event.removeAllListeners()
+          resolve(receipt)
+        }
+
+        // The transaction failed, the promise will be rejected and we will catch that in the catch close
+      })
+      .catch((error) => {
         // @ts-ignore
         event.removeAllListeners()
-        resolve(receipt)
+        reject(error)
       })
-      .once("error", reject)
   })
 }
 
