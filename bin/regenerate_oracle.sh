@@ -16,6 +16,24 @@ main() {
   done
   shift $((OPTIND-1))
 
+  grep_pattern="Version: 1.9.1[0-3]"
+  if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
+    echo "You need Geth version between 1.9.10 - 1.9.13 to generate the Oracle data."
+    echo "This is because it's our smallest supported version and generating the Oracle"
+    echo "data with an higher version creates an incompatible database version."
+    echo ""
+    echo "By doing it with 1.9.10 - 1.9.13, the generated database version is lower"
+    echo "and is upgraded on the fly by newer version like 1.9.25 so it's possible"
+    echo "to validate all supported versions."
+    echo ""
+    echo "The version check was performed on this output (geth version 2> /dev/null)"
+    echo ""
+    $geth_bin version 2>/dev/null
+    echo ""
+    echo "And by grepping for 'grep -E \"$grep_pattern\"'"
+    exit 1
+  fi
+
   if [[ $copy_only == "" ]]; then
     ./bin/generate_local.sh -l "$oracle_transaction_log"
   fi
@@ -28,8 +46,9 @@ main() {
   rm -rf $oracle_data_dir/genesis &> /dev/null || true
 
   cp -a "$GENESIS_DIR/geth" "$oracle_data_dir/genesis"
+  cp -a "$BOOT_DIR/chainspec.json" "$oracle_data_dir/genesis/chainspec.json"
   cp -a $miner_data_dir/geth $oracle_data_dir
-  cp $syncer_deep_mind_log $oracle_deep_mind_log
+  cp $syncer_geth_deep_mind_log $oracle_deep_mind_log
 
   # Remove TRX_ENTER_POOL elements (we do not compare them currently)
   temporary_deep_mind_log=$(mktemp)
@@ -54,6 +73,16 @@ main() {
   cp keystore.zip "$oracle_bootstrap_dir" &> /dev/null
   cp $BOOT_DIR/genesis.json "$oracle_bootstrap_dir/mindreader" &> /dev/null
   cp $BOOT_DIR/keystore.md "$oracle_bootstrap_dir" &> /dev/null
+
+  echo ""
+  echo "Important: You should commit the changes before running './bin/compare_vs_oracle.sh geth'."
+  echo "This is because the compare script runs 'git restore -- run/data/oracle' after the Geth node"
+  echo "finished his work because it make some changes to some files that are checked in in Git."
+  echo ""
+  echo "If you run './bin/compare_vs_oracle.sh geth' before committing the changes, your new oracle"
+  echo "data will be reverted at the end of the compare execution."
+  echo ""
+  echo "You've been warned!"
 }
 
 usage_error() {

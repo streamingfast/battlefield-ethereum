@@ -80,6 +80,11 @@ main() {
       echo "## Transaction Log (`date`)" > $log_file
       echo "" >> $log_file
       echo "\`\`\`" >> $log_file
+      $geth_bin version 2>/dev/null 1>> $log_file
+      echo "\`\`\`" >> $log_file
+
+      echo "" >> $log_file
+      echo "\`\`\`" >> $log_file
     fi
 
     if [[ "$log_file" != "" ]]; then
