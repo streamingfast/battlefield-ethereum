@@ -226,6 +226,20 @@ async function main() {
       ),
 
     () =>
+      runner.koContractSend(
+        "call: contract creation from call, with constructor that will fail",
+        "main",
+        mainContract.methods.contractWithFailingConstructor()
+      ),
+
+    () =>
+      runner.koContractSend(
+        "call: contract creation from call, recursive constructor, second will fail",
+        "main",
+        mainContract.methods.contracFailingRecursiveConstructor()
+      ),
+
+    () =>
       runner.okContractSend(
         "call: nested fail with native transfer",
         "main",

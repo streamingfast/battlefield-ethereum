@@ -29,20 +29,21 @@ contract Main {
     }
 
     function nestedNativeTransfer(address child, address payable to) public payable {
-        (bool success, ) = child.call{value: msg.value}(
-            abi.encodeWithSignature("nativeTransfer(address)", to)
-        );
+        (bool success, ) =
+            child.call{value: msg.value}(abi.encodeWithSignature("nativeTransfer(address)", to));
         require(success, "should have succeed");
     }
 
     function nestedFailtNativeTransfer(address child, address payable to) public payable {
-        (bool success, ) = child.call{value: msg.value - 1}(
-            abi.encodeWithSignature("failNativeTransfer(address)", to)
-        );
+        (bool success, ) =
+            child.call{value: msg.value - 1}(
+                abi.encodeWithSignature("failNativeTransfer(address)", to)
+            );
         require(!success, "should have failed");
-        (bool success2, ) = child.call{value: msg.value - 2}(
-            abi.encodeWithSignature("nativeTransfer(address)", to)
-        );
+        (bool success2, ) =
+            child.call{value: msg.value - 2}(
+                abi.encodeWithSignature("nativeTransfer(address)", to)
+            );
         require(success2, "should have succeed");
     }
 
@@ -56,8 +57,16 @@ contract Main {
         new ContractConstructor(bytes32("testing"));
     }
 
+    function contractWithFailingConstructor() public {
+        new ContractFailingConstructor(true);
+    }
+
     function contractWithEmptyConstructor() public {
         new ContractEmpty();
+    }
+
+    function contracFailingRecursiveConstructor() public {
+        new ContractTopConstructorOkThenFailing();
     }
 
     /**
@@ -85,9 +94,10 @@ contract Main {
         emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
 
         uint256 callGasLimit = 0x30000;
-        (bool success, ) = child.call{gas: callGasLimit}(
-            abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
-        );
+        (bool success, ) =
+            child.call{gas: callGasLimit}(
+                abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
+            );
         require(success, "should have succeed");
 
         callTreeIndex = 0xca110002;
@@ -224,30 +234,33 @@ contract Main {
     function nestedLowGas(address child) public {
         uint256 callGasLimit = 2500000;
 
-        (bool success, ) = child.call{gas: callGasLimit}(
-            abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
-        );
+        (bool success, ) =
+            child.call{gas: callGasLimit}(
+                abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
+            );
         require(success, "should have succeed");
     }
 
     function deepNestedCallForLowestGas(address child, address grandChild) public view {
-        (bool success, ) = child.staticcall(
-            abi.encodeWithSignature("nestedEmptyCallForLowestGas(address)", grandChild)
-        );
+        (bool success, ) =
+            child.staticcall(
+                abi.encodeWithSignature("nestedEmptyCallForLowestGas(address)", grandChild)
+            );
         require(success, "should have succeed");
     }
 
     function deepNestedLowGas(address child, address grandChild) public {
         uint256 callGasLimit = 2500000;
 
-        (bool success, ) = child.call{gas: callGasLimit}(
-            abi.encodeWithSignature(
-                "nestedRecordGasLeft(address,uint256,uint256)",
-                grandChild,
-                callGasLimit,
-                gasleft()
-            )
-        );
+        (bool success, ) =
+            child.call{gas: callGasLimit}(
+                abi.encodeWithSignature(
+                    "nestedRecordGasLeft(address,uint256,uint256)",
+                    grandChild,
+                    callGasLimit,
+                    gasleft()
+                )
+            );
         require(success, "should have succeed");
     }
 
@@ -280,8 +293,12 @@ contract Main {
         stringToIntListMap["short string"][0] = 256;
 
         intToStringMap[3] = "b";
-        stringMap["realy long string larger than 32 bytes to test out solidity splitting stuff"] = "a";
-        nestedStringMap["REALY LONG STRING LARGER THAN 32 BYTES TO TEST OUT SOLIDITY SPLITTING STUFF"]["realy long string larger than 32 bytes to test out solidity splitting stuff"] = "a";
+        stringMap[
+            "realy long string larger than 32 bytes to test out solidity splitting stuff"
+        ] = "a";
+        nestedStringMap[
+            "REALY LONG STRING LARGER THAN 32 BYTES TO TEST OUT SOLIDITY SPLITTING STUFF"
+        ]["realy long string larger than 32 bytes to test out solidity splitting stuff"] = "a";
 
         shortString = "1234567890123456789012345678901";
         flushLongString = "12345678901234567890123456789012";
@@ -365,5 +382,19 @@ contract ContractConstructor {
 
     constructor(bytes32 name) public {
         Name = name;
+    }
+}
+
+contract ContractFailingConstructor {
+    constructor(bool fail) public {
+        if (fail) {
+            assert(false);
+        }
+    }
+}
+
+contract ContractTopConstructorOkThenFailing {
+    constructor() public {
+        new ContractFailingConstructor(true);
     }
 }
