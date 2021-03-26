@@ -9,6 +9,7 @@ require (
 	github.com/eoscanada/bstream v1.7.0 // indirect
 	github.com/eoscanada/eos-go v0.9.1-0.20200805141443-a9d5402a7bc5 // indirect
 	github.com/golang/protobuf v1.4.3
+	github.com/google/go-cmp v0.5.4
 	github.com/lithammer/dedent v1.1.0
 	github.com/manifoldco/promptui v0.7.0
 	github.com/spf13/cobra v1.0.0
@@ -18,5 +19,3 @@ require (
 )
 
 replace github.com/gorilla/rpc => github.com/dfuse-io/rpc v1.2.1-0.20200218195849-d2251f4fe50d
-
-//replace github.com/Azure/go-autorest => github.com/Azure/go-autorest/autorest v0.8.3

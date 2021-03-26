@@ -15,25 +15,16 @@ import (
 
 	"github.com/dfuse-io/dfuse-ethereum/codec"
 	pbcodec "github.com/dfuse-io/dfuse-ethereum/pb/dfuse/ethereum/codec/v1"
+	"github.com/dfuse-io/ethereum.battlefield/cli"
 	"github.com/dfuse-io/jsonpb"
 	"github.com/dfuse-io/logging"
 	"github.com/golang/protobuf/ptypes"
 	pbts "github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/lithammer/dedent"
-	"github.com/manifoldco/promptui"
+	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
-	"golang.org/x/crypto/ssh/terminal"
 )
-
-var rootCmd = &cobra.Command{Use: "battlefield", Short: "Battlefield binary"}
-var generateCmd = &cobra.Command{Use: "generate", Short: "From the oracle deep mind log file, generate the oracle dfuse blocks", RunE: generateE}
-var compareCmd = &cobra.Command{
-	Use:   "compare <syncer_deepmind_log> [<file_dir>]",
-	Short: "From a new actual deep mind log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks",
-	RunE:  compareE,
-}
 
 var fixedTimestamp *pbts.Timestamp
 var zlog = zap.NewNop()
@@ -46,21 +37,30 @@ func init() {
 }
 
 func main() {
-	rootCmd.SilenceErrors = true
-	rootCmd.SilenceUsage = true
+	Run("battlefield", "Battlefield binary",
+		Command(generateE,
+			"generate",
+			"From the oracle deep mind log file, generate the oracle dfuse blocks",
+		),
+		Command(compareE,
+			"compare <syncer_deepmind_log>",
+			"From a new actual deep mind log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks",
+			Description(`
+				Runs dfuse Console Reader against <syncer_deepmind_log> argument and turns it into
+				an array of *pbcodec.Block. It then compares that to the Oracle's array of pbcodec.Block
+				that is stored in 'run/data/oracle/oracle.json' file.
 
-	rootCmd.AddCommand(generateCmd)
-	rootCmd.AddCommand(compareCmd)
-
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
+				If there is a diff between the two, a diff viewer is invoked. If the 'DIFF_EDITOR' is set,
+				it is use with '$DIFF_EDITOR <oracle_json> <syncer_json>'. If 'DIFF_EDITOR' is **not** set, the command
+				'bash -c diff -C 5 <oracle_json> <syncer_json>'.
+			`),
+		),
+	)
 }
 
 func generateE(cmd *cobra.Command, args []string) error {
 	currentDir, err := os.Getwd()
-	noError(err, "unable to get working directory")
+	cli.NoError(err, "unable to get working directory")
 
 	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
@@ -77,12 +77,15 @@ func generateE(cmd *cobra.Command, args []string) error {
 
 func compareE(cmd *cobra.Command, args []string) error {
 	currentDir, err := os.Getwd()
-	noError(err, "unable to get working directory")
+	cli.NoError(err, "unable to get working directory")
 
 	actualDmlogFile := args[0]
 	actualJSONFile := strings.ReplaceAll(actualDmlogFile, ".dmlog", ".json")
 	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
+
+	oracleBlocks := readActualBlocks(oracleDmlogFile)
+	zlog.Info("read all blocks from oracle dmlog file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleDmlogFile))
 
 	actualBlocks := readActualBlocks(actualDmlogFile)
 	zlog.Info("read all blocks from dmlog file", zap.Int("block_count", len(actualBlocks)), zap.String("file", actualDmlogFile))
@@ -90,7 +93,8 @@ func compareE(cmd *cobra.Command, args []string) error {
 	writeActualBlocks(actualJSONFile, actualBlocks)
 
 	zlog.Info("blocks read, now comparing with reference")
-	if jsonEq(oracleJSONFile, actualJSONFile) {
+
+	if isSameBlocks(oracleJSONFile, actualJSONFile) {
 		fmt.Println("Files are equal, all good")
 		os.Exit(0)
 	}
@@ -101,7 +105,7 @@ func compareE(cmd *cobra.Command, args []string) error {
 		command = fmt.Sprintf("%s \"%s\" \"%s\"", os.Getenv("DIFF_EDITOR"), oracleJSONFile, actualJSONFile)
 	}
 
-	showDiff, wasAnswered := askQuestion(`File %q and %q differs, do you want to see the difference now`, oracleJSONFile, actualJSONFile)
+	showDiff, wasAnswered := cli.AskConfirmation(`File %q and %q differs, do you want to see the difference now`, oracleJSONFile, actualJSONFile)
 	if wasAnswered && showDiff {
 		diffCmd := exec.Command(command)
 		if useBash {
@@ -111,7 +115,7 @@ func compareE(cmd *cobra.Command, args []string) error {
 		diffCmd.Stdout = os.Stdout
 		diffCmd.Stderr = os.Stderr
 
-		noError(diffCmd.Run(), "Diff command failed to run properly")
+		cli.NoError(diffCmd.Run(), "Diff command failed to run properly")
 
 		fmt.Println("You can run the following command to see it manually later:")
 	} else {
@@ -122,10 +126,10 @@ func compareE(cmd *cobra.Command, args []string) error {
 	fmt.Printf("    %s\n", command)
 	fmt.Println("")
 
-	acceptDiff, wasAnswered := askQuestion(`Do you want to accept %q as the new %q right now`, actualJSONFile, oracleJSONFile)
+	acceptDiff, wasAnswered := cli.AskConfirmation(`Do you want to accept %q as the new %q right now`, actualJSONFile, oracleJSONFile)
 	if wasAnswered && acceptDiff {
-		copyFile(actualJSONFile, oracleJSONFile)
-		copyFile(actualDmlogFile, oracleDmlogFile)
+		cli.CopyFile(actualJSONFile, oracleJSONFile)
+		cli.CopyFile(actualDmlogFile, oracleDmlogFile)
 
 		fmt.Printf("The file %q (and its '.dmlog' sibling) is now the new active oracle data\n", actualJSONFile)
 		return nil
@@ -139,60 +143,51 @@ func compareE(cmd *cobra.Command, args []string) error {
 	return errors.New("failed")
 }
 
-func makeSingleLineDiffCmd(cmd *exec.Cmd) (out string) {
-	out = cmd.String()
-	out = strings.Replace(out, "diff -C", `"diff -C`, 1)
-	out = strings.Replace(out, "| less", `| less"`, 1)
-	out = strings.Replace(out, "\n", ", ", -1)
-
-	return
-}
-
 func writeActualBlocks(actualFile string, blocks []*pbcodec.Block) {
 	buffer := bytes.NewBuffer(nil)
 	_, err := buffer.WriteString("[\n")
-	noError(err, "Unable to write list start")
+	cli.NoError(err, "Unable to write list start")
 
 	blockCount := len(blocks)
 	if blockCount > 0 {
 		lastIndex := blockCount - 1
 		for i, block := range blocks {
 			out, err := jsonpb.MarshalIndentToString(block, "  ")
-			noError(err, "Unable to marshal block %q", block.AsRef())
+			cli.NoError(err, "Unable to marshal block %q", block.AsRef())
 
 			_, err = buffer.WriteString(out)
-			noError(err, "Unable to write block %q", block.AsRef())
+			cli.NoError(err, "Unable to write block %q", block.AsRef())
 
 			if i != lastIndex {
 				_, err = buffer.WriteString(",\n")
-				noError(err, "Unable to write block delimiter %q", block.AsRef())
+				cli.NoError(err, "Unable to write block delimiter %q", block.AsRef())
 			}
 		}
 	}
 
 	_, err = buffer.WriteString("]\n")
-	noError(err, "Unable to write list end")
+	cli.NoError(err, "Unable to write list end")
 
 	var unormalizedStruct []interface{}
 	err = json.Unmarshal(buffer.Bytes(), &unormalizedStruct)
-	noError(err, "Unable to unmarshal JSON for normalization")
+	cli.NoError(err, "Unable to unmarshal JSON for normalization")
 
 	normalizedJSON, err := json.MarshalIndent(unormalizedStruct, "", "  ")
-	noError(err, "Unable to normalize JSON")
+	cli.NoError(err, "Unable to normalize JSON")
 
 	err = ioutil.WriteFile(actualFile, normalizedJSON, os.ModePerm)
-	noError(err, "Unable to write file %q", actualFile)
+	cli.NoError(err, "Unable to write file %q", actualFile)
 }
 
 func readActualBlocks(filePath string) []*pbcodec.Block {
 	blocks := []*pbcodec.Block{}
 
 	file, err := os.Open(filePath)
-	noError(err, "Unable to open actual blocks file %q", filePath)
+	cli.NoError(err, "Unable to open actual blocks file %q", filePath)
 	defer file.Close()
 
 	reader, err := codec.NewConsoleReader(file)
-	noError(err, "Unable to create console reader for actual blocks file %q", filePath)
+	cli.NoError(err, "Unable to create console reader for actual blocks file %q", filePath)
 	defer reader.Close()
 
 	var lastBlockRead *pbcodec.Block
@@ -200,7 +195,7 @@ func readActualBlocks(filePath string) []*pbcodec.Block {
 		el, err := reader.Read()
 		if el != nil && el.(*pbcodec.Block) != nil {
 			block, ok := el.(*pbcodec.Block)
-			ensure(ok, `Read block is not a "pbcodec.Block" but should have been`)
+			cli.Ensure(ok, `Read block is not a "pbcodec.Block" but should have been`)
 
 			lastBlockRead = sanitizeBlock(block)
 			blocks = append(blocks, lastBlockRead)
@@ -212,9 +207,9 @@ func readActualBlocks(filePath string) []*pbcodec.Block {
 
 		if err != nil {
 			if lastBlockRead == nil {
-				noError(err, "Unable to read first block from file %q", filePath)
+				cli.NoError(err, "Unable to read first block from file %q", filePath)
 			} else {
-				noError(err, "Unable to read block from file %q, last block read was %s", lastBlockRead.AsRef())
+				cli.NoError(err, "Unable to read block from file %q, last block read was %s", lastBlockRead.AsRef())
 			}
 		}
 	}
@@ -234,86 +229,53 @@ func sanitizeBlock(block *pbcodec.Block) *pbcodec.Block {
 	return block
 }
 
-func jsonEq(oracleFile string, actualFile string) bool {
+func isSameBlocks(oracleFile string, actualFile string) bool {
 	oracle, err := ioutil.ReadFile(oracleFile)
-	noError(err, "Unable to read %q", oracleFile)
+	cli.NoError(err, "Unable to read %q", oracleFile)
 
 	actual, err := ioutil.ReadFile(actualFile)
-	noError(err, "Unable to read %q", actualFile)
+	cli.NoError(err, "Unable to read %q", actualFile)
 
 	var oracleJSONAsInterface, actualJSONAsInterface interface{}
 
 	err = json.Unmarshal(oracle, &oracleJSONAsInterface)
-	noError(err, "Oracle file %q is not a valid JSON file", oracleFile)
+	cli.NoError(err, "Oracle file %q is not a valid JSON file", oracleFile)
 
 	err = json.Unmarshal(actual, &actualJSONAsInterface)
-	noError(err, "Actual file %q is not a valid JSON file", actualFile)
+	cli.NoError(err, "Actual file %q is not a valid JSON file", actualFile)
 
 	return assert.ObjectsAreEqualValues(oracleJSONAsInterface, actualJSONAsInterface)
 }
 
-func askQuestion(label string, args ...interface{}) (answeredYes bool, wasAnswered bool) {
-	if !terminal.IsTerminal(int(os.Stdout.Fd())) {
-		zlog.Info("stdout is not a terminal, assuming no default")
-		wasAnswered = false
-		return
-	}
+func diff() {
 
-	prompt := promptui.Prompt{
-		Label:     dedent.Dedent(fmt.Sprintf(label, args...)),
-		IsConfirm: true,
-	}
-
-	_, err := prompt.Run()
-	if err != nil {
-		zlog.Info("unable to aks user to see diff right now, too bad", zap.Error(err))
-		wasAnswered = false
-		return
-	}
-
-	wasAnswered = true
-	answeredYes = true
-
-	// strings.ToLower(result) == "y" || strings.ToLower(result) == "yes"
-	return
 }
 
-func copyFile(inPath, outPath string) {
-	inFile, err := os.Open(inPath)
-	noError(err, "Unable to open actual file %q", inPath)
-	defer inFile.Close()
-
-	outFile, err := os.Create(outPath)
-	noError(err, "Unable to open expected file %q", outPath)
-	defer outFile.Close()
-
-	_, err = io.Copy(outFile, inFile)
-	noError(err, "Unable to copy file %q to %q", inPath, outPath)
+type DiffReporter struct {
+	path  cmp.Path
+	diffs []string
 }
 
-func fileExists(path string) bool {
-	stat, err := os.Stat(path)
-	if err != nil {
-		// For this script, we don't care
-		return false
-	}
-
-	return !stat.IsDir()
+func (r *DiffReporter) PushStep(ps cmp.PathStep) {
+	r.path = append(r.path, ps)
 }
 
-func ensure(condition bool, message string, args ...interface{}) {
-	if !condition {
-		quit(message, args...)
+func (r *DiffReporter) Report(rs cmp.Result) {
+	if !rs.Equal() {
+		vx, vy := r.path.Last().Values()
+		r.diffs = append(r.diffs, fmt.Sprintf("%#v:\n\t-: %+v\n\t+: %+v\n", r.path, vx, vy))
 	}
 }
 
-func noError(err error, message string, args ...interface{}) {
-	if err != nil {
-		quit(message+": "+err.Error(), args...)
-	}
+func (r *DiffReporter) PopStep() {
+	r.path = r.path[:len(r.path)-1]
 }
 
-func quit(message string, args ...interface{}) {
-	fmt.Printf(message+"\n", args...)
-	os.Exit(1)
+func (r *DiffReporter) String() string {
+	return strings.Join(r.diffs, "\n")
 }
+
+var Run = cli.Run
+var Command = cli.Command
+
+type Description = cli.Description
