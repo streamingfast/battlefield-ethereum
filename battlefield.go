@@ -213,9 +213,7 @@ func readActualBlocks(filePath string) []*pbcodec.Block {
 func sanitizeBlock(block *pbcodec.Block) *pbcodec.Block {
 	for _, trxTrace := range block.TransactionTraces {
 		for _, call := range trxTrace.Calls {
-			if strings.HasPrefix(call.FailureReason, "evm: ") {
-				call.FailureReason = strings.TrimPrefix(call.FailureReason, "evm: ")
-			}
+			call.FailureReason = "<varying field>"
 		}
 	}
 
@@ -237,7 +235,20 @@ func jsonEq(oracleFile string, actualFile string) bool {
 	err = json.Unmarshal(actual, &actualJSONAsInterface)
 	noError(err, "Actual file %q is not a valid JSON file", actualFile)
 
-	return assert.ObjectsAreEqualValues(oracleJSONAsInterface, actualJSONAsInterface)
+	if !assert.ObjectsAreEqualValues(oracleJSONAsInterface, actualJSONAsInterface) {
+		var r DiffReporter
+		areEqual := cmp.Equal(oracleBlocks, actualBlocks,
+			cmpopts.IgnoreUnexported(protoimpl.MessageState{}),
+			cmp.Reporter(&r),
+		)
+		if areEqual {
+			panic("assert.ObjectsAreEqualValues and cmp.Equal don't agree on being not equal!")
+		}
+
+		return r.String()
+	}
+
+	return ""
 }
 
 func askQuestion(label string, args ...interface{}) (answeredYes bool, wasAnswered bool) {
@@ -248,8 +259,8 @@ func askQuestion(label string, args ...interface{}) (answeredYes bool, wasAnswer
 	}
 
 	prompt := promptui.Prompt{
-		Label:     dedent.Dedent(fmt.Sprintf(label, args...)),
-		IsConfirm: true,
+		Label: dedent.Dedent(fmt.Sprintf(label, args...)),
+		// IsConfirm: true,
 	}
 
 	result, err := prompt.Run()

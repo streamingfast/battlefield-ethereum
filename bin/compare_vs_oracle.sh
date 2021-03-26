@@ -39,6 +39,14 @@ main() {
   killall $geth_bin &> /dev/null || true
   killall $oe_bin &> /dev/null || true
 
+  if [[ $chain == "geth" ]]; then
+      syncer_log="$syncer_geth_log"
+      syncer_deep_mind_log="$syncer_geth_deep_mind_log"
+  else
+      syncer_log="$syncer_oe_log"
+      syncer_deep_mind_log="$syncer_oe_deep_mind_log"
+  fi
+
   if [[ $skip_generation == false ]]; then
     recreate_data_directories oracle syncer_geth syncer_oe
 
@@ -71,9 +79,6 @@ main() {
     monitor "oracle" $oracle_pid $parent_pid "$oracle_log" &
 
     if [[ $chain == "geth" ]]; then
-      syncer_log="$syncer_geth_log"
-      syncer_deep_mind_log="$syncer_geth_deep_mind_log"
-
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_geth_cmd \
           --deep-mind \
@@ -85,9 +90,6 @@ main() {
           --nousb $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
       syncer_pid=$!
     else
-      syncer_log="$syncer_oe_log"
-      syncer_deep_mind_log="$syncer_oe_deep_mind_log"
-
       echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"
       ($syncer_oe_cmd \
           --deep-mind \
@@ -202,7 +204,7 @@ usage() {
   echo "geth for Geth or oe for OpenEthereum."
   echo ""
   echo "Options"
-  echo "    -s          Skip syncer/miner launching and only run comparison (useful when developing battlefield)"
+  echo "    -s          Skip syncer/miner launching and only run comparison (useful when developing 'battlefield.go')"
   echo "    -n          Dry-run by not running any comparison code, exit right away once syncing has completed"
   echo "    -h          Display help about this script"
 }
