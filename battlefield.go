@@ -112,12 +112,15 @@ func compareE(cmd *cobra.Command, args []string) error {
 		diffCmd.Stderr = os.Stderr
 
 		noError(diffCmd.Run(), "Diff command failed to run properly")
+
+		fmt.Println("You can run the following command to see it manually later:")
 	} else {
 		fmt.Println("Not showing diff between files, run the following command to see it manually:")
-		fmt.Println()
-		fmt.Printf("    %s\n", command)
-		fmt.Println("")
 	}
+
+	fmt.Println()
+	fmt.Printf("    %s\n", command)
+	fmt.Println("")
 
 	acceptDiff, wasAnswered := askQuestion(`Do you want to accept %q as the new %q right now`, actualJSONFile, oracleJSONFile)
 	if wasAnswered && acceptDiff {
