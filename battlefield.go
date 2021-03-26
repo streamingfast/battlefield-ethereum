@@ -95,10 +95,19 @@ func compareE(cmd *cobra.Command, args []string) error {
 		os.Exit(0)
 	}
 
-	diffCmd := exec.Command("bash", "-c", fmt.Sprintf("diff -C 5 %s %s | less", oracleJSONFile, actualJSONFile))
+	useBash := true
+	command := fmt.Sprintf("diff -C 5 \"%s\" \"%s\" | less", oracleJSONFile, actualJSONFile)
+	if os.Getenv("DIFF_EDITOR") != "" {
+		command = fmt.Sprintf("%s \"%s\" \"%s\"", os.Getenv("DIFF_EDITOR"), oracleJSONFile, actualJSONFile)
+	}
 
 	showDiff, wasAnswered := askQuestion(`File %q and %q differs, do you want to see the difference now`, oracleJSONFile, actualJSONFile)
 	if wasAnswered && showDiff {
+		diffCmd := exec.Command(command)
+		if useBash {
+			diffCmd = exec.Command("bash", "-c", command)
+		}
+
 		diffCmd.Stdout = os.Stdout
 		diffCmd.Stderr = os.Stderr
 
@@ -106,7 +115,7 @@ func compareE(cmd *cobra.Command, args []string) error {
 	} else {
 		fmt.Println("Not showing diff between files, run the following command to see it manually:")
 		fmt.Println()
-		fmt.Printf("    %s\n", makeSingleLineDiffCmd(diffCmd))
+		fmt.Printf("    %s\n", command)
 		fmt.Println("")
 	}
 
@@ -213,7 +222,9 @@ func readActualBlocks(filePath string) []*pbcodec.Block {
 func sanitizeBlock(block *pbcodec.Block) *pbcodec.Block {
 	for _, trxTrace := range block.TransactionTraces {
 		for _, call := range trxTrace.Calls {
-			call.FailureReason = "<varying field>"
+			if call.FailureReason != "" {
+				call.FailureReason = "(varying field)"
+			}
 		}
 	}
 
@@ -235,20 +246,7 @@ func jsonEq(oracleFile string, actualFile string) bool {
 	err = json.Unmarshal(actual, &actualJSONAsInterface)
 	noError(err, "Actual file %q is not a valid JSON file", actualFile)
 
-	if !assert.ObjectsAreEqualValues(oracleJSONAsInterface, actualJSONAsInterface) {
-		var r DiffReporter
-		areEqual := cmp.Equal(oracleBlocks, actualBlocks,
-			cmpopts.IgnoreUnexported(protoimpl.MessageState{}),
-			cmp.Reporter(&r),
-		)
-		if areEqual {
-			panic("assert.ObjectsAreEqualValues and cmp.Equal don't agree on being not equal!")
-		}
-
-		return r.String()
-	}
-
-	return ""
+	return assert.ObjectsAreEqualValues(oracleJSONAsInterface, actualJSONAsInterface)
 }
 
 func askQuestion(label string, args ...interface{}) (answeredYes bool, wasAnswered bool) {
@@ -259,11 +257,11 @@ func askQuestion(label string, args ...interface{}) (answeredYes bool, wasAnswer
 	}
 
 	prompt := promptui.Prompt{
-		Label: dedent.Dedent(fmt.Sprintf(label, args...)),
-		// IsConfirm: true,
+		Label:     dedent.Dedent(fmt.Sprintf(label, args...)),
+		IsConfirm: true,
 	}
 
-	result, err := prompt.Run()
+	_, err := prompt.Run()
 	if err != nil {
 		zlog.Info("unable to aks user to see diff right now, too bad", zap.Error(err))
 		wasAnswered = false
@@ -271,7 +269,9 @@ func askQuestion(label string, args ...interface{}) (answeredYes bool, wasAnswer
 	}
 
 	wasAnswered = true
-	answeredYes = strings.ToLower(result) == "y" || strings.ToLower(result) == "yes"
+	answeredYes = true
+
+	// strings.ToLower(result) == "y" || strings.ToLower(result) == "yes"
 	return
 }
 

@@ -2603,7 +2603,7 @@
             "callType": "CALL",
             "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
             "executedCode": true,
-            "failureReason": "out of gas",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "568",
@@ -4693,7 +4693,7 @@
             "callType": "CALL",
             "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
             "executedCode": true,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "278936",
@@ -4757,7 +4757,7 @@
               "3b8f6eb488983a35d8366c5cf1afc4f72d2f8e80"
             ],
             "depth": 1,
-            "failureReason": "invalid opcode 0xfe",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "242655",
@@ -4834,7 +4834,7 @@
             "callType": "CALL",
             "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
             "executedCode": true,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "278936",
@@ -4903,7 +4903,7 @@
               "3b8f6eb488983a35d8366c5cf1afc4f72d2f8e80"
             ],
             "depth": 1,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "242619",
@@ -4966,7 +4966,7 @@
               "a3f60b3d9fb604b8c077652b9c6fa97cf832a463"
             ],
             "depth": 2,
-            "failureReason": "invalid opcode 0xfe",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "207177",
@@ -5137,7 +5137,7 @@
             "caller": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
             "depth": 1,
             "executedCode": true,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "230853",
@@ -5410,7 +5410,7 @@
             "caller": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
             "depth": 1,
             "executedCode": true,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasConsumed": "21920",
             "gasLimit": "251599",
             "index": 2,
@@ -6238,7 +6238,7 @@
             "callType": "CALLCODE",
             "caller": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
             "depth": 1,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasConsumed": "46",
             "gasLimit": "114043",
             "index": 7,
@@ -6279,7 +6279,7 @@
             "callType": "DELEGATE",
             "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
             "depth": 1,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasConsumed": "46",
             "gasLimit": "110498",
             "index": 10,
@@ -6294,7 +6294,7 @@
             "callType": "STATIC",
             "caller": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
             "depth": 1,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasConsumed": "46",
             "gasLimit": "109462",
             "index": 11,
@@ -6331,7 +6331,7 @@
             "caller": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
             "depth": 1,
             "executedCode": true,
-            "failureReason": "bn256: malformed point",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "4000",
@@ -6470,7 +6470,7 @@
             "callType": "CALL",
             "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
             "executedCode": true,
-            "failureReason": "invalid opcode 0xfe",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "278936",
@@ -6551,7 +6551,7 @@
             "callType": "CALL",
             "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
             "executedCode": true,
-            "failureReason": "execution reverted",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "278936",
@@ -6624,7 +6624,7 @@
             "callType": "CALL",
             "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
             "executedCode": true,
-            "failureReason": "out of gas",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "newValue": "278568",
@@ -6682,7 +6682,7 @@
             "caller": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
             "depth": 1,
             "executedCode": true,
-            "failureReason": "invalid opcode 0xfe",
+            "failureReason": "(varying field)",
             "gasChanges": [
               {
                 "oldValue": "229765",
