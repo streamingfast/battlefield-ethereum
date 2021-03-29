@@ -14,7 +14,7 @@ import {
   isUnsetDefaultGasConfig,
 } from "./common"
 import { ContractSendMethod, Contract } from "web3-eth-contract"
-import { deployContract, deployContractRaw, DeploymentResult, DeployerOptions } from "./deploy"
+import {deployContract, deployContractRaw, DeploymentResult, DeployerOptions, readContractInfo} from "./deploy"
 import { readFileSync, writeFileSync, existsSync } from "fs"
 import Common from "ethereumjs-common"
 
@@ -287,6 +287,42 @@ export class BattlefieldRunner {
       return
     })
   }
+
+  async koDeployContract(
+      tag: string,
+      contractName: string,
+      options?: TransactionConfig
+  ) {
+
+    const contractMethod = await readContractInfo(
+        this.web3,
+        contractName
+    )
+
+    return this.koSend(tag, options, async (resolvedOptions) => {
+      if (this.network == "local") {
+        console.log("RESOVED OPTIONS: ", resolvedOptions);
+        return {
+          promiEvent: (contractMethod.send({
+                        from: resolvedOptions.from,
+                        gas: resolvedOptions.gas,
+                        gasPrice: resolvedOptions.gasPrice,
+                        value: resolvedOptions.value,
+                      }) as any) as PromiEvent<TransactionReceipt>
+        }
+      }
+
+      const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
+        ...resolvedOptions,
+        data: contractMethod.encodeABI(),
+      })
+
+      return { txHash: tx.hash(), promiEvent: sendRawTx(this.web3, tx) }
+    })
+  }
+
+
+
 
   async okTransfer(
     tag: string,

@@ -200,10 +200,18 @@ async function main() {
   await runner.okContractSend("storage: array update", "main", mainContract.methods.setAfter())
 
   console.log()
-  console.log("Performing 'call' transactions")
+  console.log("Performing 'call' & 'constructor' transactions")
   setDefaultGasConfig(300000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
+  // () =>
+  //     runner.koDeployContract(
+  //         "deploying a contract: not enough gas to deploy contract",
+  //         "Suicidal",
+  //         {
+  //             gas: 35000,
+  //         }
+  //     ),
     () =>
       runner.okContractSend(
         "call: complete call tree",
