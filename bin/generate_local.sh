@@ -48,6 +48,7 @@ main() {
       --miner.threads=1 \
       --networkid=1515 \
       --nodiscover \
+      --verbosity=10 \
       --nousb $@ 1> $miner_deep_mind_log 2> $miner_log) &
     miner_pid=$!
 

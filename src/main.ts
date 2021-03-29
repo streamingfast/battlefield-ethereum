@@ -204,14 +204,16 @@ async function main() {
   setDefaultGasConfig(300000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
-  // () =>
-  //     runner.koDeployContract(
-  //         "deploying a contract: not enough gas to deploy contract",
-  //         "Suicidal",
-  //         {
-  //             gas: 35000,
-  //         }
-  //     ),
+    () =>
+      runner.koDeployContract("call: contract fail just enough gas for intrinsic gas", "Suicidal", {
+        // This is the exact minimum required so the transaction pass the JSON-RPC barrier, hopefully it's good for the future
+        gas: 59244,
+      }),
+    () =>
+      runner.koDeployContract("call: contract fail not enough gas after code_copy", "Suicidal", {
+        // This is exact minimum + 65 which is the code_copy portion
+        gas: 99309,
+      }),
     () =>
       runner.okContractSend(
         "call: complete call tree",
