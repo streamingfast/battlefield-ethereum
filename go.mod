@@ -3,7 +3,7 @@ module github.com/dfuse-io/ethereum.battlefield
 go 1.14
 
 require (
-	github.com/dfuse-io/dfuse-ethereum v0.0.0-20210308214808-83fd492365a4
+	github.com/dfuse-io/dfuse-ethereum v0.0.0-20210329233233-80b62146b817
 	github.com/dfuse-io/jsonpb v0.0.0-20200819202948-831ad3282037
 	github.com/dfuse-io/logging v0.0.0-20210109005628-b97a57253f70
 	github.com/eoscanada/bstream v1.7.0 // indirect
