@@ -206,12 +206,12 @@ async function main() {
   await runner.parallelize(
     () =>
       runner.koDeployContract("call: contract fail just enough gas for intrinsic gas", "Suicidal", {
-        // This is the exact minimum required so the transaction pass the JSON-RPC barrier, hopefully it's good for the future
+        // This is the exact minimum required so the transaction pass the JSON-RPC barrier, hopefully it's good for the future, if it fails prior that
         gas: 59244,
       }),
     () =>
       runner.koDeployContract("call: contract fail not enough gas after code_copy", "Suicidal", {
-        // This is exact minimum + 65 which is the code_copy portion
+        // This has been found by trial and error such that the transaction reaches GAS_CHANGE ... code_copy but fails afterwards when storing the actual contract on the chain
         gas: 99309,
       }),
     () =>
