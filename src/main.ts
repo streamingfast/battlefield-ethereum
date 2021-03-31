@@ -1,7 +1,7 @@
 import BN from "bn.js"
-import {readContract, readContractBin, requireProcessEnv, setDefaultGasConfig} from "./common"
+import { readContract, readContractBin, requireProcessEnv, setDefaultGasConfig } from "./common"
 import { BattlefieldRunner, Network } from "./runner"
-import {join as pathJoin} from "path";
+import { join as pathJoin } from "path"
 
 const randomHex6chars = () => ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0")
 const randomHex = () =>
@@ -204,6 +204,9 @@ async function main() {
   console.log("Performing 'call' & 'constructor' transactions")
   setDefaultGasConfig(300000, runner.web3.utils.toWei("50", "gwei"))
 
+  const contractBin = await readContractBin(pathJoin(__dirname, `../contract/build/Suicidal.bin`))
+  const saltForCollision = `0x${randomHex()}`
+
   await runner.parallelize(
     () =>
       runner.koDeployContract("call: contract fail just enough gas for intrinsic gas", "Suicidal", {
@@ -294,32 +297,55 @@ async function main() {
         "main",
         mainContract.methods.nestedAssertFailure(childContractAddress)
       ),
+
+    () =>
+      runner.okContractSend(
+        "call: contract with create2, inner call fail due to insufficent funds (transaction succeed though)",
+        "main",
+        mainContract.methods.contractCreate2(
+          contractBin,
+          "300000000000000000000000000000",
+          `0x${randomHex()}`,
+          false
+        )
+      ),
+
+    () =>
+      runner.koContractSend(
+        "call: contract with create2, inner call fail due to insufficent funds then revert",
+        "main",
+        mainContract.methods.contractCreate2(
+          contractBin,
+          "300000000000000000000000000000",
+          `0x${randomHex()}`,
+          true
+        )
+      ),
+
+    () =>
+      runner.okContractSend(
+        "call: contract with create2, succesful creation",
+        "main",
+        mainContract.methods.contractCreate2(contractBin, "0", saltForCollision, false)
+      )
   )
 
-    // create2 depends on contract linearity
-    const contract = await readContract(
-        runner.web3.eth,
-        pathJoin(__dirname, `../contract/build/Suicidal.abi`)
-    )
-    const contractBin = await readContractBin(pathJoin(__dirname, `../contract/build/Suicidal.bin`))
-    await runner.koContractSend(
-        "call: contract creation2 from call should fail with transfer exceeding account balance",
+  // Depends on 'contract with create2, succesful creation' to run, so needs to be peformed after wrd
+  await runner.parallelize(
+    () =>
+      runner.okContractSend(
+        "call: contract with create2, inner call fail due to address already exists (transaction succeed though)",
         "main",
-        mainContract.methods.contractCreate2(contractBin, "300000000000000000000000000000" , "2", true)
-    );
+        mainContract.methods.contractCreate2(contractBin, "0", saltForCollision, false)
+      ),
 
-    await runner.okContractSend(
-        "call: contract creation2 from call",
+    () =>
+      runner.koContractSend(
+        "call: contract with create2, inner call fail due to address already exists then revert",
         "main",
-        mainContract.methods.contractCreate2(contractBin, "0","1", false)
-    )
-
-    await runner.okContractSend(
-        "call: contract creation2 will fail with already existing address",
-        "main",
-        mainContract.methods.contractCreate2(contractBin, "0","1", false)
-    )
-
+        mainContract.methods.contractCreate2(contractBin, "0", saltForCollision, true)
+      )
+  )
 
   console.log()
   console.log("Performing 'gas' transactions")
