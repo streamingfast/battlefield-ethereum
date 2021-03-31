@@ -69,6 +69,18 @@ contract Main {
         new ContractTopConstructorOkThenFailing();
     }
 
+    function contractCreate2(bytes memory code, uint256 salt, bool revertOnFailure) public {
+        address addr;
+        assembly {
+            addr := create2(0, add(code, 0x20), mload(code), salt)
+            if iszero(extcodesize(addr)) {
+                if revertOnFailure {
+                    revert(0, 0)
+                }
+            }
+        }
+    }
+
     /**
      * Creates:
      *
