@@ -69,10 +69,10 @@ contract Main {
         new ContractTopConstructorOkThenFailing();
     }
 
-    function contractCreate2(bytes memory code, uint256 salt, bool revertOnFailure) public {
+    function contractCreate2(bytes memory code, uint256 transferAmount, uint256 salt, bool revertOnFailure) public {
         address addr;
         assembly {
-            addr := create2(0, add(code, 0x20), mload(code), salt)
+            addr := create2(transferAmount, add(code, 0x20), mload(code), salt)
             if iszero(extcodesize(addr)) {
                 if revertOnFailure {
                     revert(0, 0)

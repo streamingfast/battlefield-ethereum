@@ -1,6 +1,7 @@
 import BN from "bn.js"
-import { requireProcessEnv, setDefaultGasConfig } from "./common"
+import {readContract, readContractBin, requireProcessEnv, setDefaultGasConfig} from "./common"
 import { BattlefieldRunner, Network } from "./runner"
+import {join as pathJoin} from "path";
 
 const randomHex6chars = () => ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0")
 const randomHex = () =>
@@ -292,8 +293,33 @@ async function main() {
         "call: assert failure on child call",
         "main",
         mainContract.methods.nestedAssertFailure(childContractAddress)
-      )
+      ),
   )
+
+    // create2 depends on contract linearity
+    const contract = await readContract(
+        runner.web3.eth,
+        pathJoin(__dirname, `../contract/build/Suicidal.abi`)
+    )
+    const contractBin = await readContractBin(pathJoin(__dirname, `../contract/build/Suicidal.bin`))
+    await runner.koContractSend(
+        "call: contract creation2 from call should fail with transfer exceeding account balance",
+        "main",
+        mainContract.methods.contractCreate2(contractBin, "300000000000000000000000000000" , "2", true)
+    );
+
+    await runner.okContractSend(
+        "call: contract creation2 from call",
+        "main",
+        mainContract.methods.contractCreate2(contractBin, "0","1", false)
+    )
+
+    await runner.okContractSend(
+        "call: contract creation2 will fail with already existing address",
+        "main",
+        mainContract.methods.contractCreate2(contractBin, "0","1", false)
+    )
+
 
   console.log()
   console.log("Performing 'gas' transactions")
