@@ -7340,6 +7340,13 @@
             "caller": "314f9285cbc3835e676974abdb7d2ab45ede3686",
             "depth": 1,
             "failureReason": "(varying field)",
+            "gasChanges": [
+              {
+                "oldValue": "235260",
+                "reason": "REASON_FAILED_EXECUTION"
+              }
+            ],
+            "gasConsumed": "235260",
             "gasLimit": "235260",
             "index": 2,
             "nonceChanges": [
@@ -7456,6 +7463,13 @@
             "caller": "314f9285cbc3835e676974abdb7d2ab45ede3686",
             "depth": 1,
             "failureReason": "(varying field)",
+            "gasChanges": [
+              {
+                "oldValue": "235248",
+                "reason": "REASON_FAILED_EXECUTION"
+              }
+            ],
+            "gasConsumed": "235248",
             "gasLimit": "235248",
             "index": 2,
             "nonceChanges": [

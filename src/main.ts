@@ -330,7 +330,7 @@ async function main() {
       )
   )
 
-  // Depends on 'contract with create2, succesful creation' to run, so needs to be peformed after wrd
+  // Depends on 'contract with create2, succesful creation' to run, so needs to be peformed afterward
   await runner.parallelize(
     () =>
       runner.okContractSend(
