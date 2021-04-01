@@ -5884,12 +5884,12 @@
               {
                 "gas": "229169",
                 "id": "ID_BEFORE_CALL",
-                "linkedCallIndex": "4"
+                "linkedCallIndex": "5"
               },
               {
                 "gas": "189056",
                 "id": "ID_AFTER_CALL",
-                "linkedCallIndex": "4"
+                "linkedCallIndex": "5"
               }
             ],
             "gasLimit": "278224",
@@ -6013,6 +6013,20 @@
             "value": "02"
           },
           {
+            "address": "dead5000d8d83bb9c6e781754b0da7da0006beef",
+            "callType": "CALL",
+            "caller": "702641c70a11e480f646ed247d078c65abaac5de",
+            "depth": 2,
+            "failureReason": "(varying field)",
+            "gasLimit": "2300",
+            "index": 4,
+            "parentIndex": 2,
+            "stateReverted": true,
+            "statusFailed": true,
+            "statusReverted": true,
+            "value": "03328b944c4002"
+          },
+          {
             "address": "702641c70a11e480f646ed247d078c65abaac5de",
             "balanceChanges": [
               {
@@ -6049,16 +6063,16 @@
               {
                 "gas": "218074",
                 "id": "ID_BEFORE_CALL",
-                "linkedCallIndex": "5"
+                "linkedCallIndex": "6"
               },
               {
                 "gas": "185674",
                 "id": "ID_AFTER_CALL",
-                "linkedCallIndex": "5"
+                "linkedCallIndex": "6"
               }
             ],
             "gasLimit": "218340",
-            "index": 4,
+            "index": 5,
             "input": "a55d0e8e000000000000000000000000dead5000d8d83bb9c6e781754b0da7da0006beef",
             "parentIndex": 1,
             "value": "01"
@@ -6086,8 +6100,8 @@
             ],
             "depth": 2,
             "gasLimit": "2300",
-            "index": 5,
-            "parentIndex": 4,
+            "index": 6,
+            "parentIndex": 5,
             "value": "01"
           }
         ],
@@ -6790,6 +6804,20 @@
               }
             ],
             "value": ""
+          },
+          {
+            "address": "466529c4ee3f5c833395d46eac9da823c6d10c0d",
+            "callType": "CREATE",
+            "caller": "314f9285cbc3835e676974abdb7d2ab45ede3686",
+            "depth": 1,
+            "failureReason": "(varying field)",
+            "gasLimit": "235142",
+            "index": 2,
+            "parentIndex": 1,
+            "stateReverted": true,
+            "statusFailed": true,
+            "statusReverted": true,
+            "value": "03c95a2f0b4856475fe0000000"
           }
         ],
         "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
@@ -7043,6 +7071,20 @@
             "statusFailed": true,
             "statusReverted": true,
             "value": ""
+          },
+          {
+            "address": "3122e28fec7f5c60d03153bcf7e3342dc76b1d2b",
+            "callType": "CREATE",
+            "caller": "314f9285cbc3835e676974abdb7d2ab45ede3686",
+            "depth": 1,
+            "failureReason": "(varying field)",
+            "gasLimit": "235130",
+            "index": 2,
+            "parentIndex": 1,
+            "stateReverted": true,
+            "statusFailed": true,
+            "statusReverted": true,
+            "value": "03c95a2f0b4856475fe0000000"
           }
         ],
         "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
