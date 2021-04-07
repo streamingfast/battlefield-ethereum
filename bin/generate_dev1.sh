@@ -71,7 +71,7 @@ execute_bootstrap() {
   miner_pid=
 
   echo ""
-  echo "Compression bootstrap data"
+  echo "Compressing bootstrap data"
 
   pushd $KEYSTORE_DIR &> /dev/null
     zip $miner_data_dir/keystore.zip * &> /dev/null
@@ -90,6 +90,9 @@ execute_bootstrap() {
   if [[ $skip_upload == "" ]]; then
     echo "Uploading bootstrap data "
     gsutil cp * gs://dfuseio-global-seed-us/eth-dev1/ &> /dev/null
+
+    echo "Uploaded eth-dev1 bootstrapping data"
+    gsutil ls -hl gs://dfuseio-global-seed-us/eth-dev1/
   fi
 }
 
