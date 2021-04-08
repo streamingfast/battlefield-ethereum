@@ -46,6 +46,7 @@ main() {
       --miner.gastarget=1 \
       --miner.gastarget=94000000 \
       --miner.threads=1 \
+      --port=30303 \
       --networkid=1515 \
       --nodiscover \
       --nousb $@ 1> $miner_deep_mind_log 2> $miner_log) &

@@ -70,10 +70,11 @@ main() {
         --miner.gastarget=1 \
         --miner.gastarget=94000000 \
         --miner.threads=0 \
+        --port=30303 \
         --networkid=1515 \
         --nodiscover \
         --nocompaction \
-        --nousb $@ 1> /dev/null 2> $oracle_log) &
+        --nousb $@ &> $oracle_log) &
     oracle_pid=$!
 
     monitor "oracle" $oracle_pid $parent_pid "$oracle_log" &
