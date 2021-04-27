@@ -128,7 +128,7 @@ main() {
         break
       fi
 
-      echo "Giving 5s for syncer to complete syncing (at Block #${latest:-"N/A"})"
+      echo "Giving 5s for syncer to complete syncing"
       sleep 5
     done
   fi
