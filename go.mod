@@ -3,7 +3,7 @@ module github.com/dfuse-io/ethereum.battlefield
 go 1.14
 
 require (
-	github.com/dfuse-io/dfuse-ethereum v0.0.0-20210329233233-80b62146b817
+	github.com/dfuse-io/dfuse-ethereum v0.0.0-20210422202955-70e9291f20a5
 	github.com/dfuse-io/jsonpb v0.0.0-20200819202948-831ad3282037
 	github.com/dfuse-io/logging v0.0.0-20210109005628-b97a57253f70
 	github.com/eoscanada/bstream v1.7.0 // indirect
@@ -15,7 +15,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/stretchr/testify v1.6.1
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0
+	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9
 )
 
 replace github.com/gorilla/rpc => github.com/dfuse-io/rpc v1.2.1-0.20200218195849-d2251f4fe50d

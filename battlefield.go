@@ -84,9 +84,6 @@ func compareE(cmd *cobra.Command, args []string) error {
 	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
 
-	oracleBlocks := readActualBlocks(oracleDmlogFile)
-	zlog.Info("read all blocks from oracle dmlog file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleDmlogFile))
-
 	actualBlocks := readActualBlocks(actualDmlogFile)
 	zlog.Info("read all blocks from dmlog file", zap.Int("block_count", len(actualBlocks)), zap.String("file", actualDmlogFile))
 
@@ -186,9 +183,11 @@ func readActualBlocks(filePath string) []*pbcodec.Block {
 	cli.NoError(err, "Unable to open actual blocks file %q", filePath)
 	defer file.Close()
 
-	reader, err := codec.NewConsoleReader(file)
+	reader, err := codec.NewConsoleReader(make(chan string, 10000))
 	cli.NoError(err, "Unable to create console reader for actual blocks file %q", filePath)
 	defer reader.Close()
+
+	go reader.ProcessData(file)
 
 	var lastBlockRead *pbcodec.Block
 	for {
