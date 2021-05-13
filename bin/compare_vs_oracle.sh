@@ -64,6 +64,7 @@ main() {
 
     echo "Starting oracle (log `relpath $oracle_log`)"
     ($oracle_cmd \
+        --syncmode="full" \
         --rpc --rpcapi="personal,db,eth,net,web3,txpool" \
         --allow-insecure-unlock \
         --mine=false \
@@ -83,6 +84,7 @@ main() {
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_geth_cmd \
           --deep-mind \
+          --syncmode="full" \
           --rpc --rpcapi="personal,db,eth,net,web3" \
           --rpcport=8555 \
           --port=30313 \

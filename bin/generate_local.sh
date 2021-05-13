@@ -59,6 +59,7 @@ main() {
   if [[ $component == "all" || $component == "syncer_only" ]]; then
     ($syncer_geth_cmd \
       --deep-mind \
+      --syncmode="full" \
       --rpc --rpcapi="personal,db,eth,net,web3" \
       --rpcport=8555 \
       --port=30313 \
