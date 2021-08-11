@@ -1,4 +1,4 @@
-module github.com/dfuse-io/ethereum.battlefield
+module github.com/streamingfast/battlefield-ethereum
 
 go 1.14
 
