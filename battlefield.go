@@ -13,15 +13,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dfuse-io/dfuse-ethereum/codec"
-	pbcodec "github.com/dfuse-io/dfuse-ethereum/pb/dfuse/ethereum/codec/v1"
-	"github.com/dfuse-io/logging"
 	"github.com/golang/protobuf/ptypes"
 	pbts "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/cobra"
 	"github.com/streamingfast/battlefield-ethereum/cli"
 	"github.com/streamingfast/jsonpb"
+	"github.com/streamingfast/logging"
+	"github.com/streamingfast/sf-ethereum/codec"
+	pbcodec "github.com/streamingfast/sf-ethereum/pb/dfuse/ethereum/codec/v1"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
