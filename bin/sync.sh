@@ -39,7 +39,7 @@ function main {
 
     echo "Starting syncer process"
     $syncer_geth_cmd \
-        --deep-mind \
+        --firehose-deep-mind \
         --rpc --rpcapi="personal,db,eth,net,web3" \
         --rpcport=8555 \
         --port=30313 \

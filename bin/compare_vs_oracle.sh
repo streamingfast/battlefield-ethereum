@@ -83,7 +83,7 @@ main() {
     if [[ $chain == "geth" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_geth_cmd \
-          --deep-mind \
+          --firehose-deep-mind \
           --syncmode="full" \
           --rpc --rpcapi="personal,db,eth,net,web3" \
           --rpcport=8555 \
@@ -95,7 +95,7 @@ main() {
     else
       echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"
       ($syncer_oe_cmd \
-          --deep-mind \
+          --firehose-deep-mind \
           --chain="$syncer_oe_data_dir/chainspec.json" \
           --port=30313 \
           --network-id=1515 \

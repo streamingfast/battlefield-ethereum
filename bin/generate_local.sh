@@ -58,7 +58,7 @@ main() {
   echo "Starting Geth syncer process (log `relpath $syncer_geth_log`)"
   if [[ $component == "all" || $component == "syncer_only" ]]; then
     ($syncer_geth_cmd \
-      --deep-mind \
+      --firehose-deep-mind \
       --syncmode="full" \
       --rpc --rpcapi="personal,db,eth,net,web3" \
       --rpcport=8555 \
