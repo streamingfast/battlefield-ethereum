@@ -172,8 +172,8 @@ cleanup() {
   kill_pid "syncer" $syncer_pid
 
   # Clean up oracle changes
-  git clean -xfd $oracle_data_dir/geth > /dev/null
-  git restore $oracle_data_dir/geth
+  git clean -xfd "$oracle_data_dir/geth" > /dev/null
+  git restore "$oracle_data_dir/geth"
 
   # Let's kill everything else
   kill $( jobs -p ) &> /dev/null

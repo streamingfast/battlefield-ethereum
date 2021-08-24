@@ -44,6 +44,9 @@ recreate_data_directories() {
 
     if [[ $component != "oracle" ]]; then
       rm -rf "$data_dir"
+    else
+      # Bor is a transient folder copied from `geth` directly, get rid of it at start
+      rm -rf "$oracle_data_dir/bor"
     fi
 
     mkdir -p "$data_dir" &> /dev/null
@@ -63,6 +66,11 @@ recreate_data_directories() {
 
     if [[ $component == "syncer_oe" ]]; then
       cp -a "$BOOT_DIR/chainspec.json" "$data_dir/"
+    fi
+
+    # To support Polygon which uses `bor` for the data folder, we simply make a copy of it here
+    if [[ $component != "syncer_oe" ]]; then
+      cp -a "$data_dir/geth" "$data_dir/bor"
     fi
   done
 }
