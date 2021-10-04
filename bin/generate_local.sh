@@ -40,16 +40,13 @@ main() {
   echo "Starting miner process (log `relpath $miner_log`)"
   if [[ $component == "all" || $component == "miner_only" ]]; then
     ($miner_cmd \
-      --rpc --rpcapi="personal,db,eth,net,web3,txpool,miner" \
+      --http --http.api="personal,eth,net,web3,txpool,miner" \
       --allow-insecure-unlock \
       --mine \
-      --miner.gastarget=1 \
-      --miner.gastarget=94000000 \
       --miner.threads=1 \
       --port=30303 \
       --networkid=1515 \
-      --nodiscover \
-      --nousb $@ 1> $miner_deep_mind_log 2> $miner_log) &
+      --nodiscover $@ 1> $miner_deep_mind_log 2> $miner_log) &
     miner_pid=$!
 
     monitor "miner" $miner_pid $parent_pid "$miner_log" &
@@ -60,12 +57,11 @@ main() {
     ($syncer_geth_cmd \
       --firehose-deep-mind \
       --syncmode="full" \
-      --rpc --rpcapi="personal,db,eth,net,web3" \
-      --rpcport=8555 \
+      --http --http.api="personal,eth,net,web3" \
+      --http.port=8555 \
       --port=30313 \
       --networkid=1515 \
-      --nodiscover \
-      --nousb $@ 1> $syncer_geth_deep_mind_log 2> $syncer_geth_log) &
+      --nodiscover $@ 1> $syncer_geth_deep_mind_log 2> $syncer_geth_log) &
     syncer_geth_pid=$!
 
     monitor "syncer_geth" $syncer_geth_pid $parent_pid "$syncer_geth_log" &

@@ -65,17 +65,14 @@ main() {
     echo "Starting oracle (log `relpath $oracle_log`)"
     ($oracle_cmd \
         --syncmode="full" \
-        --rpc --rpcapi="personal,db,eth,net,web3,txpool" \
+        --http --http.api="personal,eth,net,web3,txpool" \
         --allow-insecure-unlock \
         --mine=false \
-        --miner.gastarget=1 \
-        --miner.gastarget=94000000 \
         --miner.threads=0 \
         --port=30303 \
         --networkid=1515 \
         --nodiscover \
-        --nocompaction \
-        --nousb $@ &> $oracle_log) &
+        --nocompaction $@ &> $oracle_log) &
     oracle_pid=$!
 
     monitor "oracle" $oracle_pid $parent_pid "$oracle_log" &
@@ -85,12 +82,11 @@ main() {
       ($syncer_geth_cmd \
           --firehose-deep-mind \
           --syncmode="full" \
-          --rpc --rpcapi="personal,db,eth,net,web3" \
-          --rpcport=8555 \
+          --http --http.api="personal,eth,net,web3" \
+          --http.port=8555 \
           --port=30313 \
           --networkid=1515 \
-          --nodiscover \
-          --nousb $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
+          --nodiscover $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
       syncer_pid=$!
     else
       echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"

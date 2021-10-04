@@ -40,12 +40,11 @@ function main {
     echo "Starting syncer process"
     $syncer_geth_cmd \
         --firehose-deep-mind \
-        --rpc --rpcapi="personal,db,eth,net,web3" \
-        --rpcport=8555 \
+        --http --http.api="personal,eth,net,web3" \
+        --http.port=8555 \
         --port=30313 \
         --networkid=1515 \
-        --nodiscover \
-        --nousb 1> $deep_mind_log
+        --nodiscover 1> $deep_mind_log
 }
 
 main $@
