@@ -37,10 +37,21 @@ main() {
 
   recreate_data_directories miner syncer_geth syncer_oe
 
+  is_legacy_geth="`is_geth_version $geth_bin 'Version: 1.9.1[0-3]'`"
+
+
+  miner_version_dependent_args="--http --http.api=personal,eth,net,web3,txpool,miner"
+  syncer_version_dependent_args="--http --http.api=personal,eth,net,web3 --http.port=8555"
+
+  if [[ "$is_legacy_geth" == "true" ]]; then
+    miner_version_dependent_args="--rpc --rpcapi=personal,eth,net,web3,txpool,miner"
+    syncer_version_dependent_args="--rpc --rpcapi=personal,eth,net,web3 --rpcport=8555"
+  fi
+
   echo "Starting miner process (log `relpath $miner_log`)"
   if [[ $component == "all" || $component == "miner_only" ]]; then
     ($miner_cmd \
-      --http --http.api="personal,eth,net,web3,txpool,miner" \
+      $miner_version_dependent_args \
       --allow-insecure-unlock \
       --mine \
       --miner.threads=1 \
@@ -55,10 +66,9 @@ main() {
   echo "Starting Geth syncer process (log `relpath $syncer_geth_log`)"
   if [[ $component == "all" || $component == "syncer_only" ]]; then
     ($syncer_geth_cmd \
+      $syncer_version_dependent_args \
       --firehose-deep-mind \
       --syncmode="full" \
-      --http --http.api="personal,eth,net,web3" \
-      --http.port=8555 \
       --port=30313 \
       --networkid=1515 \
       --nodiscover $@ 1> $syncer_geth_deep_mind_log 2> $syncer_geth_log) &

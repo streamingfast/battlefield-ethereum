@@ -26,6 +26,10 @@ main() {
     echo "and is upgraded on the fly by newer version like 1.9.25 so it's possible"
     echo "to validate all supported versions."
     echo ""
+    echo "For github.com/streamingfast/go-ethereum fork, you should be able to checkout"
+    echo "tag 'v1.9.10-dm', compile 'geth' using 'go install ./cmd/geth' and re-run this"
+    echo "script to properly update bootstrap data."
+    echo ""
     echo "The version check was performed on this output (geth version 2> /dev/null)"
     echo ""
     $geth_bin version 2>/dev/null
@@ -33,6 +37,8 @@ main() {
     echo "And by grepping for 'grep -E \"$grep_pattern\"'"
     exit 1
   fi
+
+  set -e
 
   if [[ $copy_only == "" ]]; then
     ./bin/generate_local.sh -l "$oracle_transaction_log"

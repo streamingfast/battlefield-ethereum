@@ -85,7 +85,19 @@ export async function addressOrDefault(
 export async function unlockAccount(eth: Eth, address: string) {
   // FIXME: All account must be created with an empty key
   //        Implement a read from env fallback to CLI if tty mechanism
-  const succeed = await eth.personal.unlockAccount(address, "", 5000)
+  const succeed = await eth.personal.unlockAccount(address, "", 5000).catch((error) => {
+    const fromAddress = process.env.FROM_ADDRESS
+    if (fromAddress) {
+      throw new Error(
+        `Unlock account failed, it appears you have environment 'FROM_ADDRESS' set, this is usually ` +
+          `to interact with an RPC node while in this mode we are locally unlocking passphrase, ` +
+          `double check your config: ${error}`
+      )
+    }
+
+    throw new Error(`Unlock account failed: ${error}`)
+  })
+
   if (!succeed) {
     throw new Error(`Unable to unlock account`)
   }

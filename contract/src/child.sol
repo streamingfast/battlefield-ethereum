@@ -62,4 +62,15 @@ contract Child {
         revertValue += revertValue + 1;
         revert("reverting");
     }
+
+    function logAndSucceed() public {
+        emit eventChildLog(msg.data, gasleft(), msg.sender, msg.sig);
+    }
+
+    function logAndRevert() public {
+        emit eventChildLog(msg.data, gasleft(), msg.sender, msg.sig);
+        revert("reverting");
+    }
+
+    event eventChildLog(bytes data, uint256 gas, address sender, bytes4 sig);
 }

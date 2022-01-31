@@ -1,5 +1,5 @@
 import BN from "bn.js"
-import { readContract, readContractBin, requireProcessEnv, setDefaultGasConfig } from "./common"
+import { readContractBin, requireProcessEnv, setDefaultGasConfig } from "./common"
 import { BattlefieldRunner, Network } from "./runner"
 import { join as pathJoin } from "path"
 
@@ -159,7 +159,25 @@ async function main() {
     () => runner.okContractSend("log: all", "main", mainContract.methods.logAll()),
     () => runner.okContractSend("log: all indexed", "main", mainContract.methods.logAllIndexed()),
     () => runner.okContractSend("log: all mixed", "main", mainContract.methods.logAllMixed()),
-    () => runner.okContractSend("log: multi", "main", mainContract.methods.logMulti())
+    () => runner.okContractSend("log: multi", "main", mainContract.methods.logMulti()),
+    () =>
+      runner.koContractSend(
+        "log: log in top-level trx and then top-leve trx fails",
+        "main",
+        mainContract.methods.logAndTopLevelFail()
+      ),
+    () =>
+      runner.okContractSend(
+        "log: log in sub-call that fails but top-level trx succeed",
+        "main",
+        mainContract.methods.logInSubFailedCallButTrxSucceed(childContractAddress)
+      ),
+    () =>
+      runner.koContractSend(
+        "log: log in sub-call that succeed but top-level trx fails",
+        "main",
+        mainContract.methods.logInSubSuccessCallButTrxFails(childContractAddress)
+      )
   )
 
   console.log()

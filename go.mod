@@ -9,10 +9,10 @@ require (
 	github.com/manifoldco/promptui v0.8.0
 	github.com/spf13/cobra v1.1.3
 	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0 // indirect
-	github.com/streamingfast/logging v0.0.0-20210811175431-f3b44b61606a // indirect
-	github.com/streamingfast/sf-ethereum v0.0.0-20211112052327-1d6a9ad0dd28 // indirect
+	github.com/streamingfast/logging v0.0.0-20211221170249-09a6ecb200a0 // indirect
+	github.com/streamingfast/sf-ethereum v0.0.0-20220127221423-9d1877d2b3af // indirect
 	github.com/stretchr/testify v1.7.1-0.20210427113832-6241f9ab9942
-	go.uber.org/zap v1.17.0
+	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 )
 

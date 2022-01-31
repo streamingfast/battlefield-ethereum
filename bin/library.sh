@@ -107,6 +107,17 @@ monitor() {
   done
 }
 
+is_geth_version() {
+  geth_bin="$1"
+  pattern="$2"
+
+  if ! $geth_bin version 2>/dev/null | grep -qE "$pattern"; then
+    echo "false"
+  else
+    echo "true"
+  fi
+}
+
 kill_pid() {
   name=$1
   pid=$2

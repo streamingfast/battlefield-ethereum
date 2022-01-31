@@ -29,21 +29,20 @@ contract Main {
     }
 
     function nestedNativeTransfer(address child, address payable to) public payable {
-        (bool success, ) =
-            child.call{value: msg.value}(abi.encodeWithSignature("nativeTransfer(address)", to));
+        (bool success, ) = child.call{value: msg.value}(
+            abi.encodeWithSignature("nativeTransfer(address)", to)
+        );
         require(success, "should have succeed");
     }
 
     function nestedFailtNativeTransfer(address child, address payable to) public payable {
-        (bool success, ) =
-            child.call{value: msg.value - 1}(
-                abi.encodeWithSignature("failNativeTransfer(address)", to)
-            );
+        (bool success, ) = child.call{value: msg.value - 1}(
+            abi.encodeWithSignature("failNativeTransfer(address)", to)
+        );
         require(!success, "should have failed");
-        (bool success2, ) =
-            child.call{value: msg.value - 2}(
-                abi.encodeWithSignature("nativeTransfer(address)", to)
-            );
+        (bool success2, ) = child.call{value: msg.value - 2}(
+            abi.encodeWithSignature("nativeTransfer(address)", to)
+        );
         require(success2, "should have succeed");
     }
 
@@ -69,7 +68,12 @@ contract Main {
         new ContractTopConstructorOkThenFailing();
     }
 
-    function contractCreate2(bytes memory code, uint256 transferAmount, uint256 salt, bool revertOnFailure) public {
+    function contractCreate2(
+        bytes memory code,
+        uint256 transferAmount,
+        uint256 salt,
+        bool revertOnFailure
+    ) public {
         address addr;
         assembly {
             addr := create2(transferAmount, add(code, 0x20), mload(code), salt)
@@ -106,10 +110,9 @@ contract Main {
         emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
 
         uint256 callGasLimit = 0x30000;
-        (bool success, ) =
-            child.call{gas: callGasLimit}(
-                abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
-            );
+        (bool success, ) = child.call{gas: callGasLimit}(
+            abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
+        );
         require(success, "should have succeed");
 
         callTreeIndex = 0xca110002;
@@ -246,33 +249,30 @@ contract Main {
     function nestedLowGas(address child) public {
         uint256 callGasLimit = 2500000;
 
-        (bool success, ) =
-            child.call{gas: callGasLimit}(
-                abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
-            );
+        (bool success, ) = child.call{gas: callGasLimit}(
+            abi.encodeWithSignature("recordGasLeft(uint256,uint256)", callGasLimit, gasleft())
+        );
         require(success, "should have succeed");
     }
 
     function deepNestedCallForLowestGas(address child, address grandChild) public view {
-        (bool success, ) =
-            child.staticcall(
-                abi.encodeWithSignature("nestedEmptyCallForLowestGas(address)", grandChild)
-            );
+        (bool success, ) = child.staticcall(
+            abi.encodeWithSignature("nestedEmptyCallForLowestGas(address)", grandChild)
+        );
         require(success, "should have succeed");
     }
 
     function deepNestedLowGas(address child, address grandChild) public {
         uint256 callGasLimit = 2500000;
 
-        (bool success, ) =
-            child.call{gas: callGasLimit}(
-                abi.encodeWithSignature(
-                    "nestedRecordGasLeft(address,uint256,uint256)",
-                    grandChild,
-                    callGasLimit,
-                    gasleft()
-                )
-            );
+        (bool success, ) = child.call{gas: callGasLimit}(
+            abi.encodeWithSignature(
+                "nestedRecordGasLeft(address,uint256,uint256)",
+                grandChild,
+                callGasLimit,
+                gasleft()
+            )
+        );
         require(success, "should have succeed");
     }
 
@@ -370,6 +370,27 @@ contract Main {
         emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, msg.value);
         emit eventLogAllIndexed(msg.data, gasleft(), msg.sender);
         emit eventLogMixedIndexed(msg.data, gasleft(), msg.sender, msg.sig, msg.value);
+    }
+
+    function logAndTopLevelFail() public payable {
+        emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
+        assert(false); // force failure
+    }
+
+    function logInSubFailedCallButTrxSucceed(address child) public payable {
+        emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
+
+        (bool success, ) = child.call(abi.encodeWithSignature("logAndRevert()"));
+        require(!success, "should have failed");
+    }
+
+    function logInSubSuccessCallButTrxFails(address child) public payable {
+        emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
+
+        (bool success, ) = child.call(abi.encodeWithSignature("logAndSucceed()"));
+        require(success, "should have succeed");
+
+        assert(false); // force failure
     }
 
     event eventLogEmpty();

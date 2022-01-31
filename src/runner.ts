@@ -23,6 +23,9 @@ import {
 } from "./deploy"
 import { readFileSync, writeFileSync, existsSync } from "fs"
 import Common from "ethereumjs-common"
+import debugFactory from "debug"
+
+const debug = debugFactory("battlefield:deploy")
 
 export type Network = "local" | "dev1" | "ropsten"
 
@@ -95,6 +98,7 @@ export class BattlefieldRunner {
   constructor(network: Network, options: RunnerOptions = {}) {
     this.network = network
     this.deploymentStateFile = ""
+    debug("Setting default deployer to 'deployRpcContract'")
     this.deployer = this.deployRpcContract
 
     this.options = options
@@ -109,6 +113,7 @@ export class BattlefieldRunner {
     }
 
     const setupExternalNetwork = () => {
+      debug("Setting deployer for external network to 'deployRawContract'")
       this.deployer = this.deployRawContract
 
       this.deploymentStateFile = pathJoin(
@@ -126,6 +131,7 @@ export class BattlefieldRunner {
 
     this.doForNetwork({
       local: () => {
+        debug("Setting deployer for local network to 'deployRpcContract'")
         this.deployer = this.deployRpcContract
       },
       dev1: setupExternalNetwork,
@@ -193,6 +199,7 @@ export class BattlefieldRunner {
       return this.deploymentState[contract]
     }
 
+    debug("About to deploy contract %s", contract)
     return await this.deployer(source, options)
   }
 
@@ -300,12 +307,12 @@ export class BattlefieldRunner {
     return this.koSend(tag, options, async (resolvedOptions) => {
       if (this.network == "local") {
         return {
-          promiEvent: (contractMethod.send({
+          promiEvent: contractMethod.send({
             from: resolvedOptions.from,
             gas: resolvedOptions.gas,
             gasPrice: resolvedOptions.gasPrice,
             value: resolvedOptions.value,
-          }) as any) as PromiEvent<TransactionReceipt>,
+          }) as any as PromiEvent<TransactionReceipt>,
         }
       }
 
@@ -376,7 +383,7 @@ export class BattlefieldRunner {
   ) {
     return this.okSend(tag, options, async (resolvedOptions) => {
       if (this.network == "local") {
-        return { promiEvent: (trx.send(resolvedOptions) as any) as PromiEvent<TransactionReceipt> }
+        return { promiEvent: trx.send(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
       }
 
       const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
@@ -397,7 +404,7 @@ export class BattlefieldRunner {
   ) {
     return this.koSend(tag, options, async (resolvedOptions) => {
       if (this.network == "local") {
-        return { promiEvent: (trx.send(resolvedOptions) as any) as PromiEvent<TransactionReceipt> }
+        return { promiEvent: trx.send(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
       }
 
       const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
@@ -413,9 +420,7 @@ export class BattlefieldRunner {
   async okSend(
     tag: string,
     options: TransactionConfig | undefined,
-    eventFactory: (
-      options: ResolvedSendOptions
-    ) => Promise<{
+    eventFactory: (options: ResolvedSendOptions) => Promise<{
       txHash?: Buffer
       promiEvent: PromiEvent<TransactionReceipt>
     }>
@@ -458,9 +463,7 @@ export class BattlefieldRunner {
   async koSend(
     tag: string,
     options: TransactionConfig | undefined,
-    eventFactory: (
-      options: ResolvedSendOptions
-    ) => Promise<{
+    eventFactory: (options: ResolvedSendOptions) => Promise<{
       txHash?: Buffer
       promiEvent: PromiEvent<TransactionReceipt>
     }>

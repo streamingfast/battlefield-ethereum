@@ -1,114 +1,117 @@
-## Transaction Log (Wed Mar 31 15:29:15 EDT 2021)
+## Transaction Log (Mon Jan 31 16:30:53 EST 2022)
 
 ```
 Geth
-Version: 1.9.10-stable
-Architecture: amd64
+Version: 1.9.10-dm-stable
+Architecture: arm64
 Protocol Versions: [64 63]
-Go Version: go1.15.5
+Go Version: go1.17.5
 Operating System: darwin
-GOPATH=/Users/maoueh/work
-GOROOT=/usr/local/Cellar/go/1.15.5/libexec
+GOPATH=
+GOROOT=/usr/local/go
 ```
 
 ```
-$ /Users/maoueh/work/dfuse/ethereum.battlefield/node_modules/.bin/ts-node src/main.ts
+$ /Users/maoueh/work/sf/ethereum.battlefield/node_modules/.bin/ts-node src/main.ts
 Configuration
  Network: local
  Default address: 0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab
  RPC Endpoint: http://localhost:8545
 
 Deploying contracts...
+Deploying contract 'Main'
 Deploying contract 'GrandChild'
 Deploying contract 'Child'
 Deploying contract 'Suicidal'
 Deploying contract 'Suicidal'
 Deploying contract 'UniswapV2Factory'
 Deploying contract 'EIP20Factory'
-Deploying contract 'Main'
 
 Contracts
-- main => 0x314F9285cbC3835e676974abDb7d2ab45ede3686
-- child => 0x702641c70a11E480F646Ed247d078c65aBAAC5DE
-- grandChild => 0x71940c77ccadaeA1238CEa27674E6253128ca177
-- suicidal1 => 0x929bc44BBD41Ca0e621dc50f7c7E3204Ce026258
-- suicidal2 => 0x9a77F7b94488d24EcA50FA0d144212AE48300A71
-- uniswap => 0xEC9C1fCee156bf34Ba4fB5D38C9CF09Df16723eF
-- erc20 => 0xCae819bff9B75c3D34971C19e005F2cAD7354E0f
+- main => 0x71940c77ccadaeA1238CEa27674E6253128ca177
+- child => 0x9a77F7b94488d24EcA50FA0d144212AE48300A71
+- grandChild => 0x702641c70a11E480F646Ed247d078c65aBAAC5DE
+- suicidal1 => 0xEC9C1fCee156bf34Ba4fB5D38C9CF09Df16723eF
+- suicidal2 => 0x929bc44BBD41Ca0e621dc50f7c7E3204Ce026258
+- uniswap => 0xCae819bff9B75c3D34971C19e005F2cAD7354E0f
+- erc20 => 0x314F9285cbC3835e676974abDb7d2ab45ede3686
 
 Transaction Links
-- main => http://localhost:8080/tx/0xad64d0aaa1ac251a2f2b96a2d8a381c6cff6e3074bce756fefaf9fae5823bc13
-- child => http://localhost:8080/tx/0xd264d659f4fbb2cb8c777f7d7732b25d9cc4fb040ed5164542b147629f9a3834
-- grandChild => http://localhost:8080/tx/0xf20c4598f6a67d8b8b2403a1b7d6771d17a060f4c3c2838f1152bc08e52cac6d
-- suicidal1 => http://localhost:8080/tx/0xa8115d64eb1975d8f4e86d7c46c2b1a2232e78a82ffded66f4ee28680f5cf000
-- suicidal2 => http://localhost:8080/tx/0x031c0bcbc9a78d878f2587fff81724b1e834e8f3a60d6a5941c2a6d39f3beac4
-- uniswap => http://localhost:8080/tx/0x846545936f239c675b6f253ecba2d375c60a4d43ba0bed64b133f6868e2b2757
-- erc20 => http://localhost:8080/tx/0x5f2c1ddb03b7b26c714d8c76bb2a8079aa72ce60236f1cf95890f28a6aeb084d
+- main => http://localhost:8080/tx/0xc19856a830470f3624e24a182319abe2a9a5192420e4be4a5c83a7626f4ade32
+- child => http://localhost:8080/tx/0x9fe4d14925d8a209cd9eb801f0e78b472df77524b6cc3348fd703e5cb9329343
+- grandChild => http://localhost:8080/tx/0xfeb7158587ff596ed583fcf3f935e627b2b0ac3c03b99f5b12f1d577ad8f57c4
+- suicidal1 => http://localhost:8080/tx/0xdb817b0906b80b24654db5951f054aa42b2ff282bf29f0a4c37b38af6f008236
+- suicidal2 => http://localhost:8080/tx/0xa8115d64eb1975d8f4e86d7c46c2b1a2232e78a82ffded66f4ee28680f5cf000
+- uniswap => http://localhost:8080/tx/0x10cda91467a48b5f485ac23dbc239505ee51956745615e27a75296cb85442617
+- erc20 => http://localhost:8080/tx/0x41b56fc456afb55331cac0566e4fdeddf8bc8e7277173b648032bdb91cf55bb9
 
 Performing pure 'transfer' transactions
-Pushed transaction 'http://localhost:8080/tx/0x5a215c52d4626649d12dd5ba78d6c04ab43e80d6a25e61f50d091562c2b06ad3' (pure transfer: existing address)
-Pushed transaction 'http://localhost:8080/tx/0xec6ab9a187d19e7d20c80508440f9cebdb308decf08a336e7e43b66298af433c' (pure transfer: existing address with custom gas limit & price)
-Pushed transaction 'http://localhost:8080/tx/0xe87498f857dd4b59caabf1e44acff923640ae1c85a450543780103352a136fc4' (pure transfer: inexistant address creates account and has an EVM call)
-Pushed transaction 'http://localhost:8080/tx/0xfa5fd01cee351d590ecf1e9b2e4da96dea8dc7c94d7b7a6256192177ba219a27' (pure transfer: transfer of 0 ETH to inexistant address generates a transaction with no EVM call)
+Pushed transaction 'http://localhost:8080/tx/0xa0f7c019246761e08a3fe202d2ab466a15bbc514faadfbf812b7c656cbbf2b5b' (pure transfer: existing address with custom gas limit & price)
+Pushed transaction 'http://localhost:8080/tx/0x210543b13f4db2ccb05d5d2bbc021da98f109a4b62efd3d81bc62b520d6eedb7' (pure transfer: transfer of 0 ETH to inexistant address generates a transaction with no EVM call)
+Pushed transaction 'http://localhost:8080/tx/0x59bba1b390bd42b23f5a33274f9fa1e61d8bb9cbabe53f9dc093c3f51a239361' (pure transfer: existing address)
+Pushed transaction 'http://localhost:8080/tx/0x8c12adffec09de534fc2db77f211088ecbd392f4dd4bb1fc37529b1b6ef94f88' (pure transfer: inexistant address creates account and has an EVM call)
 
 Performing 'transfer' through contract transactions
-Pushed transaction 'http://localhost:8080/tx/0xcd64315839ee8fb239d10d60221832fbf4ead3010cb7099ce53285b3e8d721c9' (transfer through contract: existing addresss)
-Pushed transaction 'http://localhost:8080/tx/0xfc3f1b4b6e6db6e634826370b3af3c953a43daccdb5e035028acaef8172a385a' (transfer through contract: inexistant address creates account and has an EVM call)
-Pushed transaction 'http://localhost:8080/tx/0x99c2e8b96d3e5f3ab8da61a6ce4e901ab305e32b920f1b00b92f69b4cd7dd3fd' (nested transfer through contract: existing addresss)
-Pushed transaction 'http://localhost:8080/tx/0x764bcda47407bdb64e496815ecddcaf3f8da3ad193bd0ccc4603bd06c893bdc8' (nested transfer through contract: inexistant address creates account and has an EVM call)
+Pushed transaction 'http://localhost:8080/tx/0xed1f07c0defb3a33499a80391e57ffd6d99e94816b1f6fa39fbf82762556a852' (transfer through contract: existing addresss)
+Pushed transaction 'http://localhost:8080/tx/0x519f1f2d835f1ee5e9e94875e454af03b8714ccf4362e92b9e00c1c5ba1c1fdc' (transfer through contract: inexistant address creates account and has an EVM call)
+Pushed transaction 'http://localhost:8080/tx/0xf6976a69490baeecfd7e51d6a942d40bce317bec8eea7dc7c2ead926c3ed3d36' (nested transfer through contract: existing addresss)
+Pushed transaction 'http://localhost:8080/tx/0xb31733649ada1e1e81fb6210e2b1fc4d29f8364c58392d251f54a418a9f23358' (nested transfer through contract: inexistant address creates account and has an EVM call)
 
 Performing failing 'transfer' through contract transactions
-Pushed transaction 'http://localhost:8080/tx/0x778f290a439aefa6bdf01da4af175e85d19e615bf868b84d21b61b30a2a570f5' (transfer through contract: existing addresss correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0x93c2f3195644c8ecfe652b1d6da391e552f2692296cabb187b660539decd887b' (transfer through contract: existing addresss correctly failed with EVM reverted without reason)
 
 Performing 'log' transactions
-Pushed transaction 'http://localhost:8080/tx/0x57f29ca7272d26bbef44a941c22334789da375eedc4e963d19695556505031c6' (log: empty)
-Pushed transaction 'http://localhost:8080/tx/0x59d5865a2cc6f3b7cc396c989d04f39740c9ccc702fe2c3b8e486f3e4585189f' (log: all mixed)
-Pushed transaction 'http://localhost:8080/tx/0x45c17b3efbcc7c25ebb9c38e815aa75900c8f3b8a0b9757237adf9cd240c998b' (log: all indexed)
-Pushed transaction 'http://localhost:8080/tx/0x527784b5e69a5c2acca1fc4cb45eec0268cdb350d4ba05ca739f7e4423052929' (log: single)
-Pushed transaction 'http://localhost:8080/tx/0x788a1803b209225850bb897d16a0cfbf3365e8995e9873fb2395da533d059833' (log: multi)
-Pushed transaction 'http://localhost:8080/tx/0x1a1975ccffdb80b87df680fc25162990c2afc928e3037d76be3b563efe4f7bce' (log: all)
+Pushed transaction 'http://localhost:8080/tx/0x7fbd7109d41c7a197e355f1dd351e7f142a6f02b4cfbe7d73b6a87ded438b624' (log: all)
+Pushed transaction 'http://localhost:8080/tx/0xa9790e78e556ea918632c953da17f917f91461f40bfc913fe7b5447c678709fd' (log: all indexed)
+Pushed transaction 'http://localhost:8080/tx/0x1e5e77911d7d5e865053aa449a31803d8493364022bb5d1caa95de6424bc471b' (log: all mixed)
+Pushed transaction 'http://localhost:8080/tx/0x1d8a232c40608baf09d38fcbfe84c0cfb857456411029acee68ad13fa9671396' (log: multi)
+Pushed transaction 'http://localhost:8080/tx/0x054518768a18d76e862dcfa9ec1784e581223106d49e936ad1623a7c9bd81838' (log: log in sub-call that fails but top-level trx succeed)
+Pushed transaction 'http://localhost:8080/tx/0xc987fb337407ab7ab4a8f98328918df99c474d01fd2bf5a8e2028fe0eb2d0650' (log: empty)
+Pushed transaction 'http://localhost:8080/tx/0xe84ba545418357c83b8adb40aa1a8e1f62f8ba23cdea027200a8cddfe4e21b0c' (log: single)
+Pushed transaction 'http://localhost:8080/tx/0x5ba1b908a75bf10dbd06bc320e44c8eb601784d5d9ae5d3d7c303f5c778b57df' (log: log in top-level trx and then top-leve trx fails correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0xfe92b3161c55eed15451420a90c7dcf1cee0ca338c71d725e77fbbea6c465042' (log: log in sub-call that succeed but top-level trx fails correctly failed with EVM reverted without reason)
 
 Performing 'storage & input' transactions
-Pushed transaction 'http://localhost:8080/tx/0x099882210325774de5ddb361e387c00811ef58eacb705e17f013f544ffa4cebb' (input: string equal 15)
-Pushed transaction 'http://localhost:8080/tx/0x448a769712b6492f47bcedfab00bfde8cf35e86d6d4757f38896bf2938633f60' (input: string equal 30)
-Pushed transaction 'http://localhost:8080/tx/0x5596e751166e79d8492353afaa8fa2d599e5e16a25ea22ec6233f5976c019b16' (storage: set long string)
-Pushed transaction 'http://localhost:8080/tx/0x41c434843aad5f100291aabc40f86cd85c4668c95db2b7e62329205687f49702' (input: string longer than 32)
-Pushed transaction 'http://localhost:8080/tx/0x8b8cc19f39922de621c25288f341967952c1de691f2d140d0ab19061baad37b4' (input: string equal 31)
-Pushed transaction 'http://localhost:8080/tx/0xdb5bdca2d50e746aeacb3a00bb48266ecd6f3b6a6d4acd780bb3ca14d1528b41' (input: string equal 32)
-Pushed transaction 'http://localhost:8080/tx/0x1777a07a3c88e399a82cff6f32d08abd03b175d0539d347e7245bdff7338692d' (input: string equal 0)
-Pushed transaction 'http://localhost:8080/tx/0x16ec32dc10a507d540d57a0663b9c8c343166a9e752b13e6f550d0a9901e9ce9' (storage: array update)
+Pushed transaction 'http://localhost:8080/tx/0x133377a50b90b0a4de41b2ad9b41c645d9b4dd665da0d787561a992aba1d551a' (input: string equal 32)
+Pushed transaction 'http://localhost:8080/tx/0xd75b6297d32e838ceb0bc78517fe534028ffe97039e2b1696d710caae7346cdc' (input: string equal 15)
+Pushed transaction 'http://localhost:8080/tx/0xa2495e9dc493e51c83e412870c9adad9d26924684b26f6bccffa3953c3987c8c' (storage: set long string)
+Pushed transaction 'http://localhost:8080/tx/0xa7049175b26f1c16f1e4cb64735cceaf2858f9f51f6ea69216cc5c079f34f6da' (input: string longer than 32)
+Pushed transaction 'http://localhost:8080/tx/0xd230cbede46eae54dfee57a0538cf213711840427e4f39e1b9268b030c0f1bb7' (input: string equal 0)
+Pushed transaction 'http://localhost:8080/tx/0x85ad6ea6aaa70a6c53bec7d35d2414fd27c5a06e2b301956e407eb01ccff9c66' (input: string equal 31)
+Pushed transaction 'http://localhost:8080/tx/0xf00d7986c0492997e19f9e9eaea99d7c4b13c6dbb34cbbc08780663b62827e2e' (input: string equal 30)
+Pushed transaction 'http://localhost:8080/tx/0x5655aa67566cad558bd07eff90d7ad5a00260924af78068c161dcc7bff1bb6cb' (storage: array update)
 
 Performing 'call' & 'constructor' transactions
-Pushed transaction 'http://localhost:8080/tx/0x37d35a2298f674899cb68da7f73908c63d9b4a17bea8f9046bf20e6950377a54' (call: contract creation from call, without a constructor)
-Pushed transaction 'http://localhost:8080/tx/0x059fa7842d98d25b10a765c65f50448aac299c4a473bf62782a9db7e9f1f71c0' (call: contract creation from call, with constructor)
-Pushed transaction 'http://localhost:8080/tx/0xc910ce064ad8a2fb27c4a1355233e7aa5d0d6787d7d01b47f45d5cb856649d08' (call: contract creation from call, recursive constructor, second will fail correctly failed with EVM reverted without reason)
-Pushed transaction 'http://localhost:8080/tx/0xb5bef9939023f5cc2f6b6130935e81ffaa21b68d742b687bc8578205038fdfce' (call: contract creation from call, with constructor that will fail correctly failed with EVM reverted without reason)
-Pushed transaction 'http://localhost:8080/tx/0x9c38586bb618673b38024b54eba4b5bb4f6d137a4431912f7729747e8f5e4ce5' (call: nested fail with native transfer)
-Pushed transaction 'http://localhost:8080/tx/0x6b5830a55af920e2f1cb41a0de3cdffff34d1865eaa016daaff6d54305452e44' (call: nested call revert state changes)
-Pushed transaction 'http://localhost:8080/tx/0x27a0d75f0d0ca0bfd5300c734c57ae9c3a10f3407fdcaa43e09a9bcb9911bd8f' (call: all pre-compiled)
-Pushed transaction 'http://localhost:8080/tx/0x286522fc1e97154e66c0b62a144558d1875d6c2aa5d08d48ed9df8fcccf45ed5' (call: complete call tree)
-Pushed transaction 'http://localhost:8080/tx/0x1e072288e9c81876595a8d19cede0717e51131112d4cf740e5d44b0afc8daee3' (call: contract with create2, inner call fail due to insufficent funds (transaction succeed though))
-Pushed transaction 'http://localhost:8080/tx/0xb9d3dd71781f7c4aeed9ee00d8b592cb3c977768ea1590f796f13d99392e92b5' (call: assert failure root call correctly failed with EVM reverted without reason)
-Pushed transaction 'http://localhost:8080/tx/0x6cbec29fda043e5e2b821eb9d30e89d5a55e0118dd6a77e77adc6420aa67ad0a' (call: assert failure on child call correctly failed with EVM reverted without reason)
-Pushed transaction 'http://localhost:8080/tx/0x140c3e2a23bdb1270116fe45bac60051e7fcc3146c179543dcf420121b45e9a1' (call: contract with create2, succesful creation)
-Pushed transaction 'http://localhost:8080/tx/0x6ddb1f706439032b43c00836c63c7b98c5fa26a83935960d6581e2c0d89adeca' (call: revert failure root call correctly failed with EVM reverted without reason)
-Pushed transaction 'http://localhost:8080/tx/0x69d03812174cc270095b14313f6c2da41e676c3809213d1db971036cf00e5be8' (call: contract with create2, inner call fail due to insufficent funds then revert correctly failed with EVM reverted without reason)
-Pushed transaction 'http://localhost:8080/tx/0x87b1cf1487fc03652e3bf192d22d08040fa694032d6319ddd4bf407694898f47' (call: contract fail just enough gas for intrinsic gas correctly failed with The contract code couldn't be stored, please check your gas limit.)
-Pushed transaction 'http://localhost:8080/tx/0x947e9c54a85b7265284b572cbd3f6cb29c56ddb0ed452b63857d3a2b30821fed' (call: contract fail not enough gas after code_copy correctly failed with The contract code couldn't be stored, please check your gas limit.)
-Pushed transaction 'http://localhost:8080/tx/0x541ec1da8ab3395167be73d939d535d7bc039d56f9b694b4699511a18465a0b5' (call: contract with create2, inner call fail due to address already exists (transaction succeed though))
-Pushed transaction 'http://localhost:8080/tx/0x3e2b2ff4333706043d0ecb6ca907e86955899b334acacc024db143f55c4e3be0' (call: contract with create2, inner call fail due to address already exists then revert correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0xc4319271e89aa681e58fc85cf59dbd6ec1eff55c9ff9834c932ca8dd971507ad' (call: contract creation from call, without a constructor)
+Pushed transaction 'http://localhost:8080/tx/0x688088b48d0a38d2544ac1952dfc6def0709425499092145d81c9641b1fa2319' (call: contract creation from call, with constructor)
+Pushed transaction 'http://localhost:8080/tx/0xa3fe31852a3d36d2855e17cdc2cc7af249985f4391e28221994d251b7b8c6212' (call: complete call tree)
+Pushed transaction 'http://localhost:8080/tx/0x4905584274490a5dbe04966156266de500088caad3ad07ea39cc130498e3d14d' (call: all pre-compiled)
+Pushed transaction 'http://localhost:8080/tx/0x0ac769d8707b662a653b48b5b7e3188556e377a5cab86e19dfcafe2298f677f0' (call: nested fail with native transfer)
+Pushed transaction 'http://localhost:8080/tx/0xf6ca6532e5523d74191b31995363464015bf1e7f5af181bab992cf7a11822c02' (call: revert failure root call correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0x89635e4d5191b366b82730697c6687d1037088f3023b35fb66595ddec3286722' (call: assert failure root call correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0x5e1096dab75276f32aabd4b9ef6d45a1d5dae4ee23651d4a7e319ddc7b8f6afd' (call: contract creation from call, recursive constructor, second will fail correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0x66773fbfd91e75b2c5e03e78e9a1151929d8cf6991d4f2797896b089d07a2c78' (call: contract with create2, inner call fail due to insufficent funds (transaction succeed though))
+Pushed transaction 'http://localhost:8080/tx/0x318fd4727f07bd7a58d22693eee32ff6203839ae9fbd10110d23a149dc1a232c' (call: nested call revert state changes)
+Pushed transaction 'http://localhost:8080/tx/0xc52c89b32a94c0eea36f0e6f6ea70b0c4ff4b0f2980f4f12f6d4c60ea0a53d84' (call: contract with create2, inner call fail due to insufficent funds then revert correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0x939363ce2f1c770dbb3686ffdae127c10058522dddb6389bd357755bb2f8ccd2' (call: assert failure on child call correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0x842ee942b4f348571c573b26d9a27bc2d748e163f266194bc9913788236ebb24' (call: contract creation from call, with constructor that will fail correctly failed with EVM reverted without reason)
+Pushed transaction 'http://localhost:8080/tx/0x3eb8198a9abd982cb33674c0d9f87ab478c7c4c50e4334a11fe6dfea435947f3' (call: contract with create2, succesful creation)
+Pushed transaction 'http://localhost:8080/tx/0x92ff37d3879e255c73415a671ee18160d2b71a9a0095220d45affdde562df6ba' (call: contract fail not enough gas after code_copy correctly failed with The contract code couldn't be stored, please check your gas limit.)
+Pushed transaction 'http://localhost:8080/tx/0xdec9f428ef179da6e70e3d9ee01eb2d8ca8741ef4a3b46b8116098001c31f31f' (call: contract fail just enough gas for intrinsic gas correctly failed with The contract code couldn't be stored, please check your gas limit.)
+Pushed transaction 'http://localhost:8080/tx/0xfe6a10bd02767acf5132c975c6facde10ef26c288f1d2b4a9822ae4eae0d563e' (call: contract with create2, inner call fail due to address already exists (transaction succeed though))
+Pushed transaction 'http://localhost:8080/tx/0xa0bdd45a191191d3da4471442b125963580b7b0c7b047b5f6205b0a972708dee' (call: contract with create2, inner call fail due to address already exists then revert correctly failed with EVM reverted without reason)
 
 Performing 'gas' transactions
-Pushed transaction 'http://localhost:8080/tx/0x5af34af6fc0cd006eef15abf6386a7da3de841c2b6c3cae946e611932fe1cfae' (gas: empty call for lowest gas)
-Pushed transaction 'http://localhost:8080/tx/0x94bc7c5cb61572f8005fadbdb0975f61af9ca8bc7fdd3764d76551c0af872260' (gas: nested low gas)
-Pushed transaction 'http://localhost:8080/tx/0x3f9ed2846073e0734410dc7a5b077477582f8fa35360379fbf421f0bf6d59da0' (gas: deep nested nested call for lowest gas)
-Pushed transaction 'http://localhost:8080/tx/0x16785f2e8c695beff82ac46422af136e169bc37f5aee499c04aa52e4ae9631dd' (gas: deep nested low gas)
-Pushed transaction 'http://localhost:8080/tx/0x091dcb52b0cd5cf954f91237a9fcb82a2980e9033b59f986add71d8c532487fc' (gas: deep nested call for lowest gas)
+Pushed transaction 'http://localhost:8080/tx/0x8a5ca3f1239c7b1681c186e7deb034ddb905c0382b338b6ab7c26ebda5fd1277' (gas: empty call for lowest gas)
+Pushed transaction 'http://localhost:8080/tx/0x7551241d6c93c450c00c877266a6ca48c0d3660c5756a265c5dd50200623a48d' (gas: nested low gas)
+Pushed transaction 'http://localhost:8080/tx/0xb30040ead819ddb2f93fbe2cd2518d95efd3d5454d5259a61cd2d1d0be987712' (gas: deep nested nested call for lowest gas)
+Pushed transaction 'http://localhost:8080/tx/0x3f20303dab88f0380b83ca957a1af9887e0fbba9fbbb918c76e0f3014418ebcd' (gas: deep nested call for lowest gas)
+Pushed transaction 'http://localhost:8080/tx/0xec4409667a337517fff16c24e0707a037b3e3a2b22a03ffef73bf0c2e1ff4a37' (gas: deep nested low gas)
 
 Performing 'suicide' transactions
-Pushed transaction 'http://localhost:8080/tx/0xc3e5ead695eae21a832753b79646df64a6540a28b35248c4156d1a7f50b59fba' (suicide: contract does not hold any Ether)
-Pushed transaction 'http://localhost:8080/tx/0x8b5e7e3d9a2d9d0ec1f8802f667b271068b80cb2b5593fb09ca9062e7a3882d4' (suicide: transfer some Ether to contract that's about to suicide itself)
-Pushed transaction 'http://localhost:8080/tx/0x06d0fa237690354b582e2a4b29428cb6924e4b63ba9f9f3dfbc9b66cf4da1950' (suicide: contract does hold some Ether, and refund owner on destruct)
+Pushed transaction 'http://localhost:8080/tx/0x7a2f3f76b0e561e8b166468ded9a1a72f02d0e7c0f9bdd5b116d5124edaaad72' (suicide: contract does not hold any Ether)
+Pushed transaction 'http://localhost:8080/tx/0xf12a3f9b6e206c1e5a7e8b390b29f6133aa06a7c1709fd636588711a12aa4799' (suicide: transfer some Ether to contract that's about to suicide itself)
+Pushed transaction 'http://localhost:8080/tx/0x2becdee3b9ce9dd9a7274b8f6881e8e8d119ab046502ea90688773ef545731c7' (suicide: contract does hold some Ether, and refund owner on destruct)
 
 Completed battlefield deployment (local)
 ```

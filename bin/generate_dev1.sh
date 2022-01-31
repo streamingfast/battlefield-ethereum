@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [[ "$DEBUG" == "true" ]]; then
+  set -x
+fi
+
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 source "$ROOT/bin/library.sh"

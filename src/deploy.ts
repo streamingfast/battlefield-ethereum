@@ -33,9 +33,11 @@ export async function deployContract(
   }
 ): Promise<DeploymentResult> {
   if (unlockAccount) {
+    debug("Unlocking account for contract %s: %O", contractName, fromAddress)
     await unlockAccount(web3.eth, fromAddress)
   }
 
+  debug("Reading contract %s info: %O", contractName, options.contractArguments)
   const contractMethod = await readContractInfo(web3, contractName, options.contractArguments)
   const { gasLimit, gasPrice } = getDefaultGasConfig()
 
@@ -69,7 +71,10 @@ export async function deployContractRaw(
     contractArguments: [],
   }
 ): Promise<DeploymentResult> {
+  debug("Reading contract %s info: %O", contractName, options.contractArguments)
   const contractMethod = await readContractInfo(web3, contractName, options.contractArguments)
+
+  debug("Creating raw transaction to deploy contract %s from %s", contractName, fromAddress)
   const tx = await createRawTx(web3, fromAddress, privateKey, {
     from: fromAddress,
     data: contractMethod.encodeABI(),

@@ -21,7 +21,7 @@ import (
 	"github.com/streamingfast/jsonpb"
 	"github.com/streamingfast/logging"
 	"github.com/streamingfast/sf-ethereum/codec"
-	pbcodec "github.com/streamingfast/sf-ethereum/pb/dfuse/ethereum/codec/v1"
+	pbcodec "github.com/streamingfast/sf-ethereum/pb/sf/ethereum/codec/v1"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
