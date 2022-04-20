@@ -20,8 +20,8 @@ import (
 	"github.com/streamingfast/battlefield-ethereum/cli"
 	"github.com/streamingfast/jsonpb"
 	"github.com/streamingfast/logging"
-	"github.com/streamingfast/sf-ethereum/codec"
-	pbcodec "github.com/streamingfast/sf-ethereum/pb/sf/ethereum/codec/v1"
+	"github.com/streamingfast/sf-ethereum/node-manager/codec"
+	pbethtype "github.com/streamingfast/sf-ethereum/types/pb/sf/ethereum/type/v1"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -47,7 +47,7 @@ func main() {
 			"From a new actual deep mind log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks",
 			Description(`
 				Runs dfuse Console Reader against <syncer_deepmind_log> argument and turns it into
-				an array of *pbcodec.Block. It then compares that to the Oracle's array of pbcodec.Block
+				an array of *pbethtype.Block. It then compares that to the Oracle's array of pbethtype.Block
 				that is stored in 'run/data/oracle/oracle.json' file.
 
 				If there is a diff between the two, a diff viewer is invoked. If the 'DIFF_EDITOR' is set,
@@ -140,7 +140,7 @@ func compareE(cmd *cobra.Command, args []string) error {
 	return errors.New("failed")
 }
 
-func writeActualBlocks(actualFile string, blocks []*pbcodec.Block) {
+func writeActualBlocks(actualFile string, blocks []*pbethtype.Block) {
 	buffer := bytes.NewBuffer(nil)
 	_, err := buffer.WriteString("[\n")
 	cli.NoError(err, "Unable to write list start")
@@ -176,25 +176,25 @@ func writeActualBlocks(actualFile string, blocks []*pbcodec.Block) {
 	cli.NoError(err, "Unable to write file %q", actualFile)
 }
 
-func readActualBlocks(filePath string) []*pbcodec.Block {
-	blocks := []*pbcodec.Block{}
+func readActualBlocks(filePath string) []*pbethtype.Block {
+	blocks := []*pbethtype.Block{}
 
 	file, err := os.Open(filePath)
 	cli.NoError(err, "Unable to open actual blocks file %q", filePath)
 	defer file.Close()
 
-	reader, err := codec.NewConsoleReader(make(chan string, 10000))
+	reader, err := codec.NewConsoleReader(zlog, make(chan string, 10000))
 	cli.NoError(err, "Unable to create console reader for actual blocks file %q", filePath)
 	defer reader.Close()
 
 	go reader.ProcessData(file)
 
-	var lastBlockRead *pbcodec.Block
+	var lastBlockRead *pbethtype.Block
 	for {
 		el, err := reader.Read()
-		if el != nil && el.(*pbcodec.Block) != nil {
-			block, ok := el.(*pbcodec.Block)
-			cli.Ensure(ok, `Read block is not a "pbcodec.Block" but should have been`)
+		if el != nil && el.(*pbethtype.Block) != nil {
+			block, ok := el.(*pbethtype.Block)
+			cli.Ensure(ok, `Read block is not a "pbethtype.Block" but should have been`)
 
 			lastBlockRead = sanitizeBlock(block)
 			blocks = append(blocks, lastBlockRead)
@@ -216,7 +216,7 @@ func readActualBlocks(filePath string) []*pbcodec.Block {
 	return blocks
 }
 
-func sanitizeBlock(block *pbcodec.Block) *pbcodec.Block {
+func sanitizeBlock(block *pbethtype.Block) *pbethtype.Block {
 	for _, trxTrace := range block.TransactionTraces {
 		for _, call := range trxTrace.Calls {
 			if call.FailureReason != "" {

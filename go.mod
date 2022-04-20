@@ -4,16 +4,17 @@ go 1.14
 
 require (
 	github.com/golang/protobuf v1.5.2
-	github.com/google/go-cmp v0.5.6
+	github.com/google/go-cmp v0.5.7
 	github.com/lithammer/dedent v1.1.0
 	github.com/manifoldco/promptui v0.8.0
-	github.com/spf13/cobra v1.1.3
-	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0 // indirect
-	github.com/streamingfast/logging v0.0.0-20211221170249-09a6ecb200a0 // indirect
-	github.com/streamingfast/sf-ethereum v0.0.0-20220127221423-9d1877d2b3af // indirect
+	github.com/spf13/cobra v1.3.0
+	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0
+	github.com/streamingfast/logging v0.0.0-20220405224725-2755dab2ce75
+	github.com/streamingfast/sf-ethereum v0.10.3-0.20220420134400-aeab27bf84ba
+	github.com/streamingfast/sf-ethereum/types v0.0.0-20220420134148-f5cf2f0b9367
 	github.com/stretchr/testify v1.7.1-0.20210427113832-6241f9ab9942
-	go.uber.org/zap v1.19.1
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	go.uber.org/zap v1.21.0
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 )
 
 replace github.com/gorilla/rpc => github.com/dfuse-io/rpc v1.2.1-0.20200218195849-d2251f4fe50d
