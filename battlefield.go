@@ -21,6 +21,7 @@ import (
 	"github.com/streamingfast/jsonpb"
 	"github.com/streamingfast/logging"
 	"github.com/streamingfast/sf-ethereum/node-manager/codec"
+	"github.com/streamingfast/sf-ethereum/types"
 	pbethtype "github.com/streamingfast/sf-ethereum/types/pb/sf/ethereum/type/v1"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -191,13 +192,17 @@ func readActualBlocks(filePath string) []*pbethtype.Block {
 
 	var lastBlockRead *pbethtype.Block
 	for {
-		el, err := reader.Read()
-		if el != nil && el.(*pbethtype.Block) != nil {
-			block, ok := el.(*pbethtype.Block)
-			cli.Ensure(ok, `Read block is not a "pbethtype.Block" but should have been`)
+		bsblk, err := reader.ReadBlock()
+		if bsblk != nil {
+			el, err := types.BlockDecoder(bsblk)
+			cli.NoError(err, "cannot decode bstream block to native protocol block")
+			if el != nil && el.(*pbethtype.Block) != nil {
+				block, ok := el.(*pbethtype.Block)
+				cli.Ensure(ok, `Read block is not a "pbethtype.Block" but should have been`)
 
-			lastBlockRead = sanitizeBlock(block)
-			blocks = append(blocks, lastBlockRead)
+				lastBlockRead = sanitizeBlock(block)
+				blocks = append(blocks, lastBlockRead)
+			}
 		}
 
 		if err == io.EOF {

@@ -10,8 +10,8 @@ require (
 	github.com/spf13/cobra v1.3.0
 	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0
 	github.com/streamingfast/logging v0.0.0-20220405224725-2755dab2ce75
-	github.com/streamingfast/sf-ethereum v0.10.3-0.20220420134400-aeab27bf84ba
-	github.com/streamingfast/sf-ethereum/types v0.0.0-20220420134148-f5cf2f0b9367
+	github.com/streamingfast/sf-ethereum v0.10.3-0.20220422161628-60422c7ec71a
+	github.com/streamingfast/sf-ethereum/types v0.0.0-20220422161445-84bed905eef7
 	github.com/stretchr/testify v1.7.1-0.20210427113832-6241f9ab9942
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292

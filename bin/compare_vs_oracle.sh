@@ -159,6 +159,7 @@ main() {
 
   if [[ $skip_comparison == false ]]; then
     echo "Launching blocks comparison task (and compiling Go code)"
+    go mod tidy
     go run battlefield.go compare "$syncer_deep_mind_log"
   fi
 }
