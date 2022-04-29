@@ -50,6 +50,14 @@ main() {
   if [[ $skip_generation == false ]]; then
     recreate_data_directories oracle syncer_geth syncer_oe
 
+    httpFlag="http"
+    httpFlagPrefix="http."
+    if `geth version 2>/dev/null | grep -Eq "1.9.10-dm"`; then
+      httpFlag="rpc"
+      httpFlagPrefix="rpc"
+    fi
+
+
     if [[ $chain == "geth" ]]; then
       # For the syncer to correctly work, it must uses the same genesis block `geth` data as what `oracle` uses
       # so let's ensure it's the case here.
@@ -65,7 +73,7 @@ main() {
     echo "Starting oracle (log `relpath $oracle_log`)"
     ($oracle_cmd \
         --syncmode="full" \
-        --http --http.api="personal,eth,net,web3,txpool" \
+        --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3,txpool" \
         --allow-insecure-unlock \
         --mine=false \
         --miner.threads=0 \
@@ -82,8 +90,8 @@ main() {
       ($syncer_geth_cmd \
           --firehose-deep-mind \
           --syncmode="full" \
-          --http --http.api="personal,eth,net,web3" \
-          --http.port=8555 \
+          --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3" \
+          --${httpFlagPrefix}port=8555 \
           --port=30313 \
           --networkid=1515 \
           --nodiscover $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
