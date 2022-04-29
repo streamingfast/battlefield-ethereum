@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/golang/protobuf v1.5.2
-	github.com/google/cel-go v0.4.1 // indirect
 	github.com/google/go-cmp v0.5.7
 	github.com/lithammer/dedent v1.1.0
 	github.com/manifoldco/promptui v0.8.0
