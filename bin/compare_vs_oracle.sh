@@ -52,7 +52,7 @@ main() {
 
     httpFlag="http"
     httpFlagPrefix="http."
-    if `geth version 2>/dev/null | grep -Eq "1.9.10-dm"`; then
+    if `geth version 2>/dev/null | grep -Eq "1.9.10-(fh[0-9]+|dm)"`; then
       httpFlag="rpc"
       httpFlagPrefix="rpc"
     fi
