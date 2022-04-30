@@ -63,6 +63,7 @@ main() {
       # so let's ensure it's the case here.
       rm -rf "$syncer_geth_data_dir/geth" &> /dev/null || true
       cp -a "$oracle_data_dir/genesis" "$syncer_geth_data_dir/geth"
+      cp -a "$oracle_data_dir/genesis/genesis.json" "$syncer_geth_data_dir"
       cp -a "$BOOT_DIR/static-nodes.json" "$syncer_geth_data_dir/geth"
     else
       # For the syncer to correctly work, it must uses the same chainspec as what `oracle` uses
@@ -89,6 +90,7 @@ main() {
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_geth_cmd \
           --firehose-deep-mind \
+          --firehose-deep-mind-genesis="$syncer_geth_genesis_json" \
           --syncmode="full" \
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3" \
           --${httpFlagPrefix}port=8555 \

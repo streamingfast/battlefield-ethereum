@@ -52,6 +52,7 @@ main() {
   rm -rf $oracle_data_dir/genesis &> /dev/null || true
 
   cp -a "$GENESIS_DIR/geth" "$oracle_data_dir/genesis"
+  cp -a "$BOOT_DIR/genesis.json" "$oracle_data_dir/genesis/genesis.json"
   cp -a "$BOOT_DIR/chainspec.json" "$oracle_data_dir/genesis/chainspec.json"
   cp -a $miner_data_dir/geth $oracle_data_dir
   cp $syncer_geth_deep_mind_log $oracle_deep_mind_log

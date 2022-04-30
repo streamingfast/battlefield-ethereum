@@ -39,7 +39,6 @@ main() {
 
   is_legacy_geth="`is_geth_version $geth_bin 'Version: 1.9.1[0-3]'`"
 
-
   miner_version_dependent_args="--http --http.api=personal,eth,net,web3,txpool,miner"
   syncer_version_dependent_args="--http --http.api=personal,eth,net,web3 --http.port=8555"
 
@@ -68,6 +67,7 @@ main() {
     ($syncer_geth_cmd \
       $syncer_version_dependent_args \
       --firehose-deep-mind \
+      --firehose-deep-mind-genesis="$syncer_geth_genesis_json" \
       --syncmode="full" \
       --port=30313 \
       --networkid=1515 \

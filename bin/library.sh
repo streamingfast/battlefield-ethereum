@@ -27,6 +27,7 @@ export oracle_cmd="$geth_bin --datadir ${oracle_data_dir}"
 export syncer_geth_data_dir="$RUN_DIR/data/syncer_geth"
 export syncer_geth_log="$RUN_DIR/syncer_geth.log"
 export syncer_geth_deep_mind_log="$RUN_DIR/syncer_geth.dmlog"
+export syncer_geth_genesis_json="$syncer_geth_data_dir/genesis.json"
 export syncer_geth_cmd="$geth_bin --datadir ${syncer_geth_data_dir}"
 
 export syncer_oe_data_dir="$RUN_DIR/data/syncer_oe"
@@ -54,6 +55,7 @@ recreate_data_directories() {
     if [[ $component == "miner" || $component == "syncer_geth" ]]; then
       cp -a "$KEYSTORE_DIR" "$data_dir/keystore"
       cp -a "$GENESIS_DIR/geth" "$data_dir/geth"
+      cp -a "$genesis_json" "$data_dir/"
     fi
 
     if [[ $component == "miner" || $component == "oracle" ]]; then

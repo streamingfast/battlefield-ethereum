@@ -40,6 +40,7 @@ function main {
     echo "Starting syncer process"
     $syncer_geth_cmd \
         --firehose-deep-mind \
+        --firehose-deep-mind-genesis="$ROOT"/boot/genesis.json \
         --http --http.api="personal,eth,net,web3" \
         --http.port=8555 \
         --port=30313 \
