@@ -86,9 +86,9 @@ main() {
     monitor "oracle" $oracle_pid $parent_pid "$oracle_log" &
 
     if [[ $chain == "geth" ]]; then
-      authFlags="--authrpc.port=9555"
-      if [[ `is_old_geth` == "true" ]]; then
-        authFlags=""
+      authFlags=""
+      if [[ `is_authrpc_supported` == "true" ]]; then
+        authFlags=" --authrpc.port=9555"
       fi
 
       echo "Starting syncer process (log `relpath $syncer_log`)"
@@ -99,9 +99,8 @@ main() {
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3" \
           --${httpFlagPrefix}port=8555 \
           --port=30313 \
-          --networkid=1515 \
-          --nodiscover \
-          "$authFlags" $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
+          --networkid=1515"$authFlags" \
+          --nodiscover $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
       syncer_pid=$!
     else
       echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"
