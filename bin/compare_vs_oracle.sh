@@ -57,7 +57,6 @@ main() {
       httpFlagPrefix="rpc"
     fi
 
-
     if [[ $chain == "geth" ]]; then
       # For the syncer to correctly work, it must uses the same genesis block `geth` data as what `oracle` uses
       # so let's ensure it's the case here.
@@ -87,6 +86,11 @@ main() {
     monitor "oracle" $oracle_pid $parent_pid "$oracle_log" &
 
     if [[ $chain == "geth" ]]; then
+      authFlags="--authrpc.port=9555"
+      if [[ `is_old_geth` == "true" ]]; then
+        authFlags=""
+      fi
+
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_geth_cmd \
           --firehose-deep-mind \
@@ -96,7 +100,8 @@ main() {
           --${httpFlagPrefix}port=8555 \
           --port=30313 \
           --networkid=1515 \
-          --nodiscover $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
+          --nodiscover \
+          "$authFlags" $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
       syncer_pid=$!
     else
       echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"
