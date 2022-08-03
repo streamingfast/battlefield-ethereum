@@ -36,6 +36,14 @@ export syncer_oe_cmd="$oe_bin --base-path=${syncer_oe_data_dir}"
 
 export bootstrap_data_dir="$RUN_DIR/data/bootstrap"
 
+is_old_geth() {
+  if geth version 2>/dev/null | grep -Eq "1.9.10-(fh[0-9]+|dm)"; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
 recreate_data_directories() {
   local component
   for component in "$@"; do
