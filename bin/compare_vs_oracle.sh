@@ -87,7 +87,7 @@ main() {
     if [[ $chain == "geth" ]]; then
       authFlags=""
       if [[ `is_authrpc_supported` == "true" ]]; then
-        authFlags=" --authrpc.port=9555"
+        authFlags="--authrpc.port=9555"
       fi
 
       echo "Starting syncer process (log `relpath $syncer_log`)"
@@ -97,7 +97,8 @@ main() {
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3" \
           --${httpFlagPrefix}port=8555 \
           --port=30313 \
-          --networkid=1515"$authFlags" \
+          --networkid=1515 \
+          "$authFlags" \
           --nodiscover $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
       syncer_pid=$!
     else

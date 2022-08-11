@@ -37,7 +37,7 @@ export syncer_oe_cmd="$oe_bin --base-path=${syncer_oe_data_dir}"
 export bootstrap_data_dir="$RUN_DIR/data/bootstrap"
 
 is_authrpc_supported() {
-  if geth version 2>/dev/null | grep -Eq "1\.10\.20-(fh[0-9]+|dm)"; then
+  if geth version 2>/dev/null | grep -Eq "1\.[1-9][0-9]\.[2-9][0-9]-(fh[0-9]+|dm)"; then
     echo "true"
   else
     echo "false"
