@@ -6,7 +6,7 @@ all aspects of our Ethereum instrumentation.
 This repository assumes you have the following tool in available
 globally through your terminal:
 
-- geth (Deep mind enabled)
+- geth (Firehose enabled)
 - yarn (1.13+)
 - curl
 - jq
@@ -29,14 +29,14 @@ automatically. To compile all contracts, run:
 Then, you run the `generate_local.sh` script which will compile the
 smart contracts, launch a miner and syncer Geth processes,
 execute a bunch of transactions and collect the logs of
-all this and more specially, the deep mind logs for future
+all this and more specially, the Firehose logs for future
 analysis:
 
     ./bin/generate_local.sh
 
 ### Comparing New Version of Geth
 
-If you want to ensure that a new version of our Geth Deep Mind
+If you want to ensure that a new version of our Geth Firehose
 aware binary is valid against the previously saved valid baseline
 version called the `oracle`, ensure that `geth` in your `PATH` points
 to the new version to test then run:
@@ -60,9 +60,9 @@ need to accept the differences since all transaction ids will be different than 
 
 To re-generate, we will use the latest Geth tagged version that was known to have pass
 the compare step above. By using this latest known version, we ensure to generate the
-same set of deep mind logs but with extended transactions.
+same set of Firehose logs but with extended transactions.
 
-**Important** If you are updating the coverage to test untested part of some deep mind
+**Important** If you are updating the coverage to test untested part of some Firehose
 instrumentation, you should manually inspect the generated logs to ensure they fit the
 expectations.
 
@@ -96,7 +96,7 @@ file that tells it how to talk to the miner process.
 
 The syncer then simply sync from the miner each time new
 blocks are propagated through the network. The syncer is
-deep mind aware and generates the deep mind log.
+Firehose aware and generates the Firehose log.
 
 #### Private Keys
 

@@ -59,7 +59,7 @@ main() {
 
   # Remove TRX_ENTER_POOL elements (we do not compare them currently)
   temporary_deep_mind_log=$(mktemp)
-  grep -Ev "^DMLOG TRX_ENTER_POOL" "$oracle_deep_mind_log" > "$temporary_deep_mind_log" && mv "$temporary_deep_mind_log" "$oracle_deep_mind_log" &> /dev/null
+  grep -Ev "^FIRE TRX_ENTER_POOL" "$oracle_deep_mind_log" > "$temporary_deep_mind_log" && mv "$temporary_deep_mind_log" "$oracle_deep_mind_log" &> /dev/null
 
   echo "Launching blocks generation task (and compiling Go code)"
   go run battlefield.go generate

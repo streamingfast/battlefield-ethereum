@@ -86,15 +86,16 @@ main() {
     monitor "oracle" $oracle_pid $parent_pid "$oracle_log" &
 
     if [[ $chain == "geth" ]]; then
-      authFlags=""
+      # We define it to a flag already defined otherwise the empty string is caught as an argument!
+      authFlags="--networkid=1515"
       if [[ `is_authrpc_supported` == "true" ]]; then
         authFlags="--authrpc.port=9555"
       fi
 
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_geth_cmd \
-          --firehose-deep-mind \
-          --firehose-deep-mind-genesis="$syncer_geth_genesis_json" \
+          --firehose-enabled \
+          --firehose-genesis-file="$syncer_geth_genesis_json" \
           --syncmode="full" \
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3" \
           --${httpFlagPrefix}port=8555 \
@@ -106,7 +107,7 @@ main() {
     else
       echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"
       ($syncer_oe_cmd \
-          --firehose-deep-mind \
+          --firehose-enabled \
           --chain="$syncer_oe_data_dir/chainspec.json" \
           --port=30313 \
           --network-id=1515 \
@@ -135,7 +136,7 @@ main() {
 
     set +e
     while true; do
-      latest=`cat "$syncer_deep_mind_log" | grep -E "DMLOG FINALIZE_BLOCK [0-9]+" | tail -n1 | grep -Eo [0-9]+`
+      latest=`cat "$syncer_deep_mind_log" | grep -E "FIRE FINALIZE_BLOCK [0-9]+" | tail -n1 | grep -Eo [0-9]+`
       if [[ $latest -ge $blockNum ]]; then
         echo ""
         break
@@ -206,9 +207,9 @@ usage() {
   echo ""
   echo "The <chain> parameter must be either 'geth' (Geth) or 'oe' (OpenEthereum)."
   echo ""
-  echo "Run a comparison between oracle reference files and a new Deep Mind version."
+  echo "Run a comparison between oracle reference files and a new Firehose version."
   echo "This scripts starts a non-mining miner and let a syncer with syncs with it."
-  echo "It then runs necessary comparison between the old and new deep mind files to"
+  echo "It then runs necessary comparison between the old and new Firehose files to"
   echo "ensure we have the same output."
   echo ""
   echo "The oracle is always started with Geth, best version for Oracle is 1.9.10"

@@ -66,8 +66,8 @@ main() {
   if [[ $component == "all" || $component == "syncer_only" ]]; then
     ($syncer_geth_cmd \
       $syncer_version_dependent_args \
-      --firehose-deep-mind \
-      --firehose-deep-mind-genesis="$syncer_geth_genesis_json" \
+      --firehose-enabled \
+      --firehose-genesis-file="$syncer_geth_genesis_json" \
       --syncmode="full" \
       --port=30313 \
       --networkid=1515 \

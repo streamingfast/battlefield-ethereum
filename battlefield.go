@@ -20,9 +20,9 @@ import (
 	"github.com/streamingfast/battlefield-ethereum/cli"
 	"github.com/streamingfast/jsonpb"
 	"github.com/streamingfast/logging"
-	"github.com/streamingfast/sf-ethereum/node-manager/codec"
+	"github.com/streamingfast/sf-ethereum/codec"
 	"github.com/streamingfast/sf-ethereum/types"
-	pbethtype "github.com/streamingfast/sf-ethereum/types/pb/sf/ethereum/type/v1"
+	pbeth "github.com/streamingfast/sf-ethereum/types/pb/sf/ethereum/type/v2"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -41,14 +41,14 @@ func main() {
 	Run("battlefield", "Battlefield binary",
 		Command(generateE,
 			"generate",
-			"From the oracle deep mind log file, generate the oracle dfuse blocks",
+			"From the oracle Firehose log file, generate the oracle dfuse blocks",
 		),
 		Command(compareE,
-			"compare <syncer_deepmind_log>",
-			"From a new actual deep mind log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks",
+			"compare <syncer_firehose_log>",
+			"From a new actual Firehose log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks",
 			Description(`
-				Runs dfuse Console Reader against <syncer_deepmind_log> argument and turns it into
-				an array of *pbethtype.Block. It then compares that to the Oracle's array of pbethtype.Block
+				Runs dfuse Console Reader against <syncer_firehose_log> argument and turns it into
+				an array of *pbeth.Block. It then compares that to the Oracle's array of pbeth.Block
 				that is stored in 'run/data/oracle/oracle.json' file.
 
 				If there is a diff between the two, a diff viewer is invoked. If the 'DIFF_EDITOR' is set,
@@ -141,7 +141,7 @@ func compareE(cmd *cobra.Command, args []string) error {
 	return errors.New("failed")
 }
 
-func writeActualBlocks(actualFile string, blocks []*pbethtype.Block) {
+func writeActualBlocks(actualFile string, blocks []*pbeth.Block) {
 	buffer := bytes.NewBuffer(nil)
 	_, err := buffer.WriteString("[\n")
 	cli.NoError(err, "Unable to write list start")
@@ -177,8 +177,8 @@ func writeActualBlocks(actualFile string, blocks []*pbethtype.Block) {
 	cli.NoError(err, "Unable to write file %q", actualFile)
 }
 
-func readActualBlocks(filePath string) []*pbethtype.Block {
-	blocks := []*pbethtype.Block{}
+func readActualBlocks(filePath string) []*pbeth.Block {
+	blocks := []*pbeth.Block{}
 
 	file, err := os.Open(filePath)
 	cli.NoError(err, "Unable to open actual blocks file %q", filePath)
@@ -190,15 +190,15 @@ func readActualBlocks(filePath string) []*pbethtype.Block {
 
 	go reader.ProcessData(file)
 
-	var lastBlockRead *pbethtype.Block
+	var lastBlockRead *pbeth.Block
 	for {
 		bsblk, err := reader.ReadBlock()
 		if bsblk != nil {
 			el, err := types.BlockDecoder(bsblk)
 			cli.NoError(err, "cannot decode bstream block to native protocol block")
-			if el != nil && el.(*pbethtype.Block) != nil {
-				block, ok := el.(*pbethtype.Block)
-				cli.Ensure(ok, `Read block is not a "pbethtype.Block" but should have been`)
+			if el != nil && el.(*pbeth.Block) != nil {
+				block, ok := el.(*pbeth.Block)
+				cli.Ensure(ok, `Read block is not a "pbeth.Block" but should have been`)
 
 				lastBlockRead = sanitizeBlock(block)
 				blocks = append(blocks, lastBlockRead)
@@ -221,7 +221,7 @@ func readActualBlocks(filePath string) []*pbethtype.Block {
 	return blocks
 }
 
-func sanitizeBlock(block *pbethtype.Block) *pbethtype.Block {
+func sanitizeBlock(block *pbeth.Block) *pbeth.Block {
 	for _, trxTrace := range block.TransactionTraces {
 		for _, call := range trxTrace.Calls {
 			if call.FailureReason != "" {
