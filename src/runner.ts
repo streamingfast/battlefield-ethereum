@@ -155,8 +155,8 @@ export class BattlefieldRunner {
             "mainnet",
             {
               name: "dev1",
-              networkId: 1,
-              chainId: 123,
+              networkId: parseInt(process.env["NETWORK_ID"] || "1"),
+              chainId: parseInt(process.env["CHAIN_ID"] || "123"),
             },
             "byzantium"
           ),

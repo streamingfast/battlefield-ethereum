@@ -7,7 +7,7 @@ GETH_BIN=${GETH_BIN:-"geth"}
 
 syncer_init_log="$ROOT/syncer.init.log"
 syncer_log="$ROOT/syncer.log"
-deep_mind_log="$ROOT/deep-mind.log"
+firehose_log="$ROOT/firehose.log"
 syncer_data_dir="$ROOT/data/syncer"
 syncer_geth_cmd="$GETH_BIN --datadir ${syncer_data_dir}"
 
@@ -45,7 +45,7 @@ function main {
         --http.port=8555 \
         --port=30313 \
         --networkid=1515 \
-        --nodiscover 1> $deep_mind_log
+        --nodiscover 1> $firehose_log
 }
 
 main $@

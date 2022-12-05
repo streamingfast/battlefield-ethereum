@@ -63,11 +63,11 @@ func generateE(cmd *cobra.Command, args []string) error {
 	currentDir, err := os.Getwd()
 	cli.NoError(err, "unable to get working directory")
 
-	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
+	oracleFirehoseLogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.firelog")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
 
-	oracleBlocks := readActualBlocks(oracleDmlogFile)
-	zlog.Info("read all blocks from dmlog file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleDmlogFile))
+	oracleBlocks := readActualBlocks(oracleFirehoseLogFile)
+	zlog.Info("read all blocks from Firehose log file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleFirehoseLogFile))
 
 	fmt.Printf("Writing oracle blocks to disk...")
 	writeActualBlocks(oracleJSONFile, oracleBlocks)
@@ -80,13 +80,13 @@ func compareE(cmd *cobra.Command, args []string) error {
 	currentDir, err := os.Getwd()
 	cli.NoError(err, "unable to get working directory")
 
-	actualDmlogFile := args[0]
-	actualJSONFile := strings.ReplaceAll(actualDmlogFile, ".dmlog", ".json")
-	oracleDmlogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.dmlog")
+	actualFirehoseLogFile := args[0]
+	actualJSONFile := strings.ReplaceAll(actualFirehoseLogFile, ".firelog", ".json")
+	oracleFirehoseLogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.firelog")
 	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
 
-	actualBlocks := readActualBlocks(actualDmlogFile)
-	zlog.Info("read all blocks from dmlog file", zap.Int("block_count", len(actualBlocks)), zap.String("file", actualDmlogFile))
+	actualBlocks := readActualBlocks(actualFirehoseLogFile)
+	zlog.Info("read all blocks from Firehose log file", zap.Int("block_count", len(actualBlocks)), zap.String("file", actualFirehoseLogFile))
 
 	writeActualBlocks(actualJSONFile, actualBlocks)
 
@@ -127,9 +127,9 @@ func compareE(cmd *cobra.Command, args []string) error {
 	acceptDiff, wasAnswered := cli.AskConfirmation(`Do you want to accept %q as the new %q right now`, actualJSONFile, oracleJSONFile)
 	if wasAnswered && acceptDiff {
 		cli.CopyFile(actualJSONFile, oracleJSONFile)
-		cli.CopyFile(actualDmlogFile, oracleDmlogFile)
+		cli.CopyFile(actualFirehoseLogFile, oracleFirehoseLogFile)
 
-		fmt.Printf("The file %q (and its '.dmlog' sibling) is now the new active oracle data\n", actualJSONFile)
+		fmt.Printf("The file %q (and its '.firelog' sibling) is now the new active oracle data\n", actualJSONFile)
 		return nil
 	}
 

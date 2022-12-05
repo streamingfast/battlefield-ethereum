@@ -12,6 +12,8 @@
 /run/data/oracle/history
 /run/miner.dmlog
 /run/syncer*.dmlog
+/run/miner.firelog
+/run/syncer*.firelog
 /run/syncer*.json
 /run/*.log
 /node_modules

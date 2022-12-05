@@ -41,10 +41,10 @@ main() {
 
   if [[ $chain == "geth" ]]; then
       syncer_log="$syncer_geth_log"
-      syncer_deep_mind_log="$syncer_geth_deep_mind_log"
+      syncer_firehose_log="$syncer_geth_firehose_log"
   else
       syncer_log="$syncer_oe_log"
-      syncer_deep_mind_log="$syncer_oe_deep_mind_log"
+      syncer_firehose_log="$syncer_oe_firehose_log"
   fi
 
   if [[ $skip_generation == false ]]; then
@@ -102,7 +102,7 @@ main() {
           --port=30313 \
           --networkid=1515 \
           "$authFlags" \
-          --nodiscover $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
+          --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
     else
       echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"
@@ -113,7 +113,7 @@ main() {
           --network-id=1515 \
           --jsonrpc-port=8555 \
           --jsonrpc-apis=debug,web3,net,eth,parity,parity,parity_pubsub,parity_accounts,parity_set \
-          $@ 1> $syncer_deep_mind_log 2> $syncer_log) &
+          $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
     fi
 
@@ -136,7 +136,7 @@ main() {
 
     set +e
     while true; do
-      latest=`cat "$syncer_deep_mind_log" | grep -E "FIRE FINALIZE_BLOCK [0-9]+" | tail -n1 | grep -Eo [0-9]+`
+      latest=`cat "$syncer_firehose_log" | grep -E "FIRE FINALIZE_BLOCK [0-9]+" | tail -n1 | grep -Eo [0-9]+`
       if [[ $latest -ge $blockNum ]]; then
         echo ""
         break
@@ -148,26 +148,26 @@ main() {
   fi
 
   echo "Statistics"
-  echo " Blocks: `cat "$syncer_deep_mind_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
-  echo " Trxs: `cat "$syncer_deep_mind_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
-  echo " Calls: `cat "$syncer_deep_mind_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
+  echo " Blocks: `cat "$syncer_firehose_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
+  echo " Trxs: `cat "$syncer_firehose_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
+  echo " Calls: `cat "$syncer_firehose_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
   echo ""
-  echo " Account w/o Code: `cat "$syncer_deep_mind_log" | grep "ACCOUNT_WITHOUT_CODE" | wc -l | tr -d ' '`"
-  echo " Balance Changes: `cat "$syncer_deep_mind_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Created Accounts: `cat "$syncer_deep_mind_log" | grep "CREATED_ACCOUNT" | wc -l | tr -d ' '`"
-  echo " Code Changes: `cat "$syncer_deep_mind_log" | grep "CODE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Event Logs: `cat "$syncer_deep_mind_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
-  echo " Gas Changes: `cat "$syncer_deep_mind_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
-  echo " Gas Events: `cat "$syncer_deep_mind_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
-  echo " Keccak Operations: `cat "$syncer_deep_mind_log" | grep "EVM_KECCAK" | wc -l | tr -d ' '`"
-  echo " Nonce Changes: `cat "$syncer_deep_mind_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Suicide Changes: `cat "$syncer_deep_mind_log" | grep "SUICIDE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Storage Changes: `cat "$syncer_deep_mind_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Account w/o Code: `cat "$syncer_firehose_log" | grep "ACCOUNT_WITHOUT_CODE" | wc -l | tr -d ' '`"
+  echo " Balance Changes: `cat "$syncer_firehose_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Created Accounts: `cat "$syncer_firehose_log" | grep "CREATED_ACCOUNT" | wc -l | tr -d ' '`"
+  echo " Code Changes: `cat "$syncer_firehose_log" | grep "CODE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Event Logs: `cat "$syncer_firehose_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
+  echo " Gas Changes: `cat "$syncer_firehose_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
+  echo " Gas Events: `cat "$syncer_firehose_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
+  echo " Keccak Operations: `cat "$syncer_firehose_log" | grep "EVM_KECCAK" | wc -l | tr -d ' '`"
+  echo " Nonce Changes: `cat "$syncer_firehose_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Suicide Changes: `cat "$syncer_firehose_log" | grep "SUICIDE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Storage Changes: `cat "$syncer_firehose_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
   echo ""
 
   echo "Inspect log files"
-  echo " Oracle Deep Mind logs: cat `relpath "$oracle_deep_mind_log"`"
-  echo " Syncer Deep Mind logs: cat `relpath "$syncer_deep_mind_log"`"
+  echo " Oracle Firehose logs: cat `relpath "$oracle_firehose_log"`"
+  echo " Syncer Firehose logs: cat `relpath "$syncer_firehose_log"`"
   echo ""
   echo " Oracle logs (geth): cat `relpath "$oracle_log"`"
   echo " Syncer logs (geth): cat `relpath "$syncer_log"`"
@@ -176,7 +176,7 @@ main() {
   if [[ $skip_comparison == false ]]; then
     echo "Launching blocks comparison task (and compiling Go code)"
     go mod tidy
-    go run battlefield.go compare "$syncer_deep_mind_log"
+    go run battlefield.go compare "$syncer_firehose_log"
   fi
 }
 

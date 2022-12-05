@@ -47,7 +47,7 @@ main() {
   recreate_data_directories oracle
 
   echo ""
-  echo "Copying references file (genesis, data, .dmlog) to oracle files..."
+  echo "Copying references file (genesis, data, .firelog) to oracle files..."
   rm -rf $oracle_data_dir/geth &> /dev/null || true
   rm -rf $oracle_data_dir/genesis &> /dev/null || true
 
@@ -55,11 +55,11 @@ main() {
   cp -a "$BOOT_DIR/genesis.json" "$oracle_data_dir/genesis/genesis.json"
   cp -a "$BOOT_DIR/chainspec.json" "$oracle_data_dir/genesis/chainspec.json"
   cp -a $miner_data_dir/geth $oracle_data_dir
-  cp $syncer_geth_deep_mind_log $oracle_deep_mind_log
+  cp $syncer_geth_firehose_log $oracle_firehose_log
 
   # Remove TRX_ENTER_POOL elements (we do not compare them currently)
-  temporary_deep_mind_log=$(mktemp)
-  grep -Ev "^FIRE TRX_ENTER_POOL" "$oracle_deep_mind_log" > "$temporary_deep_mind_log" && mv "$temporary_deep_mind_log" "$oracle_deep_mind_log" &> /dev/null
+  temporary_firehose_log=$(mktemp)
+  grep -Ev "^FIRE TRX_ENTER_POOL" "$oracle_firehose_log" > "$temporary_firehose_log" && mv "$temporary_firehose_log" "$oracle_firehose_log" &> /dev/null
 
   echo "Launching blocks generation task (and compiling Go code)"
   go run battlefield.go generate

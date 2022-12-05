@@ -56,7 +56,7 @@ main() {
       --miner.threads=1 \
       --port=30303 \
       --networkid=1515 \
-      --nodiscover $@ 1> $miner_deep_mind_log 2> $miner_log) &
+      --nodiscover $@ 1> $miner_firehose_log 2> $miner_log) &
     miner_pid=$!
 
     monitor "miner" $miner_pid $parent_pid "$miner_log" &
@@ -71,7 +71,7 @@ main() {
       --syncmode="full" \
       --port=30313 \
       --networkid=1515 \
-      --nodiscover $@ 1> $syncer_geth_deep_mind_log 2> $syncer_geth_log) &
+      --nodiscover $@ 1> $syncer_geth_firehose_log 2> $syncer_geth_log) &
     syncer_geth_pid=$!
 
     monitor "syncer_geth" $syncer_geth_pid $parent_pid "$syncer_geth_log" &
@@ -129,20 +129,20 @@ main() {
   done
 
   echo "Statistics"
-  echo " Blocks: `cat "$syncer_geth_deep_mind_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
-  echo " Trxs: `cat "$syncer_geth_deep_mind_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
-  echo " Calls: `cat "$syncer_geth_deep_mind_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
+  echo " Blocks: `cat "$syncer_geth_firehose_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
+  echo " Trxs: `cat "$syncer_geth_firehose_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
+  echo " Calls: `cat "$syncer_geth_firehose_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
   echo ""
-  echo " Balance Changes: `cat "$syncer_geth_deep_mind_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Event Logs: `cat "$syncer_geth_deep_mind_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
-  echo " Gas Changes: `cat "$syncer_geth_deep_mind_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
-  echo " Gas Events: `cat "$syncer_geth_deep_mind_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
-  echo " Nonce Changes: `cat "$syncer_geth_deep_mind_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Storage Changes: `cat "$syncer_geth_deep_mind_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Balance Changes: `cat "$syncer_geth_firehose_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Event Logs: `cat "$syncer_geth_firehose_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
+  echo " Gas Changes: `cat "$syncer_geth_firehose_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
+  echo " Gas Events: `cat "$syncer_geth_firehose_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
+  echo " Nonce Changes: `cat "$syncer_geth_firehose_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Storage Changes: `cat "$syncer_geth_firehose_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
   echo ""
 
   echo "Inspect log files"
-  echo " Deep Mind logs: cat `relpath "$syncer_geth_deep_mind_log"`"
+  echo " Firehose logs: cat `relpath "$syncer_geth_firehose_log"`"
   echo " Miner logs: cat `relpath "$miner_log"`"
   echo " Syncer logs: cat `relpath "$syncer_geth_log"`"
   echo ""
