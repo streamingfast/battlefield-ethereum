@@ -34,15 +34,7 @@ async function recoverPrivateKey(keystore: string, address: string) {
 async function getAddresses(): Promise<string[]> {
   return fs
     .readdirSync(path.join(directory, "keystore"))
-    .map((file) => {
-      const parts = file.split("--")
-      if (parts.length != 3) {
-        return undefined
-      }
-
-      return parts[2]
-    })
-    .filter((x) => x != undefined) as string[]
+    .filter((x) => x != undefined && x.match(/^[0-9a-fA-F]{40}$/)) as string[]
 }
 
 main().catch((error) => {

@@ -1,5 +1,5 @@
 import BN from "bn.js"
-import { readContractBin, requireProcessEnv, setDefaultGasConfig } from "./common"
+import { readContractBin, requireProcessEnv, setDefaultGasConfig, waitFor } from "./common"
 import { BattlefieldRunner, Network } from "./runner"
 import { join as pathJoin } from "path"
 
@@ -30,6 +30,7 @@ async function main() {
     runner.only = new RegExp(only)
   }
 
+  console.log("Initializing runner...")
   await runner.initialize()
   runner.printConfiguration()
 
@@ -231,11 +232,13 @@ async function main() {
         // This is the exact minimum required so the transaction pass the JSON-RPC barrier, hopefully it's good for the future, if it fails prior that
         gas: 59244,
       }),
+
     () =>
       runner.koDeployContract("call: contract fail not enough gas after code_copy", "Suicidal", {
         // This has been found by trial and error such that the transaction reaches GAS_CHANGE ... code_copy but fails afterwards when storing the actual contract on the chain
         gas: 99309,
       }),
+
     () =>
       runner.okContractSend(
         "call: complete call tree",
@@ -411,6 +414,8 @@ async function main() {
   console.log()
   console.log("Performing 'suicide' transactions")
 
+  setDefaultGasConfig(5566000, runner.web3.utils.toWei("50", "gwei"))
+
   await runner.parallelize(
     () =>
       runner.okContractSend(
@@ -419,21 +424,66 @@ async function main() {
         suicidal1Contract.methods.kill()
       ),
 
+    () =>
+      runner.okContractSend(
+        "suicide: create contract, kill it and try to call within same call",
+        "main",
+        mainContract.methods.contractSuicideThenCall()
+      ),
+
+    () =>
+      runner.okContractSend(
+        "suicide: create contract to fixed address (create2), kill it and try instantiate it again at same address",
+        "main",
+        mainContract.methods.contractFixedAddressSuicideThenTryToCreateOnSameAddress()
+      ),
+
+    () =>
+      runner.okContractSend(
+        "suicide: ensure suicidal2 bump is nonce by creating a contract (#1)",
+        "suicidal2",
+        suicidal2Contract.methods.createContract()
+      ),
+
+    () =>
+      runner.okContractSend(
+        "suicide: ensure suicidal2 bump is nonce by creating a contract (#2)",
+        "suicidal2",
+        suicidal2Contract.methods.createContract()
+      ),
+
     // A suicide where the contract does hold some Ether, and refund owner on destruct
     () =>
       runner.okTransfer(
-        "suicide: transfer some Ether to contract that's about to suicide itself",
+        "suicide: transfer some Ether to contract suicide that's about to suicide itself",
         "default",
         suicidal2ContractAddress,
         oneWei
       )
   )
 
-  // Depends on transfer some Ether to contract transaction above, so let's run it only afterwards
-  await runner.okContractSend(
-    "suicide: contract does hold some Ether, and refund owner on destruct",
-    "suicidal2",
-    suicidal2Contract.methods.kill()
+  // Depends on transfer some transaction above, so let's run it only afterwards
+  await runner.parallelize(
+    () =>
+      runner.okContractSend(
+        "suicide: contract does hold some Ether, and refund owner on destruct",
+        "suicidal2",
+        suicidal2Contract.methods.kill()
+      ),
+
+    () =>
+      runner.okContractSend(
+        "suicide: create contract to fixed address (create2), kill it and try instantiate it again at same address",
+        "main",
+        mainContract.methods.contractFixedAddressSuicideThenTryToCreateOnSameAddress()
+      ),
+
+    () =>
+      runner.okContractSend(
+        "suicide: create contract, kill it and try to call within same call (second time to valid nonce change after suicide)",
+        "main",
+        mainContract.methods.contractSuicideThenCall()
+      )
   )
 
   // Close eagerly as there is a bunch of pending not fully resolved promises due to PromiEvent

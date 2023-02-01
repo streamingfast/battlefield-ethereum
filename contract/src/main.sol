@@ -68,6 +68,66 @@ contract Main {
         new ContractTopConstructorOkThenFailing();
     }
 
+    event ContractDeployed(address indexed deployed_to);
+
+    function contractSuicideThenCall() public payable {
+        ContractSuicide deployment = new ContractSuicide(msg.sender);
+
+        emit ContractDeployed(address(deployment));
+
+        deployment.createContract();
+
+        (bool successKill, bytes memory resultRawKill) = address(deployment).call(
+            abi.encodeWithSignature("kill()")
+        );
+        require(successKill, "call to kill() succeed");
+        require(resultRawKill.length == 0);
+
+        // Contract suicided at this point
+        deployment.createContract();
+
+        (bool successKill2, bytes memory resultRawKill2) = address(deployment).call(
+            abi.encodeWithSignature("kill()")
+        );
+        require(successKill2, "call to kill() failed");
+        require(resultRawKill2.length == 0);
+
+        (bool successTransferToValue, ) = address(deployment).call(
+            abi.encodeWithSignature("transferToValue(address,uint256)", msg.sender, 1)
+        );
+
+        require(
+            !successTransferToValue,
+            "call to transferToValue(address,uint256) should have failed"
+        );
+
+        (bool successTransferToSuicided, ) = payable(address(deployment)).call{value: 1}("");
+        require(!successTransferToSuicided, "Transfer after suicide should revert");
+    }
+
+    function contractFixedAddressSuicideThenTryToCreateOnSameAddress() public payable {
+        bytes32 salt = "some salt";
+
+        ContractSuicideNoConstructor deployment = new ContractSuicideNoConstructor{salt: salt}();
+        emit ContractDeployed(address(deployment));
+
+        address ownerInit = deployment.owner();
+        require(ownerInit == 0x0000000000000000000000000000000000000000);
+
+        deployment.setOwner(msg.sender);
+        address ownerBefore = deployment.owner();
+        require(ownerBefore == msg.sender);
+
+        (bool successKill2, bytes memory resultRawKill2) = address(deployment).call(
+            abi.encodeWithSignature("kill()")
+        );
+        require(successKill2, "call to kill() failed");
+        require(resultRawKill2.length == 0);
+
+        address ownerAfter = deployment.owner();
+        require(ownerAfter == msg.sender);
+    }
+
     function contractCreate2(
         bytes memory code,
         uint256 transferAmount,
@@ -415,6 +475,58 @@ contract ContractConstructor {
 
     constructor(bytes32 name) public {
         Name = name;
+    }
+}
+
+contract ContractSuicide {
+    address payable public owner;
+
+    constructor(address payable _owner) public {
+        owner = _owner;
+    }
+
+    function kill() public payable returns (bool) {
+        selfdestruct(owner);
+
+        return true;
+    }
+
+    function transferToFromMsg(address payable receiver) public payable {
+        receiver.transfer(msg.value);
+    }
+
+    function transferToValue(address payable receiver, uint256 value) public payable {
+        receiver.transfer(value);
+    }
+
+    event ContractDeployed(address indexed deployed_to);
+
+    function createContract() public {
+        ContractSuicideNoConstructor deployment = new ContractSuicideNoConstructor();
+        emit ContractDeployed(address(deployment));
+    }
+}
+
+contract ContractSuicideNoConstructor {
+    address payable public owner;
+
+    constructor() public {}
+
+    function setOwner(address payable _owner) public {
+        owner = _owner;
+    }
+
+    function kill() public payable returns (bool) {
+        selfdestruct(owner);
+
+        return true;
+    }
+
+    event ContractDeployed(address indexed deployed_to);
+
+    function createContract() public {
+        ContractFailingConstructor deployment = new ContractFailingConstructor(false);
+        emit ContractDeployed(address(deployment));
     }
 }
 

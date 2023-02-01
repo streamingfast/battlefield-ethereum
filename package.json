@@ -1,10 +1,10 @@
 {
-  "name": "@dfuse/ethereum-genesis-network",
+  "name": "@streamingfast/battlefield-ethereum",
   "private": true,
   "license": "MIT",
   "scripts": {
     "local": "NETWORK=local yarn run ts-node src/main.ts",
-    "ropsten": "NETWORK=ropsten yarn run ts-node src/main.ts",
+    "goerli": "NETWORK=goerli yarn run ts-node src/main.ts",
     "dev1": "NETWORK=dev1 yarn run ts-node src/main.ts",
     "r": "yarn run ts-node"
   },

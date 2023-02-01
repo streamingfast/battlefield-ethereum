@@ -6,6 +6,7 @@ source "$ROOT/bin/library.sh"
 
 parent_pid="$$"
 miner_pid=""
+syncer_anvil_pid=""
 syncer_geth_pid=""
 current_dir=`pwd`
 log_file=""
@@ -32,54 +33,80 @@ main() {
     component=$1; shift
   fi
 
+  chain="geth"
+  if [[ "$1" != "" ]]; then
+    chain="$1"; shift
+  fi
+
   set -e
-  killall $geth_bin &> /dev/null || true
+  if [[ "$chain" == "geth" ]]; then
+    killall $geth_bin &> /dev/null || true
 
-  recreate_data_directories miner syncer_geth syncer_oe
+    recreate_data_directories miner syncer_geth syncer_oe
 
-  is_legacy_geth="`is_geth_version $geth_bin 'Version: 1.9.1[0-3]'`"
+    is_legacy_geth="`is_geth_version $geth_bin 'Version: 1.9.1[0-3]'`"
 
-  miner_version_dependent_args="--http --http.api=personal,eth,net,web3,txpool,miner"
-  syncer_version_dependent_args="--http --http.api=personal,eth,net,web3 --http.port=8555"
+    miner_version_dependent_args="--http --http.api=personal,eth,net,web3,txpool,miner"
+    syncer_version_dependent_args="--http --http.api=personal,eth,net,web3 --http.port=8555 --authrpc.port=9669"
 
-  if [[ "$is_legacy_geth" == "true" ]]; then
-    miner_version_dependent_args="--rpc --rpcapi=personal,eth,net,web3,txpool,miner"
-    syncer_version_dependent_args="--rpc --rpcapi=personal,eth,net,web3 --rpcport=8555"
-  fi
+    if [[ "$is_legacy_geth" == "true" ]]; then
+      miner_version_dependent_args="--rpc --rpcapi=personal,eth,net,web3,txpool,miner"
+      syncer_version_dependent_args="--rpc --rpcapi=personal,eth,net,web3 --rpcport=8555"
+    fi
 
-  echo "Starting miner process (log `relpath $miner_log`)"
-  if [[ $component == "all" || $component == "miner_only" ]]; then
-    ($miner_cmd \
-      $miner_version_dependent_args \
-      --allow-insecure-unlock \
-      --mine \
-      --miner.threads=1 \
-      --port=30303 \
-      --networkid=1515 \
-      --nodiscover $@ 1> $miner_firehose_log 2> $miner_log) &
-    miner_pid=$!
+    if [[ $component == "all" || $component == "miner_only" ]]; then
+      echo "Starting miner process (log `relpath $miner_log`)"
 
-    monitor "miner" $miner_pid $parent_pid "$miner_log" &
-  fi
+      ($miner_cmd \
+        $miner_version_dependent_args \
+        --allow-insecure-unlock \
+        --mine \
+        --miner.threads=1 \
+        --port=30303 \
+        --networkid=1515 \
+        --nodiscover $@ 1> $miner_firehose_log 2> $miner_log) &
+      miner_pid=$!
 
-  echo "Starting Geth syncer process (log `relpath $syncer_geth_log`)"
-  if [[ $component == "all" || $component == "syncer_only" ]]; then
-    ($syncer_geth_cmd \
-      $syncer_version_dependent_args \
-      --firehose-enabled \
-      --firehose-genesis-file="$syncer_geth_genesis_json" \
-      --syncmode="full" \
-      --port=30313 \
-      --networkid=1515 \
-      --nodiscover $@ 1> $syncer_geth_firehose_log 2> $syncer_geth_log) &
-    syncer_geth_pid=$!
+      monitor "miner" $miner_pid $parent_pid "$miner_log" &
+    fi
 
-    monitor "syncer_geth" $syncer_geth_pid $parent_pid "$syncer_geth_log" &
+    if [[ $component == "all" || $component == "syncer_only" ]]; then
+      echo "Starting Geth syncer process (log `relpath $syncer_geth_log`)"
+
+      ($syncer_geth_cmd \
+        $syncer_version_dependent_args \
+        --firehose-enabled \
+        --firehose-genesis-file="$syncer_geth_genesis_json" \
+        --syncmode="full" \
+        --port=30313 \
+        --networkid=1515 \
+        --nodiscover $@ 1> $syncer_geth_firehose_log 2> $syncer_geth_log) &
+      syncer_geth_pid=$!
+
+      monitor "syncer_geth" $syncer_geth_pid $parent_pid "$syncer_geth_log" &
+    fi
+  elif [[ "$chain" == "anvil" ]]; then
+    killall "$anvil_bin" &> /dev/null || true
+
+    recreate_data_directories syncer_anvil
+
+    ($syncer_anvil_cmd \
+        --firehose-enabled \
+        $@ 1> $syncer_anvil_log 2> $syncer_anvil_firehose_log) &
+    syncer_anvil_pid=$!
+
+    monitor "syncer_anvil" $syncer_anvil_pid $parent_pid "$syncer_anvil_log" &
+  else
+    usage_error "Chain '$chain' is not recognized, accepting 'geth' or 'anvil'"
   fi
 
   echo "Giving 5s for miner to be ready"
   sleep 5
   echo ""
+
+  if [[ $chain == "anvil" ]]; then
+    exit 1
+  fi
 
   if [[ $component == "all" || $component == "miner_only" ]]; then
     echo "Executing transactions contained in script 'main.ts'"
@@ -155,7 +182,8 @@ main() {
 
 cleanup() {
   kill_pid "miner" $miner_pid
-  kill_pid "syncer" $syncer_geth_pid
+  kill_pid "syncer_geth" $syncer_geth_pid
+  kill_pid "syncer_anvil" $syncer_anvil_pid
 
   # Let's kill everything else
   kill $( jobs -p ) &> /dev/null
@@ -172,7 +200,7 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: generate_local.sh [-w] [-l <logFile>]"
+  echo "usage: generate_local.sh [-w] [-l <logFile>] [<component>] [<chain>]"
   echo ""
   echo ""
   echo "Options"

@@ -14,11 +14,22 @@ contract Owned {
 }
 
 contract Mortal is Owned {
-    function kill() public payable onlyOwner() {
+    function kill() public payable onlyOwner {
         selfdestruct(owner);
     }
 }
 
 contract Suicidal is Owned, Mortal {
     receive() external payable {}
+
+    event ContractDeployed(address indexed deployed_to);
+
+    function createContract() public {
+        Dummy deployment = new Dummy();
+        emit ContractDeployed(address(deployment));
+    }
+}
+
+contract Dummy {
+    constructor() public {}
 }

@@ -4,6 +4,7 @@ export KEYSTORE_DIR=${BOOT_DIR}/keystore
 export GENESIS_DIR=${BOOT_DIR}/genesis
 export RUN_DIR=${ROOT}/run
 
+export anvil_bin=${ANVIL_BIN:-"anvil"}
 export geth_bin=${GETH_BIN:-"geth"}
 export bootnode_bin=${BOOTNODE_BIN:-"bootnode"}
 export oe_bin=${OPENETHEREUM_BIN:-"openethereum"}
@@ -23,6 +24,12 @@ export oracle_log="$RUN_DIR/oracle.log"
 export oracle_firehose_log="$oracle_data_dir/oracle.firelog"
 export oracle_transaction_log="$oracle_data_dir/oracle.md"
 export oracle_cmd="$geth_bin --datadir ${oracle_data_dir}"
+
+export syncer_anvil_data_dir="$RUN_DIR/data/syncer_anvil"
+export syncer_anvil_log="$RUN_DIR/syncer_anvil.log"
+export syncer_anvil_firehose_log="$RUN_DIR/syncer_anvil.firelog"
+export syncer_anvil_genesis_json="$syncer_anvil_data_dir/genesis.json"
+export syncer_anvil_cmd="$anvil_bin"
 
 export syncer_geth_data_dir="$RUN_DIR/data/syncer_geth"
 export syncer_geth_log="$RUN_DIR/syncer_geth.log"
@@ -60,7 +67,7 @@ recreate_data_directories() {
 
     mkdir -p "$data_dir" &> /dev/null
 
-    if [[ $component == "miner" || $component == "syncer_geth" ]]; then
+    if [[ $component == "miner" || $component == "syncer_geth" || $component == "bootstrap" ]]; then
       cp -a "$KEYSTORE_DIR" "$data_dir/keystore"
       cp -a "$GENESIS_DIR/geth" "$data_dir/geth"
       cp -a "$genesis_json" "$data_dir/"
@@ -79,7 +86,7 @@ recreate_data_directories() {
     fi
 
     # To support Polygon which uses `bor` for the data folder, we simply make a copy of it here
-    if [[ $component != "syncer_oe" ]]; then
+    if [[ $component != "syncer_anvil" && $component != "syncer_oe" ]]; then
       cp -a "$data_dir/geth" "$data_dir/bor"
     fi
   done
