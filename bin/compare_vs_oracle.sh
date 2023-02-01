@@ -26,29 +26,33 @@ main() {
   shift $((OPTIND-1))
 
   if [[ $1 == "" ]]; then
-    usage_error "The <chain> argument must be provided, either geth (Geth) or oe (OpenEthereum)"
+    usage_error "The <chain> argument must be provided, geth (Geth), oe (OpenEthereum) or erigon (Erigon) is supported"
   fi
 
-  if [[ $1 != "geth" && $1 != "oe" ]]; then
-    usage_error "The <chain> argument must be either geth (Geth) or oe (OpenEthereum)"
+  if [[ $1 != "geth" && $1 != "oe" && $1 != "erigon" ]]; then
+    usage_error "The <chain> argument must be geth (Geth), oe (OpenEthereum) or erigon (Erigon)"
   fi
 
   chain="$1"; shift
   trap cleanup EXIT
 
   killall $geth_bin &> /dev/null || true
+  killall $erigon_bin &> /dev/null || true
   killall $oe_bin &> /dev/null || true
 
   if [[ $chain == "geth" ]]; then
       syncer_log="$syncer_geth_log"
       syncer_firehose_log="$syncer_geth_firehose_log"
+  elif [[ $chain == "erigon" ]]; then
+      syncer_log="$syncer_erigon_log"
+      syncer_firehose_log="$syncer_erigon_firehose_log"
   else
       syncer_log="$syncer_oe_log"
       syncer_firehose_log="$syncer_oe_firehose_log"
   fi
 
   if [[ $skip_generation == false ]]; then
-    recreate_data_directories oracle syncer_geth syncer_oe
+    recreate_data_directories oracle syncer_geth syncer_oe syncer_erigon
 
     httpFlag="http"
     httpFlagPrefix="http."
@@ -64,6 +68,9 @@ main() {
       cp -a "$oracle_data_dir/genesis" "$syncer_geth_data_dir/geth"
       cp -a "$oracle_data_dir/genesis/genesis.json" "$syncer_geth_data_dir"
       cp -a "$BOOT_DIR/static-nodes.json" "$syncer_geth_data_dir/geth"
+    elif [[ $chain == "erigon" ]]; then
+      rm -rf "$syncer_erigon_data_dir/erigon" &> /dev/null || true
+      cp -a "$oracle_data_dir/genesis/genesis.json" "$syncer_erigon_data_dir"
     else
       # For the syncer to correctly work, it must uses the same chainspec as what `oracle` uses
       # so let's ensure it's the case here.
@@ -102,6 +109,23 @@ main() {
           --port=30313 \
           --networkid=1515 \
           "$authFlags" \
+          --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
+      syncer_pid=$!
+    elif [[ $chain == "erigon" ]]; then
+      echo "Starting syncer process (log `relpath $syncer_log`)"
+      ($syncer_erigon_cmd init $syncer_erigon_genesis_json $@ 1> $syncer_firehose_log 2> $syncer_log)
+      ($syncer_erigon_cmd \
+          --firehose-enabled \
+          --firehose-genesis-file="$syncer_erigon_genesis_json" \
+          --http \
+          --http.port=8555 \
+          --http.api=eth,erigon,web3,net,debug,trace,txpool,parity \
+          --port=30313 \
+          --chain=dev \
+          --networkid=1515 \
+          --authrpc.port=9555 \
+          --prune=disabled \
+          --staticpeers="enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303" \
           --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
     else
