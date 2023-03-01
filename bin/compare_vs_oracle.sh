@@ -36,11 +36,15 @@ main() {
   chain="$1"; shift
   trap cleanup EXIT
 
+  killall $anvil_bin &> /dev/null || true
   killall $geth_bin &> /dev/null || true
   killall $erigon_bin &> /dev/null || true
   killall $oe_bin &> /dev/null || true
 
-  if [[ $chain == "geth" ]]; then
+  if [[ $chain == "anvil" ]]; then
+      syncer_log="$syncer_anvil_log"
+      syncer_firehose_log="$syncer_anvil_firehose_log"
+  elif [[ $chain == "geth" ]]; then
       syncer_log="$syncer_geth_log"
       syncer_firehose_log="$syncer_geth_firehose_log"
   elif [[ $chain == "erigon" ]]; then
@@ -52,7 +56,7 @@ main() {
   fi
 
   if [[ $skip_generation == false ]]; then
-    recreate_data_directories oracle syncer_geth syncer_oe syncer_erigon
+    recreate_data_directories oracle syncer_anvil syncer_geth syncer_oe syncer_erigon
 
     httpFlag="http"
     httpFlagPrefix="http."

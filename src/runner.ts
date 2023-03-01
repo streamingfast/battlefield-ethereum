@@ -27,7 +27,7 @@ import debugFactory from "debug"
 
 const debug = debugFactory("battlefield:deploy")
 
-export type Network = "local" | "dev1" | "ropsten"
+export type Network = "local" | "dev1" | "goerli"
 
 type Doer<T> = (() => T) | (() => Promise<T>)
 
@@ -108,7 +108,7 @@ export class BattlefieldRunner {
       this.rpcEndpoint = this.forNetwork({
         local: "http://localhost:8545",
         dev1: "http://localhost:8545",
-        ropsten: "https://ropsten.infura.io/json-rpc/",
+        goerli: "https://goerli.infura.io/json-rpc/",
       })
     }
 
@@ -135,7 +135,7 @@ export class BattlefieldRunner {
         this.deployer = this.deployRpcContract
       },
       dev1: setupExternalNetwork,
-      ropsten: setupExternalNetwork,
+      goerli: setupExternalNetwork,
     })
 
     this.web3 = new Web3(this.rpcEndpoint)
@@ -162,8 +162,8 @@ export class BattlefieldRunner {
           ),
         })
       },
-      ropsten: async () => {
-        setDefaultTxOptions({ chain: "ropsten", hardfork: "istanbul" })
+      goerli: async () => {
+        setDefaultTxOptions({ chain: "goerli", hardfork: "istanbul" })
       },
     })
 
@@ -174,7 +174,7 @@ export class BattlefieldRunner {
     return await this.doForNetwork({
       local: async () => this.deploymentState,
       dev1: this.loadDeploymentStateFromFile,
-      ropsten: this.loadDeploymentStateFromFile,
+      goerli: this.loadDeploymentStateFromFile,
     })
   }
 
@@ -549,7 +549,7 @@ export class BattlefieldRunner {
     console.log(` Network: ${this.network}`)
     console.log(
       ` Default address: ${
-        this.network === "ropsten"
+        this.network === "goerli"
           ? this.etherscanLink("/address/" + this.defaultAddress)
           : this.defaultAddress
       }`
@@ -585,8 +585,8 @@ export class BattlefieldRunner {
       baseUrl = "https://dev1-eth.ethq.dfuse.dev"
     }
 
-    if (this.network === "ropsten") {
-      baseUrl = "https://ropsten.ethq.app"
+    if (this.network === "goerli") {
+      baseUrl = "https://goerli.ethq.app"
     }
 
     // Override any value when explicitely provided
@@ -603,8 +603,8 @@ export class BattlefieldRunner {
 
   etherscanLink(path: string): string {
     let baseUrl = ""
-    if (this.network === "ropsten") {
-      baseUrl = "https://ropsten.etherscan.io"
+    if (this.network === "goerli") {
+      baseUrl = "https://goerli.etherscan.io"
     }
 
     return `${baseUrl}${path}`

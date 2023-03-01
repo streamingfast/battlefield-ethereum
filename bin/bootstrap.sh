@@ -73,6 +73,13 @@ main() {
     echo -n "Press any key when you have finished editing 'genesis.json'..."
     read answer
 
+    files=`ls "$KEYSTORE_DIR" | grep UTC`
+    for file in $files; do
+      mv "$KEYSTORE_DIR/$file" "$KEYSTORE_DIR/`printf "${file}" | cut -d '-' -f 9`"
+    done
+
+    exit 1
+
     echo "\`\`\`" > $BOOT_DIR/keystore.md
     (yarn -s r src/keys.ts | tail -n +3) >> $BOOT_DIR/keystore.md
     echo "\`\`\`" >> $BOOT_DIR/keystore.md

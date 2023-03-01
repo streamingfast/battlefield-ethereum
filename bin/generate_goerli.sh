@@ -8,7 +8,7 @@ main() {
   pushd "$ROOT" &> /dev/null
 
   mkdir -p $ROOT/state &> /dev/null || true
-  state_file="$ROOT/state/ropsten-active.md"
+  state_file="$ROOT/state/goerli-active.md"
 
   while getopts "hw" opt; do
     case $opt in
@@ -24,11 +24,11 @@ main() {
   echo ""
 
   echo "Executing transactions contained in script 'main.ts'"
-  echo "## Ropsten Last Run Log (`date`)" > $state_file
+  echo "## Goerli Last Run Log (`date`)" > $state_file
   echo "" >> $state_file
   echo "\`\`\`" >> $state_file
 
-  yarn -s run ropsten | tee -a $state_file
+  yarn -s run goerli | tee -a $state_file
   echo ""
 }
 
@@ -50,9 +50,9 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: generate_dev1.sh"
+  echo "usage: generate_goerli.sh"
   echo ""
-  echo "Generate Battlefield transaction on Ethereum Ropsten Tesnet"
+  echo "Generate Battlefield transaction on Ethereum Goerli Tesnet"
   echo ""
   echo "Required Environment Variables"
   echo "    RPC_ENDPOINT    The url to use to reach the RPC endpoint so we can send transaction to it"
