@@ -6,6 +6,7 @@ export RUN_DIR=${ROOT}/run
 
 export anvil_bin=${ANVIL_BIN:-"anvil"}
 export geth_bin=${GETH_BIN:-"geth"}
+export erigon_bin=${GETH_BIN:-"erigon"}
 export bootnode_bin=${BOOTNODE_BIN:-"bootnode"}
 export oe_bin=${OPENETHEREUM_BIN:-"openethereum"}
 
@@ -36,6 +37,12 @@ export syncer_geth_log="$RUN_DIR/syncer_geth.log"
 export syncer_geth_firehose_log="$RUN_DIR/syncer_geth.firelog"
 export syncer_geth_genesis_json="$syncer_geth_data_dir/genesis.json"
 export syncer_geth_cmd="$geth_bin --datadir ${syncer_geth_data_dir}"
+
+export syncer_erigon_data_dir="$RUN_DIR/data/syncer_erigon"
+export syncer_erigon_log="$RUN_DIR/syncer_erigon.log"
+export syncer_erigon_firehose_log="$RUN_DIR/syncer_erigon.firelog"
+export syncer_erigon_genesis_json="$syncer_erigon_data_dir/genesis.json"
+export syncer_erigon_cmd="$erigon_bin --datadir ${syncer_erigon_data_dir}/erigon"
 
 export syncer_oe_data_dir="$RUN_DIR/data/syncer_oe"
 export syncer_oe_log="$RUN_DIR/syncer_oe.log"
@@ -86,7 +93,7 @@ recreate_data_directories() {
     fi
 
     # To support Polygon which uses `bor` for the data folder, we simply make a copy of it here
-    if [[ $component != "syncer_anvil" && $component != "syncer_oe" ]]; then
+    if [[ $component != "syncer_anvil" && $component != "syncer_oe" && $component != "syncer_erigon" ]]; then
       cp -a "$data_dir/geth" "$data_dir/bor"
     fi
   done
