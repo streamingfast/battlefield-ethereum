@@ -37,6 +37,7 @@ export syncer_geth_log="$RUN_DIR/syncer_geth.log"
 export syncer_geth_firehose_log="$RUN_DIR/syncer_geth.firelog"
 export syncer_geth_genesis_json="$syncer_geth_data_dir/genesis.json"
 export syncer_geth_cmd="$geth_bin --datadir ${syncer_geth_data_dir}"
+export syncer_geth_addpeer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $geth_bin attach ${syncer_geth_data_dir}/geth.ipc"
 
 export syncer_erigon_data_dir="$RUN_DIR/data/syncer_erigon"
 export syncer_erigon_log="$RUN_DIR/syncer_erigon.log"
@@ -52,7 +53,7 @@ export syncer_oe_cmd="$oe_bin --base-path=${syncer_oe_data_dir}"
 export bootstrap_data_dir="$RUN_DIR/data/bootstrap"
 
 is_authrpc_supported() {
-  if geth version 2>/dev/null | grep -Eq "1\.[1-9][0-9]\.[2-9][0-9]-(fh[0-9]+|dm)"; then
+    if geth version 2>/dev/null | grep -Eq "1\.(10.[2-9][0-9]|1[1-9].[0-9]*)-(fh[0-9]+|dm)"; then
     echo "true"
   else
     echo "false"
