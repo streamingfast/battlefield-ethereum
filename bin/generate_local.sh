@@ -61,7 +61,6 @@ main() {
         $miner_version_dependent_args \
         --allow-insecure-unlock \
         --mine \
-        --miner.threads=1 \
         --port=30303 \
         --networkid=1515 \
         --nodiscover $@ 1> $miner_firehose_log 2> $miner_log) &

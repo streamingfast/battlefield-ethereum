@@ -87,7 +87,6 @@ main() {
         --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3,txpool" \
         --allow-insecure-unlock \
         --mine=false \
-        --miner.threads=0 \
         --port=30303 \
         --networkid=1515 \
         --nodiscover \
@@ -167,7 +166,7 @@ main() {
     set +e
     while true; do
       if [[ $chain == "geth" ]]; then
-          echo 'admin.addPeer("enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303")' | $geth_bin attach ${syncer_geth_data_dir}/geth.ipc >/dev/null 2>&1 
+          echo 'admin.addPeer("enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303")' | $geth_bin attach ${syncer_geth_data_dir}/geth.ipc >/dev/null 2>&1
       fi
       latest=`cat "$syncer_firehose_log" | grep -E "FIRE FINALIZE_BLOCK [0-9]+" | tail -n1 | grep -Eo [0-9]+`
       if [[ $latest -ge $blockNum ]]; then
