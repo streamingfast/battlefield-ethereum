@@ -7,8 +7,8 @@ export RUN_DIR=${ROOT}/run
 export anvil_bin=${ANVIL_BIN:-"anvil"}
 export geth_bin=${GETH_BIN:-"geth"}
 export erigon_bin=${GETH_BIN:-"erigon"}
+export polygon_bin=${POLYGON_BIN:-"geth"}
 export bootnode_bin=${BOOTNODE_BIN:-"bootnode"}
-export oe_bin=${OPENETHEREUM_BIN:-"openethereum"}
 
 export genesis_log="$GENESIS_DIR/genesis.log"
 export genesis_json="$BOOT_DIR/genesis.json"
@@ -19,12 +19,19 @@ export miner_log="$RUN_DIR/miner.log"
 export miner_firehose_log="$RUN_DIR/miner.firelog"
 export miner_cmd="$geth_bin --datadir ${miner_data_dir}"
 
-export oracle_data_dir="$RUN_DIR/data/oracle"
-export oracle_bootstrap_dir="$RUN_DIR/data/oracle/bootstrap"
-export oracle_log="$RUN_DIR/oracle.log"
-export oracle_firehose_log="$oracle_data_dir/oracle.firelog"
-export oracle_transaction_log="$oracle_data_dir/oracle.md"
-export oracle_cmd="$geth_bin --datadir ${oracle_data_dir}"
+export oracle_common_data_dir="$RUN_DIR/data/oracle_common"
+export oracle_common_bootstrap_dir="$oracle_common_data_dir/bootstrap"
+export oracle_common_log="$RUN_DIR/oracle_common.log"
+export oracle_common_firehose_log="$oracle_common_data_dir/oracle.firelog"
+export oracle_common_transaction_log="$oracle_common_data_dir/oracle.md"
+export oracle_common_cmd="$geth_bin --datadir ${oracle_common_data_dir}"
+
+export oracle_polygon_data_dir="$RUN_DIR/data/oracle_polygon"
+export oracle_polygon_bootstrap_dir="$oracle_polygon_data_dir/bootstrap"
+export oracle_polygon_log="$RUN_DIR/oracle_polygon.log"
+export oracle_polygon_firehose_log="$oracle_polygon_data_dir/oracle.firelog"
+export oracle_polygon_transaction_log="$oracle_polygon_data_dir/oracle.md"
+export oracle_polygon_cmd="$geth_bin --datadir ${oracle_polygon_data_dir}"
 
 export syncer_anvil_data_dir="$RUN_DIR/data/syncer_anvil"
 export syncer_anvil_log="$RUN_DIR/syncer_anvil.log"
@@ -45,10 +52,12 @@ export syncer_erigon_firehose_log="$RUN_DIR/syncer_erigon.firelog"
 export syncer_erigon_genesis_json="$syncer_erigon_data_dir/genesis.json"
 export syncer_erigon_cmd="$erigon_bin --datadir ${syncer_erigon_data_dir}/erigon"
 
-export syncer_oe_data_dir="$RUN_DIR/data/syncer_oe"
-export syncer_oe_log="$RUN_DIR/syncer_oe.log"
-export syncer_oe_firehose_log="$RUN_DIR/syncer_oe.firelog"
-export syncer_oe_cmd="$oe_bin --base-path=${syncer_oe_data_dir}"
+export syncer_polygon_data_dir="$RUN_DIR/data/syncer_polygon"
+export syncer_polygon_log="$RUN_DIR/syncer_polygon.log"
+export syncer_polygon_firehose_log="$RUN_DIR/syncer_polygon.firelog"
+export syncer_polygon_genesis_json="$syncer_polygon_data_dir/genesis.json"
+export syncer_polygon_cmd="$polygon_bin --datadir ${syncer_polygon_data_dir}"
+export syncer_polygon_addpeer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $polygon_bin attach ${syncer_polygom_data_dir}/bor.ipc"
 
 export bootstrap_data_dir="$RUN_DIR/data/bootstrap"
 
@@ -63,14 +72,11 @@ is_authrpc_supported() {
 recreate_data_directories() {
   local component
   for component in "$@"; do
-    # Dynamically access one of `miner_data_dir`, `syncer_geth_data_dir`, syncer_oe_data_dir` or `oracle_data_dir`
+    # Dynamically access one of `miner_data_dir`, `syncer_geth_data_dir`, syncer_polygon_data_dir` or `oracle_data_dir`
     data_dir=`dynamic_var_name=${component}_data_dir; echo ${!dynamic_var_name}`
 
-    if [[ $component != "oracle" ]]; then
+    if [[ $component != "oracle_common" && $component != "oracle_polygon" ]]; then
       rm -rf "$data_dir"
-    else
-      # Bor is a transient folder copied from `geth` directly, get rid of it at start
-      rm -rf "$oracle_data_dir/bor"
     fi
 
     mkdir -p "$data_dir" &> /dev/null
@@ -81,21 +87,23 @@ recreate_data_directories() {
       cp -a "$genesis_json" "$data_dir/"
     fi
 
-    if [[ $component == "miner" || $component == "oracle" ]]; then
-      cp -a "$BOOT_DIR/nodekey" "$data_dir/geth"
-    fi
-
     if [[ $component == "syncer_geth" ]]; then
       cp -a "$BOOT_DIR/static-nodes.json" "$data_dir/geth"
     fi
 
-    if [[ $component == "syncer_oe" ]]; then
-      cp -a "$BOOT_DIR/chainspec.json" "$data_dir/"
+    if [[ $component == "miner" || $component == "oracle_common" ]]; then
+      cp -a "$BOOT_DIR/nodekey" "$data_dir/geth"
     fi
 
-    # To support Polygon which uses `bor` for the data folder, we simply make a copy of it here
-    if [[ $component != "syncer_anvil" && $component != "syncer_oe" && $component != "syncer_erigon" ]]; then
-      cp -a "$data_dir/geth" "$data_dir/bor"
+    if [[ $component == "oracle_polygon" ]]; then
+      cp -a "$BOOT_DIR/nodekey" "$data_dir/bor"
+    fi
+
+    if [[ $component == "syncer_polygon" ]]; then
+      cp -a "$KEYSTORE_DIR" "$data_dir/keystore"
+      cp -a "$GENESIS_DIR/bor" "$data_dir/bor"
+      cp -a "$genesis_json" "$data_dir/"
+      cp -a "$BOOT_DIR/static-nodes.json" "$data_dir/bor"
     fi
   done
 }

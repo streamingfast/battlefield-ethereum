@@ -7,9 +7,10 @@
 /run/data/bootstrap
 /run/data/miner
 /run/data/syncer*
-/run/data/oracle_common/bor
 /run/data/oracle_common/geth/nodekey
 /run/data/oracle_common/history
+/run/data/oracle_polygon/bor/nodekey
+/run/data/oracle_polygon/history
 /run/miner.dmlog
 /run/syncer*.dmlog
 /run/miner.firelog

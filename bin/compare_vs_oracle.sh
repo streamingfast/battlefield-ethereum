@@ -26,11 +26,7 @@ main() {
   shift $((OPTIND-1))
 
   if [[ $1 == "" ]]; then
-    usage_error "The <chain> argument must be provided, geth (Geth), oe (OpenEthereum) or erigon (Erigon) is supported"
-  fi
-
-  if [[ $1 != "geth" && $1 != "oe" && $1 != "erigon" ]]; then
-    usage_error "The <chain> argument must be geth (Geth), oe (OpenEthereum) or erigon (Erigon)"
+    usage_error "The <chain> argument must be provided, geth, polygon or erigon is supported"
   fi
 
   chain="$1"; shift
@@ -39,7 +35,6 @@ main() {
   killall $anvil_bin &> /dev/null || true
   killall $geth_bin &> /dev/null || true
   killall $erigon_bin &> /dev/null || true
-  killall $oe_bin &> /dev/null || true
 
   if [[ $chain == "anvil" ]]; then
       syncer_log="$syncer_anvil_log"
@@ -47,16 +42,26 @@ main() {
   elif [[ $chain == "geth" ]]; then
       syncer_log="$syncer_geth_log"
       syncer_firehose_log="$syncer_geth_firehose_log"
+  elif [[ $chain == "polygon" ]]; then
+      syncer_log="$syncer_polygon_log"
+      syncer_firehose_log="$syncer_polygon_firehose_log"
   elif [[ $chain == "erigon" ]]; then
       syncer_log="$syncer_erigon_log"
       syncer_firehose_log="$syncer_erigon_firehose_log"
   else
-      syncer_log="$syncer_oe_log"
-      syncer_firehose_log="$syncer_oe_firehose_log"
+      usage_error "The <chain> argument must be geth, polygon and erigon are supported"
+  fi
+
+  if [[ $chain == "polygon" ]]; then
+    oracle_data_dir=$oracle_polygon_data_dir
+    oracle_log="$oracle_polygon_log"
+  else
+    oracle_data_dir=$oracle_common_data_dir
+    oracle_log="$oracle_common_log"
   fi
 
   if [[ $skip_generation == false ]]; then
-    recreate_data_directories oracle syncer_anvil syncer_geth syncer_oe syncer_erigon
+    recreate_data_directories oracle_common syncer_anvil syncer_geth syncer_polygon syncer_erigon
 
     httpFlag="http"
     httpFlagPrefix="http."
@@ -69,29 +74,46 @@ main() {
       # For the syncer to correctly work, it must uses the same genesis block `geth` data as what `oracle` uses
       # so let's ensure it's the case here.
       rm -rf "$syncer_geth_data_dir/geth" &> /dev/null || true
-      cp -a "$oracle_data_dir/genesis" "$syncer_geth_data_dir/geth"
-      cp -a "$oracle_data_dir/genesis/genesis.json" "$syncer_geth_data_dir"
+      cp -a "$oracle_common_data_dir/genesis" "$syncer_geth_data_dir/geth"
+      cp -a "$oracle_common_data_dir/genesis/genesis.json" "$syncer_geth_data_dir"
       cp -a "$BOOT_DIR/static-nodes.json" "$syncer_geth_data_dir/geth"
+    elif [[ $chain == "polygon" ]]; then
+      # For the syncer to correctly work, it must uses the same genesis block `bor` data as what `oracle` uses
+      # so let's ensure it's the case here.
+      rm -rf "$syncer_polygon_data_dir/bor" &> /dev/null || true
+      cp -a "$oracle_polygon_data_dir/genesis" "$syncer_polygon_data_dir/bor"
+      cp -a "$oracle_polygon_data_dir/genesis/genesis.json" "$syncer_polygon_data_dir"
+      cp -a "$BOOT_DIR/static-nodes.json" "$syncer_polygon_data_dir/bor"
     elif [[ $chain == "erigon" ]]; then
       rm -rf "$syncer_erigon_data_dir/erigon" &> /dev/null || true
-      cp -a "$oracle_data_dir/genesis/genesis.json" "$syncer_erigon_data_dir"
-    else
-      # For the syncer to correctly work, it must uses the same chainspec as what `oracle` uses
-      # so let's ensure it's the case here.
-      cp "$oracle_data_dir/genesis/chainspec.json" "$syncer_oe_data_dir/chainspec.json"
+      cp -a "$oracle_common_data_dir/genesis/genesis.json" "$syncer_erigon_data_dir"
     fi
 
-    echo "Starting oracle (log `relpath $oracle_log`)"
-    ($oracle_cmd \
-        --syncmode="full" \
-        --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3,txpool" \
-        --allow-insecure-unlock \
-        --mine=false \
-        --port=30303 \
-        --networkid=1515 \
-        --nodiscover \
-        --nocompaction $@ &> $oracle_log) &
-    oracle_pid=$!
+    if [[ $chain == "polygon" ]]; then
+      echo "Starting oracle (log `relpath $oracle_log`)"
+      ($oracle_polygon_cmd \
+          --syncmode="full" \
+          --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3,txpool" \
+          --allow-insecure-unlock \
+          --mine=false \
+          --port=30303 \
+          --networkid=1515 \
+          --nodiscover \
+          --nocompaction $@ &> $oracle_log) &
+      oracle_pid=$!
+    else
+      echo "Starting oracle (log `relpath $oracle_log`)"
+      ($oracle_common_cmd \
+          --syncmode="full" \
+          --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3,txpool" \
+          --allow-insecure-unlock \
+          --mine=false \
+          --port=30303 \
+          --networkid=1515 \
+          --nodiscover \
+          --nocompaction $@ &> $oracle_log) &
+      oracle_pid=$!
+    fi
 
     monitor "oracle" $oracle_pid $parent_pid "$oracle_log" &
 
@@ -114,6 +136,19 @@ main() {
           "$authFlags" \
           --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
+    elif [[ $chain == "polygon" ]]; then
+      echo "Starting syncer process (log `relpath $syncer_log`)"
+      ($syncer_polygon_cmd \
+          --firehose-enabled \
+          --firehose-genesis-file="$syncer_polygon_genesis_json" \
+          --syncmode="full" \
+          --http --http.api="personal,eth,net,web3" \
+          --http.port=8555 \
+          --port=30313 \
+          --networkid=1515 \
+          --authrpc.port=9555 \
+          --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
+      syncer_pid=$!
     elif [[ $chain == "erigon" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_erigon_cmd --firehose-enabled \
@@ -132,17 +167,6 @@ main() {
           --prune=disabled \
           --staticpeers="enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303" \
           --nodiscover $@ 1>> $syncer_firehose_log 2>> $syncer_log) &
-      syncer_pid=$!
-    else
-      echo "Starting OpenEthereum syncer process (log `relpath $syncer_log`)"
-      ($syncer_oe_cmd \
-          --firehose-enabled \
-          --chain="$syncer_oe_data_dir/chainspec.json" \
-          --port=30313 \
-          --network-id=1515 \
-          --jsonrpc-port=8555 \
-          --jsonrpc-apis=debug,web3,net,eth,parity,parity,parity_pubsub,parity_accounts,parity_set \
-          $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
     fi
 
@@ -166,8 +190,9 @@ main() {
     set +e
     while true; do
       if [[ $chain == "geth" ]]; then
-          echo 'admin.addPeer("enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303")' | $geth_bin attach ${syncer_geth_data_dir}/geth.ipc >/dev/null 2>&1
+          $syncer_geth_addpeer
       fi
+
       latest=`cat "$syncer_firehose_log" | grep -E "FIRE FINALIZE_BLOCK [0-9]+" | tail -n1 | grep -Eo [0-9]+`
       if [[ $latest -ge $blockNum ]]; then
         echo ""
@@ -207,8 +232,8 @@ main() {
 
   if [[ $skip_comparison == false ]]; then
     echo "Launching blocks comparison task (and compiling Go code)"
-    go mod tidy
-    go run battlefield.go compare "$syncer_firehose_log"
+
+    go run battlefield.go compare "$oracle_data_dir" "$syncer_firehose_log"
   fi
 }
 
@@ -217,8 +242,11 @@ cleanup() {
   kill_pid "syncer" $syncer_pid
 
   # Clean up oracle changes
-  git clean -xfd "$oracle_data_dir/geth" > /dev/null
-  git restore "$oracle_data_dir/geth"
+  git clean -xfd "$oracle_common_data_dir/geth" > /dev/null
+  git restore "$oracle_common_data_dir/geth"
+
+  git clean -xfd "$oracle_polygon_data_dir/bor" > /dev/null
+  git restore "$oracle_polygon_data_dir/bor"
 
   # Let's kill everything else
   kill $( jobs -p ) &> /dev/null

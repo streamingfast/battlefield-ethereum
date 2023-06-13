@@ -17,7 +17,8 @@ import (
 	pbts "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/cobra"
-	"github.com/streamingfast/battlefield-ethereum/cli"
+	"github.com/streamingfast/cli"
+	. "github.com/streamingfast/cli"
 	"github.com/streamingfast/jsonpb"
 	"github.com/streamingfast/logging"
 	"github.com/streamingfast/sf-ethereum/codec"
@@ -28,10 +29,10 @@ import (
 )
 
 var fixedTimestamp *pbts.Timestamp
-var zlog = zap.NewNop()
+var zlog, _ = logging.PackageLogger("battlefield", "github.com/streamingfast/battlefield-ethereum")
 
 func init() {
-	logging.TestingOverride()
+	logging.InstantiateLoggers()
 
 	fixedTime, _ := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
 	fixedTimestamp, _ = ptypes.TimestampProto(fixedTime)
@@ -40,31 +41,33 @@ func init() {
 func main() {
 	Run("battlefield", "Battlefield binary",
 		Command(generateE,
-			"generate",
-			"From the oracle Firehose log file, generate the oracle dfuse blocks",
+			"generate <oracle_data_dir>",
+			"From the oracle Firehose log file, generate the oracle Firehose blocks",
+			ExactArgs(1),
 		),
 		Command(compareE,
-			"compare <syncer_firehose_log>",
-			"From a new actual Firehose log file, generate the actual dfuse blocks and compare them against the current oracle dfuse blocks",
+			"compare <oracle_data_dir> <syncer_firehose_log>",
+			"From a new actual Firehose log file, generate the actual Firehose blocks and compare them against the current oracle Firehose blocks",
+			ExactArgs(2),
 			Description(`
-				Runs dfuse Console Reader against <syncer_firehose_log> argument and turns it into
+				Runs Firehose Console Reader against <syncer_firehose_log> argument and turns it into
 				an array of *pbeth.Block. It then compares that to the Oracle's array of pbeth.Block
-				that is stored in 'run/data/oracle/oracle.json' file.
+				that is stored in '<oracle_data_dir>/oracle.json' file.
 
 				If there is a diff between the two, a diff viewer is invoked. If the 'DIFF_EDITOR' is set,
 				it is use with '$DIFF_EDITOR <oracle_json> <syncer_json>'. If 'DIFF_EDITOR' is **not** set, the command
 				'bash -c diff -C 5 <oracle_json> <syncer_json>'.
 			`),
 		),
+		OnCommandErrorLogAndExit(zlog),
 	)
 }
 
 func generateE(cmd *cobra.Command, args []string) error {
-	currentDir, err := os.Getwd()
-	cli.NoError(err, "unable to get working directory")
+	oracleDataDir := args[0]
 
-	oracleFirehoseLogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.firelog")
-	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
+	oracleFirehoseLogFile := filepath.Join(oracleDataDir, "oracle.firelog")
+	oracleJSONFile := filepath.Join(oracleDataDir, "oracle.json")
 
 	oracleBlocks := readActualBlocks(oracleFirehoseLogFile)
 	zlog.Info("read all blocks from Firehose log file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleFirehoseLogFile))
@@ -77,13 +80,12 @@ func generateE(cmd *cobra.Command, args []string) error {
 }
 
 func compareE(cmd *cobra.Command, args []string) error {
-	currentDir, err := os.Getwd()
-	cli.NoError(err, "unable to get working directory")
+	oracleDataDir := args[0]
+	actualFirehoseLogFile := args[1]
 
-	actualFirehoseLogFile := args[0]
 	actualJSONFile := strings.ReplaceAll(actualFirehoseLogFile, ".firelog", ".json")
-	oracleFirehoseLogFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.firelog")
-	oracleJSONFile := filepath.Join(currentDir, "run", "data", "oracle", "oracle.json")
+	oracleFirehoseLogFile := filepath.Join(oracleDataDir, "oracle.firelog")
+	oracleJSONFile := filepath.Join(oracleDataDir, "oracle.json")
 
 	actualBlocks := readActualBlocks(actualFirehoseLogFile)
 	zlog.Info("read all blocks from Firehose log file", zap.Int("block_count", len(actualBlocks)), zap.String("file", actualFirehoseLogFile))
@@ -251,10 +253,6 @@ func isSameBlocks(oracleFile string, actualFile string) bool {
 	return assert.ObjectsAreEqualValues(oracleJSONAsInterface, actualJSONAsInterface)
 }
 
-func diff() {
-
-}
-
 type DiffReporter struct {
 	path  cmp.Path
 	diffs []string
@@ -278,8 +276,3 @@ func (r *DiffReporter) PopStep() {
 func (r *DiffReporter) String() string {
 	return strings.Join(r.diffs, "\n")
 }
-
-var Run = cli.Run
-var Command = cli.Command
-
-type Description = cli.Description

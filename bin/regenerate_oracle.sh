@@ -16,6 +16,14 @@ main() {
   done
   shift $((OPTIND-1))
 
+  if [[ $1 == "" ]]; then
+    usage_error "The <chain> argument must be provided, geth (Geth), oe (OpenEthereum) or erigon (Erigon) is supported"
+  fi
+
+  if [[ $1 != "geth" && $1 != "oe" && $1 != "erigon" ]]; then
+    usage_error "The <chain> argument must be geth (Geth), oe (OpenEthereum) or erigon (Erigon)"
+  fi
+
   grep_pattern="Version: 1.9.1[0-3]"
   if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
     echo "You need Geth version between 1.9.10 - 1.9.13 to generate the Oracle data."
@@ -75,11 +83,11 @@ main() {
   tar -cf bootstrap.tar --exclude nodekey * > /dev/null
   zstd -14 bootstrap.tar &> /dev/null
 
-  mkdir -p "$oracle_bootstrap_dir" "$oracle_bootstrap_dir/mindreader" &> /dev/null
-  cp bootstrap.tar.zst "$oracle_bootstrap_dir" &> /dev/null
-  cp keystore.zip "$oracle_bootstrap_dir" &> /dev/null
-  cp $BOOT_DIR/genesis.json "$oracle_bootstrap_dir/mindreader" &> /dev/null
-  cp $BOOT_DIR/keystore.md "$oracle_bootstrap_dir" &> /dev/null
+  mkdir -p "$oracle_common_bootstrap_dir" "$oracle_common_bootstrap_dir/mindreader" &> /dev/null
+  cp bootstrap.tar.zst "$oracle_common_bootstrap_dir" &> /dev/null
+  cp keystore.zip "$oracle_common_bootstrap_dir" &> /dev/null
+  cp $BOOT_DIR/genesis.json "$oracle_common_bootstrap_dir/mindreader" &> /dev/null
+  cp $BOOT_DIR/keystore.md "$oracle_common_bootstrap_dir" &> /dev/null
 
   echo ""
   echo "Important: You should commit the changes before running './bin/compare_vs_oracle.sh geth'."
@@ -103,10 +111,14 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: oracle.sh [-c]"
+  echo "usage: oracle.sh [-c] <chain>"
   echo ""
   echo "Run the local transaction generation script and replaced previous oracle reference"
   echo "data with the new one we just generated."
+  echo ""
+  echo "The <chain> is used to generate an oracle data directory in 'run/data/oracle/<chain>'"
+  echo "this is required because some chains generates different consensus data than others,"
+  echo "Polygon is such example."
   echo ""
   echo "Options"
   echo "    -c          Do no run generate_local.sh and only copy over the last generated values"
