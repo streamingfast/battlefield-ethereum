@@ -23,7 +23,7 @@ export const setDefaultAddress = (address: string) => {
 
 export type GasConfig = { gasLimit: number; gasPrice: string }
 
-let defaultGasConfig: GasConfig = { gasLimit: 93999999, gasPrice: "1" }
+let defaultGasConfig: GasConfig = { gasLimit: 7_999_999, gasPrice: "1" }
 export const getDefaultGasConfig = () => defaultGasConfig
 export const setDefaultGasConfig = (gasLimit: number, gasPrice: string) => {
   defaultGasConfig = { gasLimit, gasPrice }

@@ -3,6 +3,8 @@
 .envrc
 /boot/genesis/alloc.json
 /boot/genesis/keystore
+/boot/genesis/geth/nodekey
+/boot/genesis/bor/nodekey
 /contract/build/
 /run/data/bootstrap
 /run/data/miner

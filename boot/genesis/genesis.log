@@ -1,13 +1,14 @@
 
 Generating genesis block & node information
-INFO [09-29|21:45:21.265] Initializing deep mind 
-INFO [09-29|21:45:21.266] Deep mind initialized                    enabled=false block_progress_enabled=false compaction_disabled=false
-INFO [09-29|21:45:21.269] Maximum peer count                       ETH=50 LES=0 total=50
-INFO [09-29|21:45:21.305] Allocated cache and file handles         database=/Users/maoueh/work/dfuse/ethereum.battlefield/boot/genesis/geth/chaindata cache=16.00MiB handles=16
-INFO [09-29|21:45:21.348] Writing custom genesis block 
-INFO [09-29|21:45:21.350] Persisted trie from memory database      nodes=14 size=2.07KiB time=308.443µs gcnodes=0 gcsize=0.00B gctime=0s livenodes=1 livesize=0.00B
-INFO [09-29|21:45:21.351] Successfully wrote genesis state         database=chaindata hash=c59020…9e780b
-INFO [09-29|21:45:21.351] Allocated cache and file handles         database=/Users/maoueh/work/dfuse/ethereum.battlefield/boot/genesis/geth/lightchaindata cache=16.00MiB handles=16
-INFO [09-29|21:45:21.391] Writing custom genesis block 
-INFO [09-29|21:45:21.392] Persisted trie from memory database      nodes=14 size=2.07KiB time=352.726µs gcnodes=0 gcsize=0.00B gctime=0s livenodes=1 livesize=0.00B
-INFO [09-29|21:45:21.393] Successfully wrote genesis state         database=lightchaindata hash=c59020…9e780b
+INFO [06-13|19:35:26.832] Initializing firehose 
+INFO [06-13|19:35:26.833] Firehose initialized                     enabled=false sync_instrumentation_enabled=true mining_enabled=false block_progress_enabled=false genesis_provenance="Geth Default (Polygon Mainnet)" firehose_version=2.2 geth_version=0.4.0-beta-5-fh2 chain_variant=polygon
+INFO [06-13|19:35:26.834] Maximum peer count                       ETH=50 LES=0 total=50
+INFO [06-13|19:35:26.835] Set global gas cap                       cap=50,000,000
+INFO [06-13|19:35:26.835] Allocated cache and file handles         database=/Users/maoueh/work/sf/ethereum.battlefield/boot/genesis/bor/chaindata cache=16.00MiB handles=16
+INFO [06-13|19:35:26.859] Writing custom genesis block 
+INFO [06-13|19:35:26.859] Persisted trie from memory database      nodes=14 size=2.06KiB time="121.208µs" gcnodes=0 gcsize=0.00B gctime=0s livenodes=1 livesize=0.00B
+INFO [06-13|19:35:26.860] Successfully wrote genesis state         database=chaindata hash=c59020..9e780b
+INFO [06-13|19:35:26.860] Allocated cache and file handles         database=/Users/maoueh/work/sf/ethereum.battlefield/boot/genesis/bor/lightchaindata cache=16.00MiB handles=16
+INFO [06-13|19:35:26.881] Writing custom genesis block 
+INFO [06-13|19:35:26.881] Persisted trie from memory database      nodes=14 size=2.06KiB time="156.292µs" gcnodes=0 gcsize=0.00B gctime=0s livenodes=1 livesize=0.00B
+INFO [06-13|19:35:26.881] Successfully wrote genesis state         database=lightchaindata hash=c59020..9e780b

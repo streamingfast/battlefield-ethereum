@@ -20,15 +20,28 @@ main() {
   done
   shift $((OPTIND-1))
 
-  echo -n "This will delete existing wallets, continue (y/n)? "
-  read answer
+  if [[ $1 == "" ]]; then
+    usage_error "The <chain> argument must be provided, geth or polygon is supported"
+  fi
 
-  if [[ "$answer" != "y" && "$answer" != "Y" ]]; then
-      exit 0
+  chain="$1"; shift
+  if [[ $chain == "geth" ]]; then
+    chain_data_dir="$GENESIS_DIR/geth"
+  elif [[ $chain == "polygon" ]]; then
+    chain_data_dir="$GENESIS_DIR/bor"
+  else
+    usage_error "The <chain> argument must be geth or polygon"
   fi
 
   if [[ $genesis_block == "" ]]; then
-    recreate_boot_directories $genesis_block
+    echo -n "This will delete existing wallets, continue (y/n)? "
+    read answer
+
+    if [[ "$answer" != "y" && "$answer" != "Y" ]]; then
+        exit 0
+    fi
+
+    recreate_boot_directories
     echo "" > $genesis_log
 
     echo "Generating public keys"
@@ -85,7 +98,7 @@ main() {
     echo "\`\`\`" >> $BOOT_DIR/keystore.md
   else
     mkdir -p "$GENESIS_DIR" &> /dev/null
-    rm -rf $GENESIS_DIR/geth &> /dev/null || true
+    rm -rf "$chain_data_dir" &> /dev/null || true
     echo "" > $genesis_log
   fi
 
@@ -122,15 +135,19 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: bootstrap [-b]"
+  echo "usage: bootstrap [-b] <chain>"
   echo ""
-  echo "Generate all necessary data to boostrap a node process for this chain."
+  echo "Generate all necessary data to boostrap a node process for this <chain>."
+  echo ""
   echo "The bootstrap phase generates keys for all hardcoded account as well as the"
   echo "genesis block information from the genesis configuration."
   echo ""
   echo "Most instructions and related information can be obtain from this"
   echo "blog post: https://hackernoon.com/setup-your-own-private-proof-of-authority-ethereum-network-with-geth-9a0a3750cda8"
-
+  echo ""
+  echo "Supported <chain>"
+  echo "- geth"
+  echo "- polygon"
   echo ""
   echo "Options"
   echo "    -h          Display help about this script"
