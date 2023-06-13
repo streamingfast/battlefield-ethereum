@@ -20,6 +20,7 @@ export miner_firehose_log="$RUN_DIR/miner.firelog"
 export miner_cmd="$geth_bin --datadir ${miner_data_dir}"
 
 export oracle_common_data_dir="$RUN_DIR/data/oracle_common"
+export oracle_common_chain_data_dir="$oracle_common_data_dir/geth"
 export oracle_common_bootstrap_dir="$oracle_common_data_dir/bootstrap"
 export oracle_common_log="$RUN_DIR/oracle_common.log"
 export oracle_common_firehose_log="$oracle_common_data_dir/oracle.firelog"
@@ -27,6 +28,7 @@ export oracle_common_transaction_log="$oracle_common_data_dir/oracle.md"
 export oracle_common_cmd="$geth_bin --datadir ${oracle_common_data_dir}"
 
 export oracle_polygon_data_dir="$RUN_DIR/data/oracle_polygon"
+export oracle_polygon_chain_data_dir="$oracle_polygon_data_dir/bor"
 export oracle_polygon_bootstrap_dir="$oracle_polygon_data_dir/bootstrap"
 export oracle_polygon_log="$RUN_DIR/oracle_polygon.log"
 export oracle_polygon_firehose_log="$oracle_polygon_data_dir/oracle.firelog"
@@ -91,7 +93,15 @@ recreate_data_directories() {
       cp -a "$BOOT_DIR/static-nodes.json" "$data_dir/geth"
     fi
 
-    if [[ $component == "miner" || $component == "oracle_common" ]]; then
+    if [[ $component == "miner" ]]; then
+      cp -a "$BOOT_DIR/nodekey" "$data_dir/geth"
+
+      # Ensure miner bootstrap with correct data when using polygon chain
+      cp -a "$GENESIS_DIR/geth" "$data_dir/bor"
+      cp -a "$BOOT_DIR/nodekey" "$data_dir/bor"
+    fi
+
+    if [[ $component == "oracle_common" ]]; then
       cp -a "$BOOT_DIR/nodekey" "$data_dir/geth"
     fi
 

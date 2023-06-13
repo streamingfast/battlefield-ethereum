@@ -7,7 +7,7 @@ source "$ROOT/bin/library.sh"
 parent_pid="$$"
 miner_pid=""
 syncer_anvil_pid=""
-syncer_geth_pid=""
+syncer_pid=""
 current_dir=`pwd`
 log_file=""
 
@@ -38,11 +38,33 @@ main() {
     chain="$1"; shift
   fi
 
+  if [[ $chain == "anvil" ]]; then
+      syncer_cmd="$syncer_anvil_cmd"
+      syncer_log="$syncer_anvil_log"
+      syncer_firehose_log="$syncer_anvil_firehose_log"
+  elif [[ $chain == "geth" ]]; then
+      syncer_cmd="$syncer_geth_cmd"
+      syncer_log="$syncer_geth_log"
+      syncer_firehose_log="$syncer_geth_firehose_log"
+      syncer_genesis_json="$syncer_geth_genesis_json"
+  elif [[ $chain == "polygon" ]]; then
+      syncer_cmd="$syncer_polygon_cmd"
+      syncer_log="$syncer_polygon_log"
+      syncer_firehose_log="$syncer_polygon_firehose_log"
+      syncer_genesis_json="$syncer_polygon_genesis_json"
+  elif [[ $chain == "erigon" ]]; then
+      syncer_cmd="$syncer_erigon_cmd"
+      syncer_log="$syncer_erigon_log"
+      syncer_firehose_log="$syncer_erigon_firehose_log"
+  else
+      usage_error "The <chain> argument must be geth, polygon or erigon are supported"
+  fi
+
   set -e
-  if [[ "$chain" == "geth" ]]; then
+  if [[ "$chain" == "geth" || "$chain" == "polygon"  ]]; then
     killall $geth_bin &> /dev/null || true
 
-    recreate_data_directories miner syncer_geth syncer_oe
+    recreate_data_directories miner syncer_geth syncer_polygon
 
     is_legacy_geth="`is_geth_version $geth_bin 'Version: 1.9.1[0-3]'`"
 
@@ -60,44 +82,43 @@ main() {
       ($miner_cmd \
         $miner_version_dependent_args \
         --allow-insecure-unlock \
+        --keystore="/Users/maoueh/work/sf/ethereum.battlefield/run/data/miner/keystore" \
+        --unlock=821b55d8abe79bc98f05eb675fdc50dfe796b7ab \
+        --password="/Users/maoueh/work/sf/ethereum.battlefield/run/data/miner/keystore/passphrase.txt" \
         --mine \
         --port=30303 \
         --networkid=1515 \
-        --nodiscover $@ 1> $miner_firehose_log 2> $miner_log) &
+        --nodiscover --verbosity 10 $@ 1> $miner_firehose_log 2> $miner_log) &
       miner_pid=$!
 
       monitor "miner" $miner_pid $parent_pid "$miner_log" &
     fi
 
     if [[ $component == "all" || $component == "syncer_only" ]]; then
-      echo "Starting Geth syncer process (log `relpath $syncer_geth_log`)"
+        echo "Starting syncer process (log `relpath $syncer_log`)"
 
-      ($syncer_geth_cmd \
-        $syncer_version_dependent_args \
-        --firehose-enabled \
-        --firehose-genesis-file="$syncer_geth_genesis_json" \
-        --syncmode="full" \
-        --port=30313 \
-        --networkid=1515 \
-        --nodiscover $@ 1> $syncer_geth_firehose_log 2> $syncer_geth_log) &
-      syncer_geth_pid=$!
-
-      monitor "syncer_geth" $syncer_geth_pid $parent_pid "$syncer_geth_log" &
+        ($syncer_cmd \
+          $syncer_version_dependent_args \
+          --firehose-enabled \
+          --firehose-genesis-file="$syncer_genesis_json" \
+          --syncmode="full" \
+          --port=30313 \
+          --networkid=1515 \
+          --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
+        syncer_pid=$!
     fi
   elif [[ "$chain" == "anvil" ]]; then
     killall "$anvil_bin" &> /dev/null || true
 
     recreate_data_directories syncer_anvil
 
-    ($syncer_anvil_cmd \
+    ($syncer_cmd \
         --firehose-enabled \
-        $@ 1> $syncer_anvil_log 2> $syncer_anvil_firehose_log) &
-    syncer_anvil_pid=$!
-
-    monitor "syncer_anvil" $syncer_anvil_pid $parent_pid "$syncer_anvil_log" &
-  else
-    usage_error "Chain '$chain' is not recognized, accepting 'geth' or 'anvil'"
+        $@ 1> $syncer_log 2> $syncer_firehose_log) &
+    syncer_pid=$!
   fi
+
+  monitor "syncer" $syncer_pid $parent_pid "$syncer_log" &
 
   echo "Giving 5s for miner to be ready"
   sleep 5
@@ -144,7 +165,7 @@ main() {
   set +e
   while true; do
     # Sometimes, syncing group blocks together so we miss our wanted value, let's use arithmetic to be sure
-    latest=`cat "$syncer_geth_log" | grep -E "Imported new chain segment" | tail -n1 | grep -Eo number=[0-9]+ | grep -Eo [0-9]+`
+    latest=`cat "$syncer_log" | grep -E "Imported new chain segment" | tail -n1 | grep -Eo number=[0-9]+ | grep -Eo [0-9]+`
     if [[ $latest -ge $blockNum ]]; then
       echo ""
       break
@@ -155,20 +176,20 @@ main() {
   done
 
   echo "Statistics"
-  echo " Blocks: `cat "$syncer_geth_firehose_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
-  echo " Trxs: `cat "$syncer_geth_firehose_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
-  echo " Calls: `cat "$syncer_geth_firehose_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
+  echo " Blocks: `cat "$syncer_firehose_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
+  echo " Trxs: `cat "$syncer_firehose_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
+  echo " Calls: `cat "$syncer_firehose_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
   echo ""
-  echo " Balance Changes: `cat "$syncer_geth_firehose_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Event Logs: `cat "$syncer_geth_firehose_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
-  echo " Gas Changes: `cat "$syncer_geth_firehose_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
-  echo " Gas Events: `cat "$syncer_geth_firehose_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
-  echo " Nonce Changes: `cat "$syncer_geth_firehose_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Storage Changes: `cat "$syncer_geth_firehose_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Balance Changes: `cat "$syncer_firehose_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Event Logs: `cat "$syncer_firehose_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
+  echo " Gas Changes: `cat "$syncer_firehose_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
+  echo " Gas Events: `cat "$syncer_firehose_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
+  echo " Nonce Changes: `cat "$syncer_firehose_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Storage Changes: `cat "$syncer_firehose_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
   echo ""
 
   echo "Inspect log files"
-  echo " Firehose logs: cat `relpath "$syncer_geth_firehose_log"`"
+  echo " Firehose logs: cat `relpath "$syncer_firehose_log"`"
   echo " Miner logs: cat `relpath "$miner_log"`"
   echo " Syncer logs: cat `relpath "$syncer_geth_log"`"
   echo ""
@@ -181,7 +202,7 @@ main() {
 
 cleanup() {
   kill_pid "miner" $miner_pid
-  kill_pid "syncer_geth" $syncer_geth_pid
+  kill_pid "syncer_geth" $syncer_pid
   kill_pid "syncer_anvil" $syncer_anvil_pid
 
   # Let's kill everything else

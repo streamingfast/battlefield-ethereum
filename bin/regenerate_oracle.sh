@@ -17,52 +17,78 @@ main() {
   shift $((OPTIND-1))
 
   if [[ $1 == "" ]]; then
-    usage_error "The <chain> argument must be provided, geth (Geth), oe (OpenEthereum) or erigon (Erigon) is supported"
+    usage_error "The <chain> argument must be provided, geth or polygon is supported"
   fi
 
-  if [[ $1 != "geth" && $1 != "oe" && $1 != "erigon" ]]; then
-    usage_error "The <chain> argument must be geth (Geth), oe (OpenEthereum) or erigon (Erigon)"
+  chain="$1"; shift
+  if [[ $chain == "geth" ]]; then
+    oracle_data_dir="$oracle_common_data_dir"
+    oracle_bootstrap_dir="$oracle_common_bootstrap_dir"
+    oracle_chain_data_dir="$oracle_common_chain_data_dir"
+    oracle_firehose_log="$oracle_common_firehose_log"
+    oracle_transaction_log="$oracle_common_transaction_log"
+
+    recreate_data_directories oracle_common
+  elif [[ $chain == "polygon" ]]; then
+    oracle_data_dir="$oracle_polygon_data_dir"
+    oracle_bootstrap_dir="$oracle_polygon_bootstrap_dir"
+    oracle_chain_data_dir="$oracle_polygon_chain_data_dir"
+    oracle_firehose_log="$oracle_polygon_firehose_log"
+    oracle_transaction_log="$oracle_polygon_transaction_log"
+
+    recreate_data_directories oracle_polygon
+  else
+    usage_error "The <chain> argument must be geth or polygon"
   fi
 
-  grep_pattern="Version: 1.9.1[0-3]"
-  if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
-    echo "You need Geth version between 1.9.10 - 1.9.13 to generate the Oracle data."
-    echo "This is because it's our smallest supported version and generating the Oracle"
-    echo "data with an higher version creates an incompatible database version."
-    echo ""
-    echo "By doing it with 1.9.10 - 1.9.13, the generated database version is lower"
-    echo "and is upgraded on the fly by newer version like 1.9.25 so it's possible"
-    echo "to validate all supported versions."
-    echo ""
-    echo "For github.com/streamingfast/go-ethereum fork, you should be able to checkout"
-    echo "tag 'v1.9.10-dm', compile 'geth' using 'go install ./cmd/geth' and re-run this"
-    echo "script to properly update bootstrap data."
-    echo ""
-    echo "The version check was performed on this output (geth version 2> /dev/null)"
-    echo ""
-    $geth_bin version 2>/dev/null
-    echo ""
-    echo "And by grepping for 'grep -E \"$grep_pattern\"'"
-    exit 1
+  if [[ $chain == "geth" ]]; then
+    grep_pattern="Version: 1.9.1[0-3]"
+    if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
+      echo "You need Geth version between 1.9.10 - 1.9.13 to generate the Oracle data."
+      echo "This is because it's our smallest supported version and generating the Oracle"
+      echo "data with an higher version creates an incompatible database version."
+      echo ""
+      echo "By doing it with 1.9.10 - 1.9.13, the generated database version is lower"
+      echo "and is upgraded on the fly by newer version like 1.9.25 so it's possible"
+      echo "to validate all supported versions."
+      echo ""
+      echo "For github.com/streamingfast/go-ethereum fork, you should be able to checkout"
+      echo "tag 'v1.9.10-dm', compile 'geth' using 'go install ./cmd/geth' and re-run this"
+      echo "script to properly update bootstrap data."
+      echo ""
+      echo "The version check was performed on this output (geth version 2> /dev/null)"
+      echo ""
+      $geth_bin version 2>/dev/null
+      echo ""
+      echo "And by grepping for 'grep -E \"$grep_pattern\"'"
+      exit 1
+    fi
   fi
 
   set -e
 
   if [[ $copy_only == "" ]]; then
-    ./bin/generate_local.sh -l "$oracle_transaction_log"
+    ./bin/generate_local.sh -l "$oracle_transaction_log" $chain
   fi
-
-  recreate_data_directories oracle
 
   echo ""
   echo "Copying references file (genesis, data, .firelog) to oracle files..."
-  rm -rf $oracle_data_dir/geth &> /dev/null || true
+  rm -rf $oracle_chain_data_dir &> /dev/null || true
   rm -rf $oracle_data_dir/genesis &> /dev/null || true
 
-  cp -a "$GENESIS_DIR/geth" "$oracle_data_dir/genesis"
+  mkdir "$oracle_data_dir/genesis"
   cp -a "$BOOT_DIR/genesis.json" "$oracle_data_dir/genesis/genesis.json"
   cp -a "$BOOT_DIR/chainspec.json" "$oracle_data_dir/genesis/chainspec.json"
-  cp -a $miner_data_dir/geth $oracle_data_dir
+
+  if [[ $chain == "geth" ]]; then
+    cp -a "$GENESIS_DIR/geth" "$oracle_data_dir/genesis"
+    cp -a $miner_data_dir/geth $oracle_data_dir
+  elif [[ $chain == "polygon" ]]; then
+    cp -a "$GENESIS_DIR/bor" "$oracle_data_dir/genesis"
+    cp -a $miner_data_dir/bor $oracle_data_dir
+  fi
+
+  # This is correct, for now in all cases we run the same geth binary for both geth and polygon
   cp $syncer_geth_firehose_log $oracle_firehose_log
 
   # Remove TRX_ENTER_POOL elements (we do not compare them currently)
@@ -70,7 +96,7 @@ main() {
   grep -Ev "^FIRE TRX_ENTER_POOL" "$oracle_firehose_log" > "$temporary_firehose_log" && mv "$temporary_firehose_log" "$oracle_firehose_log" &> /dev/null
 
   echo "Launching blocks generation task (and compiling Go code)"
-  go run battlefield.go generate
+  go run battlefield.go generate "$oracle_data_dir"
   echo ""
 
   echo "Compressing oracle bootstrap data"
@@ -83,11 +109,11 @@ main() {
   tar -cf bootstrap.tar --exclude nodekey * > /dev/null
   zstd -14 bootstrap.tar &> /dev/null
 
-  mkdir -p "$oracle_common_bootstrap_dir" "$oracle_common_bootstrap_dir/mindreader" &> /dev/null
-  cp bootstrap.tar.zst "$oracle_common_bootstrap_dir" &> /dev/null
-  cp keystore.zip "$oracle_common_bootstrap_dir" &> /dev/null
-  cp $BOOT_DIR/genesis.json "$oracle_common_bootstrap_dir/mindreader" &> /dev/null
-  cp $BOOT_DIR/keystore.md "$oracle_common_bootstrap_dir" &> /dev/null
+  mkdir -p "$oracle_bootstrap_dir" "$oracle_bootstrap_dir/mindreader" &> /dev/null
+  cp bootstrap.tar.zst "$oracle_bootstrap_dir" &> /dev/null
+  cp keystore.zip "$oracle_bootstrap_dir" &> /dev/null
+  cp $BOOT_DIR/genesis.json "$oracle_bootstrap_dir/mindreader" &> /dev/null
+  cp $BOOT_DIR/keystore.md "$oracle_bootstrap_dir" &> /dev/null
 
   echo ""
   echo "Important: You should commit the changes before running './bin/compare_vs_oracle.sh geth'."
