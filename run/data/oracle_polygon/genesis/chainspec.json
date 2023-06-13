@@ -1,0 +1,183 @@
+{
+  "name": "Battlefield",
+  "engine": {
+    "clique": {
+      "params": {
+        "period": 1,
+        "epoch": 30000
+      }
+    }
+  },
+  "params": {
+    "chainID": "0x5eb",
+    "networkID": "0x5eb",
+
+    "gasLimitBoundDivisor": "0x400",
+    "minGasLimit": "0x200",
+    "maxCodeSize": "0x6000",
+    "maxCodeSizeTransition": "0x28d138",
+    "maximumExtraDataSize": "0x80",
+
+    "eip150Transition": "0x0",
+    "eip160Transition": "0x0",
+    "eip161abcTransition": "0x0",
+    "eip161dTransition": "0x0",
+    "eip155Transition": "0x0",
+    "eip140Transition": "0x0",
+    "eip211Transition": "0x0",
+    "eip214Transition": "0x0",
+    "eip658Transition": "0x0",
+    "eip145Transition": "0x0",
+    "eip1014Transition": "0x0",
+    "eip1052Transition": "0x0",
+    "eip1283ReenableTransition": "0x0",
+    "eip1344Transition": "0x0",
+    "eip1706Transition": "0x0",
+    "eip1884Transition": "0x0",
+    "eip2028Transition": "0x0"
+  },
+  "genesis": {
+    "timestamp": "0x5a722c92",
+    "gasLimit": "0x59A5380",
+    "difficulty": "0x1",
+    "extraData": "0x646675736520457468657265756d20426174746c656669656c6420436861696e821b55d8abe79bc98f05eb675fdc50dfe796b7ab0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "seal": {
+      "ethereum": {
+        "nonce": "0x0000000000000000",
+        "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  },
+  "nodes": [
+    "enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303"
+  ],
+  "accounts": {
+    "0x0000000000000000000000000000000000000001": {
+      "builtin": {
+        "name": "ecrecover",
+        "pricing": {
+          "linear": {
+            "base": 3000,
+            "word": 0
+          }
+        }
+      }
+    },
+    "0x0000000000000000000000000000000000000002": {
+      "builtin": {
+        "name": "sha256",
+        "pricing": {
+          "linear": {
+            "base": 60,
+            "word": 12
+          }
+        }
+      }
+    },
+    "0x0000000000000000000000000000000000000003": {
+      "builtin": {
+        "name": "ripemd160",
+        "pricing": {
+          "linear": {
+            "base": 600,
+            "word": 120
+          }
+        }
+      }
+    },
+    "0x0000000000000000000000000000000000000004": {
+      "builtin": {
+        "name": "identity",
+        "pricing": {
+          "linear": {
+            "base": 15,
+            "word": 3
+          }
+        }
+      }
+    },
+    "0x0000000000000000000000000000000000000005": {
+      "builtin": {
+        "name": "modexp",
+        "activate_at": "0x0",
+        "pricing": {
+          "modexp": {
+            "divisor": 20
+          }
+        }
+      }
+    },
+    "0x0000000000000000000000000000000000000006": {
+      "builtin": {
+        "name": "alt_bn128_add",
+        "pricing": {
+          "0x0": {
+            "price": { "alt_bn128_const_operations": { "price": 150 } }
+          }
+        }
+      }
+    },
+    "0x0000000000000000000000000000000000000007": {
+      "builtin": {
+        "name": "alt_bn128_mul",
+        "pricing": {
+          "0x0": {
+            "price": { "alt_bn128_const_operations": { "price": 6000 } }
+          }
+        }
+      }
+    },
+    "0x0000000000000000000000000000000000000008": {
+      "builtin": {
+        "name": "alt_bn128_pairing",
+        "pricing": {
+          "0x0": {
+            "price": { "alt_bn128_pairing": { "base": 45000, "pair": 34000 } }
+          }
+        }
+      }
+    },
+    "0x0000000000000000000000000000000000000009": {
+      "builtin": {
+        "name": "blake2_f",
+        "activate_at": "0x8a61c8",
+        "pricing": {
+          "blake2_f": {
+            "gas_per_round": 1
+          }
+        }
+      }
+    },
+
+    "821b55d8abe79bc98f05eb675fdc50dfe796b7ab": {
+      "balance": "0x2863C1F5CDAE42F9540000000"
+    },
+    "832de76536377dd681de5d26e2d5f6117db11392": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "ac09ba0311b92aaefbf01e5b8aef1e00adb7ad02": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "3d1d003e8799638165c70ff515379b926ca2d123": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "403a09cd493e41d381ebff4ffb01de4c9f2ff1dc": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "92f2187845b98c65e20f51ceb223ffe1c9c1ead2": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "dfe15828305e9968835e7797f063bd8bbec038c0": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "ccd3dd1db00b7c5b493b879f04379287227d200d": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "e8c4b557fb717f7a366d4cb7f8fe41ef1e108c16": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "634c337deb8125ccef2378e811fa3980047ddad0": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    }
+  }
+}
