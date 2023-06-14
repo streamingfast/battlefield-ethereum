@@ -99,19 +99,14 @@ func compareE(cmd *cobra.Command, args []string) error {
 		os.Exit(0)
 	}
 
-	useBash := true
 	command := fmt.Sprintf("diff -C 5 \"%s\" \"%s\" | less", oracleJSONFile, actualJSONFile)
 	if os.Getenv("DIFF_EDITOR") != "" {
 		command = fmt.Sprintf("%s \"%s\" \"%s\"", os.Getenv("DIFF_EDITOR"), oracleJSONFile, actualJSONFile)
-		useBash = false
 	}
 
 	showDiff, wasAnswered := cli.PromptConfirm(fmt.Sprintf(`File %q and %q differs, do you want to see the difference now`, oracleJSONFile, actualJSONFile))
 	if wasAnswered && showDiff {
-		diffCmd := exec.Command(command)
-		if useBash {
-			diffCmd = exec.Command("bash", "-c", command)
-		}
+		diffCmd := exec.Command("bash", "-c", command)
 
 		diffCmd.Stdout = os.Stdout
 		diffCmd.Stderr = os.Stderr
