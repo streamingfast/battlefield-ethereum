@@ -88,7 +88,7 @@ main() {
         --mine \
         --port=30303 \
         --networkid=1515 \
-        --nodiscover --verbosity 10 $@ 1> $miner_firehose_log 2> $miner_log) &
+        --nodiscover --verbosity 4 $@ 1> $miner_firehose_log 2> $miner_log) &
       miner_pid=$!
 
       monitor "miner" $miner_pid $parent_pid "$miner_log" &
@@ -104,7 +104,7 @@ main() {
           --syncmode="full" \
           --port=30313 \
           --networkid=1515 \
-          --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
+          --nodiscover --verbosity 4 $@ 1> $syncer_firehose_log 2> $syncer_log) &
         syncer_pid=$!
     fi
   elif [[ "$chain" == "anvil" ]]; then

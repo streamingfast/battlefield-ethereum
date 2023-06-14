@@ -89,8 +89,12 @@ recreate_data_directories() {
     fi
 
     if [[ $component == "miner" ]]; then
+      cp -a "$KEYSTORE_DIR" "$data_dir/keystore"
+      cp -a "$BOOT_DIR/nodekey" "$data_dir/geth"
+
       # Ensure miner bootstrap with correct data when using polygon chain
-      cp -a "$GENESIS_DIR/geth" "$data_dir/bor"
+      cp -a "$GENESIS_DIR/bor" "$data_dir/bor"
+      cp -a "$BOOT_DIR/nodekey" "$data_dir/bor"
     fi
 
     if [[ $component == "syncer_geth" ]]; then
