@@ -63,6 +63,24 @@ main() {
       echo "And by grepping for 'grep -E \"$grep_pattern\"'"
       exit 1
     fi
+  elif [[ $chain == "polygon" ]]; then
+    grep_pattern="Version: 0.3.7-stable-fh2"
+    if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
+      echo "You need Polygon version 0.3.7-stable-fh2 to generate the Oracle data."
+      echo "This is because it's our smallest supported version and generating the Oracle"
+      echo "data with an higher version creates an incompatible database version."
+      echo ""
+      echo "For github.com/streamingfast/go-ethereum fork, you should be able to checkout"
+      echo "branch 'release/polygon-battlefield-bootstrap', compile 'geth' using"
+      echo "'go install ./cmd/geth' and re-run this script to properly update bootstrap data."
+      echo ""
+      echo "The version check was performed on this output (geth version 2> /dev/null)"
+      echo ""
+      $geth_bin version 2>/dev/null
+      echo ""
+      echo "And by grepping for 'grep -E \"$grep_pattern\"'"
+      exit 1
+    fi
   fi
 
   set -e
