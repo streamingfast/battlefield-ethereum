@@ -73,20 +73,26 @@ main() {
 
   echo ""
   echo "Copying references file (genesis, data, .firelog) to oracle files..."
-  rm -rf $oracle_chain_data_dir &> /dev/null || true
   rm -rf $oracle_data_dir/genesis &> /dev/null || true
 
-  mkdir "$oracle_data_dir/genesis"
-  cp -a "$BOOT_DIR/genesis.json" "$oracle_data_dir/genesis/genesis.json"
-  cp -a "$BOOT_DIR/chainspec.json" "$oracle_data_dir/genesis/chainspec.json"
+  # We create the "genesis" folder by copying the chain data to it, so don't create it prior!
 
   if [[ $chain == "geth" ]]; then
     cp -a "$GENESIS_DIR/geth" "$oracle_data_dir/genesis"
-    cp -a $miner_data_dir/geth $oracle_data_dir
+    cp -a $miner_data_dir/geth "$oracle_data_dir"
+    cp -a $BOOT_DIR/nodekey "$oracle_data_dir/geth"
   elif [[ $chain == "polygon" ]]; then
     cp -a "$GENESIS_DIR/bor" "$oracle_data_dir/genesis"
-    cp -a $miner_data_dir/bor $oracle_data_dir
+    cp -a $miner_data_dir/bor "$oracle_data_dir"
+    cp -a $BOOT_DIR/nodekey "$oracle_data_dir/polygon"
   fi
+
+  # "genesis" folder exist reaching this point
+  cp -a "$BOOT_DIR/genesis.json" "$oracle_data_dir/genesis/genesis.json"
+  cp -a "$BOOT_DIR/chainspec.json" "$oracle_data_dir/genesis/chainspec.json"
+
+  # Remove nodekey, we don't want the syncer when picking up this genesis folder to pick it up
+  rm -rf $oracle_data_dir/genesis/nodekey &> /dev/null || true
 
   # This is correct, for now in all cases we run the same geth binary for both geth and polygon
   cp $syncer_geth_firehose_log $oracle_firehose_log

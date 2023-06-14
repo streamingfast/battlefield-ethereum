@@ -84,33 +84,20 @@ recreate_data_directories() {
     mkdir -p "$data_dir" &> /dev/null
 
     if [[ $component == "miner" || $component == "syncer_geth" || $component == "bootstrap" ]]; then
-      cp -a "$KEYSTORE_DIR" "$data_dir/keystore"
       cp -a "$GENESIS_DIR/geth" "$data_dir/geth"
       cp -a "$genesis_json" "$data_dir/"
+    fi
+
+    if [[ $component == "miner" ]]; then
+      # Ensure miner bootstrap with correct data when using polygon chain
+      cp -a "$GENESIS_DIR/geth" "$data_dir/bor"
     fi
 
     if [[ $component == "syncer_geth" ]]; then
       cp -a "$BOOT_DIR/static-nodes.json" "$data_dir/geth"
     fi
 
-    if [[ $component == "miner" ]]; then
-      cp -a "$BOOT_DIR/nodekey" "$data_dir/geth"
-
-      # Ensure miner bootstrap with correct data when using polygon chain
-      cp -a "$GENESIS_DIR/geth" "$data_dir/bor"
-      cp -a "$BOOT_DIR/nodekey" "$data_dir/bor"
-    fi
-
-    if [[ $component == "oracle_common" ]]; then
-      cp -a "$BOOT_DIR/nodekey" "$data_dir/geth"
-    fi
-
-    if [[ $component == "oracle_polygon" ]]; then
-      cp -a "$BOOT_DIR/nodekey" "$data_dir/bor"
-    fi
-
     if [[ $component == "syncer_polygon" ]]; then
-      cp -a "$KEYSTORE_DIR" "$data_dir/keystore"
       cp -a "$GENESIS_DIR/bor" "$data_dir/bor"
       cp -a "$genesis_json" "$data_dir/"
       cp -a "$BOOT_DIR/static-nodes.json" "$data_dir/bor"

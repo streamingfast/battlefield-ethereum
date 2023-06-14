@@ -1,18 +1,16 @@
 .DS_Store
 
 .envrc
-/boot/genesis/alloc.json
-/boot/genesis/keystore
 /boot/genesis/geth/nodekey
 /boot/genesis/bor/nodekey
+/boot/genesis/alloc.json
+/boot/genesis/keystore
 /contract/build/
 /run/data/bootstrap
 /run/data/miner
 /run/data/syncer*
-/run/data/oracle_common/geth/nodekey
-/run/data/oracle_common/history
-/run/data/oracle_polygon/bor/nodekey
-/run/data/oracle_polygon/history
+/run/data/oracle_common/geth.ipc
+/run/data/oracle_polygon/bor.ipc
 /run/miner.dmlog
 /run/syncer*.dmlog
 /run/miner.firelog

@@ -103,9 +103,10 @@ func compareE(cmd *cobra.Command, args []string) error {
 	command := fmt.Sprintf("diff -C 5 \"%s\" \"%s\" | less", oracleJSONFile, actualJSONFile)
 	if os.Getenv("DIFF_EDITOR") != "" {
 		command = fmt.Sprintf("%s \"%s\" \"%s\"", os.Getenv("DIFF_EDITOR"), oracleJSONFile, actualJSONFile)
+		useBash = false
 	}
 
-	showDiff, wasAnswered := cli.AskConfirmation(`File %q and %q differs, do you want to see the difference now`, oracleJSONFile, actualJSONFile)
+	showDiff, wasAnswered := cli.PromptConfirm(fmt.Sprintf(`File %q and %q differs, do you want to see the difference now`, oracleJSONFile, actualJSONFile))
 	if wasAnswered && showDiff {
 		diffCmd := exec.Command(command)
 		if useBash {
@@ -126,7 +127,7 @@ func compareE(cmd *cobra.Command, args []string) error {
 	fmt.Printf("    %s\n", command)
 	fmt.Println("")
 
-	acceptDiff, wasAnswered := cli.AskConfirmation(`Do you want to accept %q as the new %q right now`, actualJSONFile, oracleJSONFile)
+	acceptDiff, wasAnswered := cli.PromptConfirm(fmt.Sprintf(`Do you want to accept %q as the new %q right now`, actualJSONFile, oracleJSONFile))
 	if wasAnswered && acceptDiff {
 		cli.CopyFile(actualJSONFile, oracleJSONFile)
 		cli.CopyFile(actualFirehoseLogFile, oracleFirehoseLogFile)
