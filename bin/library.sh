@@ -105,6 +105,7 @@ recreate_data_directories() {
       cp -a "$GENESIS_DIR/bor" "$data_dir/bor"
       cp -a "$genesis_json" "$data_dir/"
       cp -a "$BOOT_DIR/static-nodes.json" "$data_dir/bor"
+      cp -a "$BOOT_DIR/syncer_polygon.config.toml" "$data_dir/config.toml"
     fi
   done
 }
