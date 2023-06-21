@@ -7,8 +7,8 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/spf13/cobra v1.6.1
 	github.com/streamingfast/cli v0.0.4-0.20230610024659-0c1862bfd186
-	github.com/streamingfast/firehose-ethereum v1.4.6-0.20230621174021-736ac9ec2dda
-	github.com/streamingfast/firehose-ethereum/types v0.0.0-20230621174021-736ac9ec2dda
+	github.com/streamingfast/firehose-ethereum v1.4.6-0.20230621191929-7005c522c31f
+	github.com/streamingfast/firehose-ethereum/types v0.0.0-20230621191929-7005c522c31f
 	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0
 	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091
 	github.com/stretchr/testify v1.8.3
@@ -66,11 +66,11 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
 	github.com/streamingfast/atm v0.0.0-20220131151839-18c87005e680 // indirect
-	github.com/streamingfast/bstream v0.0.2-0.20230510131449-6b591d74130d // indirect
+	github.com/streamingfast/bstream v0.0.2-0.20230619183735-f8325d186119 // indirect
 	github.com/streamingfast/dbin v0.0.0-20210809205249-73d5eca35dc5 // indirect
-	github.com/streamingfast/dgrpc v0.0.0-20230616195911-1a7e8a5c5ca4 // indirect
+	github.com/streamingfast/dgrpc v0.0.0-20230621153617-bc715cdb9fd1 // indirect
 	github.com/streamingfast/dmetrics v0.0.0-20230516031116-28fcfeb4b9ed // indirect
-	github.com/streamingfast/dstore v0.1.1-0.20230512204716-ca0e4973e4f4 // indirect
+	github.com/streamingfast/dstore v0.1.1-0.20230620124109-3924b3b36c77 // indirect
 	github.com/streamingfast/eth-go v0.0.0-20230410173454-433bd8803da1 // indirect
 	github.com/streamingfast/opaque v0.0.0-20210811180740-0c01d37ea308 // indirect
 	github.com/streamingfast/pbgo v0.0.6-0.20221020131607-255008258d28 // indirect

@@ -9,7 +9,9 @@
 /run/data/bootstrap
 /run/data/miner
 /run/data/syncer*
+/run/data/oracle_common/bor
 /run/data/oracle_common/geth.ipc
+/run/data/oracle_polygon/geth
 /run/data/oracle_polygon/bor.ipc
 /run/miner.dmlog
 /run/syncer*.dmlog
