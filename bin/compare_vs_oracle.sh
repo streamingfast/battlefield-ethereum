@@ -186,14 +186,16 @@ main() {
       sleep 5
     done
 
+    if [[ $chain == "geth" ]]; then
+      # Didn't find a way to send command output to $syncer_log without breaking the syncer writing to it to
+      # Easiest for now is to send everything to `/dev/null`.
+      bash -c "$syncer_geth_addpeer" &> /dev/null
+    fi
+
     echo "Waiting for syncer to reach block #$blockNum"
 
     set +e
     while true; do
-      if [[ $chain == "geth" ]]; then
-          $syncer_geth_addpeer
-      fi
-
       latest=`cat "$syncer_firehose_log" | grep -E "FIRE FINALIZE_BLOCK [0-9]+" | tail -n1 | grep -Eo [0-9]+`
       if [[ $latest -ge $blockNum ]]; then
         echo ""
