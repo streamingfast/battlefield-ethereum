@@ -46,7 +46,7 @@ export syncer_geth_log="$RUN_DIR/syncer_geth.log"
 export syncer_geth_firehose_log="$RUN_DIR/syncer_geth.firelog"
 export syncer_geth_genesis_json="$syncer_geth_data_dir/genesis.json"
 export syncer_geth_cmd="$geth_bin --datadir ${syncer_geth_data_dir}"
-export syncer_geth_addpeer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $geth_bin attach ${syncer_geth_data_dir}/geth.ipc"
+export syncer_geth_add_peer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $geth_bin attach ${syncer_geth_data_dir}/geth.ipc"
 
 export syncer_erigon_data_dir="$RUN_DIR/data/syncer_erigon"
 export syncer_erigon_log="$RUN_DIR/syncer_erigon.log"
@@ -127,8 +127,8 @@ monitor() {
 
       echo "Process $name ($pid) died, exiting parent"
       if [[ "$process_log" != "" ]]; then
-        echo "Last 25 lines of log"
-        tail -n 25 $process_log
+        echo "Last 50 lines of log"
+        tail -n 50 $process_log
 
         echo
         echo "See full logs with 'less `relpath $process_log`'"

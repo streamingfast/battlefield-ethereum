@@ -88,6 +88,7 @@ main() {
         --mine \
         --port=30303 \
         --networkid=1515 \
+        --miner.etherbase=821b55d8abe79bc98f05eb675fdc50dfe796b7ab \
         --nodiscover --verbosity 4 $@ 1> $miner_firehose_log 2> $miner_log) &
       miner_pid=$!
 
@@ -220,7 +221,7 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: generate_local.sh [-w] [-l <logFile>] [<component>] [<chain>]"
+  echo "usage: generate_local.sh [-w] [-l <logFile>] [<(miner_only|syncer_only)>] [<chain>]"
   echo ""
   echo ""
   echo "Options"

@@ -30,7 +30,9 @@ main() {
   fi
 
   chain="$1"; shift
+  component="$1"; shift
   trap cleanup EXIT
+
 
   killall $anvil_bin &> /dev/null || true
   killall $geth_bin &> /dev/null || true
@@ -117,7 +119,7 @@ main() {
 
     monitor "oracle" $oracle_pid $parent_pid "$oracle_log" &
 
-    if [[ $chain == "geth" ]]; then
+    if [[ $chain == "geth" && $component != "miner_only" ]]; then
       # We define it to a flag already defined otherwise the empty string is caught as an argument!
       authFlags="--networkid=1515"
       if [[ `is_authrpc_supported` == "true" ]]; then
@@ -125,18 +127,20 @@ main() {
       fi
 
       echo "Starting syncer process (log `relpath $syncer_log`)"
+      # --firehose-enabled \
+      # --firehose-genesis-file="$syncer_geth_genesis_json" \
       ($syncer_geth_cmd \
-          --firehose-enabled \
-          --firehose-genesis-file="$syncer_geth_genesis_json" \
           --syncmode="full" \
+          --vmtrace \
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3" \
           --${httpFlagPrefix}port=8555 \
           --port=30313 \
           --networkid=1515 \
           "$authFlags" \
+          "--authrpc.port=9555" \
           --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
-    elif [[ $chain == "polygon" ]]; then
+    elif [[ $chain == "polygon" && $component != "miner_only" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_polygon_cmd \
           --config="$syncer_polygon_data_dir/config.toml" \
@@ -150,7 +154,7 @@ main() {
           --authrpc.port=9555 \
           --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
-    elif [[ $chain == "erigon" ]]; then
+    elif [[ $chain == "erigon" && $component != "miner_only" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_erigon_cmd --firehose-enabled \
           --firehose-genesis-file="$syncer_erigon_genesis_json" \
@@ -171,7 +175,9 @@ main() {
       syncer_pid=$!
     fi
 
-    monitor "syncer" $syncer_pid $parent_pid "$syncer_log" &
+    if [[ $component != "miner_only" ]]; then
+      monitor "syncer" $syncer_pid $parent_pid "$syncer_log" &
+    fi
 
     while true; do
       blockNumHex=`curl -s -X POST -H 'Content-Type: application/json' localhost:8545 --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r .result | sed 's/0x//'`
@@ -182,27 +188,32 @@ main() {
         break
       fi
 
-      echo "Giving 5s for oracle to start completely"
+      echo "Giving +5s for oracle to start completely"
       sleep 5
     done
+
+    if [[ $component == "miner_only" ]]; then
+      echo "Miner only specified, waiting forever in this state"
+      sleep 500000000
+    fi
 
     if [[ $chain == "geth" ]]; then
       # Didn't find a way to send command output to $syncer_log without breaking the syncer writing to it to
       # Easiest for now is to send everything to `/dev/null`.
-      bash -c "$syncer_geth_addpeer" &> /dev/null
+      bash -c "$syncer_geth_add_peer" &> /dev/null
     fi
 
     echo "Waiting for syncer to reach block #$blockNum"
 
     set +e
     while true; do
-      latest=`cat "$syncer_firehose_log" | grep -E "FIRE FINALIZE_BLOCK [0-9]+" | tail -n1 | grep -Eo [0-9]+`
+      latest=`cat "$syncer_firehose_log" | grep -E "FIRE BLOCK [0-9]+" | tail -n1 | cut -d ' ' -f 3`
       if [[ $latest -ge $blockNum ]]; then
         echo ""
         break
       fi
 
-      echo "Giving 5s for syncer to complete syncing"
+      echo "Giving +5s for syncer to complete syncing"
       sleep 5
     done
   fi
@@ -266,7 +277,7 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: compare_vs_oracle.sh [-s] [-n] <chain>"
+  echo "usage: compare_vs_oracle.sh [-s] [-n] <chain> [<(miner_only)>]"
   echo ""
   echo "The <chain> parameter must be either 'geth' (Geth) or 'oe' (OpenEthereum)."
   echo ""
