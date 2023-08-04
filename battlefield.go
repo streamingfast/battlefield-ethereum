@@ -1,41 +1,33 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
-	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	pbts "github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/cobra"
 	"github.com/streamingfast/cli"
 	. "github.com/streamingfast/cli"
 	"github.com/streamingfast/firehose-ethereum/codec"
+	"github.com/streamingfast/firehose-ethereum/tools"
 	"github.com/streamingfast/firehose-ethereum/types"
 	pbeth "github.com/streamingfast/firehose-ethereum/types/pb/sf/ethereum/type/v2"
 	"github.com/streamingfast/jsonpb"
 	"github.com/streamingfast/logging"
-	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
+	"google.golang.org/protobuf/proto"
 )
 
-var fixedTimestamp *pbts.Timestamp
 var zlog, _ = logging.PackageLogger("battlefield", "github.com/streamingfast/battlefield-ethereum")
 
 func init() {
 	logging.InstantiateLoggers()
-
-	fixedTime, _ := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
-	fixedTimestamp, _ = ptypes.TimestampProto(fixedTime)
 }
 
 func main() {
@@ -67,123 +59,208 @@ func generateE(cmd *cobra.Command, args []string) error {
 	oracleDataDir := args[0]
 
 	oracleFirehoseLogFile := filepath.Join(oracleDataDir, "oracle.firelog")
-	oracleJSONFile := filepath.Join(oracleDataDir, "oracle.json")
 
-	oracleBlocks := readActualBlocks(oracleFirehoseLogFile)
-	zlog.Info("read all blocks from Firehose log file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleFirehoseLogFile))
+	oracleBlocks := readBlocks(oracleFirehoseLogFile)
+	zlog.Info("read all oracle blocks from Firehose log file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleFirehoseLogFile))
 
-	fmt.Printf("Writing oracle blocks to disk...")
-	writeActualBlocks(oracleJSONFile, oracleBlocks)
+	writeBlocks(oracleBlocks)
 
-	fmt.Println(" done")
+	fmt.Println("done")
 	return nil
 }
 
-func compareE(cmd *cobra.Command, args []string) error {
+func compareE(_ *cobra.Command, args []string) error {
 	oracleDataDir := args[0]
 	actualFirehoseLogFile := args[1]
 
-	actualJSONFile := strings.ReplaceAll(actualFirehoseLogFile, ".firelog", ".json")
 	oracleFirehoseLogFile := filepath.Join(oracleDataDir, "oracle.firelog")
-	oracleJSONFile := filepath.Join(oracleDataDir, "oracle.json")
+	oracleBlocks := readBlocks(oracleFirehoseLogFile)
+	zlog.Info("read all oracle blocks from Firehose log file", zap.Int("block_count", len(oracleBlocks)), zap.String("file", oracleFirehoseLogFile))
 
-	actualBlocks := readActualBlocks(actualFirehoseLogFile)
-	zlog.Info("read all blocks from Firehose log file", zap.Int("block_count", len(actualBlocks)), zap.String("file", actualFirehoseLogFile))
+	actualBlocks := readBlocks(actualFirehoseLogFile)
+	zlog.Info("read all actual blocks from Firehose log file", zap.Int("block_count", len(actualBlocks)), zap.String("file", actualFirehoseLogFile))
 
-	writeActualBlocks(actualJSONFile, actualBlocks)
+	writeBlocks(actualBlocks)
 
 	zlog.Info("blocks read, now comparing with reference")
-
-	if isSameBlocks(oracleJSONFile, actualJSONFile) {
-		fmt.Println("Files are equal, all good")
-		os.Exit(0)
+	hasDifferences := false
+	if len(oracleBlocks) != len(actualBlocks) {
+		fmt.Printf("Oracle and actual blocks count differs, oracle has %d blocks, actual has %d blocks\n", len(oracleBlocks), len(actualBlocks))
+		hasDifferences = true
 	}
 
-	command := fmt.Sprintf("diff -C 5 \"%s\" \"%s\" | less", oracleJSONFile, actualJSONFile)
-	if os.Getenv("DIFF_EDITOR") != "" {
-		command = fmt.Sprintf("%s \"%s\" \"%s\"", os.Getenv("DIFF_EDITOR"), oracleJSONFile, actualJSONFile)
-	}
+	// displayDiff := true
 
-	showDiff, wasAnswered := cli.PromptConfirm(fmt.Sprintf(`File %q and %q differs, do you want to see the difference now`, oracleJSONFile, actualJSONFile))
-	if wasAnswered && showDiff {
-		diffCmd := exec.Command("bash", "-c", command)
+	upToBlock := uint64(math.Min(float64(len(oracleBlocks)), float64(len(actualBlocks))))
+	for i := uint64(0); i < upToBlock; i++ {
+		oracle := oracleBlocks[i]
+		actual := actualBlocks[i]
 
-		diffCmd.Stdout = os.Stdout
-		diffCmd.Stderr = os.Stderr
+		// diff := false
+		// for _, trxTrace := range actual.Block.TransactionTraces {
+		// 	hash := eth.Hash(trxTrace.Hash).String()
 
-		cli.NoError(diffCmd.Run(), "Diff command failed to run properly")
+		// 	if len(trxTrace.Calls) == 0 {
+		// 		continue
+		// 	}
 
-		fmt.Println("You can run the following command to see it manually later:")
-	} else {
-		fmt.Println("Not showing diff between files, run the following command to see it manually:")
-	}
+		// 	rootCall := trxTrace.Calls[0]
+		// 	if len(rootCall.GasChanges) == 0 {
+		// 		continue
+		// 	}
 
-	fmt.Println()
-	fmt.Printf("    %s\n", command)
-	fmt.Println("")
+		// 	rootGasChange := rootCall.GasChanges[0]
+		// 	if rootCall.GasChanges[0].NewValue != trxTrace.GasLimit {
+		// 		fmt.Printf("Call index #%d (on trx %s), root gas change %s, new value should be trx trace gasLimit of %d for first gas change\n", rootCall.Index, hash, (*gasChangeView)(rootGasChange), trxTrace.GasLimit)
+		// 		diff = true
+		// 	}
 
-	acceptDiff, wasAnswered := cli.PromptConfirm(fmt.Sprintf(`Do you want to accept %q as the new %q right now`, actualJSONFile, oracleJSONFile))
-	if wasAnswered && acceptDiff {
-		cli.CopyFile(actualJSONFile, oracleJSONFile)
-		cli.CopyFile(actualFirehoseLogFile, oracleFirehoseLogFile)
+		// 	for _, call := range trxTrace.Calls {
+		// 		first := call.GasChanges[0]
+		// 		if first.OldValue != 0 {
+		// 			fmt.Printf("Call index #%d (on trx %s), gas change %s, old value should be 0 for first gas change\n", call.Index, hash, (*gasChangeView)(first))
+		// 			diff = true
+		// 		}
 
-		fmt.Printf("The file %q (and its '.firelog' sibling) is now the new active oracle data\n", actualJSONFile)
-		return nil
-	}
+		// 		last := call.GasChanges[len(call.GasChanges)-1]
+		// 		if last.NewValue != 0 {
+		// 			fmt.Printf("Call index #%d (on trx %s), gas change %s, new value should be 0 for last gas change\n", call.Index, hash, (*gasChangeView)(last))
+		// 			diff = true
+		// 		}
+		// 	}
 
-	fmt.Printf("You can make actual file %q the new oracle file manually by doing:\n", actualJSONFile)
-	fmt.Println("")
-	fmt.Printf("    cp %s %s\n", actualJSONFile, oracleJSONFile)
-	fmt.Println("")
+		// 	lastGasChange := rootCall.GasChanges[len(rootCall.GasChanges)-1]
+		// 	lastBalance := lastGasChange.NewValue
+		// 	if lastGasChange.Reason == pbeth.GasChange_REASON_BUYBACK {
+		// 		// The usage is computed on the last non-buyback gas change, otherwise our last balance is our value before the buyback
+		// 		lastBalance = lastGasChange.OldValue
+		// 	}
 
-	return errors.New("failed")
-}
+		// 	if rootGasChange.NewValue-lastBalance != trxTrace.GasUsed {
+		// 		fmt.Printf("Call index #%d (on trx %s), root call gas change %s and last gas change %s diff (start %d - last balance %d = %d) != trx gasUsed of %d\n",
+		// 			rootCall.Index, hash,
+		// 			(*gasChangeView)(rootGasChange),
+		// 			(*gasChangeView)(lastGasChange),
+		// 			rootGasChange.NewValue, lastBalance, rootGasChange.NewValue-lastBalance,
+		// 			trxTrace.GasUsed,
+		// 		)
+		// 		diff = true
+		// 	}
+		// }
 
-func writeActualBlocks(actualFile string, blocks []*pbeth.Block) {
-	buffer := bytes.NewBuffer(nil)
-	_, err := buffer.WriteString("[\n")
-	cli.NoError(err, "Unable to write list start")
+		// if diff {
+		// 	showDiff, _ := cli.PromptConfirm(fmt.Sprintf(`Actual block %s have invalid gas change, open it`, oracle.Block.AsRef()))
+		// 	if showDiff {
+		// 		diffCmd := exec.Command("code", actual.JSONFile)
 
-	blockCount := len(blocks)
-	if blockCount > 0 {
-		lastIndex := blockCount - 1
-		for i, block := range blocks {
-			out, err := jsonpb.MarshalIndentToString(block, "  ")
-			cli.NoError(err, "Unable to marshal block %q", block.AsRef())
+		// 		diffCmd.Stdout = os.Stdout
+		// 		diffCmd.Stderr = os.Stderr
 
-			_, err = buffer.WriteString(out)
-			cli.NoError(err, "Unable to write block %q", block.AsRef())
+		// 		cli.NoError(diffCmd.Run(), "Diff command failed to run properly")
+		// 	}
 
-			if i != lastIndex {
-				_, err = buffer.WriteString(",\n")
-				cli.NoError(err, "Unable to write block delimiter %q", block.AsRef())
+		// }
+
+		// if true {
+		// 	continue
+		// }
+
+		isEqual, _ := tools.Compare(oracle.Block, actual.Block, false)
+
+		if !isEqual {
+			command := fmt.Sprintf("diff -C 5 \"%s\" \"%s\" | less", oracle.JSONFile, actual.JSONFile)
+			if os.Getenv("DIFF_EDITOR") != "" {
+				command = fmt.Sprintf("%s \"%s\" \"%s\"", os.Getenv("DIFF_EDITOR"), oracle.JSONFile, actual.JSONFile)
+			}
+
+			showDiff, _ := cli.PromptConfirm(fmt.Sprintf(`Block %s between oracle and actual differs, do you want to see the difference now`, oracle.Block.AsRef()))
+			if showDiff {
+				diffCmd := exec.Command("bash", "-c", command)
+
+				diffCmd.Stdout = os.Stdout
+				diffCmd.Stderr = os.Stderr
+
+				cli.NoError(diffCmd.Run(), "Diff command failed to run properly")
+			} else {
+				fmt.Println("You can run the following command to see it manually later:")
+				fmt.Println()
+				fmt.Println(command)
 			}
 		}
 	}
 
-	_, err = buffer.WriteString("]\n")
-	cli.NoError(err, "Unable to write list end")
+	topBlock := uint64(math.Max(float64(len(oracleBlocks)), float64(len(actualBlocks))))
+	for i := upToBlock; i < topBlock; i++ {
+		if i >= uint64(len(oracleBlocks)) {
+			fmt.Printf("Actual has block #%d, oracle does not\n", i)
+			continue
+		}
 
-	var unormalizedStruct []interface{}
-	err = json.Unmarshal(buffer.Bytes(), &unormalizedStruct)
-	cli.NoError(err, "Unable to unmarshal JSON for normalization")
+		if i >= uint64(len(actualBlocks)) {
+			fmt.Printf("Oracle has block %d, actual does not\n", i)
+			continue
+		}
+	}
 
-	normalizedJSON, err := json.MarshalIndent(unormalizedStruct, "", "  ")
-	cli.NoError(err, "Unable to normalize JSON")
+	if hasDifferences {
+		return errors.New("failed")
+	}
 
-	err = ioutil.WriteFile(actualFile, normalizedJSON, os.ModePerm)
-	cli.NoError(err, "Unable to write file %q", actualFile)
+	fmt.Println("All blocks are equals!")
+	return nil
 }
 
-func readActualBlocks(filePath string) []*pbeth.Block {
-	blocks := []*pbeth.Block{}
+func writeBlocks(blocks []*BlockWrapper) {
+	zlog.Info("blocks read, now splitting them into individual files")
+	slices.SortFunc(blocks, func(a, b *BlockWrapper) bool {
+		return a.Block.Number < b.Block.Number
+	})
 
-	file, err := os.Open(filePath)
-	cli.NoError(err, "Unable to open actual blocks file %q", filePath)
+	for _, block := range blocks {
+		data, err := proto.Marshal(block.Block)
+		cli.NoError(err, "Encoding block %q failed", block.Block.AsRef())
+
+		err = os.WriteFile(block.ProtoFile, data, os.ModePerm)
+		cli.NoError(err, "Writing block %q to %q failed", block.Block.AsRef(), block.ProtoFile)
+
+		err = ioutil.WriteFile(block.JSONFile, toJSON(block.Block), os.ModePerm)
+		cli.NoError(err, "Writing block %q to %q failed", block.Block.AsRef(), block.JSONFile)
+	}
+}
+
+func toJSON(block *pbeth.Block) []byte {
+	// Works only for top-level message it seems, seems like a shallow dynamic parsing
+	// msg, err := dynamic.AsDynamicMessage(block)
+	// cli.NoError(err, "Unable to load message for block %q", block.AsRef())
+
+	// out, err := msg.MarshalJSONPB(&jsonpb.Marshaler{EmitDefaults: true, Indent: "  "})
+	// cli.NoError(err, "Unable to marshal message for block %q", block.AsRef())
+
+	out, err := jsonpb.MarshalIndentToString(block, "  ")
+	cli.NoError(err, "Unable to marshal message for block %q", block.AsRef())
+
+	return []byte(out)
+}
+
+type BlockWrapper struct {
+	Block     *pbeth.Block
+	ProtoFile string
+	JSONFile  string
+}
+
+func readBlocks(firelogPath string) []*BlockWrapper {
+	blocks := []*BlockWrapper{}
+
+	firelogDir := filepath.Dir(firelogPath)
+	firelogBase := filepath.Base(firelogPath)
+	firelogTag := firelogBase[:len(firelogBase)-len(filepath.Ext(firelogBase))]
+
+	file, err := os.Open(firelogPath)
+	cli.NoError(err, "Unable to open blocks file %q", firelogPath)
 	defer file.Close()
 
 	reader, err := codec.NewConsoleReader(zlog, make(chan string, 10000))
-	cli.NoError(err, "Unable to create console reader for actual blocks file %q", filePath)
+	cli.NoError(err, "Unable to create console reader for blocks file %q", firelogPath)
 	defer reader.Close()
 
 	go reader.ProcessData(file)
@@ -199,7 +276,12 @@ func readActualBlocks(filePath string) []*pbeth.Block {
 				cli.Ensure(ok, `Read block is not a "pbeth.Block" but should have been`)
 
 				lastBlockRead = sanitizeBlock(block)
-				blocks = append(blocks, lastBlockRead)
+
+				blocks = append(blocks, &BlockWrapper{
+					Block:     lastBlockRead,
+					ProtoFile: filepath.Join(firelogDir, fmt.Sprintf("%s.%d.binpb", firelogTag, block.Number)),
+					JSONFile:  filepath.Join(firelogDir, fmt.Sprintf("%s.%d.json", firelogTag, block.Number)),
+				})
 			}
 		}
 
@@ -209,7 +291,7 @@ func readActualBlocks(filePath string) []*pbeth.Block {
 
 		if err != nil {
 			if lastBlockRead == nil {
-				cli.NoError(err, "Unable to read first block from file %q", filePath)
+				cli.NoError(err, "Unable to read first block from file %q", firelogPath)
 			} else {
 				cli.NoError(err, "Unable to read block from file %q, last block read was %s", lastBlockRead.AsRef())
 			}
@@ -228,47 +310,71 @@ func sanitizeBlock(block *pbeth.Block) *pbeth.Block {
 		}
 	}
 
+	// FIXME: This is temporary until we fix the issue in the Firehose directly, for
+	// now compare without so that diff can go out cleanly.
+	// block = clearOutOrdinalAndGasChanges(block)
+
 	return block
 }
 
-func isSameBlocks(oracleFile string, actualFile string) bool {
-	oracle, err := ioutil.ReadFile(oracleFile)
-	cli.NoError(err, "Unable to read %q", oracleFile)
-
-	actual, err := ioutil.ReadFile(actualFile)
-	cli.NoError(err, "Unable to read %q", actualFile)
-
-	var oracleJSONAsInterface, actualJSONAsInterface interface{}
-
-	err = json.Unmarshal(oracle, &oracleJSONAsInterface)
-	cli.NoError(err, "Oracle file %q is not a valid JSON file", oracleFile)
-
-	err = json.Unmarshal(actual, &actualJSONAsInterface)
-	cli.NoError(err, "Actual file %q is not a valid JSON file", actualFile)
-
-	return assert.ObjectsAreEqualValues(oracleJSONAsInterface, actualJSONAsInterface)
-}
-
-type DiffReporter struct {
-	path  cmp.Path
-	diffs []string
-}
-
-func (r *DiffReporter) PushStep(ps cmp.PathStep) {
-	r.path = append(r.path, ps)
-}
-
-func (r *DiffReporter) Report(rs cmp.Result) {
-	if !rs.Equal() {
-		vx, vy := r.path.Last().Values()
-		r.diffs = append(r.diffs, fmt.Sprintf("%#v:\n\t-: %+v\n\t+: %+v\n", r.path, vx, vy))
+func clearOutOrdinalAndGasChanges(block *pbeth.Block) *pbeth.Block {
+	for _, change := range block.BalanceChanges {
+		change.Ordinal = 0
 	}
+
+	for _, change := range block.CodeChanges {
+		change.Ordinal = 0
+	}
+
+	for _, trxTrace := range block.TransactionTraces {
+		trxTrace.BeginOrdinal = 0
+		trxTrace.EndOrdinal = 0
+
+		for _, log := range trxTrace.Receipt.Logs {
+			log.Ordinal = 0
+		}
+
+		for _, call := range trxTrace.Calls {
+			call.BeginOrdinal = 0
+			call.EndOrdinal = 0
+
+			// call.GasChanges = nil
+
+			for _, creation := range call.AccountCreations {
+				creation.Ordinal = 0
+			}
+
+			for _, log := range call.Logs {
+				log.Ordinal = 0
+			}
+
+			for _, change := range call.BalanceChanges {
+				change.Ordinal = 0
+			}
+
+			for _, change := range call.GasChanges {
+				change.Ordinal = 0
+			}
+
+			for _, change := range call.NonceChanges {
+				change.Ordinal = 0
+			}
+
+			for _, change := range call.StorageChanges {
+				change.Ordinal = 0
+			}
+
+			for _, change := range call.CodeChanges {
+				change.Ordinal = 0
+			}
+		}
+	}
+
+	return block
 }
 
-func (r *DiffReporter) PopStep() {
-	r.path = r.path[:len(r.path)-1]
-}
+type gasChangeView pbeth.GasChange
 
-func (r *DiffReporter) String() string {
-	return strings.Join(r.diffs, "\n")
+func (g *gasChangeView) String() string {
+	return fmt.Sprintf("%d => %d (%s @ %d)", g.OldValue, g.NewValue, g.Reason, g.Ordinal)
 }

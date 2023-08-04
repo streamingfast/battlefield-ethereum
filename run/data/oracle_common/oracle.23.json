@@ -1,0 +1,118 @@
+{
+  "hash": "4621fe41295a5214450a350e3fb2f590e905e790863a96f2d19c869f4881ac8b",
+  "number": "23",
+  "size": "719",
+  "header": {
+    "parentHash": "9e1209a4361ae188494565d18ed80c81d8f401795e3d0cb91946119db57cfa88",
+    "uncleHash": "1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+    "coinbase": "0000000000000000000000000000000000000000",
+    "stateRoot": "5c633ec56821d5a72835302a571a693689b395952897502156ff92dc4ff91db7",
+    "transactionsRoot": "b41c9478ef0048e6edbcfda83caf58cadbee21d03a926cf09eecbc7302a16588",
+    "receiptRoot": "5243564deaa7cf1c0b8442b3dc6b1904c5fe1d7e4c0065c6f7de1d18710c3aff",
+    "logsBloom": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "difficulty": "02",
+    "totalDifficulty": "2f",
+    "number": "23",
+    "gasLimit": "91911232",
+    "gasUsed": "13934",
+    "timestamp": "2022-01-31T21:31:20Z",
+    "extraData": "d98301090a846765746888676f312e31372e358664617277696e000000000000cf29ef7d50266c9ca1970e424687c1f9da7c26b73e98283d864dec3cab501bf0596fd2c1fc227386fcf268d2597288edea16a978907b38ef87b4e4892ed3e35100",
+    "mixHash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "hash": "4621fe41295a5214450a350e3fb2f590e905e790863a96f2d19c869f4881ac8b"
+  },
+  "transactionTraces": [
+    {
+      "to": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
+      "nonce": "58",
+      "gasPrice": "0ba43b7400",
+      "gasLimit": "300000",
+      "input": "41c0e1b5",
+      "v": "0bf9",
+      "r": "2b0d6434d98be6858c367710fff02ed69b86c0b1188a737d3ca55507f363928c",
+      "s": "691797966e89cbb83dd45c2b6685ca1dc3734ee0c58ae8ffd935c9823b051e9f",
+      "gasUsed": "13934",
+      "hash": "2becdee3b9ce9dd9a7274b8f6881e8e8d119ab046502ea90688773ef545731c7",
+      "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "beginOrdinal": "1",
+      "endOrdinal": "12",
+      "status": "SUCCEEDED",
+      "receipt": {
+        "cumulativeGasUsed": "13934",
+        "logsBloom": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "calls": [
+        {
+          "index": 1,
+          "callType": "CALL",
+          "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "address": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
+          "gasLimit": "278936",
+          "gasConsumed": "6804",
+          "input": "41c0e1b5",
+          "executedCode": true,
+          "suicide": true,
+          "balanceChanges": [
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdae42f953fff9e4d",
+              "newValue": "02863c1f5cdaaee529985e1e4d",
+              "reason": "REASON_GAS_BUY",
+              "ordinal": "2"
+            },
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdaaee529985e1e4d",
+              "newValue": "02863c1f5cdaaee529985e1e4e",
+              "reason": "REASON_SUICIDE_REFUND",
+              "ordinal": "7"
+            },
+            {
+              "address": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
+              "oldValue": "01",
+              "reason": "REASON_SUICIDE_WITHDRAW",
+              "ordinal": "8"
+            },
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdaaee529985e1e4e",
+              "newValue": "02863c1f5cdae1b5f023fbc64e",
+              "reason": "REASON_GAS_REFUND",
+              "ordinal": "10"
+            },
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdae1b5f023fbc64e",
+              "newValue": "02863c1f5cdae42f953fff9e4e",
+              "reason": "REASON_REWARD_TRANSACTION_FEE",
+              "ordinal": "11"
+            }
+          ],
+          "nonceChanges": [
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "58",
+              "newValue": "59",
+              "ordinal": "4"
+            }
+          ],
+          "gasChanges": [
+            {
+              "oldValue": "300000",
+              "newValue": "278936",
+              "reason": "REASON_INTRINSIC_GAS",
+              "ordinal": "3"
+            },
+            {
+              "oldValue": "277132",
+              "newValue": "272132",
+              "reason": "REASON_SELF_DESTRUCT",
+              "ordinal": "6"
+            }
+          ],
+          "endOrdinal": "9"
+        }
+      ]
+    }
+  ],
+  "ver": 3
+}

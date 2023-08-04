@@ -1,0 +1,190 @@
+{
+  "hash": "a94a1be242ae506a7a348af54a9cc2a42b6434a7c91e066481ac2b49e3a53efa",
+  "number": "21",
+  "size": "824",
+  "header": {
+    "parentHash": "a1575689d9d7229945f5196fbbd26eb7ce7c383333e5931dba1ab086a41986c2",
+    "uncleHash": "1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+    "coinbase": "0000000000000000000000000000000000000000",
+    "stateRoot": "57c933ab488965f7ec4f358a5479e783708966170aee53ce8a22432c72016bd6",
+    "transactionsRoot": "5cf80cdb53d919ba8102711f2f342cf14ca38693361195569035ee69718349e3",
+    "receiptRoot": "debf757d5f77969673410035d6790205928ec3105f052173c88d63bb29caf74d",
+    "logsBloom": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "difficulty": "02",
+    "totalDifficulty": "2b",
+    "number": "21",
+    "gasLimit": "92091006",
+    "gasUsed": "34989",
+    "timestamp": "2022-01-31T21:31:18Z",
+    "extraData": "d98301090a846765746888676f312e31372e358664617277696e00000000000054d27a6661391f55ed4ddad28c70b4e3ba39d77caf1816df1d13d76a99298ae6005c38f9f3d15b7e9808382a2136b6320b0768d953597436733818312c0764da00",
+    "mixHash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "hash": "a94a1be242ae506a7a348af54a9cc2a42b6434a7c91e066481ac2b49e3a53efa"
+  },
+  "transactionTraces": [
+    {
+      "to": "ec9c1fcee156bf34ba4fb5d38c9cf09df16723ef",
+      "nonce": "56",
+      "gasPrice": "0ba43b7400",
+      "gasLimit": "300000",
+      "input": "41c0e1b5",
+      "v": "0bf9",
+      "r": "bdaddfbedf751a1363ea0a6eaa71e3b0cc07406af12b4ce9ad65a48f29ade828",
+      "s": "6d5b3b2efd66af110b6f5c6dbb38b68a22bb20e17c0ee6fc3847d778219e4b3a",
+      "gasUsed": "13934",
+      "hash": "7a2f3f76b0e561e8b166468ded9a1a72f02d0e7c0f9bdd5b116d5124edaaad72",
+      "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "beginOrdinal": "1",
+      "endOrdinal": "10",
+      "status": "SUCCEEDED",
+      "receipt": {
+        "cumulativeGasUsed": "13934",
+        "logsBloom": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "calls": [
+        {
+          "index": 1,
+          "callType": "CALL",
+          "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "address": "ec9c1fcee156bf34ba4fb5d38c9cf09df16723ef",
+          "gasLimit": "278936",
+          "gasConsumed": "6804",
+          "input": "41c0e1b5",
+          "executedCode": true,
+          "suicide": true,
+          "balanceChanges": [
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdae42f953fff9e4e",
+              "newValue": "02863c1f5cdaaee529985e1e4e",
+              "reason": "REASON_GAS_BUY",
+              "ordinal": "2"
+            },
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdaaee529985e1e4e",
+              "newValue": "02863c1f5cdae1b5f023fbc64e",
+              "reason": "REASON_GAS_REFUND",
+              "ordinal": "8"
+            },
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdae1b5f023fbc64e",
+              "newValue": "02863c1f5cdae42f953fff9e4e",
+              "reason": "REASON_REWARD_TRANSACTION_FEE",
+              "ordinal": "9"
+            }
+          ],
+          "nonceChanges": [
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "56",
+              "newValue": "57",
+              "ordinal": "4"
+            }
+          ],
+          "gasChanges": [
+            {
+              "oldValue": "300000",
+              "newValue": "278936",
+              "reason": "REASON_INTRINSIC_GAS",
+              "ordinal": "3"
+            },
+            {
+              "oldValue": "277132",
+              "newValue": "272132",
+              "reason": "REASON_SELF_DESTRUCT",
+              "ordinal": "6"
+            }
+          ],
+          "endOrdinal": "7"
+        }
+      ]
+    },
+    {
+      "to": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
+      "nonce": "57",
+      "gasPrice": "0ba43b7400",
+      "gasLimit": "300000",
+      "value": "01",
+      "v": "0bfa",
+      "r": "458399fd907fdd39242300d37545ac81cacdc2b1e9bd94be0a1b9cc2d5dc9ede",
+      "s": "23249f93445d94ec6dc99bc1a7b2f1996a550f37a5c00ba86f203efa16fb16fe",
+      "gasUsed": "21055",
+      "index": 1,
+      "hash": "f12a3f9b6e206c1e5a7e8b390b29f6133aa06a7c1709fd636588711a12aa4799",
+      "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "beginOrdinal": "11",
+      "endOrdinal": "21",
+      "status": "SUCCEEDED",
+      "receipt": {
+        "cumulativeGasUsed": "34989",
+        "logsBloom": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "calls": [
+        {
+          "index": 1,
+          "callType": "CALL",
+          "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "address": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
+          "value": "01",
+          "gasLimit": "279000",
+          "gasConsumed": "55",
+          "balanceChanges": [
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdae42f953fff9e4e",
+              "newValue": "02863c1f5cdaaee529985e1e4e",
+              "reason": "REASON_GAS_BUY",
+              "ordinal": "12"
+            },
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdaaee529985e1e4e",
+              "newValue": "02863c1f5cdaaee529985e1e4d",
+              "reason": "REASON_TRANSFER",
+              "ordinal": "16"
+            },
+            {
+              "address": "929bc44bbd41ca0e621dc50f7c7e3204ce026258",
+              "newValue": "01",
+              "reason": "REASON_TRANSFER",
+              "ordinal": "17"
+            },
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdaaee529985e1e4d",
+              "newValue": "02863c1f5cdae0721cca36124d",
+              "reason": "REASON_GAS_REFUND",
+              "ordinal": "19"
+            },
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "02863c1f5cdae0721cca36124d",
+              "newValue": "02863c1f5cdae42f953fff9e4d",
+              "reason": "REASON_REWARD_TRANSACTION_FEE",
+              "ordinal": "20"
+            }
+          ],
+          "nonceChanges": [
+            {
+              "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+              "oldValue": "57",
+              "newValue": "58",
+              "ordinal": "14"
+            }
+          ],
+          "gasChanges": [
+            {
+              "oldValue": "300000",
+              "newValue": "279000",
+              "reason": "REASON_INTRINSIC_GAS",
+              "ordinal": "13"
+            }
+          ],
+          "endOrdinal": "18"
+        }
+      ]
+    }
+  ],
+  "ver": 3
+}

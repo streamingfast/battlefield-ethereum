@@ -219,21 +219,7 @@ main() {
   fi
 
   echo "Statistics"
-  echo " Blocks: `cat "$syncer_firehose_log" | grep "END_BLOCK" | wc -l | tr -d ' '`"
-  echo " Trxs: `cat "$syncer_firehose_log" | grep "END_APPLY_TRX" | wc -l | tr -d ' '`"
-  echo " Calls: `cat "$syncer_firehose_log" | grep "EVM_END_CALL" | wc -l | tr -d ' '`"
-  echo ""
-  echo " Account w/o Code: `cat "$syncer_firehose_log" | grep "ACCOUNT_WITHOUT_CODE" | wc -l | tr -d ' '`"
-  echo " Balance Changes: `cat "$syncer_firehose_log" | grep "BALANCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Created Accounts: `cat "$syncer_firehose_log" | grep "CREATED_ACCOUNT" | wc -l | tr -d ' '`"
-  echo " Code Changes: `cat "$syncer_firehose_log" | grep "CODE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Event Logs: `cat "$syncer_firehose_log" | grep "ADD_LOG" | wc -l | tr -d ' '`"
-  echo " Gas Changes: `cat "$syncer_firehose_log" | grep "GAS_CHANGE" | wc -l | tr -d ' '`"
-  echo " Gas Events: `cat "$syncer_firehose_log" | grep "GAS_EVENT" | wc -l | tr -d ' '`"
-  echo " Keccak Operations: `cat "$syncer_firehose_log" | grep "EVM_KECCAK" | wc -l | tr -d ' '`"
-  echo " Nonce Changes: `cat "$syncer_firehose_log" | grep "NONCE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Suicide Changes: `cat "$syncer_firehose_log" | grep "SUICIDE_CHANGE" | wc -l | tr -d ' '`"
-  echo " Storage Changes: `cat "$syncer_firehose_log" | grep "STORAGE_CHANGE" | wc -l | tr -d ' '`"
+  echo " Blocks: `cat "$syncer_firehose_log" | grep -E "(FIRE BLOCK|END_BLOCK)" | wc -l | tr -d ' '`"
   echo ""
 
   echo "Inspect log files"
