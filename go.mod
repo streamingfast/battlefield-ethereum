@@ -7,8 +7,8 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/spf13/cobra v1.6.1
 	github.com/streamingfast/cli v0.0.4-0.20230610024659-0c1862bfd186
-	github.com/streamingfast/firehose-ethereum v1.4.6-0.20230621191929-7005c522c31f
-	github.com/streamingfast/firehose-ethereum/types v0.0.0-20230621191929-7005c522c31f
+	github.com/streamingfast/firehose-ethereum v1.4.12
+	github.com/streamingfast/firehose-ethereum/types v0.0.0-20230811151536-b9dff86edf7d
 	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0
 	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091
 	github.com/stretchr/testify v1.8.3
@@ -29,7 +29,7 @@ require (
 	github.com/bobg/go-generics/v2 v2.1.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
+	github.com/chzyer/readline v1.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
@@ -66,9 +66,9 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
 	github.com/streamingfast/atm v0.0.0-20220131151839-18c87005e680 // indirect
-	github.com/streamingfast/bstream v0.0.2-0.20230619183735-f8325d186119 // indirect
+	github.com/streamingfast/bstream v0.0.2-0.20230731165201-639b4f347707 // indirect
 	github.com/streamingfast/dbin v0.0.0-20210809205249-73d5eca35dc5 // indirect
-	github.com/streamingfast/dgrpc v0.0.0-20230621153617-bc715cdb9fd1 // indirect
+	github.com/streamingfast/dgrpc v0.0.0-20230623191332-4ed02c06bc6f // indirect
 	github.com/streamingfast/dmetrics v0.0.0-20230516031116-28fcfeb4b9ed // indirect
 	github.com/streamingfast/dstore v0.1.1-0.20230620124109-3924b3b36c77 // indirect
 	github.com/streamingfast/eth-go v0.0.0-20230410173454-433bd8803da1 // indirect
@@ -84,7 +84,7 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
-	golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb // indirect
+	golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.9.0 // indirect
