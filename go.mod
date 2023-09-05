@@ -76,7 +76,7 @@ require (
 	github.com/spf13/viper v1.15.0 // indirect
 	github.com/streamingfast/atm v0.0.0-20220131151839-18c87005e680 // indirect
 	github.com/streamingfast/bstream v0.0.2-0.20230731165201-639b4f347707 // indirect
-	github.com/streamingfast/dbin v0.0.0-20210809205249-73d5eca35dc5 // indirect
+	github.com/streamingfast/dbin v0.9.1-0.20220513054835-1abebbb944ad // indirect
 	github.com/streamingfast/dgrpc v0.0.0-20230623191332-4ed02c06bc6f // indirect
 	github.com/streamingfast/dmetrics v0.0.0-20230516031116-28fcfeb4b9ed // indirect
 	github.com/streamingfast/dstore v0.1.1-0.20230620124109-3924b3b36c77 // indirect
@@ -84,7 +84,7 @@ require (
 	github.com/streamingfast/firehose v0.1.1-0.20230731171526-3428fc0ff8d9 // indirect
 	github.com/streamingfast/opaque v0.0.0-20210811180740-0c01d37ea308 // indirect
 	github.com/streamingfast/pbgo v0.0.6-0.20221020131607-255008258d28 // indirect
-	github.com/streamingfast/sf-tools v0.0.0-20230607184109-6fff9dd0c7df // indirect
+	github.com/streamingfast/sf-tools v0.0.0-20230811131237-97a5d4afa459 // indirect
 	github.com/streamingfast/shutter v1.5.0 // indirect
 	github.com/stretchr/testify v1.8.3 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
