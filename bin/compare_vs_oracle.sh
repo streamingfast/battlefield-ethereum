@@ -131,7 +131,7 @@ main() {
       # --firehose-genesis-file="$syncer_geth_genesis_json" \
       ($syncer_geth_cmd \
           --syncmode="full" \
-          --vmtrace \
+          --vmtrace firehose \
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3" \
           --${httpFlagPrefix}port=8555 \
           --port=30313 \
