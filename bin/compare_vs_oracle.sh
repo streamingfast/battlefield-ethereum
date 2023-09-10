@@ -92,6 +92,7 @@ main() {
     if [[ $chain == "polygon" ]]; then
       echo "Starting oracle (log `relpath $oracle_log`)"
       ($oracle_polygon_cmd \
+          --battlefield \
           --syncmode="full" \
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3,txpool" \
           --allow-insecure-unlock \
@@ -142,6 +143,7 @@ main() {
           --config="$syncer_polygon_data_dir/config.toml" \
           --firehose-enabled \
           --firehose-genesis-file="$syncer_polygon_genesis_json" \
+          --battlefield \
           --syncmode="full" \
           --http --http.api="personal,eth,net,web3" \
           --http.port=8555 \
@@ -190,6 +192,10 @@ main() {
       # Didn't find a way to send command output to $syncer_log without breaking the syncer writing to it to
       # Easiest for now is to send everything to `/dev/null`.
       bash -c "$syncer_geth_addpeer" &> /dev/null
+    elif [[ $chain == "polygon" ]]; then
+      # Didn't find a way to send command output to $syncer_log without breaking the syncer writing to it to
+      # Easiest for now is to send everything to `/dev/null`.
+      bash -c "$syncer_polygon_addpeer" &> /dev/null
     fi
 
     echo "Waiting for syncer to reach block #$blockNum"

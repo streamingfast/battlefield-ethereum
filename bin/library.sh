@@ -59,7 +59,7 @@ export syncer_polygon_log="$RUN_DIR/syncer_polygon.log"
 export syncer_polygon_firehose_log="$RUN_DIR/syncer_polygon.firelog"
 export syncer_polygon_genesis_json="$syncer_polygon_data_dir/genesis.json"
 export syncer_polygon_cmd="$polygon_bin --datadir ${syncer_polygon_data_dir}"
-export syncer_polygon_addpeer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $polygon_bin attach ${syncer_polygom_data_dir}/bor.ipc"
+export syncer_polygon_addpeer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $polygon_bin attach ${syncer_polygon_data_dir}/bor.ipc"
 
 export bootstrap_data_dir="$RUN_DIR/data/bootstrap"
 
