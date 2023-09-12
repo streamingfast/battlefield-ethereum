@@ -1,12 +1,14 @@
 module github.com/streamingfast/battlefield-ethereum
 
-go 1.18
+go 1.21
+
+toolchain go1.21.1
 
 require (
 	github.com/spf13/cobra v1.6.1
 	github.com/streamingfast/cli v0.0.4-0.20230610024659-0c1862bfd186
 	github.com/streamingfast/firehose-ethereum v1.4.12-0.20230803204006-973964406d37
-	github.com/streamingfast/firehose-ethereum/types v0.0.0-20230802141317-beada4442970
+	github.com/streamingfast/firehose-ethereum/types v0.0.0-20230911152856-ecc5a5edb14f
 	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0
 	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091
 	go.uber.org/zap v1.24.0
@@ -75,7 +77,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
 	github.com/streamingfast/atm v0.0.0-20220131151839-18c87005e680 // indirect
-	github.com/streamingfast/bstream v0.0.2-0.20230731165201-639b4f347707 // indirect
+	github.com/streamingfast/bstream v0.0.2-0.20230829131224-b9272048dc6a // indirect
 	github.com/streamingfast/dbin v0.9.1-0.20220513054835-1abebbb944ad // indirect
 	github.com/streamingfast/dgrpc v0.0.0-20230623191332-4ed02c06bc6f // indirect
 	github.com/streamingfast/dmetrics v0.0.0-20230516031116-28fcfeb4b9ed // indirect

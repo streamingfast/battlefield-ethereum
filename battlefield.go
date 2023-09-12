@@ -89,85 +89,16 @@ func compareE(_ *cobra.Command, args []string) error {
 		hasDifferences = true
 	}
 
-	// displayDiff := true
-
 	upToBlock := uint64(math.Min(float64(len(oracleBlocks)), float64(len(actualBlocks))))
 	for i := uint64(0); i < upToBlock; i++ {
 		oracle := oracleBlocks[i]
 		actual := actualBlocks[i]
 
-		// diff := false
-		// for _, trxTrace := range actual.Block.TransactionTraces {
-		// 	hash := eth.Hash(trxTrace.Hash).String()
-
-		// 	if len(trxTrace.Calls) == 0 {
-		// 		continue
-		// 	}
-
-		// 	rootCall := trxTrace.Calls[0]
-		// 	if len(rootCall.GasChanges) == 0 {
-		// 		continue
-		// 	}
-
-		// 	rootGasChange := rootCall.GasChanges[0]
-		// 	if rootCall.GasChanges[0].NewValue != trxTrace.GasLimit {
-		// 		fmt.Printf("Call index #%d (on trx %s), root gas change %s, new value should be trx trace gasLimit of %d for first gas change\n", rootCall.Index, hash, (*gasChangeView)(rootGasChange), trxTrace.GasLimit)
-		// 		diff = true
-		// 	}
-
-		// 	for _, call := range trxTrace.Calls {
-		// 		first := call.GasChanges[0]
-		// 		if first.OldValue != 0 {
-		// 			fmt.Printf("Call index #%d (on trx %s), gas change %s, old value should be 0 for first gas change\n", call.Index, hash, (*gasChangeView)(first))
-		// 			diff = true
-		// 		}
-
-		// 		last := call.GasChanges[len(call.GasChanges)-1]
-		// 		if last.NewValue != 0 {
-		// 			fmt.Printf("Call index #%d (on trx %s), gas change %s, new value should be 0 for last gas change\n", call.Index, hash, (*gasChangeView)(last))
-		// 			diff = true
-		// 		}
-		// 	}
-
-		// 	lastGasChange := rootCall.GasChanges[len(rootCall.GasChanges)-1]
-		// 	lastBalance := lastGasChange.NewValue
-		// 	if lastGasChange.Reason == pbeth.GasChange_REASON_BUYBACK {
-		// 		// The usage is computed on the last non-buyback gas change, otherwise our last balance is our value before the buyback
-		// 		lastBalance = lastGasChange.OldValue
-		// 	}
-
-		// 	if rootGasChange.NewValue-lastBalance != trxTrace.GasUsed {
-		// 		fmt.Printf("Call index #%d (on trx %s), root call gas change %s and last gas change %s diff (start %d - last balance %d = %d) != trx gasUsed of %d\n",
-		// 			rootCall.Index, hash,
-		// 			(*gasChangeView)(rootGasChange),
-		// 			(*gasChangeView)(lastGasChange),
-		// 			rootGasChange.NewValue, lastBalance, rootGasChange.NewValue-lastBalance,
-		// 			trxTrace.GasUsed,
-		// 		)
-		// 		diff = true
-		// 	}
-		// }
-
-		// if diff {
-		// 	showDiff, _ := cli.PromptConfirm(fmt.Sprintf(`Actual block %s have invalid gas change, open it`, oracle.Block.AsRef()))
-		// 	if showDiff {
-		// 		diffCmd := exec.Command("code", actual.JSONFile)
-
-		// 		diffCmd.Stdout = os.Stdout
-		// 		diffCmd.Stderr = os.Stderr
-
-		// 		cli.NoError(diffCmd.Run(), "Diff command failed to run properly")
-		// 	}
-
-		// }
-
-		// if true {
-		// 	continue
-		// }
-
 		isEqual, _ := tools.Compare(oracle.Block, actual.Block, false)
 
 		if !isEqual {
+			hasDifferences = true
+
 			command := fmt.Sprintf("diff -C 5 \"%s\" \"%s\" | less", oracle.JSONFile, actual.JSONFile)
 			if os.Getenv("DIFF_EDITOR") != "" {
 				command = fmt.Sprintf("%s \"%s\" \"%s\"", os.Getenv("DIFF_EDITOR"), oracle.JSONFile, actual.JSONFile)
