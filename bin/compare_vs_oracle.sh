@@ -92,15 +92,14 @@ main() {
     if [[ $chain == "polygon" ]]; then
       echo "Starting oracle (log `relpath $oracle_log`)"
       ($oracle_polygon_cmd \
-          --battlefield \
+          --chain="$oracle_polygon_data_dir/genesis/genesis.json" \
           --syncmode="full" \
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3,txpool" \
           --allow-insecure-unlock \
           --mine=false \
           --port=30303 \
-          --networkid=1515 \
-          --nodiscover \
-          --nocompaction $@ &> $oracle_log) &
+          --grpc.addr=:3131 \
+          --nodiscover $@ &> $oracle_log) &
       oracle_pid=$!
     else
       echo "Starting oracle (log `relpath $oracle_log`)"
@@ -140,16 +139,14 @@ main() {
     elif [[ $chain == "polygon" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_polygon_cmd \
-          --config="$syncer_polygon_data_dir/config.toml" \
+          --chain="$syncer_polygon_genesis_json" \
           --firehose-enabled \
-          --firehose-genesis-file="$syncer_polygon_genesis_json" \
-          --battlefield \
           --syncmode="full" \
           --http --http.api="personal,eth,net,web3" \
           --http.port=8555 \
           --port=30313 \
-          --networkid=1515 \
           --authrpc.port=9555 \
+          --grpc.addr=:3132 \
           --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
     elif [[ $chain == "erigon" ]]; then

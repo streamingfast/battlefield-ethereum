@@ -7,7 +7,7 @@ export RUN_DIR=${ROOT}/run
 export anvil_bin=${ANVIL_BIN:-"anvil"}
 export geth_bin=${GETH_BIN:-"geth"}
 export erigon_bin=${GETH_BIN:-"erigon"}
-export polygon_bin=${POLYGON_BIN:-"geth"}
+export polygon_bin=${POLYGON_BIN:-"polygon"}
 export bootnode_bin=${BOOTNODE_BIN:-"bootnode"}
 
 export genesis_log="$GENESIS_DIR/genesis.log"
@@ -33,7 +33,7 @@ export oracle_polygon_bootstrap_dir="$oracle_polygon_data_dir/bootstrap"
 export oracle_polygon_log="$RUN_DIR/oracle_polygon.log"
 export oracle_polygon_firehose_log="$oracle_polygon_data_dir/oracle.firelog"
 export oracle_polygon_transaction_log="$oracle_polygon_data_dir/oracle.md"
-export oracle_polygon_cmd="$geth_bin --datadir ${oracle_polygon_data_dir}"
+export oracle_polygon_cmd="$polygon_bin server --datadir ${oracle_polygon_data_dir}"
 
 export syncer_anvil_data_dir="$RUN_DIR/data/syncer_anvil"
 export syncer_anvil_log="$RUN_DIR/syncer_anvil.log"
@@ -58,7 +58,7 @@ export syncer_polygon_data_dir="$RUN_DIR/data/syncer_polygon"
 export syncer_polygon_log="$RUN_DIR/syncer_polygon.log"
 export syncer_polygon_firehose_log="$RUN_DIR/syncer_polygon.firelog"
 export syncer_polygon_genesis_json="$syncer_polygon_data_dir/genesis.json"
-export syncer_polygon_cmd="$polygon_bin --datadir ${syncer_polygon_data_dir}"
+export syncer_polygon_cmd="$polygon_bin server --datadir ${syncer_polygon_data_dir}"
 export syncer_polygon_addpeer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $polygon_bin attach ${syncer_polygon_data_dir}/bor.ipc"
 
 export bootstrap_data_dir="$RUN_DIR/data/bootstrap"
