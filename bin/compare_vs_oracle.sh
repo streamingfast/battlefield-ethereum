@@ -94,14 +94,14 @@ main() {
     if [[ $chain == "polygon" ]]; then
       echo "Starting oracle (log `relpath $oracle_log`)"
       ($oracle_polygon_cmd \
+          --chain="$oracle_polygon_data_dir/genesis/genesis.json" \
           --syncmode="full" \
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3,txpool" \
           --allow-insecure-unlock \
           --mine=false \
           --port=30303 \
-          --networkid=1515 \
-          --nodiscover \
-          --nocompaction $@ &> $oracle_log) &
+          --grpc.addr=:3131 \
+          --nodiscover $@ &> $oracle_log) &
       oracle_pid=$!
     else
       echo "Starting oracle (log `relpath $oracle_log`)"
@@ -143,15 +143,14 @@ main() {
     elif [[ $chain == "polygon" && $component != "miner_only" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_polygon_cmd \
-          --config="$syncer_polygon_data_dir/config.toml" \
+          --chain="$syncer_polygon_genesis_json" \
           --firehose-enabled \
-          --firehose-genesis-file="$syncer_polygon_genesis_json" \
           --syncmode="full" \
           --http --http.api="personal,eth,net,web3" \
           --http.port=8555 \
           --port=30313 \
-          --networkid=1515 \
           --authrpc.port=9555 \
+          --grpc.addr=:3132 \
           --nodiscover $@ 1> $syncer_firehose_log 2> $syncer_log) &
       syncer_pid=$!
     elif [[ $chain == "erigon" && $component != "miner_only" ]]; then
@@ -201,6 +200,10 @@ main() {
       # Didn't find a way to send command output to $syncer_log without breaking the syncer writing to it to
       # Easiest for now is to send everything to `/dev/null`.
       bash -c "$syncer_geth_add_peer" &> /dev/null
+    elif [[ $chain == "polygon" ]]; then
+      # Didn't find a way to send command output to $syncer_log without breaking the syncer writing to it to
+      # Easiest for now is to send everything to `/dev/null`.
+      bash -c "$syncer_polygon_add_peer" &> /dev/null
     fi
 
     echo "Waiting for syncer to reach block #$blockNum"
