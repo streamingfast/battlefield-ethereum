@@ -155,22 +155,43 @@ main() {
       syncer_pid=$!
     elif [[ $chain == "erigon" && $component != "miner_only" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
-      ($syncer_erigon_cmd --firehose-enabled \
-          --firehose-genesis-file="$syncer_erigon_genesis_json" \
-           init $syncer_erigon_genesis_json $@ 1> $syncer_firehose_log 2> $syncer_log)
       ($syncer_erigon_cmd \
-          --firehose-enabled \
-          --firehose-genesis-file="$syncer_erigon_genesis_json" \
-          --http \
+          --vmtrace=firehose \
+          init $syncer_erigon_genesis_json $@ 1> $syncer_firehose_log 2> $syncer_log)
+      ($syncer_erigon_cmd \
+          --vmtrace=firehose \
+          --http=false \
           --http.port=8555 \
           --http.api=eth,erigon,web3,net,debug,trace,txpool,parity \
           --port=30313 \
           --chain=dev \
+          --nat=none \
           --networkid=1515 \
           --authrpc.port=9555 \
           --prune=disabled \
-          --staticpeers="enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303" \
-          --nodiscover $@ 1>> $syncer_firehose_log 2>> $syncer_log) &
+          --staticpeers="enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303?discport=0" \
+          --snapshots=false $@ 1>> $syncer_firehose_log 2>> $syncer_log) &
+      syncer_pid=$!
+
+      # Erigon isn't sycing in the first run
+      # sleeping and restart the syncer again
+      sleep 5
+
+      echo "killing and restarting erigon syncer"
+      kill_pid "syncer" $syncer_pid
+      ($syncer_erigon_cmd \
+          --vmtrace=firehose \
+          --http=false \
+          --http.port=8555 \
+          --http.api=eth,erigon,web3,net,debug,trace,txpool,parity \
+          --port=30313 \
+          --chain=dev \
+          --nat=none \
+          --networkid=1515 \
+          --authrpc.port=9555 \
+          --prune=disabled \
+          --staticpeers="enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303?discport=0" \
+          --snapshots=false $@ 1>> $syncer_firehose_log 2>> $syncer_log) &
       syncer_pid=$!
     fi
 
