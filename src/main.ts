@@ -41,15 +41,15 @@ async function main() {
   runner.printContracts()
 
   const mainContract = runner.contracts["main"]
+  const callsContract = runner.contracts["calls"]
+
   const childContract = runner.contracts["child"]
   const grandChildContract = runner.contracts["grandChild"]
   const suicidal1Contract = runner.contracts["suicidal1"]
   const suicidal2Contract = runner.contracts["suicidal2"]
 
-  const mainContractAddress = mainContract.options.address
   const childContractAddress = childContract.options.address
   const grandChildContractAddress = grandChildContract.options.address
-  const suicidal1ContractAddress = suicidal1Contract.options.address
   const suicidal2ContractAddress = suicidal2Contract.options.address
 
   console.log()
@@ -218,6 +218,31 @@ async function main() {
 
   // Depends on `setLongString` being set, so it's better to perform it on its own
   await runner.okContractSend("storage: array update", "main", mainContract.methods.setAfter())
+
+  console.log()
+  console.log("Performing 'call' & 'constructor' transactions (new contract)")
+  setDefaultGasConfig(300000, runner.web3.utils.toWei("50", "gwei"))
+
+  await runner.parallelize(
+    () =>
+      runner.koDeployContract("call: contract fail just enough gas for intrinsic gas", "Suicidal", {
+        // This is the exact minimum required so the transaction pass the JSON-RPC barrier, hopefully it's good for the future, if it fails prior that
+        gas: 59244,
+      }),
+
+    () =>
+      runner.koDeployContract("call: contract fail not enough gas after code_copy", "Suicidal", {
+        // This has been found by trial and error such that the transaction reaches GAS_CHANGE ... code_copy but fails afterwards when storing the actual contract on the chain
+        gas: 99309,
+      }),
+
+    () =>
+      runner.okContractSend(
+        "call: complete call tree",
+        "main",
+        callsContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
+      ),
+  )
 
   console.log()
   console.log("Performing 'call' & 'constructor' transactions")

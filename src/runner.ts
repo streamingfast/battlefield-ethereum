@@ -33,6 +33,7 @@ type Doer<T> = (() => T) | (() => Promise<T>)
 
 const Contracts = {
   main: { name: "main", source: "Main" },
+  calls: { name: "calls", source: "Calls" },
   child: { name: "child", source: "Child" },
   grandChild: { name: "grandChild", source: "GrandChild" },
   suicidal1: { name: "suicidal1", source: "Suicidal" },
@@ -209,6 +210,7 @@ export class BattlefieldRunner {
     if (this.network === "local") {
       const promises: Record<ContractID, Promise<DeploymentResult>> = {
         main: this.deployContract("main", Contracts["main"].source),
+        calls: this.deployContract("calls", Contracts["calls"].source),
         child: this.deployContract("child", Contracts["child"].source),
         grandChild: this.deployContract("grandChild", Contracts["grandChild"].source, {
           contractArguments: ["0x0000000000000000000000000000000000000330", false],
@@ -231,6 +233,7 @@ export class BattlefieldRunner {
       // This is all very quick since each promise is already resolved
       this.deploymentState = {
         main: await promises["main"],
+        calls: await promises["calls"],
         child: await promises["child"],
         grandChild: await promises["grandChild"],
         suicidal1: await promises["suicidal1"],
@@ -241,6 +244,7 @@ export class BattlefieldRunner {
     } else {
       this.deploymentState = {
         main: await this.deployContract("main", Contracts["main"].source),
+        calls: await this.deployContract("calls", Contracts["calls"].source),
         child: await this.deployContract("child", Contracts["child"].source),
         grandChild: await this.deployContract("grandChild", Contracts["grandChild"].source, {
           contractArguments: ["0x0000000000000000000000000000000000000330", false],
@@ -498,7 +502,7 @@ export class BattlefieldRunner {
       }
 
       throw new Error(`Unexpected transaction success, expecting a failure`)
-    } catch (error) {
+    } catch (error: any) {
       if (error.receipt) {
         trxHashString = this.trxHashAsString(error.receipt.transactionHash)
       }

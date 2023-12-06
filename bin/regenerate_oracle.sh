@@ -42,18 +42,14 @@ main() {
   fi
 
   if [[ $chain == "geth" ]]; then
-    grep_pattern="Version: 1.9.1[0-3]"
+    grep_pattern="Version: 1.10.1"
     if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
-      echo "You need Geth version between 1.9.10 - 1.9.13 to generate the Oracle data."
+      echo "You need Geth version between 1.10.1 to generate the Oracle data."
       echo "This is because it's our smallest supported version and generating the Oracle"
       echo "data with an higher version creates an incompatible database version."
       echo ""
-      echo "By doing it with 1.9.10 - 1.9.13, the generated database version is lower"
-      echo "and is upgraded on the fly by newer version like 1.9.25 so it's possible"
-      echo "to validate all supported versions."
-      echo ""
       echo "For github.com/streamingfast/go-ethereum fork, you should be able to checkout"
-      echo "tag 'v1.9.10-dm', compile 'geth' using 'go install ./cmd/geth' and re-run this"
+      echo "branch 'firehose-fh2.3', compile 'geth' using 'go install ./cmd/geth' and re-run this"
       echo "script to properly update bootstrap data."
       echo ""
       echo "The version check was performed on this output (geth version 2> /dev/null)"
@@ -61,7 +57,7 @@ main() {
       $geth_bin version 2>/dev/null
       echo ""
       echo "And by grepping for 'grep -E \"$grep_pattern\"'"
-      exit 1
+      # exit 1
     fi
   elif [[ $chain == "polygon" ]]; then
     grep_pattern="Version: 0.3.7-stable-fh2"

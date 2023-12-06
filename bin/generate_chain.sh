@@ -59,7 +59,7 @@ main() {
   echo "## ${target} Bootstrap Log (`date`)" > $bootstrap_log_file
   echo "" >> $bootstrap_log_file
   echo "\`\`\`" >> $bootstrap_log_file
-  yarn -s local | tee -a $bootstrap_log_file
+  npm run -s local | tee -a $bootstrap_log_file
   echo "\`\`\`" >> $bootstrap_log_file
 
   kill -s TERM $monitor_pid

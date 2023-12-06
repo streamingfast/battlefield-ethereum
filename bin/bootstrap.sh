@@ -94,7 +94,7 @@ main() {
     exit 1
 
     echo "\`\`\`" > $BOOT_DIR/keystore.md
-    (yarn -s r src/keys.ts | tail -n +3) >> $BOOT_DIR/keystore.md
+    (npm run -s r src/keys.ts | tail -n +3) >> $BOOT_DIR/keystore.md
     echo "\`\`\`" >> $BOOT_DIR/keystore.md
   else
     mkdir -p "$GENESIS_DIR" &> /dev/null
@@ -104,7 +104,7 @@ main() {
 
   log "Generating genesis block & node information"
   coinbase_address=`cat $genesis_alloc_json | jq -r 'keys_unsorted[0]'`
-  coinbase_private=`yarn -s r src/keys.ts $coinbase_address | tail -n1`
+  coinbase_private=`npm run -s r src/keys.ts $coinbase_address | tail -n1`
   coinbase_enode=`$bootnode_bin -nodekeyhex $coinbase_private -writeaddress`
 
   echo "$coinbase_private" > $BOOT_DIR/nodekey
