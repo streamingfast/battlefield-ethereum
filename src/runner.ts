@@ -34,6 +34,7 @@ type Doer<T> = (() => T) | (() => Promise<T>)
 const Contracts = {
   main: { name: "main", source: "Main" },
   calls: { name: "calls", source: "Calls" },
+  logs: { name: "logs", source: "Logs" },
   child: { name: "child", source: "Child" },
   grandChild: { name: "grandChild", source: "GrandChild" },
   suicidal1: { name: "suicidal1", source: "Suicidal" },
@@ -211,6 +212,7 @@ export class BattlefieldRunner {
       const promises: Record<ContractID, Promise<DeploymentResult>> = {
         main: this.deployContract("main", Contracts["main"].source),
         calls: this.deployContract("calls", Contracts["calls"].source),
+        logs: this.deployContract("logs", Contracts["logs"].source),
         child: this.deployContract("child", Contracts["child"].source),
         grandChild: this.deployContract("grandChild", Contracts["grandChild"].source, {
           contractArguments: ["0x0000000000000000000000000000000000000330", false],
@@ -234,6 +236,7 @@ export class BattlefieldRunner {
       this.deploymentState = {
         main: await promises["main"],
         calls: await promises["calls"],
+        logs: await promises["logs"],
         child: await promises["child"],
         grandChild: await promises["grandChild"],
         suicidal1: await promises["suicidal1"],
@@ -245,6 +248,7 @@ export class BattlefieldRunner {
       this.deploymentState = {
         main: await this.deployContract("main", Contracts["main"].source),
         calls: await this.deployContract("calls", Contracts["calls"].source),
+        logs: await this.deployContract("logs", Contracts["logs"].source),
         child: await this.deployContract("child", Contracts["child"].source),
         grandChild: await this.deployContract("grandChild", Contracts["grandChild"].source, {
           contractArguments: ["0x0000000000000000000000000000000000000330", false],

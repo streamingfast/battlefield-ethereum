@@ -42,6 +42,7 @@ async function main() {
 
   const mainContract = runner.contracts["main"]
   const callsContract = runner.contracts["calls"]
+  const logsContract = runner.contracts["logs"]
 
   const childContract = runner.contracts["child"]
   const grandChildContract = runner.contracts["grandChild"]
@@ -155,29 +156,29 @@ async function main() {
   setDefaultGasConfig(95000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
-    () => runner.okContractSend("log: empty", "main", mainContract.methods.logEmpty()),
-    () => runner.okContractSend("log: single", "main", mainContract.methods.logSingle()),
-    () => runner.okContractSend("log: all", "main", mainContract.methods.logAll()),
-    () => runner.okContractSend("log: all indexed", "main", mainContract.methods.logAllIndexed()),
-    () => runner.okContractSend("log: all mixed", "main", mainContract.methods.logAllMixed()),
-    () => runner.okContractSend("log: multi", "main", mainContract.methods.logMulti()),
+    () => runner.okContractSend("log: empty", "main", logsContract.methods.logEmpty()),
+    () => runner.okContractSend("log: single", "main", logsContract.methods.logSingle()),
+    () => runner.okContractSend("log: all", "main", logsContract.methods.logAll()),
+    () => runner.okContractSend("log: all indexed", "main", logsContract.methods.logAllIndexed()),
+    () => runner.okContractSend("log: all mixed", "main", logsContract.methods.logAllMixed()),
+    () => runner.okContractSend("log: multi", "main", logsContract.methods.logMulti()),
     () =>
       runner.koContractSend(
         "log: log in top-level trx and then top-leve trx fails",
         "main",
-        mainContract.methods.logAndTopLevelFail()
+        logsContract.methods.logAndTopLevelFail()
       ),
     () =>
       runner.okContractSend(
         "log: log in sub-call that fails but top-level trx succeed",
         "main",
-        mainContract.methods.logInSubFailedCallButTrxSucceed(childContractAddress)
+        logsContract.methods.logInSubFailedCallButTrxSucceed(childContractAddress)
       ),
     () =>
       runner.koContractSend(
         "log: log in sub-call that succeed but top-level trx fails",
         "main",
-        mainContract.methods.logInSubSuccessCallButTrxFails(childContractAddress)
+        logsContract.methods.logInSubSuccessCallButTrxFails(childContractAddress)
       )
   )
 
