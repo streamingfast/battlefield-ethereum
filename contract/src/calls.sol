@@ -187,6 +187,33 @@ contract Calls {
         emit eventLogAll(msg.data, gasleft(), msg.sender, msg.sig, 0);
     }
 
+    function allPrecompiled() public {
+        latestAddress = ecrecover(
+            0xdaf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53,
+            0x25,
+            0x28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276,
+            0x67cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83
+        );
+
+        bytes memory inputSha256 = abi.encodeWithSignature("revertFailure()");
+        sha256(inputSha256);
+
+        precompile0x07(0x00, 0x00);
+    }
+
+    function precompile0x07(uint256 ax, uint256 ay) private view {
+        // Call a precompiled contract!
+        uint256[2] memory result;
+        uint256[3] memory input;
+        input[0] = ax;
+        input[1] = ay;
+        input[2] = 3;
+
+        assembly {
+            let ignored := staticcall(10000, 0x07, input, 0x60, result, 0x40)
+        }
+    }
+
     uint256 asserValue;
     uint256 revertValue;
 
@@ -218,33 +245,6 @@ contract Calls {
         require(!success, "should have failed");
 
         revertValue += revertValue - 1;
-    }
-
-    function allPrecompiled() public {
-        latestAddress = ecrecover(
-            0xdaf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53,
-            0x25,
-            0x28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276,
-            0x67cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83
-        );
-
-        bytes memory inputSha256 = abi.encodeWithSignature("revertFailure()");
-        sha256(inputSha256);
-
-        precompile0x07(0x00, 0x00);
-    }
-
-    function precompile0x07(uint256 ax, uint256 ay) private view {
-        // Call a precompiled contract!
-        uint256[2] memory result;
-        uint256[3] memory input;
-        input[0] = ax;
-        input[1] = ay;
-        input[2] = 3;
-
-        assembly {
-            let ignored := staticcall(10000, 0x07, input, 0x60, result, 0x40)
-        }
     }
 }
 
