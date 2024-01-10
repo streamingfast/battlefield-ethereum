@@ -7,7 +7,7 @@ export RUN_DIR=${ROOT}/run
 export anvil_bin=${ANVIL_BIN:-"anvil"}
 export geth_bin=${GETH_BIN:-"geth"}
 export erigon_bin=${GETH_BIN:-"erigon"}
-export polygon_bin=${POLYGON_BIN:-"geth"}
+export polygon_bin=${POLYGON_BIN:-"bor"}
 export bootnode_bin=${BOOTNODE_BIN:-"bootnode"}
 
 export genesis_log="$GENESIS_DIR/genesis.log"
