@@ -214,6 +214,13 @@ contract Calls {
         }
     }
 
+    function delegateWithValue(address child) public payable {
+        (bool success, ) = child.delegatecall{value: msg.value}(
+            abi.encodeWithSignature("logValue()")
+        );
+        require(success, "should have succeed");
+    }
+
     uint256 asserValue;
     uint256 revertValue;
 
