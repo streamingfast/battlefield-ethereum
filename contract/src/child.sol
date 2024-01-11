@@ -74,8 +74,8 @@ contract Child {
     event eventChildLog(bytes data, uint256 gas, address sender, bytes4 sig);
 
     function logValue() public payable {
-        emit eventValue(msg.value, tx.origin, msg.sender, gasLeft(), msg.data);
+        emit eventValue(msg.value, tx.origin, msg.sender, gasLeft, msg.data);
     }
-    event eventValue(uint256 indexed value, address indexed txOrigin, address indexed sender, uint256 indexed gasLeft, bytes data);
+    event eventValue(uint256 indexed value, address indexed txOrigin, address indexed sender, uint256 gasLeft, bytes data);
 
 }

@@ -215,7 +215,7 @@ contract Calls {
     }
 
     function delegateWithValue(address child) public payable {
-        (bool success, ) = child.delegatecall{value: msg.value}(
+        (bool success, ) = child.delegatecall(
             abi.encodeWithSignature("logValue()")
         );
         require(success, "should have succeed");

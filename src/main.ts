@@ -291,7 +291,10 @@ async function main() {
       runner.okContractSend(
         "call: delegate with value",
         "calls",
-        callsContract.methods.delegateWithValue(childContractAddress)
+        callsContract.methods.delegateWithValue(childContractAddress),
+        {
+          value: threeWei,
+        }
       ),
 
     () =>
