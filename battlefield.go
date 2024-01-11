@@ -13,9 +13,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/streamingfast/cli"
 	. "github.com/streamingfast/cli"
+	firecore "github.com/streamingfast/firehose-core"
+	"github.com/streamingfast/firehose-core/cmd/tools/compare"
+	"github.com/streamingfast/firehose-core/node-manager/mindreader"
 	"github.com/streamingfast/firehose-ethereum/codec"
-	"github.com/streamingfast/firehose-ethereum/tools"
-	"github.com/streamingfast/firehose-ethereum/types"
 	pbeth "github.com/streamingfast/firehose-ethereum/types/pb/sf/ethereum/type/v2"
 	"github.com/streamingfast/jsonpb"
 	"github.com/streamingfast/logging"
@@ -24,7 +25,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var zlog, _ = logging.PackageLogger("battlefield", "github.com/streamingfast/battlefield-ethereum")
+var zlog, tracer = logging.PackageLogger("battlefield", "github.com/streamingfast/battlefield-ethereum")
 
 func init() {
 	logging.InstantiateLoggers()
@@ -94,7 +95,7 @@ func compareE(_ *cobra.Command, args []string) error {
 		oracle := oracleBlocks[i]
 		actual := actualBlocks[i]
 
-		isEqual, _ := tools.Compare(oracle.Block, actual.Block, false)
+		isEqual, _ := compare.Compare(oracle.Block, actual.Block, false)
 
 		if !isEqual {
 			hasDifferences = true
@@ -179,6 +180,12 @@ type BlockWrapper struct {
 	JSONFile  string
 }
 
+type EthereumConsoleReader interface {
+	mindreader.ConsolerReader
+	ProcessData(reader io.Reader) error
+	Close()
+}
+
 func readBlocks(firelogPath string) []*BlockWrapper {
 	blocks := []*BlockWrapper{}
 
@@ -190,30 +197,28 @@ func readBlocks(firelogPath string) []*BlockWrapper {
 	cli.NoError(err, "Unable to open blocks file %q", firelogPath)
 	defer file.Close()
 
-	reader, err := codec.NewConsoleReader(zlog, make(chan string, 10000))
+	encoder := firecore.NewBlockEncoder()
+	reader, err := codec.NewConsoleReader(make(chan string, 10000), encoder, zlog, tracer)
 	cli.NoError(err, "Unable to create console reader for blocks file %q", firelogPath)
-	defer reader.Close()
 
-	go reader.ProcessData(file)
+	if v, ok := reader.(EthereumConsoleReader); ok {
+		defer v.Close()
+		go v.ProcessData(file)
+	}
 
 	var lastBlockRead *pbeth.Block
 	for {
 		bsblk, err := reader.ReadBlock()
 		if bsblk != nil {
-			el, err := types.BlockDecoder(bsblk)
-			cli.NoError(err, "cannot decode bstream block to native protocol block")
-			if el != nil && el.(*pbeth.Block) != nil {
-				block, ok := el.(*pbeth.Block)
-				cli.Ensure(ok, `Read block is not a "pbeth.Block" but should have been`)
+			block := &pbeth.Block{}
+			cli.NoError(bsblk.Payload.UnmarshalTo(block), "Unable to unmarshal block from pbbstream.Block")
 
-				lastBlockRead = sanitizeBlock(block)
-
-				blocks = append(blocks, &BlockWrapper{
-					Block:     lastBlockRead,
-					ProtoFile: filepath.Join(firelogDir, fmt.Sprintf("%s.%d.binpb", firelogTag, block.Number)),
-					JSONFile:  filepath.Join(firelogDir, fmt.Sprintf("%s.%d.json", firelogTag, block.Number)),
-				})
-			}
+			lastBlockRead = sanitizeBlock(block)
+			blocks = append(blocks, &BlockWrapper{
+				Block:     lastBlockRead,
+				ProtoFile: filepath.Join(firelogDir, fmt.Sprintf("%s.%d.binpb", firelogTag, block.Number)),
+				JSONFile:  filepath.Join(firelogDir, fmt.Sprintf("%s.%d.json", firelogTag, block.Number)),
+			})
 		}
 
 		if err == io.EOF {
@@ -241,71 +246,5 @@ func sanitizeBlock(block *pbeth.Block) *pbeth.Block {
 		}
 	}
 
-	// FIXME: This is temporary until we fix the issue in the Firehose directly, for
-	// now compare without so that diff can go out cleanly.
-	// block = clearOutOrdinalAndGasChanges(block)
-
 	return block
-}
-
-func clearOutOrdinalAndGasChanges(block *pbeth.Block) *pbeth.Block {
-	for _, change := range block.BalanceChanges {
-		change.Ordinal = 0
-	}
-
-	for _, change := range block.CodeChanges {
-		change.Ordinal = 0
-	}
-
-	for _, trxTrace := range block.TransactionTraces {
-		trxTrace.BeginOrdinal = 0
-		trxTrace.EndOrdinal = 0
-
-		for _, log := range trxTrace.Receipt.Logs {
-			log.Ordinal = 0
-		}
-
-		for _, call := range trxTrace.Calls {
-			call.BeginOrdinal = 0
-			call.EndOrdinal = 0
-
-			// call.GasChanges = nil
-
-			for _, creation := range call.AccountCreations {
-				creation.Ordinal = 0
-			}
-
-			for _, log := range call.Logs {
-				log.Ordinal = 0
-			}
-
-			for _, change := range call.BalanceChanges {
-				change.Ordinal = 0
-			}
-
-			for _, change := range call.GasChanges {
-				change.Ordinal = 0
-			}
-
-			for _, change := range call.NonceChanges {
-				change.Ordinal = 0
-			}
-
-			for _, change := range call.StorageChanges {
-				change.Ordinal = 0
-			}
-
-			for _, change := range call.CodeChanges {
-				change.Ordinal = 0
-			}
-		}
-	}
-
-	return block
-}
-
-type gasChangeView pbeth.GasChange
-
-func (g *gasChangeView) String() string {
-	return fmt.Sprintf("%d => %d (%s @ %d)", g.OldValue, g.NewValue, g.Reason, g.Ordinal)
 }
