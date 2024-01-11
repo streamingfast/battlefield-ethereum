@@ -243,7 +243,7 @@ main() {
   fi
 
   echo "Statistics"
-  echo " Blocks: `cat "$syncer_firehose_log" | grep -E "(FIRE BLOCK|END_BLOCK)" | wc -l | tr -d ' '`"
+  echo " Blocks: `cat "$syncer_firehose_log" | grep -E "(FIRE BLOCK)" | wc -l | tr -d ' '`"
   echo ""
 
   echo "Inspect log files"
