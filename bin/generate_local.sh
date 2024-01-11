@@ -66,7 +66,7 @@ main() {
 
     recreate_data_directories miner syncer_geth syncer_polygon
 
-    is_legacy_geth="`is_geth_version $geth_bin 'Version: 1.9.1[0-3]'`"
+    is_legacy_geth="`is_geth_version $geth_bin 'Version: (1.9.[0-9]+|1.10.[0-1])'`"
 
     miner_version_dependent_args="--http --http.api=personal,eth,net,web3,txpool,miner"
     syncer_version_dependent_args="--http --http.api=personal,eth,net,web3 --http.port=8555 --authrpc.port=9669"
@@ -144,10 +144,10 @@ main() {
     fi
 
     if [[ "$log_file" != "" ]]; then
-      ETHQ_URL=http://localhost:8080 yarn -s local | tee -a $log_file
+      ETHQ_URL=http://localhost:8080 npm run -s local | tee -a $log_file
       echo "\`\`\`" >> $log_file
     else
-      yarn -s local
+      npm run -s local
     fi
 
     echo ""

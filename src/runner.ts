@@ -33,6 +33,9 @@ type Doer<T> = (() => T) | (() => Promise<T>)
 
 const Contracts = {
   main: { name: "main", source: "Main" },
+  calls: { name: "calls", source: "Calls" },
+  logs: { name: "logs", source: "Logs" },
+  transfers: { name: "transfers", source: "Transfers" },
   child: { name: "child", source: "Child" },
   grandChild: { name: "grandChild", source: "GrandChild" },
   suicidal1: { name: "suicidal1", source: "Suicidal" },
@@ -191,13 +194,14 @@ export class BattlefieldRunner {
 
   async deployContract(
     contract: keyof DeploymentState,
-    source: string,
     options?: DeployerOptions
   ): Promise<DeploymentResult> {
     if (isDeployed(contract, this.deploymentState)) {
       console.log(`Contract ${contract} already deployed for network ${this.network}`)
       return this.deploymentState[contract]
     }
+
+    const source = Contracts[contract].source
 
     debug("About to deploy contract %s", contract)
     return await this.deployer(source, options)
@@ -208,19 +212,22 @@ export class BattlefieldRunner {
     // FIXME: At least, we should get rid of the enormous duplication in there...
     if (this.network === "local") {
       const promises: Record<ContractID, Promise<DeploymentResult>> = {
-        main: this.deployContract("main", Contracts["main"].source),
-        child: this.deployContract("child", Contracts["child"].source),
-        grandChild: this.deployContract("grandChild", Contracts["grandChild"].source, {
+        main: this.deployContract("main"),
+        calls: this.deployContract("calls"),
+        logs: this.deployContract("logs"),
+        transfers: this.deployContract("transfers"),
+        child: this.deployContract("child"),
+        grandChild: this.deployContract("grandChild", {
           contractArguments: ["0x0000000000000000000000000000000000000330", false],
           value: "25000",
         }),
-        suicidal1: this.deployContract("suicidal1", Contracts["suicidal1"].source),
-        suicidal2: this.deployContract("suicidal2", Contracts["suicidal2"].source),
+        suicidal1: this.deployContract("suicidal1"),
+        suicidal2: this.deployContract("suicidal2"),
 
-        uniswap: this.deployContract("uniswap", Contracts["uniswap"].source, {
+        uniswap: this.deployContract("uniswap", {
           contractArguments: [this.defaultAddress],
         }),
-        erc20: this.deployContract("erc20", Contracts["erc20"].source),
+        erc20: this.deployContract("erc20"),
       }
 
       Promise.all(Object.values(promises))
@@ -231,6 +238,9 @@ export class BattlefieldRunner {
       // This is all very quick since each promise is already resolved
       this.deploymentState = {
         main: await promises["main"],
+        calls: await promises["calls"],
+        logs: await promises["logs"],
+        transfers: await promises["transfers"],
         child: await promises["child"],
         grandChild: await promises["grandChild"],
         suicidal1: await promises["suicidal1"],
@@ -240,19 +250,22 @@ export class BattlefieldRunner {
       }
     } else {
       this.deploymentState = {
-        main: await this.deployContract("main", Contracts["main"].source),
-        child: await this.deployContract("child", Contracts["child"].source),
-        grandChild: await this.deployContract("grandChild", Contracts["grandChild"].source, {
+        main: await this.deployContract("main"),
+        calls: await this.deployContract("calls"),
+        logs: await this.deployContract("logs"),
+        transfers: await this.deployContract("transfers"),
+        child: await this.deployContract("child"),
+        grandChild: await this.deployContract("grandChild", {
           contractArguments: ["0x0000000000000000000000000000000000000330", false],
           value: "25000",
         }),
-        suicidal1: await this.deployContract("suicidal1", Contracts["suicidal1"].source),
-        suicidal2: await this.deployContract("suicidal2", Contracts["suicidal2"].source),
+        suicidal1: await this.deployContract("suicidal1"),
+        suicidal2: await this.deployContract("suicidal2"),
 
-        uniswap: await this.deployContract("uniswap", Contracts["uniswap"].source, {
+        uniswap: await this.deployContract("uniswap", {
           contractArguments: [this.defaultAddress],
         }),
-        erc20: await this.deployContract("erc20", Contracts["erc20"].source),
+        erc20: await this.deployContract("erc20"),
       }
     }
 
@@ -498,7 +511,7 @@ export class BattlefieldRunner {
       }
 
       throw new Error(`Unexpected transaction success, expecting a failure`)
-    } catch (error) {
+    } catch (error: any) {
       if (error.receipt) {
         trxHashString = this.trxHashAsString(error.receipt.transactionHash)
       }

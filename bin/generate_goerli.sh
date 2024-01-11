@@ -28,7 +28,7 @@ main() {
   echo "" >> $state_file
   echo "\`\`\`" >> $state_file
 
-  yarn -s run goerli | tee -a $state_file
+  npm -s run goerli | tee -a $state_file
   echo ""
 }
 

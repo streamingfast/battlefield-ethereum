@@ -41,15 +41,17 @@ async function main() {
   runner.printContracts()
 
   const mainContract = runner.contracts["main"]
+  const callsContract = runner.contracts["calls"]
+  const logsContract = runner.contracts["logs"]
+  const transfersContract = runner.contracts["transfers"]
+
   const childContract = runner.contracts["child"]
   const grandChildContract = runner.contracts["grandChild"]
   const suicidal1Contract = runner.contracts["suicidal1"]
   const suicidal2Contract = runner.contracts["suicidal2"]
 
-  const mainContractAddress = mainContract.options.address
   const childContractAddress = childContract.options.address
   const grandChildContractAddress = grandChildContract.options.address
-  const suicidal1ContractAddress = suicidal1Contract.options.address
   const suicidal2ContractAddress = suicidal2Contract.options.address
 
   console.log()
@@ -94,8 +96,8 @@ async function main() {
     () =>
       runner.okContractSend(
         "transfer through contract: existing addresss",
-        "main",
-        mainContract.methods.nativeTransfer(knownExistingAddress),
+        "transfers",
+        transfersContract.methods.nativeTransfer(knownExistingAddress),
         {
           from: "default",
           value: oneWei,
@@ -104,8 +106,8 @@ async function main() {
     () =>
       runner.okContractSend(
         "transfer through contract: inexistant address creates account and has an EVM call",
-        "main",
-        mainContract.methods.nativeTransfer(randomAddress3),
+        "transfers",
+        transfersContract.methods.nativeTransfer(randomAddress3),
         {
           from: "default",
           value: oneWei,
@@ -114,8 +116,8 @@ async function main() {
     () =>
       runner.okContractSend(
         "nested transfer through contract: existing addresss",
-        "main",
-        mainContract.methods.nestedNativeTransfer(childContractAddress, knownExistingAddress),
+        "transfers",
+        transfersContract.methods.nestedNativeTransfer(childContractAddress, knownExistingAddress),
         {
           from: "default",
           value: oneWei,
@@ -124,8 +126,8 @@ async function main() {
     () =>
       runner.okContractSend(
         "nested transfer through contract: inexistant address creates account and has an EVM call",
-        "main",
-        mainContract.methods.nestedNativeTransfer(childContractAddress, randomAddress4),
+        "transfers",
+        transfersContract.methods.nestedNativeTransfer(childContractAddress, randomAddress4),
         {
           from: "default",
           value: oneWei,
@@ -140,8 +142,8 @@ async function main() {
   await runner.parallelize(() =>
     runner.koContractSend(
       "transfer through contract: existing addresss",
-      "main",
-      mainContract.methods.nativeTransfer(knownExistingAddress),
+      "transfers",
+      transfersContract.methods.nativeTransfer(knownExistingAddress),
       {
         from: "default",
         value: oneWei,
@@ -155,29 +157,29 @@ async function main() {
   setDefaultGasConfig(95000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
-    () => runner.okContractSend("log: empty", "main", mainContract.methods.logEmpty()),
-    () => runner.okContractSend("log: single", "main", mainContract.methods.logSingle()),
-    () => runner.okContractSend("log: all", "main", mainContract.methods.logAll()),
-    () => runner.okContractSend("log: all indexed", "main", mainContract.methods.logAllIndexed()),
-    () => runner.okContractSend("log: all mixed", "main", mainContract.methods.logAllMixed()),
-    () => runner.okContractSend("log: multi", "main", mainContract.methods.logMulti()),
+    () => runner.okContractSend("log: empty", "main", logsContract.methods.logEmpty()),
+    () => runner.okContractSend("log: single", "main", logsContract.methods.logSingle()),
+    () => runner.okContractSend("log: all", "main", logsContract.methods.logAll()),
+    () => runner.okContractSend("log: all indexed", "main", logsContract.methods.logAllIndexed()),
+    () => runner.okContractSend("log: all mixed", "main", logsContract.methods.logAllMixed()),
+    () => runner.okContractSend("log: multi", "main", logsContract.methods.logMulti()),
     () =>
       runner.koContractSend(
         "log: log in top-level trx and then top-leve trx fails",
-        "main",
-        mainContract.methods.logAndTopLevelFail()
+        "logs",
+        logsContract.methods.logAndTopLevelFail()
       ),
     () =>
       runner.okContractSend(
         "log: log in sub-call that fails but top-level trx succeed",
-        "main",
-        mainContract.methods.logInSubFailedCallButTrxSucceed(childContractAddress)
+        "logs",
+        logsContract.methods.logInSubFailedCallButTrxSucceed(childContractAddress)
       ),
     () =>
       runner.koContractSend(
         "log: log in sub-call that succeed but top-level trx fails",
-        "main",
-        mainContract.methods.logInSubSuccessCallButTrxFails(childContractAddress)
+        "logs",
+        logsContract.methods.logInSubSuccessCallButTrxFails(childContractAddress)
       )
   )
 
@@ -220,6 +222,31 @@ async function main() {
   await runner.okContractSend("storage: array update", "main", mainContract.methods.setAfter())
 
   console.log()
+  console.log("Performing 'call' & 'constructor' transactions (new contract)")
+  setDefaultGasConfig(300000, runner.web3.utils.toWei("50", "gwei"))
+
+  await runner.parallelize(
+    () =>
+      runner.koDeployContract("call: contract fail just enough gas for intrinsic gas", "Suicidal", {
+        // This is the exact minimum required so the transaction pass the JSON-RPC barrier, hopefully it's good for the future, if it fails prior that
+        gas: 59244,
+      }),
+
+    () =>
+      runner.koDeployContract("call: contract fail not enough gas after code_copy", "Suicidal", {
+        // This has been found by trial and error such that the transaction reaches GAS_CHANGE ... code_copy but fails afterwards when storing the actual contract on the chain
+        gas: 99309,
+      }),
+
+    () =>
+      runner.okContractSend(
+        "call: complete call tree",
+        "calls",
+        callsContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
+      ),
+  )
+
+  console.log()
   console.log("Performing 'call' & 'constructor' transactions")
   setDefaultGasConfig(300000, runner.web3.utils.toWei("50", "gwei"))
 
@@ -242,43 +269,53 @@ async function main() {
     () =>
       runner.okContractSend(
         "call: complete call tree",
-        "main",
-        mainContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
+        "calls",
+        callsContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
       ),
 
     () =>
       runner.okContractSend(
         "call: contract creation from call, without a constructor",
-        "main",
-        mainContract.methods.contractWithEmptyConstructor()
+        "calls",
+        callsContract.methods.contractWithEmptyConstructor()
       ),
 
     () =>
       runner.okContractSend(
         "call: contract creation from call, with constructor",
-        "main",
-        mainContract.methods.contractWithConstructor()
+        "calls",
+        callsContract.methods.contractWithConstructor()
+      ),
+
+      () =>
+      runner.okContractSend(
+        "call: delegate with value",
+        "calls",
+        callsContract.methods.delegateWithValue(childContractAddress),
+        {
+          value: threeWei,
+        }
       ),
 
     () =>
       runner.koContractSend(
         "call: contract creation from call, with constructor that will fail",
-        "main",
-        mainContract.methods.contractWithFailingConstructor()
+        "calls",
+        callsContract.methods.contractWithFailingConstructor()
       ),
 
     () =>
       runner.koContractSend(
         "call: contract creation from call, recursive constructor, second will fail",
-        "main",
-        mainContract.methods.contracFailingRecursiveConstructor()
+        "calls",
+        callsContract.methods.contracFailingRecursiveConstructor()
       ),
 
     () =>
       runner.okContractSend(
         "call: nested fail with native transfer",
-        "main",
-        mainContract.methods.nestedFailtNativeTransfer(childContractAddress, randomAddress5),
+        "transfers",
+        transfersContract.methods.nestedFailtNativeTransfer(childContractAddress, randomAddress5),
         {
           value: threeWei,
         }
@@ -287,43 +324,43 @@ async function main() {
     () =>
       runner.okContractSend(
         "call: nested call revert state changes",
-        "main",
-        mainContract.methods.nestedRevertFailure(childContractAddress)
+        "calls",
+        callsContract.methods.nestedRevertFailure(childContractAddress)
       ),
 
     () =>
       runner.okContractSend(
         "call: all pre-compiled",
-        "main",
-        mainContract.methods.allPrecompiled()
+        "calls",
+        callsContract.methods.allPrecompiled()
       ),
 
     () =>
       runner.koContractSend(
         "call: assert failure root call",
-        "main",
-        mainContract.methods.assertFailure()
+        "calls",
+        callsContract.methods.assertFailure()
       ),
 
     () =>
       runner.koContractSend(
         "call: revert failure root call",
-        "main",
-        mainContract.methods.revertFailure()
+        "calls",
+        callsContract.methods.revertFailure()
       ),
 
     () =>
       runner.koContractSend(
         "call: assert failure on child call",
-        "main",
-        mainContract.methods.nestedAssertFailure(childContractAddress)
+        "calls",
+        callsContract.methods.nestedAssertFailure(childContractAddress)
       ),
 
     () =>
       runner.okContractSend(
         "call: contract with create2, inner call fail due to insufficent funds (transaction succeed though)",
-        "main",
-        mainContract.methods.contractCreate2(
+        "calls",
+        callsContract.methods.contractCreate2(
           contractBin,
           "300000000000000000000000000000",
           `0x${randomHex()}`,
@@ -334,8 +371,8 @@ async function main() {
     () =>
       runner.koContractSend(
         "call: contract with create2, inner call fail due to insufficent funds then revert",
-        "main",
-        mainContract.methods.contractCreate2(
+        "calls",
+        callsContract.methods.contractCreate2(
           contractBin,
           "300000000000000000000000000000",
           `0x${randomHex()}`,
@@ -346,8 +383,8 @@ async function main() {
     () =>
       runner.okContractSend(
         "call: contract with create2, succesful creation",
-        "main",
-        mainContract.methods.contractCreate2(contractBin, "0", saltForCollision, false)
+        "calls",
+        callsContract.methods.contractCreate2(contractBin, "0", saltForCollision, false)
       )
   )
 
@@ -356,15 +393,15 @@ async function main() {
     () =>
       runner.okContractSend(
         "call: contract with create2, inner call fail due to address already exists (transaction succeed though)",
-        "main",
-        mainContract.methods.contractCreate2(contractBin, "0", saltForCollision, false)
+        "calls",
+        callsContract.methods.contractCreate2(contractBin, "0", saltForCollision, false)
       ),
 
     () =>
       runner.koContractSend(
         "call: contract with create2, inner call fail due to address already exists then revert",
-        "main",
-        mainContract.methods.contractCreate2(contractBin, "0", saltForCollision, true)
+        "calls",
+        callsContract.methods.contractCreate2(contractBin, "0", saltForCollision, true)
       )
   )
 
@@ -427,15 +464,15 @@ async function main() {
     () =>
       runner.okContractSend(
         "suicide: create contract, kill it and try to call within same call",
-        "main",
-        mainContract.methods.contractSuicideThenCall()
+        "calls",
+        callsContract.methods.contractSuicideThenCall()
       ),
 
     () =>
       runner.okContractSend(
         "suicide: create contract to fixed address (create2), kill it and try instantiate it again at same address",
-        "main",
-        mainContract.methods.contractFixedAddressSuicideThenTryToCreateOnSameAddress()
+        "calls",
+        callsContract.methods.contractFixedAddressSuicideThenTryToCreateOnSameAddress()
       ),
 
     () =>
@@ -474,15 +511,15 @@ async function main() {
     () =>
       runner.okContractSend(
         "suicide: create contract to fixed address (create2), kill it and try instantiate it again at same address",
-        "main",
-        mainContract.methods.contractFixedAddressSuicideThenTryToCreateOnSameAddress()
+        "calls",
+        callsContract.methods.contractFixedAddressSuicideThenTryToCreateOnSameAddress()
       ),
 
     () =>
       runner.okContractSend(
         "suicide: create contract, kill it and try to call within same call (second time to valid nonce change after suicide)",
-        "main",
-        mainContract.methods.contractSuicideThenCall()
+        "calls",
+        callsContract.methods.contractSuicideThenCall()
       )
   )
 
