@@ -8,7 +8,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/streamingfast/cli v0.0.4-0.20230825151644-8cc84512cd80
 	github.com/streamingfast/firehose-core v1.0.1-0.20240109204056-bffc42bc79f6
-	github.com/streamingfast/firehose-ethereum v1.4.23-0.20240109204200-2ebc43630dbf
+	github.com/streamingfast/firehose-ethereum v1.4.23-0.20240115183936-e7898e3559d9
 	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0
 	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091
 	go.uber.org/zap v1.26.0
