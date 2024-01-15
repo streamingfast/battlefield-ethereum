@@ -41,6 +41,8 @@ main() {
     usage_error "The <chain> argument must be geth or polygon"
   fi
 
+  rm -rf "$oracle_data_dir"/oracle.* &> /dev/null || true
+
   if [[ $chain == "geth" ]]; then
     grep_pattern="Version: 1.10.1"
     if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
