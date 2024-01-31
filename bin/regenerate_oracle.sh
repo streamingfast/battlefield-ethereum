@@ -110,8 +110,11 @@ main() {
   # Remove nodekey, we don't want the syncer when picking up this genesis folder to pick it up
   rm -rf $oracle_data_dir/genesis/nodekey &> /dev/null || true
 
-  # This is correct, for now in all cases we run the same geth binary for both geth and polygon
-  cp $syncer_geth_firehose_log $oracle_firehose_log
+  if [[ $chain == "geth" ]]; then
+    cp $syncer_geth_firehose_log $oracle_firehose_log
+  elif [[ $chain == "polygon" ]]; then
+    cp $syncer_polygon_firehose_log $oracle_firehose_log
+  fi
 
   # Remove TRX_ENTER_POOL elements (we do not compare them currently)
   temporary_firehose_log=$(mktemp)
