@@ -61,12 +61,12 @@ main() {
   fi
 
   set -e
-  if [[ "$chain" == "geth" || "$chain" == "polygon"  ]]; then
+  if [[ "$chain" == "geth" ]]; then
     killall $geth_bin &> /dev/null || true
 
-    recreate_data_directories miner syncer_geth syncer_polygon
+    recreate_data_directories miner syncer_geth
 
-    is_legacy_geth="`is_geth_version $geth_bin 'Version: (1.9.[0-9]+|1.10.[0-1])'`"
+    is_legacy_geth="`is_version $geth_bin 'Version: (1.9.[0-9]+|1.10.[0-1])'`"
 
     miner_version_dependent_args="--http --http.api=personal,eth,net,web3,txpool,miner"
     syncer_version_dependent_args="--http --http.api=personal,eth,net,web3 --http.port=8555 --authrpc.port=9669"
@@ -107,6 +107,56 @@ main() {
           --nodiscover --verbosity 4 $@ 1> $syncer_firehose_log 2> $syncer_log) &
         syncer_pid=$!
     fi
+  elif [[ "$chain" == "polygon" ]]; then
+    killall $polygon_bin &> /dev/null || true
+
+    recreate_data_directories miner syncer_polygon
+
+    is_legacy_polygon="`is_version $polygon_bin 'Version: 0.3.7-stable-fh2'`"
+
+    miner_version_dependent_args="server"
+    syncer_version_dependent_args="server"
+
+    if [[ "$is_legacy_polygon" == "true" ]]; then
+      miner_version_dependent_args=""
+      syncer_version_dependent_args=""
+    fi
+
+    if [[ $component == "all" || $component == "miner_only" ]]; then
+      echo "Starting polygon miner process (log `relpath $miner_log`)"
+
+      ($miner_polygon_cmd \
+        $miner_version_dependent_args \
+        --http --http.api=personal,eth,net,web3,txpool,miner \
+        --allow-insecure-unlock \
+        --keystore="/Users/maoueh/work/sf/ethereum.battlefield/run/data/miner/keystore" \
+        --unlock=821b55d8abe79bc98f05eb675fdc50dfe796b7ab \
+        --password="/Users/maoueh/work/sf/ethereum.battlefield/run/data/miner/keystore/passphrase.txt" \
+        --mine \
+        --port=30303 \
+        --networkid=1515 \
+        --nodiscover --verbosity 4 $@ 1> $miner_firehose_log 2> $miner_log) &
+      miner_pid=$!
+
+      monitor "miner" $miner_pid $parent_pid "$miner_log" &
+    fi
+
+    if [[ $component == "all" || $component == "syncer_only" ]]; then
+        echo "Starting polygon syncer process (log `relpath $syncer_log`)"
+
+        echo "Value of dependents args: $syncer_version_dependent_args"
+        ($syncer_cmd \
+          $syncer_version_dependent_args \
+          --http --http.api=personal,eth,net,web3 --http.port=8555 --authrpc.port=9669 \
+          --firehose-enabled \
+          --firehose-genesis-file="$syncer_genesis_json" \
+          --syncmode="full" \
+          --port=30313 \
+          --networkid=1515 \
+          --nodiscover --verbosity 4 $@ 1> $syncer_firehose_log 2> $syncer_log) &
+        syncer_pid=$!
+    fi
+
   elif [[ "$chain" == "anvil" ]]; then
     killall "$anvil_bin" &> /dev/null || true
 

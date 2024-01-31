@@ -139,6 +139,7 @@ main() {
     elif [[ $chain == "polygon" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_polygon_cmd \
+          server \
           --chain="$syncer_polygon_genesis_json" \
           --firehose-enabled \
           --syncmode="full" \
