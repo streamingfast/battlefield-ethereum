@@ -61,7 +61,7 @@ main() {
   fi
 
   if [[ $skip_generation == false ]]; then
-    recreate_data_directories oracle_common syncer_anvil syncer_geth syncer_polygon syncer_erigon
+    recreate_data_directories oracle_common oracle_polygon syncer_anvil syncer_geth syncer_polygon syncer_erigon
 
     httpFlag="http"
     httpFlagPrefix="http."
