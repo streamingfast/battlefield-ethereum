@@ -274,6 +274,14 @@ async function main() {
       ),
 
     () =>
+      runner.okTxSend(
+        "call: call to a precompiled address",
+        {
+          to: "0x0000000000000000000000000000000000000004",
+        },
+      ),
+
+    () =>
       runner.okContractSend(
         "call: contract creation from call, without a constructor",
         "calls",

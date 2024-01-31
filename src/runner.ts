@@ -391,18 +391,35 @@ export class BattlefieldRunner {
   async okContractSend(
     tag: string,
     contract: keyof DeploymentState,
-    trx: ContractSendMethod,
+    call: ContractSendMethod,
     options?: TransactionConfig
   ) {
     return this.okSend(tag, options, async (resolvedOptions) => {
       if (this.network == "local") {
-        return { promiEvent: trx.send(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
+        return { promiEvent: call.send(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
       }
 
       const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
         ...resolvedOptions,
         to: this.contracts[contract].options.address,
-        data: trx.encodeABI(),
+        data: call.encodeABI(),
+      })
+
+      return { txHash: tx.hash(), promiEvent: sendRawTx(this.web3, tx) }
+    })
+  }
+
+  async okTxSend(
+    tag: string,
+    options?: TransactionConfig
+  ) {
+    return this.okSend(tag, options, async (resolvedOptions) => {
+      if (this.network == "local") {
+        return { promiEvent: this.web3.eth.sendTransaction(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
+      }
+
+      const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
+        ...resolvedOptions,
       })
 
       return { txHash: tx.hash(), promiEvent: sendRawTx(this.web3, tx) }
