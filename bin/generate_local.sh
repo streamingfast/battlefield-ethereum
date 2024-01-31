@@ -127,6 +127,7 @@ main() {
 
       ($miner_polygon_cmd \
         $miner_version_dependent_args \
+        --datadir ${miner_data_dir} \
         --http --http.api=personal,eth,net,web3,txpool,miner \
         --allow-insecure-unlock \
         --keystore="/Users/maoueh/work/sf/ethereum.battlefield/run/data/miner/keystore" \
@@ -144,9 +145,9 @@ main() {
     if [[ $component == "all" || $component == "syncer_only" ]]; then
         echo "Starting polygon syncer process (log `relpath $syncer_log`)"
 
-        echo "Value of dependents args: $syncer_version_dependent_args"
         ($syncer_cmd \
           $syncer_version_dependent_args \
+          --datadir=${syncer_polygon_data_dir} \
           --http --http.api=personal,eth,net,web3 --http.port=8555 --authrpc.port=9669 \
           --firehose-enabled \
           --firehose-genesis-file="$syncer_genesis_json" \

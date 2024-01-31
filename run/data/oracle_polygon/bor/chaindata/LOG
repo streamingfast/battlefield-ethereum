@@ -7,14 +7,14 @@
 19:35:26.860138 db@close closing
 19:35:26.860243 db@close done T·104.5µs
 =============== Jan 31, 2024 (EST) ===============
-10:11:20.727439 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-10:11:20.727551 version@stat F·[] S·0B[] Sc·[]
-10:11:20.727566 db@open opening
-10:11:20.727605 journal@recovery F·1
-10:11:20.728658 journal@recovery recovering @1
-10:11:20.735936 memdb@flush created L0@2 N·35 S·3KiB "\x06\xc4Q..\x99\xe6\x14,v21":"\xee\x84\xde..>\x1a\x1f,v24"
-10:11:20.737542 version@stat F·[1] S·3KiB[3KiB] Sc·[0.25]
-10:11:20.782471 db@janitor F·3 G·0
-10:11:20.782502 db@open done T·54.923083ms
-10:11:54.214844 db@close closing
-10:11:54.215124 db@close done T·279.042µs
+10:18:47.271802 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+10:18:47.272162 version@stat F·[] S·0B[] Sc·[]
+10:18:47.272197 db@open opening
+10:18:47.272251 journal@recovery F·1
+10:18:47.283190 journal@recovery recovering @1
+10:18:47.295663 memdb@flush created L0@2 N·35 S·3KiB "\x06\xc4Q..\x99\xe6\x14,v21":"\xee\x84\xde..>\x1a\x1f,v24"
+10:18:47.297414 version@stat F·[1] S·3KiB[3KiB] Sc·[0.25]
+10:18:47.356093 db@janitor F·3 G·0
+10:18:47.356672 db@open done T·84.467458ms
+10:19:21.857645 db@close closing
+10:19:21.857894 db@close done T·248.334µs

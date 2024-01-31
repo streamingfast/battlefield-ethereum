@@ -140,6 +140,7 @@ main() {
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_polygon_cmd \
           server \
+          --datadir=${syncer_polygon_data_dir} \
           --chain="$syncer_polygon_genesis_json" \
           --firehose-enabled \
           --syncmode="full" \
