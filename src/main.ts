@@ -531,6 +531,16 @@ async function main() {
       )
   )
 
+  await runner.parallelize(
+    () =>
+    runner.okTxSend(
+      "call: call to a precompiled address again at the very end, to see duplicate OnNewAccount",
+      {
+        to: "0x0000000000000000000000000000000000000004",
+      },
+    ),
+  )
+
   // Close eagerly as there is a bunch of pending not fully resolved promises due to PromiEvent
   console.log()
   console.log(`Completed battlefield deployment (${network})`)

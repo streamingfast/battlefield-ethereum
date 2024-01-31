@@ -84,7 +84,7 @@ main() {
   set -e
 
   if [[ $copy_only == "" ]]; then
-    bash -x ./bin/generate_local.sh -l "$oracle_transaction_log" $chain
+    ./bin/generate_local.sh -l "$oracle_transaction_log" $chain
   fi
 
   echo ""
