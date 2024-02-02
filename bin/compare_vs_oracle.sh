@@ -63,7 +63,7 @@ main() {
   fi
 
   if [[ $skip_generation == false ]]; then
-    recreate_data_directories oracle_common syncer_anvil syncer_geth syncer_polygon syncer_erigon
+    recreate_data_directories oracle_common oracle_polygon syncer_anvil syncer_geth syncer_polygon syncer_erigon
 
     httpFlag="http"
     httpFlagPrefix="http."
@@ -143,6 +143,8 @@ main() {
     elif [[ $chain == "polygon" && $component != "miner_only" ]]; then
       echo "Starting syncer process (log `relpath $syncer_log`)"
       ($syncer_polygon_cmd \
+          server \
+          --datadir=${syncer_polygon_data_dir} \
           --chain="$syncer_polygon_genesis_json" \
           --firehose-enabled \
           --syncmode="full" \

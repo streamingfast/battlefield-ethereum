@@ -17,7 +17,9 @@ export genesis_alloc_json="$GENESIS_DIR/alloc.json"
 export miner_data_dir="$RUN_DIR/data/miner"
 export miner_log="$RUN_DIR/miner.log"
 export miner_firehose_log="$RUN_DIR/miner.firelog"
+
 export miner_cmd="$geth_bin --datadir ${miner_data_dir}"
+export miner_polygon_cmd="$polygon_bin"
 
 export oracle_common_data_dir="$RUN_DIR/data/oracle_common"
 export oracle_common_chain_data_dir="$oracle_common_data_dir/geth"
@@ -58,8 +60,8 @@ export syncer_polygon_data_dir="$RUN_DIR/data/syncer_polygon"
 export syncer_polygon_log="$RUN_DIR/syncer_polygon.log"
 export syncer_polygon_firehose_log="$syncer_polygon_data_dir/syncer_polygon.firelog"
 export syncer_polygon_genesis_json="$syncer_polygon_data_dir/genesis.json"
-export syncer_polygon_cmd="$polygon_bin server --datadir ${syncer_polygon_data_dir}"
-export syncer_polygon_add_peer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $polygon_bin attach ${syncer_polygon_data_dir}/bor.ipc"
+export syncer_polygon_cmd="$polygon_bin"
+export syncer_polygon_addpeer="echo 'admin.addPeer(\"enode://2c8f6d4764c3aca75696e18aeef683932a2bfa0be1603adb54f30dfad8e5cf2372a9d6eeb0e5caffba1fca22e12878c450e6ef09434888f04c6a97b6f50c75d4@127.0.0.1:30303\")' | $polygon_bin attach ${syncer_polygon_data_dir}/bor.ipc"
 
 export bootstrap_data_dir="$RUN_DIR/data/bootstrap"
 
@@ -142,11 +144,11 @@ monitor() {
   done
 }
 
-is_geth_version() {
-  geth_bin="$1"
+is_version() {
+  bin="$1"
   pattern="$2"
 
-  if ! $geth_bin version 2>/dev/null | grep -qE "$pattern"; then
+  if ! $bin version 2>/dev/null | grep -qE "$pattern"; then
     echo "false"
   else
     echo "true"

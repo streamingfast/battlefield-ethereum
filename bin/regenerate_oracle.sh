@@ -63,7 +63,7 @@ main() {
     fi
   elif [[ $chain == "polygon" ]]; then
     grep_pattern="Version: 0.3.7-stable-fh2"
-    if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
+    if ! $polygon_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
       echo "You need Polygon version 0.3.7-stable-fh2 to generate the Oracle data."
       echo "This is because it's our smallest supported version and generating the Oracle"
       echo "data with an higher version creates an incompatible database version."
@@ -74,7 +74,7 @@ main() {
       echo ""
       echo "The version check was performed on this output (geth version 2> /dev/null)"
       echo ""
-      $geth_bin version 2>/dev/null
+      $polygon_bin version 2>/dev/null
       echo ""
       echo "And by grepping for 'grep -E \"$grep_pattern\"'"
       exit 1
@@ -110,8 +110,11 @@ main() {
   # Remove nodekey, we don't want the syncer when picking up this genesis folder to pick it up
   rm -rf $oracle_data_dir/genesis/nodekey &> /dev/null || true
 
-  # This is correct, for now in all cases we run the same geth binary for both geth and polygon
-  cp $syncer_geth_firehose_log $oracle_firehose_log
+  if [[ $chain == "geth" ]]; then
+    cp $syncer_geth_firehose_log $oracle_firehose_log
+  elif [[ $chain == "polygon" ]]; then
+    cp $syncer_polygon_firehose_log $oracle_firehose_log
+  fi
 
   # Remove TRX_ENTER_POOL elements (we do not compare them currently)
   temporary_firehose_log=$(mktemp)
