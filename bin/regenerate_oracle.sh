@@ -63,7 +63,7 @@ main() {
     fi
   elif [[ $chain == "polygon" ]]; then
     grep_pattern="Version: 0.3.7-stable-fh2"
-    if ! $geth_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
+    if ! $polygon_bin version 2>/dev/null | grep -qE "$grep_pattern"; then
       echo "You need Polygon version 0.3.7-stable-fh2 to generate the Oracle data."
       echo "This is because it's our smallest supported version and generating the Oracle"
       echo "data with an higher version creates an incompatible database version."
@@ -74,7 +74,7 @@ main() {
       echo ""
       echo "The version check was performed on this output (geth version 2> /dev/null)"
       echo ""
-      $geth_bin version 2>/dev/null
+      $polygon_bin version 2>/dev/null
       echo ""
       echo "And by grepping for 'grep -E \"$grep_pattern\"'"
       exit 1
