@@ -18,6 +18,9 @@ const randomAddress4 = `0xdead4000${randomHex()}0003beef`
 const randomAddress5 = `0xdead5000${randomHex()}0006beef`
 const randomAddress6 = `0xdead5000${randomHex()}0007beef`
 
+const precompileWithBalance = "0x0000000000000000000000000000000000000004"
+const precompileWithoutBalance = "0x0000000000000000000000000000000000000005"
+
 async function main() {
   const network = requireProcessEnv("NETWORK")
   const only = process.env["ONLY"]
@@ -85,6 +88,14 @@ async function main() {
         "default",
         randomAddress2,
         0
+      ),
+      () =>
+      runner.okTransfer(
+        "pure transfer: to precompile address",
+        "default",
+        precompileWithBalance,
+        oneWei,
+        {gas: 75000},
       )
   )
 
@@ -275,9 +286,17 @@ async function main() {
 
     () =>
       runner.okTxSend(
-        "call: call to a precompiled address",
+        "call: call to a precompiled address with balance",
         {
-          to: "0x0000000000000000000000000000000000000004",
+          to: precompileWithBalance,
+        },
+      ),
+
+    () =>
+      runner.okTxSend(
+        "call: call to a precompiled address without balance",
+        {
+          to: precompileWithoutBalance,
         },
       ),
 
@@ -533,12 +552,20 @@ async function main() {
 
   await runner.parallelize(
     () =>
-    runner.okTxSend(
-      "call: call to a precompiled address again at the very end, to see duplicate OnNewAccount",
-      {
-        to: "0x0000000000000000000000000000000000000004",
-      },
-    ),
+      runner.okTxSend(
+        "call: call to a precompiled address with balance again at the very end, to see effect on OnNewAccount",
+        {
+          to: precompileWithBalance,
+        },
+      ),
+
+    () =>
+      runner.okTxSend(
+        "call: call to a precompiled address without balance again at the very end, to see effect on OnNewAccount",
+        {
+          to: precompileWithoutBalance,
+        },
+      ),
   )
 
   // Close eagerly as there is a bunch of pending not fully resolved promises due to PromiEvent
