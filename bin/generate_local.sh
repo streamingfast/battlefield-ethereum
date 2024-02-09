@@ -86,6 +86,8 @@ main() {
         --unlock=821b55d8abe79bc98f05eb675fdc50dfe796b7ab \
         --password="/Users/maoueh/work/sf/ethereum.battlefield/run/data/miner/keystore/passphrase.txt" \
         --mine \
+        --syncmode=full \
+        --gcmode=archive \
         --port=30303 \
         --networkid=1515 \
         --nodiscover --verbosity 4 $@ 1> $miner_firehose_log 2> $miner_log) &

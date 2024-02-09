@@ -78,7 +78,6 @@ interface ResolvedSendOptions {
 }
 
 interface RunnerOptions {
-  ethqUrl?: string
 }
 
 export class BattlefieldRunner {
@@ -558,11 +557,11 @@ export class BattlefieldRunner {
   }
 
   trxHashAsString(hash: string) {
-    if (this.network == "local" && !this.options.ethqUrl) {
-      return hash
+    if (!hash.startsWith("0x")) {
+      return "0x" + hash
     }
 
-    return this.ethqTxLink(hash)
+    return hash
   }
 
   mergeSendOptionsWithDefaults(options?: TransactionConfig): ResolvedSendOptions {
@@ -609,35 +608,13 @@ export class BattlefieldRunner {
       console.log(`- ${entry[0]} => ${entry[1].contractAddress}`)
     })
 
-    if (this.network != "local" || this.options.ethqUrl) {
+    if (this.network != "local") {
       console.log("")
       console.log("Transaction Links")
       Object.entries(this.deploymentState).forEach((entry) => {
-        console.log(`- ${entry[0]} => ${this.ethqTxLink(entry[1].transactionHash)}`)
+        console.log(`- ${entry[0]} => ${entry[1].transactionHash}`)
       })
     }
-  }
-
-  ethqLink(path: string): string {
-    let baseUrl = ""
-    if (this.network === "dev1") {
-      baseUrl = "https://dev1-eth.ethq.dfuse.dev"
-    }
-
-    if (this.network === "goerli") {
-      baseUrl = "https://goerli.ethq.app"
-    }
-
-    // Override any value when explicitely provided
-    if (this.options.ethqUrl) {
-      baseUrl = this.options.ethqUrl
-    }
-
-    return `${baseUrl}${path}`
-  }
-
-  ethqTxLink(hash: string): string {
-    return this.ethqLink(`/tx/${hash}`)
   }
 
   etherscanLink(path: string): string {
