@@ -18,6 +18,14 @@ let defaultAddress = ""
 
 export const getDefaultAddress = () => defaultAddress
 export const setDefaultAddress = (address: string) => {
+  if (!address.startsWith("0x")) {
+    address = "0x" + address
+  }
+
+  if (!Web3.utils.isAddress(address)) {
+    throw new Error(`Invalid address: ${address}`)
+  }
+
   defaultAddress = address
 }
 
@@ -195,6 +203,7 @@ export async function createRawTx(
   sendOptions = configureDefaultSendOptions(sendOptions)
 
   const nonce = await web3.eth.getTransactionCount(fromAddress)
+
   const txData: TxData = {
     nonce: web3.utils.toHex(nonce),
     gasLimit: web3.utils.toHex(sendOptions.gas!),
@@ -210,13 +219,12 @@ export async function createRawTx(
   // The second parameter is not necessary if these values are used
   const tx = new Transaction(txData, sendOptions.txOptions || defaultTxOptions)
   debug("About to sign transaction %o", {
-    nonce: tx.nonce.toString("hex"),
+    nonce: txData.nonce,
     gasLimit: tx.gasLimit.toString("hex"),
     gasPrice: tx.gasPrice.toString("hex"),
     to: tx.to.toString("hex"),
     options: sendOptions.txOptions || defaultTxOptions,
   })
-
   tx.sign(privateKey)
 
   return tx
