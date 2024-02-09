@@ -16,12 +16,14 @@ main() {
 
   component="all"
   wait_forever=
+  skip_execution=
 
-  while getopts "hwl:" opt; do
+  while getopts "hwl:s" opt; do
     case $opt in
       h) usage && exit 0;;
       w) wait_forever=true;;
       l) log_file="$OPTARG";;
+      s) skip_execution=true;;
       \?) usage_error "Invalid option: -$OPTARG";;
     esac
   done
@@ -86,6 +88,9 @@ main() {
         --unlock=821b55d8abe79bc98f05eb675fdc50dfe796b7ab \
         --password="/Users/maoueh/work/sf/ethereum.battlefield/run/data/miner/keystore/passphrase.txt" \
         --mine \
+        --miner.etherbase=821b55d8abe79bc98f05eb675fdc50dfe796b7ab \
+        --syncmode=full \
+        --gcmode=archive \
         --port=30303 \
         --networkid=1515 \
         --miner.etherbase=821b55d8abe79bc98f05eb675fdc50dfe796b7ab \
@@ -180,29 +185,31 @@ main() {
     exit 1
   fi
 
-  # if [[ $component == "all" || $component == "miner_only" ]]; then
-  #   echo "Executing transactions contained in script 'main.ts'"
+  if [[ $skip_execution != "true" ]]; then
+    if [[ $component == "all" || $component == "miner_only" ]]; then
+      echo "Executing transactions contained in script 'main.ts'"
 
-  #   if [[ "$log_file" != "" ]]; then
-  #     echo "## Transaction Log (`date`)" > $log_file
-  #     echo "" >> $log_file
-  #     echo "\`\`\`" >> $log_file
-  #     $geth_bin version 2>/dev/null 1>> $log_file
-  #     echo "\`\`\`" >> $log_file
+      if [[ "$log_file" != "" ]]; then
+        echo "## Transaction Log (`date`)" > $log_file
+        echo "" >> $log_file
+        echo "\`\`\`" >> $log_file
+        $geth_bin version 2>/dev/null 1>> $log_file
+        echo "\`\`\`" >> $log_file
 
-  #     echo "" >> $log_file
-  #     echo "\`\`\`" >> $log_file
-  #   fi
+        echo "" >> $log_file
+        echo "\`\`\`" >> $log_file
+      fi
 
-  #   if [[ "$log_file" != "" ]]; then
-  #     ETHQ_URL=http://localhost:8080 npm run -s local | tee -a $log_file
-  #     echo "\`\`\`" >> $log_file
-  #   else
-  #     npm run -s local
-  #   fi
+      if [[ "$log_file" != "" ]]; then
+        ETHQ_URL=http://localhost:8080 npm run -s local | tee -a $log_file
+        echo "\`\`\`" >> $log_file
+      else
+        npm run -s local
+      fi
 
-  #   echo ""
-  # fi
+      echo ""
+    fi
+  fi
 
   if [[ $component == "miner_only" ]]; then
     echo "Miner sleeping forever"
@@ -269,6 +276,7 @@ usage() {
   echo "Options"
   echo "    -h          Display help about this script"
   echo "    -w          Wait forever once all transactions have been included instead of quitting, useful for debugging purposes"
+  echo "    -s          Skip transactions execution useful to start a local node without executing transactions"
   echo "    -l <file>   The execution log file to produce when locally executing the transaction"
 }
 
