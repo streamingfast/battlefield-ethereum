@@ -16,7 +16,6 @@ const randomAddress2 = `0xdead2000${randomHex()}0001beef`
 const randomAddress3 = `0xdead3000${randomHex()}0004beef`
 const randomAddress4 = `0xdead4000${randomHex()}0003beef`
 const randomAddress5 = `0xdead5000${randomHex()}0006beef`
-const randomAddress6 = `0xdead5000${randomHex()}0007beef`
 
 const precompileWithBalance = "0x0000000000000000000000000000000000000004"
 const precompileWithoutBalance = "0x0000000000000000000000000000000000000005"
@@ -168,12 +167,12 @@ async function main() {
   setDefaultGasConfig(95000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
-    () => runner.okContractSend("log: empty", "main", logsContract.methods.logEmpty()),
-    () => runner.okContractSend("log: single", "main", logsContract.methods.logSingle()),
-    () => runner.okContractSend("log: all", "main", logsContract.methods.logAll()),
-    () => runner.okContractSend("log: all indexed", "main", logsContract.methods.logAllIndexed()),
-    () => runner.okContractSend("log: all mixed", "main", logsContract.methods.logAllMixed()),
-    () => runner.okContractSend("log: multi", "main", logsContract.methods.logMulti()),
+    () => runner.okContractSend("log: empty", "logs", logsContract.methods.logEmpty()),
+    () => runner.okContractSend("log: single", "logs", logsContract.methods.logSingle()),
+    () => runner.okContractSend("log: all", "logs", logsContract.methods.logAll()),
+    () => runner.okContractSend("log: all indexed", "logs", logsContract.methods.logAllIndexed()),
+    () => runner.okContractSend("log: all mixed", "logs", logsContract.methods.logAllMixed()),
+    () => runner.okContractSend("log: multi", "logs", logsContract.methods.logMulti()),
     () =>
       runner.koContractSend(
         "log: log in top-level trx and then top-leve trx fails",

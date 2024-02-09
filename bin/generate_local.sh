@@ -180,29 +180,29 @@ main() {
     exit 1
   fi
 
-  if [[ $component == "all" || $component == "miner_only" ]]; then
-    echo "Executing transactions contained in script 'main.ts'"
+  # if [[ $component == "all" || $component == "miner_only" ]]; then
+  #   echo "Executing transactions contained in script 'main.ts'"
 
-    if [[ "$log_file" != "" ]]; then
-      echo "## Transaction Log (`date`)" > $log_file
-      echo "" >> $log_file
-      echo "\`\`\`" >> $log_file
-      $geth_bin version 2>/dev/null 1>> $log_file
-      echo "\`\`\`" >> $log_file
+  #   if [[ "$log_file" != "" ]]; then
+  #     echo "## Transaction Log (`date`)" > $log_file
+  #     echo "" >> $log_file
+  #     echo "\`\`\`" >> $log_file
+  #     $geth_bin version 2>/dev/null 1>> $log_file
+  #     echo "\`\`\`" >> $log_file
 
-      echo "" >> $log_file
-      echo "\`\`\`" >> $log_file
-    fi
+  #     echo "" >> $log_file
+  #     echo "\`\`\`" >> $log_file
+  #   fi
 
-    if [[ "$log_file" != "" ]]; then
-      ETHQ_URL=http://localhost:8080 npm run -s local | tee -a $log_file
-      echo "\`\`\`" >> $log_file
-    else
-      npm run -s local
-    fi
+  #   if [[ "$log_file" != "" ]]; then
+  #     ETHQ_URL=http://localhost:8080 npm run -s local | tee -a $log_file
+  #     echo "\`\`\`" >> $log_file
+  #   else
+  #     npm run -s local
+  #   fi
 
-    echo ""
-  fi
+  #   echo ""
+  # fi
 
   if [[ $component == "miner_only" ]]; then
     echo "Miner sleeping forever"

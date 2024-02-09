@@ -124,6 +124,15 @@ export class BattlefieldRunner {
         `../state/${this.network}-deployment-state.json`
       )
       this.defaultAddress = requireProcessEnv("FROM_ADDRESS")
+      if (!this.defaultAddress.startsWith("0x")) {
+        this.defaultAddress = "0x" + this.defaultAddress
+      }
+
+      if (!Web3.utils.isAddress(this.defaultAddress)) {
+        console.error(`Invalid address: ${this.defaultAddress}`)
+        process.exit(1)
+      }
+
       this.privateKey = Buffer.from(requireProcessEnv("PRIVATE_KEY"), "hex")
 
       if (this.privateKey.length != 32) {
