@@ -1,10 +1,9 @@
 import { join as pathJoin } from "path"
+import net from 'net';
 import Web3 from "web3"
 import { PromiEvent, TransactionReceipt, TransactionConfig } from "web3-core"
-import BN from "bn.js"
 import {
   readContract,
-  promisifyOnFirstConfirmation,
   requireProcessEnv,
   initialDefaultAddress,
   sendRawTx,
@@ -12,6 +11,8 @@ import {
   setDefaultTxOptions,
   getDefaultGasConfig,
   isUnsetDefaultGasConfig,
+  promisifyOnReceipt,
+  EthValue,
 } from "./common"
 import { ContractSendMethod, Contract } from "web3-eth-contract"
 import {
@@ -73,7 +74,7 @@ interface ResolvedSendOptions {
   to: string
   gasPrice: string
   gas: number
-  value: number | string | BN
+  value: EthValue
   data?: string
 }
 
@@ -149,7 +150,11 @@ export class BattlefieldRunner {
       goerli: setupExternalNetwork,
     })
 
-    this.web3 = new Web3(this.rpcEndpoint)
+    if (this.rpcEndpoint.startsWith("ipc://")) {
+      this.web3 = new Web3(this.rpcEndpoint.replace('ipc://', ''), new net.Socket())
+    } else {
+      this.web3 = new Web3(this.rpcEndpoint)
+    }
   }
 
   async initialize() {
@@ -218,7 +223,7 @@ export class BattlefieldRunner {
   async deployContracts(): Promise<DeploymentState> {
     // FIXME: Only local do it in parallel for now as foreign network needs to have an update nonce after each transaction!
     // FIXME: At least, we should get rid of the enormous duplication in there...
-    if (this.network === "local") {
+    if (this.network === "local" && !this.rpcEndpoint.startsWith("ipc://")) {
       const promises: Record<ContractID, Promise<DeploymentResult>> = {
         main: this.deployContract("main"),
         calls: this.deployContract("calls"),
@@ -305,7 +310,7 @@ export class BattlefieldRunner {
   }
 
   async parallelize<T = any>(...promiseFactories: Array<() => Promise<T>>): Promise<void> {
-    if (this.network == "local") {
+    if (this.network == "local" && !this.rpcEndpoint.startsWith("ipc://")) {
       return Promise.all(promiseFactories.map((promiseFactory) => promiseFactory())).then(() => {
         return
       })
@@ -350,7 +355,7 @@ export class BattlefieldRunner {
     tag: string,
     from: string | "default",
     to: string,
-    value: string | number | BN,
+    value: EthValue,
     options?: TransactionConfig
   ) {
     options = { ...options, from, value, to }
@@ -375,7 +380,7 @@ export class BattlefieldRunner {
     tag: string,
     from: string | "default",
     to: string,
-    value: string | number | BN,
+    value: EthValue,
     options?: TransactionConfig
   ) {
     options = { ...options, from, value, to }
@@ -477,7 +482,7 @@ export class BattlefieldRunner {
         console.log(`Pending transaction hash '${trxHashString}' (${tag})`)
       }
 
-      const receipt = await promisifyOnFirstConfirmation(promiEvent)
+      const receipt = await promisifyOnReceipt(promiEvent)
       trxHashString = this.trxHashAsString(receipt.transactionHash)
 
       // See https://ethereum.stackexchange.com/a/6003
@@ -520,7 +525,7 @@ export class BattlefieldRunner {
         console.log(`Pending transaction hash '${trxHashString}' (${tag})`)
       }
 
-      const receipt = await promisifyOnFirstConfirmation(promiEvent)
+      const receipt = await promisifyOnReceipt(promiEvent)
       trxHashString = this.trxHashAsString(receipt.transactionHash)
 
       // See https://ethereum.stackexchange.com/a/6003

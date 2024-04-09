@@ -7,6 +7,9 @@ import { Transaction, BufferLike, TxData, TransactionOptions } from "ethereumjs-
 import Web3 from "web3"
 import debugFactory from "debug"
 
+// To ensure our types are fully compatible
+export type EthValue = SendOptions["value"]
+
 const debug = debugFactory("battlefield:common")
 
 export type GasOptions = {
@@ -87,7 +90,8 @@ export async function addressOrDefault(
   if (input != null) return input
   if (eth.defaultAccount != null) return eth.defaultAccount
 
-  return await eth.getCoinbase()
+  const accounts = await eth.getAccounts()
+  return accounts[0]
 }
 
 export async function unlockAccount(eth: Eth, address: string) {
@@ -144,6 +148,18 @@ export function fullyExecuteAndLog<T>(event: PromiEvent<T>): Promise<Transaction
 
 export function promisifyOnReceipt<T>(event: PromiEvent<T>): Promise<TransactionReceipt> {
   return new Promise((resolve, reject) => {
+    // Left for debugging purposes
+    // event.on("receipt", () => { console.log("Received receipt") }).catch((error) => { console.log("Received receipt error", error) })
+    // event.on("transactionHash", () => { console.log("Received transactionHash") }).catch((error) => { console.log("Received transactionHash error", error) })
+    // event.on("confirmation", () => { console.log("Received confirmation") }).catch((error) => { console.log("Received confirmation error", error) })
+    // event.on("error", () => { console.log("Received error") }).catch((error) => { console.log("Received error error", error) })
+    // event.once("sending", () => { console.log("Received (once) sending") }).catch((error) => { console.log("Received (once) sending error", error) })
+    // event.once("sent", () => { console.log("Received (once) sent") }).catch((error) => { console.log("Received (once) sent error", error) })
+    // event.once("error", () => { console.log("Received (once) error") }).catch((error) => { console.log("Received (once) error error", error) })
+    // event.once("receipt", () => { console.log("Received (once) receipt") }).catch((error) => { console.log("Received (once) receipt error", error) })
+    // event.once("transactionHash", () => { console.log("Received (once) transactionHash") }).catch((error) => { console.log("Received (once) transactionHash error", error) })
+    // event.once("confirmation", () => { console.log("Received (once) confirmation") }).catch((error) => { console.log("Received (once) confirmation error", error) })
+
     event.once("receipt", resolve).catch(reject)
   })
 }
@@ -213,6 +229,9 @@ export async function createRawTx(
   }
 
   if (sendOptions.value) {
+    // @ts-ignore Another weird case of typing issue here, `web3-tuols` and `SendOptions` are not compatible
+    // around the BN type for unknown reason. There is another case of this in `main.ts` when we define
+    // `oneWei` and `threeWei`.
     txData.value = web3.utils.toHex(sendOptions.value)
   }
 

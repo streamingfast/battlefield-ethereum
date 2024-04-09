@@ -1,14 +1,19 @@
-import BN from "bn.js"
 import { readContractBin, requireProcessEnv, setDefaultGasConfig, waitFor } from "./common"
 import { BattlefieldRunner, Network } from "./runner"
 import { join as pathJoin } from "path"
+import { toBN } from "web3-utils"
 
 const randomHex6chars = () => ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0")
 const randomHex = () =>
   randomHex6chars() + randomHex6chars() + randomHex6chars() + randomHex6chars()
 
-const oneWei = new BN(1)
-const threeWei = new BN(3)
+// It seems the `BN` from `web3-utils` is not fully compatible with the `SendOptions["value"]` type
+// that we use in our codebase. They seems to all come from the same require but for an unknown reason,
+// I now hit problem with version 1.10 of Web3.js.
+//
+// Let's deal with this later on and just use `any` for now.
+const oneWei = toBN(1) as any
+const threeWei = toBN(3) as any
 
 const knownExistingAddress = "0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd"
 const randomAddress1 = `0xdead1000${randomHex()}0002beef`
