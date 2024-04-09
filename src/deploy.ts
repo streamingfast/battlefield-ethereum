@@ -2,13 +2,13 @@ import { join as pathJoin } from "path"
 import Web3 from "web3"
 import { ContractSendMethod } from "web3-eth-contract"
 import {
-  promisifyOnFirstConfirmation,
   readContract,
   readContractBin,
   unlockAccount,
   createRawTx,
   sendRawTx,
   getDefaultGasConfig,
+  promisifyOnReceipt,
 } from "./common"
 import debugFactory from "debug"
 
@@ -32,7 +32,9 @@ export async function deployContract(
     contractArguments: [],
   }
 ): Promise<DeploymentResult> {
-  if (unlockAccount) {
+  debug("Deploying %s using from address %s", contractName, fromAddress)
+
+  if (!(web3.currentProvider instanceof Web3.providers.IpcProvider)) {
     debug("Unlocking account for contract %s: %O", contractName, fromAddress)
     await unlockAccount(web3.eth, fromAddress)
   }
@@ -47,7 +49,7 @@ export async function deployContract(
   //        the actual observer backing the `PromiEvent` is still running and continue to send
   //        events to the `PromiEvent`.
   console.log(`Deploying contract '${contractName}'`)
-  const receipt = await promisifyOnFirstConfirmation(
+  const receipt = await promisifyOnReceipt(
     contractMethod.send({
       from: fromAddress,
       gas: gasLimit,
@@ -87,7 +89,7 @@ export async function deployContractRaw(
   })
 
   console.log(`Deploying contract '${contractName}'`)
-  const receipt = await promisifyOnFirstConfirmation(sendRawTx(web3, tx))
+  const receipt = await promisifyOnReceipt(sendRawTx(web3, tx))
 
   return {
     contractAddress: receipt.contractAddress!,
