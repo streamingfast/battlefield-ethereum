@@ -5,6 +5,12 @@ contract Logs {
         emit eventLogEmpty();
     }
 
+    function logNoTopics() public {
+        assembly {
+            log0(0, 0)
+        }
+    }
+
     function logSingle() public {
         emit eventLogSingle(
             "payload as string",

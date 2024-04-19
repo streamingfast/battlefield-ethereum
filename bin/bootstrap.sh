@@ -103,7 +103,7 @@ main() {
   fi
 
   log "Generating genesis block & node information"
-  coinbase_address=`cat $genesis_alloc_json | jq -r 'keys_unsorted[0]'`
+  coinbase_address=`cat $BOOT_DIR/genesis.json | jq -r '.alloc | keys_unsorted[0]'`
   coinbase_private=`npm run -s r src/keys.ts $coinbase_address | tail -n1`
   coinbase_enode=`$bootnode_bin -nodekeyhex $coinbase_private -writeaddress`
 

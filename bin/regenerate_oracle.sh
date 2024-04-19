@@ -51,7 +51,7 @@ main() {
       echo "data with an higher version creates an incompatible database version."
       echo ""
       echo "For github.com/streamingfast/go-ethereum fork, you should be able to checkout"
-      echo "branch 'firehose-fh2.3', compile 'geth' using 'go install ./cmd/geth' and re-run this"
+      echo "branch 'firehose-fh2.4', compile 'geth' using 'go install ./cmd/geth' and re-run this"
       echo "script to properly update bootstrap data."
       echo ""
       echo "The version check was performed on this output (geth version 2> /dev/null)"
@@ -59,7 +59,7 @@ main() {
       $geth_bin version 2>/dev/null
       echo ""
       echo "And by grepping for 'grep -E \"$grep_pattern\"'"
-      # exit 1
+      exit 1
     fi
   elif [[ $chain == "polygon" ]]; then
     grep_pattern="Version: 0.3.7-stable-fh2"
