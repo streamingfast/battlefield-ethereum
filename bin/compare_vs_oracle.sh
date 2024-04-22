@@ -132,6 +132,7 @@ main() {
       ($syncer_geth_cmd \
           --syncmode="full" \
           --vmtrace firehose \
+          --vmtrace.config='{"applyBackwardCompatibility":true}' \
           --$httpFlag --${httpFlagPrefix}api="personal,eth,net,web3" \
           --${httpFlagPrefix}port=8555 \
           --port=30313 \
@@ -162,6 +163,7 @@ main() {
           init $syncer_erigon_genesis_json $@ 1> $syncer_firehose_log 2> $syncer_log)
       ($syncer_erigon_cmd \
           --vmtrace=firehose \
+          --vmtrace.config='{"applyBackwardCompatibility":true}' \
           --http=false \
           --http.port=8555 \
           --http.api=eth,erigon,web3,net,debug,trace,txpool,parity \
@@ -183,6 +185,7 @@ main() {
       kill_pid "syncer" $syncer_pid
       ($syncer_erigon_cmd \
           --vmtrace=firehose \
+          --vmtrace.config='{"applyBackwardCompatibility":true}' \
           --http=false \
           --http.port=8555 \
           --http.api=eth,erigon,web3,net,debug,trace,txpool,parity \
