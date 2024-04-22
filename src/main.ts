@@ -93,13 +93,13 @@ async function main() {
         randomAddress2,
         0
       ),
-      () =>
+    () =>
       runner.okTransfer(
         "pure transfer: to precompile address",
         "default",
         precompileWithBalance,
         oneWei,
-        {gas: 75000},
+        { gas: 75000 }
       )
   )
 
@@ -172,6 +172,8 @@ async function main() {
   setDefaultGasConfig(95000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
+    () =>
+      runner.okContractSend("log: no topics (log0)", "logs", logsContract.methods.logNoTopics()),
     () => runner.okContractSend("log: empty", "logs", logsContract.methods.logEmpty()),
     () => runner.okContractSend("log: single", "logs", logsContract.methods.logSingle()),
     () => runner.okContractSend("log: all", "logs", logsContract.methods.logAll()),
@@ -258,7 +260,7 @@ async function main() {
         "call: complete call tree",
         "calls",
         callsContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
-      ),
+      )
   )
 
   console.log()
@@ -289,20 +291,14 @@ async function main() {
       ),
 
     () =>
-      runner.okTxSend(
-        "call: call to a precompiled address with balance",
-        {
-          to: precompileWithBalance,
-        },
-      ),
+      runner.okTxSend("call: call to a precompiled address with balance", {
+        to: precompileWithBalance,
+      }),
 
     () =>
-      runner.okTxSend(
-        "call: call to a precompiled address without balance",
-        {
-          to: precompileWithoutBalance,
-        },
-      ),
+      runner.okTxSend("call: call to a precompiled address without balance", {
+        to: precompileWithoutBalance,
+      }),
 
     () =>
       runner.okContractSend(
@@ -318,7 +314,7 @@ async function main() {
         callsContract.methods.contractWithConstructor()
       ),
 
-      () =>
+    () =>
       runner.okContractSend(
         "call: delegate with value",
         "calls",
@@ -560,7 +556,7 @@ async function main() {
         "call: call to a precompiled address with balance again at the very end, to see effect on OnNewAccount",
         {
           to: precompileWithBalance,
-        },
+        }
       ),
 
     () =>
@@ -568,8 +564,8 @@ async function main() {
         "call: call to a precompiled address without balance again at the very end, to see effect on OnNewAccount",
         {
           to: precompileWithoutBalance,
-        },
-      ),
+        }
+      )
   )
 
   // Close eagerly as there is a bunch of pending not fully resolved promises due to PromiEvent

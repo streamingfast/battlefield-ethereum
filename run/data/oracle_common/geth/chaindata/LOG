@@ -1,37 +1,37 @@
-=============== Sep 29, 2020 (EDT) ===============
-21:45:21.307549 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-21:45:21.329200 db@open opening
-21:45:21.336226 version@stat F·[] S·0B[] Sc·[]
-21:45:21.344655 db@janitor F·2 G·0
-21:45:21.348344 db@open done T·16.267944ms
-21:45:21.351120 db@close closing
-21:45:21.351359 db@close done T·236.464µs
-=============== Feb 1, 2024 (EST) ===============
-10:10:39.185637 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-10:10:39.185736 version@stat F·[] S·0B[] Sc·[]
-10:10:39.185748 db@open opening
-10:10:39.185775 journal@recovery F·1
-10:10:39.186838 journal@recovery recovering @1
-10:10:39.193900 memdb@flush created L0@2 N·34 S·2KiB "\x06\xc4Q..\x99\xe6\x14,v21":"\xee\x84\xde..>\x1a\x1f,v24"
-10:10:39.194825 version@stat F·[1] S·2KiB[2KiB] Sc·[0.25]
-10:10:39.213532 db@janitor F·3 G·0
-10:10:39.213568 db@open done T·27.812208ms
-10:10:39.279558 table@compaction range L-1 "a":"b"
-10:10:39.279575 table@compaction L0·1 -> L1·0 S·2KiB Q·40
-10:10:39.293903 table@build created L1@5 N·34 S·2KiB "\x06\xc4Q..\x99\xe6\x14,v21":"\xee\x84\xde..>\x1a\x1f,v24"
-10:10:39.294217 version@stat F·[0 1] S·2KiB[0B 2KiB] Sc·[0.00 0.00]
-10:10:39.308346 table@compaction committed F~ S~ Ke·0 D·0 T·28.737916ms
-10:10:39.327675 memdb@flush N·7 S·416B
-10:10:39.344176 memdb@flush created L0@7 N·7 S·558B "Dat..ion,v36":"unc..own,v42"
-10:10:39.344707 version@stat F·[1 1] S·3KiB[558B 2KiB] Sc·[0.25 0.00]
-10:10:39.359583 memdb@flush committed F·1 T·29.869916ms
-10:10:39.360303 journal@remove removed @3
-10:10:39.360320 table@compaction range L-1 "o":"p"
-10:10:39.360339 table@compaction L0·1 -> L1·1 S·3KiB Q·42
-10:10:39.370713 table@build created L1@8 N·39 S·2KiB "\x06\xc4Q..\x99\xe6\x14,v21":"\xee\x84\xde..>\x1a\x1f,v24"
-10:10:39.371159 version@stat F·[0 1] S·2KiB[0B 2KiB] Sc·[0.00 0.00]
-10:10:39.384122 table@compaction committed F-1 S-251B Ke·0 D·2 T·23.765291ms
-10:10:39.384630 table@remove removed @7
-10:10:39.389874 table@remove removed @5
-10:11:14.684715 db@close closing
-10:11:14.684800 db@close done T·84.792µs
+=============== Apr 19, 2024 (EDT) ===============
+15:55:07.190332 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:55:07.204591 db@open opening
+15:55:07.205060 version@stat F·[] S·0B[] Sc·[]
+15:55:07.209687 db@janitor F·2 G·0
+15:55:07.209711 db@open done T·5.0875ms
+15:55:07.211893 db@close closing
+15:55:07.212161 db@close done T·232.208µs
+=============== Apr 19, 2024 (EDT) ===============
+15:56:35.488520 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:56:35.488617 version@stat F·[] S·0B[] Sc·[]
+15:56:35.488629 db@open opening
+15:56:35.488661 journal@recovery F·1
+15:56:35.489590 journal@recovery recovering @1
+15:56:35.500694 memdb@flush created L0@2 N·34 S·2KiB "\x06\xc4Q..\x99\xe6\x14,v21":"\xee\x84\xde..>\x1a\x1f,v24"
+15:56:35.502318 version@stat F·[1] S·2KiB[2KiB] Sc·[0.25]
+15:56:35.538063 db@janitor F·3 G·0
+15:56:35.538093 db@open done T·49.456042ms
+15:56:35.618985 table@compaction range L-1 "a":"b"
+15:56:35.618998 table@compaction L0·1 -> L1·0 S·2KiB Q·40
+15:56:35.624381 table@build created L1@5 N·34 S·2KiB "\x06\xc4Q..\x99\xe6\x14,v21":"\xee\x84\xde..>\x1a\x1f,v24"
+15:56:35.624930 version@stat F·[0 1] S·2KiB[0B 2KiB] Sc·[0.00 0.00]
+15:56:35.639713 table@compaction committed F~ S~ Ke·0 D·0 T·20.697583ms
+15:56:35.645032 memdb@flush N·7 S·416B
+15:56:35.669474 memdb@flush created L0@7 N·7 S·558B "Dat..ion,v36":"unc..own,v42"
+15:56:35.674958 version@stat F·[1 1] S·3KiB[558B 2KiB] Sc·[0.25 0.00]
+15:56:35.694050 memdb@flush committed F·1 T·48.661625ms
+15:56:35.694498 journal@remove removed @3
+15:56:35.694512 table@compaction range L-1 "o":"p"
+15:56:35.694524 table@compaction L0·1 -> L1·1 S·3KiB Q·42
+15:56:35.704212 table@build created L1@8 N·39 S·2KiB "\x06\xc4Q..\x99\xe6\x14,v21":"\xee\x84\xde..>\x1a\x1f,v24"
+15:56:35.704248 version@stat F·[0 1] S·2KiB[0B 2KiB] Sc·[0.00 0.00]
+15:56:35.714581 table@compaction committed F-1 S-251B Ke·0 D·2 T·20.042333ms
+15:56:35.714920 table@remove removed @7
+15:56:35.714995 table@remove removed @5
+15:57:10.934753 db@close closing
+15:57:10.934818 db@close done T·64.417µs

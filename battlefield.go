@@ -16,8 +16,10 @@ import (
 	firecore "github.com/streamingfast/firehose-core"
 	"github.com/streamingfast/firehose-core/cmd/tools/compare"
 	"github.com/streamingfast/firehose-core/node-manager/mindreader"
+	fcproto "github.com/streamingfast/firehose-core/proto"
 	"github.com/streamingfast/firehose-ethereum/codec"
 	pbeth "github.com/streamingfast/firehose-ethereum/types/pb/sf/ethereum/type/v2"
+
 	"github.com/streamingfast/jsonpb"
 	"github.com/streamingfast/logging"
 	"go.uber.org/zap"
@@ -90,12 +92,19 @@ func compareE(_ *cobra.Command, args []string) error {
 		hasDifferences = true
 	}
 
+	registry, err := fcproto.NewRegistry(new(pbeth.Block).ProtoReflect().Descriptor().ParentFile())
+	if err != nil {
+		return fmt.Errorf("new proto registry: %w", err)
+
+	}
+
 	upToBlock := uint64(math.Min(float64(len(oracleBlocks)), float64(len(actualBlocks))))
 	for i := uint64(0); i < upToBlock; i++ {
 		oracle := oracleBlocks[i]
 		actual := actualBlocks[i]
 
-		isEqual, _ := compare.Compare(oracle.Block, actual.Block, false)
+		differences := compare.Compare(oracle.Block, actual.Block, true, registry, "hex")
+		isEqual := len(differences) == 0
 
 		if !isEqual {
 			hasDifferences = true
