@@ -1,16 +1,16 @@
+import debugFactory from "debug"
 import { join as pathJoin } from "path"
 import Web3 from "web3"
 import { ContractSendMethod } from "web3-eth-contract"
 import {
-  readContract,
-  readContractBin,
-  unlockAccount,
   createRawTx,
-  sendRawTx,
   getDefaultGasConfig,
   promisifyOnReceipt,
+  readContract,
+  readContractBin,
+  sendRawTx,
+  unlockAccount,
 } from "./common"
-import debugFactory from "debug"
 
 const debug = debugFactory("battlefield:deploy")
 
@@ -88,8 +88,13 @@ export async function deployContractRaw(
     value: options.value,
   })
 
-  console.log(`Deploying contract '${contractName}'`)
   const receipt = await promisifyOnReceipt(sendRawTx(web3, tx))
+  console.log(
+    `Contract deployed ${contractName}
+    blockHash: ${receipt.blockHash}
+    blocknumber: ${receipt.blockNumber}
+    trxHash: ${receipt.transactionHash}`
+  )
 
   return {
     contractAddress: receipt.contractAddress!,

@@ -1,30 +1,30 @@
+import debugFactory from "debug"
+import Common from "ethereumjs-common"
+import { existsSync, readFileSync, writeFileSync } from "fs"
+import net from "net"
 import { join as pathJoin } from "path"
-import net from 'net';
 import Web3 from "web3"
-import { PromiEvent, TransactionReceipt, TransactionConfig } from "web3-core"
+import { PromiEvent, TransactionConfig, TransactionReceipt } from "web3-core"
+import { Contract, ContractSendMethod } from "web3-eth-contract"
 import {
-  readContract,
-  requireProcessEnv,
-  initialDefaultAddress,
-  sendRawTx,
   createRawTx,
-  setDefaultTxOptions,
+  EthValue,
   getDefaultGasConfig,
+  initialDefaultAddress,
   isUnsetDefaultGasConfig,
   promisifyOnReceipt,
-  EthValue,
+  readContract,
+  requireProcessEnv,
+  sendRawTx,
+  setDefaultTxOptions,
 } from "./common"
-import { ContractSendMethod, Contract } from "web3-eth-contract"
 import {
   deployContract,
   deployContractRaw,
-  DeploymentResult,
   DeployerOptions,
+  DeploymentResult,
   readContractInfo,
 } from "./deploy"
-import { readFileSync, writeFileSync, existsSync } from "fs"
-import Common from "ethereumjs-common"
-import debugFactory from "debug"
 
 const debug = debugFactory("battlefield:deploy")
 
@@ -47,9 +47,9 @@ const Contracts = {
 
 const contractIds = Object.keys(Contracts) as ContractID[]
 
-type ContractID = keyof typeof Contracts
-type DeploymentState = Record<ContractID, DeploymentResult>
-type DeploymentContracts = Record<ContractID, Contract>
+export type ContractID = keyof typeof Contracts
+export type DeploymentState = Record<ContractID, DeploymentResult>
+export type DeploymentContracts = Record<ContractID, Contract>
 
 const emptyDeploymentState = () => {
   const state = {} as DeploymentState
@@ -78,8 +78,7 @@ interface ResolvedSendOptions {
   data?: string
 }
 
-interface RunnerOptions {
-}
+interface RunnerOptions {}
 
 export class BattlefieldRunner {
   // Going to be fully initialize in the `initialize` call
@@ -97,6 +96,9 @@ export class BattlefieldRunner {
 
   only?: RegExp
   options: RunnerOptions
+
+  // Output of test runs
+  jsonOutput: any = {}
 
   constructor(network: Network, options: RunnerOptions = {}) {
     this.network = network
@@ -142,16 +144,17 @@ export class BattlefieldRunner {
     }
 
     this.doForNetwork({
-      local: () => {
-        debug("Setting deployer for local network to 'deployRpcContract'")
-        this.deployer = this.deployRpcContract
-      },
+      // local: () => {
+      //   debug("Setting deployer for local network to 'deployRpcContract'")
+      //   this.deployer = this.deployRpcContract
+      // },
       dev1: setupExternalNetwork,
       goerli: setupExternalNetwork,
+      local: setupExternalNetwork,
     })
 
     if (this.rpcEndpoint.startsWith("ipc://")) {
-      this.web3 = new Web3(this.rpcEndpoint.replace('ipc://', ''), new net.Socket())
+      this.web3 = new Web3(this.rpcEndpoint.replace("ipc://", ""), new net.Socket())
     } else {
       this.web3 = new Web3(this.rpcEndpoint)
     }
@@ -223,7 +226,11 @@ export class BattlefieldRunner {
   async deployContracts(): Promise<DeploymentState> {
     // FIXME: Only local do it in parallel for now as foreign network needs to have an update nonce after each transaction!
     // FIXME: At least, we should get rid of the enormous duplication in there...
-    if (this.network === "local" && !this.rpcEndpoint.startsWith("ipc://")) {
+    if (
+      process.env.PRIVATE_KEY === "" &&
+      this.network === "local" &&
+      !this.rpcEndpoint.startsWith("ipc://")
+    ) {
       const promises: Record<ContractID, Promise<DeploymentResult>> = {
         main: this.deployContract("main"),
         calls: this.deployContract("calls"),
@@ -294,6 +301,12 @@ export class BattlefieldRunner {
 
     await this.initializeContracts()
 
+    // Add contracts to the JSON Output
+    Object.entries(this.deploymentState).forEach(([contract, deployment]) => {
+      console.log("adding json output entry", contract, deployment.contractAddress)
+      this.jsonOutput[contract] = deployment.contractAddress
+    })
+
     return this.deploymentState
   }
 
@@ -309,38 +322,42 @@ export class BattlefieldRunner {
     await Promise.all(promises)
   }
 
+  // TODO: fix the parallelization, currently, it's sequential
   async parallelize<T = any>(...promiseFactories: Array<() => Promise<T>>): Promise<void> {
-    if (this.network == "local" && !this.rpcEndpoint.startsWith("ipc://")) {
-      return Promise.all(promiseFactories.map((promiseFactory) => promiseFactory())).then(() => {
-        return
-      })
-    }
+    // if (this.network == "local" && !this.rpcEndpoint.startsWith("ipc://")) {
+    //   return Promise.all(promiseFactories.map((promiseFactory) => promiseFactory())).then(() => {
+    //     return
+    //   })
+    // }
 
     // Sequential for now because on non-local network, we need to actually fetch the current nonce and each parallel execution need to get the nonce for which it will work
     var result = Promise.resolve<T>(undefined as any)
     promiseFactories.forEach((promiseFactory) => {
+      //@ts-ignore
       result = result.then(() => promiseFactory() as Promise<T>)
     })
 
-    return result.then(() => {
-      return
+    var test = new Promise<void>((resolve, reject) => {
+      result.then(() => resolve()).catch(reject)
     })
+
+    return test
   }
 
   async koDeployContract(tag: string, contractName: string, options?: TransactionConfig) {
     const contractMethod = await readContractInfo(this.web3, contractName)
 
     return this.koSend(tag, options, async (resolvedOptions) => {
-      if (this.network == "local") {
-        return {
-          promiEvent: contractMethod.send({
-            from: resolvedOptions.from,
-            gas: resolvedOptions.gas,
-            gasPrice: resolvedOptions.gasPrice,
-            value: resolvedOptions.value,
-          }) as any as PromiEvent<TransactionReceipt>,
-        }
-      }
+      // if (this.network == "local") {
+      //   return {
+      //     promiEvent: contractMethod.send({
+      //       from: resolvedOptions.from,
+      //       gas: resolvedOptions.gas,
+      //       gasPrice: resolvedOptions.gasPrice,
+      //       value: resolvedOptions.value,
+      //     }) as any as PromiEvent<TransactionReceipt>,
+      //   }
+      // }
 
       const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
         ...resolvedOptions,
@@ -361,10 +378,11 @@ export class BattlefieldRunner {
     options = { ...options, from, value, to }
 
     return this.okSend(tag, options, async (resolvedOptions) => {
-      if (this.network == "local") {
-        return { promiEvent: this.web3.eth.sendTransaction(resolvedOptions) }
-      }
+      // if (this.network == "local") {
+      //   return { promiEvent: this.web3.eth.sendTransaction(resolvedOptions) }
+      // }
 
+      console.log(`Transferring ${value?.toString()} WEI from ${from} to ${to}`)
       const tx = await createRawTx(
         this.web3,
         resolvedOptions.from,
@@ -386,9 +404,9 @@ export class BattlefieldRunner {
     options = { ...options, from, value, to }
 
     return this.koSend(tag, options, async (resolvedOptions) => {
-      if (this.network == "local") {
-        return { promiEvent: this.web3.eth.sendTransaction(resolvedOptions) }
-      }
+      // if (this.network == "local") {
+      //   return { promiEvent: this.web3.eth.sendTransaction(resolvedOptions) }
+      // }
 
       const tx = await createRawTx(
         this.web3,
@@ -405,31 +423,38 @@ export class BattlefieldRunner {
     tag: string,
     contract: keyof DeploymentState,
     call: ContractSendMethod,
-    options?: TransactionConfig
+    options?: TransactionConfig,
+    printLogs?: boolean
   ) {
-    return this.okSend(tag, options, async (resolvedOptions) => {
-      if (this.network == "local") {
-        return { promiEvent: call.send(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
-      }
+    return this.okSend(
+      tag,
+      options,
+      async (resolvedOptions) => {
+        // if (this.network == "local") {
+        //   return { promiEvent: call.send(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
+        // }
 
-      const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
-        ...resolvedOptions,
-        to: this.contracts[contract].options.address,
-        data: call.encodeABI(),
-      })
+        const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
+          ...resolvedOptions,
+          to: this.contracts[contract].options.address,
+          data: call.encodeABI(),
+        })
 
-      return { txHash: tx.hash(), promiEvent: sendRawTx(this.web3, tx) }
-    })
+        return { txHash: tx.hash(), promiEvent: sendRawTx(this.web3, tx) }
+      },
+      printLogs
+    )
   }
 
-  async okTxSend(
-    tag: string,
-    options?: TransactionConfig
-  ) {
+  async okTxSend(tag: string, options?: TransactionConfig) {
     return this.okSend(tag, options, async (resolvedOptions) => {
-      if (this.network == "local") {
-        return { promiEvent: this.web3.eth.sendTransaction(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
-      }
+      // if (this.network == "local") {
+      //   return {
+      //     promiEvent: this.web3.eth.sendTransaction(
+      //       resolvedOptions
+      //     ) as any as PromiEvent<TransactionReceipt>,
+      //   }
+      // }
 
       const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
         ...resolvedOptions,
@@ -446,9 +471,9 @@ export class BattlefieldRunner {
     options?: TransactionConfig
   ) {
     return this.koSend(tag, options, async (resolvedOptions) => {
-      if (this.network == "local") {
-        return { promiEvent: trx.send(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
-      }
+      // if (this.network == "local") {
+      //   return { promiEvent: trx.send(resolvedOptions) as any as PromiEvent<TransactionReceipt> }
+      // }
 
       const tx = await createRawTx(this.web3, resolvedOptions.from, this.privateKey!, {
         ...resolvedOptions,
@@ -466,7 +491,8 @@ export class BattlefieldRunner {
     eventFactory: (options: ResolvedSendOptions) => Promise<{
       txHash?: Buffer
       promiEvent: PromiEvent<TransactionReceipt>
-    }>
+    }>,
+    printLogs?: boolean
   ) {
     if (this.only && !tag.match(this.only)) {
       return ""
@@ -495,7 +521,17 @@ export class BattlefieldRunner {
         throw new Error(`Unexpected transaction ${trxHashString} failure (${tag})`)
       }
 
-      console.log(`Pushed transaction '${trxHashString}' (${tag})`)
+      console.log(
+        `Pushed transaction '${trxHashString}' (${tag})
+        \tblockNumber: ${receipt.blockNumber}`
+      )
+
+      if (printLogs) {
+        console.log(`Logs: ${JSON.stringify(receipt.logs)}}`)
+      }
+
+      this.jsonOutput[tag] = receipt
+
       return receipt.transactionHash
     } catch (error) {
       console.log(`Transaction '${trxHashString}' (${tag}) failed`, error)
@@ -537,6 +573,8 @@ export class BattlefieldRunner {
         console.log(
           `Pushed transaction '${trxHashString}' (${tag} correctly failed deduced by gasUsed == gas)`
         )
+
+        this.jsonOutput[tag] = trxHashString
         return trxHashString
       }
 
@@ -555,6 +593,8 @@ export class BattlefieldRunner {
       } else if (error.message) {
         reason = error.message
       }
+
+      this.jsonOutput[tag] = trxHashString
 
       console.log(`Pushed transaction '${trxHashString}' (${tag} correctly failed with ${reason})`)
       return trxHashString

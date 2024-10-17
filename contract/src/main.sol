@@ -65,9 +65,9 @@ contract Main {
         uint256 counter = 0;
         while (true) {
             if (counter % 2 == 0) {
-                gasConsumedStorage = "realy long string larger than 32 bytes to test out solidity splitting stuff";
+                gasConsumedStorage = "really long string larger than 32 bytes to test out solidity splitting stuff";
             } else {
-                gasConsumedStorage = "REALY LONG STRING LARGER THAN 32 BYTES TO TEST OUT SOLIDITY SPLITTING STUFF";
+                gasConsumedStorage = "REALLY LONG STRING LARGER THAN 32 BYTES TO TEST OUT SOLIDITY SPLITTING STUFF";
             }
         }
     }
@@ -91,15 +91,15 @@ contract Main {
 
         intToStringMap[3] = "b";
         stringMap[
-            "realy long string larger than 32 bytes to test out solidity splitting stuff"
+            "really long string larger than 32 bytes to test out solidity splitting stuff"
         ] = "a";
         nestedStringMap[
-            "REALY LONG STRING LARGER THAN 32 BYTES TO TEST OUT SOLIDITY SPLITTING STUFF"
-        ]["realy long string larger than 32 bytes to test out solidity splitting stuff"] = "a";
+            "REALLY LONG STRING LARGER THAN 32 BYTES TO TEST OUT SOLIDITY SPLITTING STUFF"
+        ]["really long string larger than 32 bytes to test out solidity splitting stuff"] = "a";
 
         shortString = "1234567890123456789012345678901";
         flushLongString = "12345678901234567890123456789012";
-        longString = "realy long string larger than 32 bytes to test out solidity splitting stuff";
+        longString = "really long string larger than 32 bytes to test out solidity splitting stuff";
         uintList.push(55);
         uintList.push(75);
 
@@ -113,9 +113,7 @@ contract Main {
         longString = "really long string larger than 32 bytes to test out solidity splitting stuff";
     }
 
-    function longStringInput(
-        string memory /* input */
-    ) public pure returns (uint256) {
+    function longStringInput(string memory /* input */) public pure returns (uint256) {
         return 0;
     }
 }

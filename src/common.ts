@@ -1,11 +1,11 @@
+import debugFactory from "debug"
+import { BufferLike, Transaction, TransactionOptions, TxData } from "ethereumjs-tx"
 import { readFile } from "fs"
 import { promisify } from "util"
-import { PromiEvent, TransactionReceipt } from "web3-core"
-import { Contract, SendOptions } from "web3-eth-contract"
-import { Eth } from "web3-eth"
-import { Transaction, BufferLike, TxData, TransactionOptions } from "ethereumjs-tx"
 import Web3 from "web3"
-import debugFactory from "debug"
+import { PromiEvent, TransactionReceipt } from "web3-core"
+import { Eth } from "web3-eth"
+import { Contract, SendOptions } from "web3-eth-contract"
 
 // To ensure our types are fully compatible
 export type EthValue = SendOptions["value"]
@@ -47,7 +47,7 @@ export const unsetDefaultGasConfig = () => {
 export const isUnsetDefaultGasConfig = () =>
   defaultGasConfig.gasLimit === 0 && defaultGasConfig.gasPrice === ""
 
-let defaultTxOptions: TransactionOptions = { chain: "mainnet", hardfork: "muirglacier" }
+let defaultTxOptions: TransactionOptions = { chain: "mainnet" }
 
 export const getDefaultTxOptions = () => defaultTxOptions
 export const setDefaultTxOptions = (options: TransactionOptions) => {
@@ -97,6 +97,11 @@ export async function addressOrDefault(
 export async function unlockAccount(eth: Eth, address: string) {
   // FIXME: All account must be created with an empty key
   //        Implement a read from env fallback to CLI if tty mechanism
+
+  if (process.env.PRIVATE_KEY) {
+    return
+  }
+
   const succeed = await eth.personal.unlockAccount(address, "", 5000).catch((error) => {
     const fromAddress = process.env.FROM_ADDRESS
     if (fromAddress) {

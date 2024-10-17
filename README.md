@@ -17,7 +17,7 @@ Running the whole battlefield test set is simply a matter of
 first installing script dependencies (mainly web3 to interact
 with the chain):
 
-    yarn install
+    npm install
 
 Second step is to build all contracts. We uses various Docker instances
 with different version of the `solc` compiler. This is all automated, if
