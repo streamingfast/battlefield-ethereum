@@ -9,6 +9,11 @@
   "author": "",
   "license": "Private",
   "devDependencies": {
+    "@bufbuild/buf": "^1.47.2",
+    "@bufbuild/protobuf": "^2.2.2",
+    "@bufbuild/protoc-gen-es": "^2.2.2",
+    "@connectrpc/connect": "^2.0.0",
+    "@connectrpc/connect-node": "^2.0.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
     "@nomicfoundation/hardhat-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-ignition": "^0.15.0",
