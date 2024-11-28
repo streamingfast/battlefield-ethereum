@@ -43,32 +43,34 @@ describe("Pure transfers", function () {
     const receipt = await sendEth(owner, knownExistingAddress, wei(1))
     const trace = await fetchFirehoseTransaction(receipt)
 
-    expect(trace).to.trxTraceEqual(
-      trxTraceFromReceipt(receipt, {
-        beginOrdinal: 13n,
-        endOrdinal: 22n,
-        calls: [
-          rootCallFromReceipt(receipt, {
-            beginOrdinal: 0n,
-            endOrdinal: 20n,
-            value: oneWeiF,
-            nonceChanges: [nonceChangeDelta(receipt.from, 1, 16)],
-            balanceChanges: [
-              balanceChangeDelta(receipt.from, -168000, 14, BalanceChange_Reason.GAS_BUY),
-              balanceChangeDelta(receipt.from, -1, 18, BalanceChange_Reason.TRANSFER),
-              balanceChangeDelta(receipt.to!, 1, 19, BalanceChange_Reason.TRANSFER),
-              balanceChangeDelta(
-                chainStaticInfo.coinbase,
-                21000,
-                21,
-                BalanceChange_Reason.REWARD_TRANSACTION_FEE
-              ),
-            ],
-            gasChanges: [gasChange(21000, 0, 15, GasChange_Reason.INTRINSIC_GAS)],
-          }),
-        ],
-      })
-    )
+    expect(trace).to.trxTraceEqualSnapshot("./snapshots/transfer-existing-address.json", receipt)
+
+    // expect(trace).to.trxTraceEqual(
+    //   trxTraceFromReceipt(receipt, {
+    //     beginOrdinal: 13n,
+    //     endOrdinal: 22n,
+    //     calls: [
+    //       rootCallFromReceipt(receipt, {
+    //         beginOrdinal: 0n,
+    //         endOrdinal: 20n,
+    //         value: oneWeiF,
+    //         nonceChanges: [nonceChangeDelta(receipt.from, 1, 16)],
+    //         balanceChanges: [
+    //           balanceChangeDelta(receipt.from, -168000, 14, BalanceChange_Reason.GAS_BUY),
+    //           balanceChangeDelta(receipt.from, -1, 18, BalanceChange_Reason.TRANSFER),
+    //           balanceChangeDelta(receipt.to!, 1, 19, BalanceChange_Reason.TRANSFER),
+    //           balanceChangeDelta(
+    //             chainStaticInfo.coinbase,
+    //             21000,
+    //             21,
+    //             BalanceChange_Reason.REWARD_TRANSACTION_FEE
+    //           ),
+    //         ],
+    //         gasChanges: [gasChange(21000, 0, 15, GasChange_Reason.INTRINSIC_GAS)],
+    //       }),
+    //     ],
+    //   })
+    // )
   })
 
   // describe("Pure transfers", function () {
