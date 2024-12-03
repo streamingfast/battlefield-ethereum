@@ -2,76 +2,63 @@
 // import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs"
 import { expect, use } from "chai"
 import hre from "hardhat"
-import { knownExistingAddress } from "./addresses"
-import { NonceManager, getBytes } from "ethers"
-import { executeTransactions, sendEth, sendImmediateEth } from "./trxs"
-import { oneWeiF, wei } from "./money"
 import {
-  balanceChangeDelta,
-  fetchFirehoseTransaction,
-  gasChange,
-  nonceChangeDelta,
-  rootCallFromReceipt,
-  trxTraceFromReceipt,
-} from "./firehose"
-import { BalanceChange_Reason, GasChange_Reason } from "../pb/sf/ethereum/type/v2/type_pb"
-import { addFirehoseEthereumMatchers as firehoseEthereumMatchers } from "./fireeth_assertions"
-import { chainStaticInfo, initChainStaticInfo } from "./chain"
+  knownExistingAddress,
+  randomAddress1,
+  randomAddress1Hex,
+  randomAddress2,
+  randomAddress2Hex,
+} from "./lib/addresses"
+import { ContractFactory, NonceManager, getBytes } from "ethers"
+import { executeTransactions, sendEth, sendImmediateEth } from "./lib/trxs"
+import { oneWei, wei } from "./lib/money"
+import { addFirehoseEthereumMatchers as firehoseEthereumMatchers } from "./lib/fireeth_assertions"
+import { initChainStaticInfo } from "./lib/chain"
+import { Child, Main } from "../typechain-types"
+import { owner, ownerAddress } from "./global"
 
 use(firehoseEthereumMatchers)
 
-describe("Pure transfers", function () {
-  var owner: NonceManager
-  var ownerAddress: string
-  var ownerAddressBytes: Uint8Array
+describe("Contract transfers", function () {
+  let Main: Main
+  let Child: Child
 
   before(async () => {
-    const [first] = await hre.ethers.getSigners()
+    const MainContract = await hre.ethers.getContractFactory("Main")
 
-    // first and owner are the same here, but first is of type HardhatSigner and have .address already resolved
-    owner = new hre.ethers.NonceManager(first)
-    ownerAddress = first.address
-    ownerAddressBytes = getBytes(ownerAddress)
+    const deployContract = async function (
+      factory: ContractFactory,
+      contractSetter: (result: any) => void
+    ) {
+      const trx = await factory.getDeployTransaction({ from: ownerAddress })
+      const response = await owner.sendTransaction(trx)
+      const out = await response.wait(1, 2500)
 
-    // Do not wait for this to finish, other stuff will fail if it's not fast enough of if provider is broken
-    initChainStaticInfo(hre.ethers.provider).then(() => {})
+      contractSetter(factory.attach(out!.contractAddress!))
+    }
 
-    executeTransactions(sendImmediateEth(owner, knownExistingAddress, wei(1)))
+    await deployContract(MainContract, (result: any) => (Main = result))
   })
 
   it("Transfer to existing address", async function () {
-    const receipt = await sendEth(owner, knownExistingAddress, wei(1))
-    const trace = await fetchFirehoseTransaction(receipt)
-
-    expect(trace).to.trxTraceEqualSnapshot("./snapshots/transfer-existing-address.json", receipt)
-
-    // expect(trace).to.trxTraceEqual(
-    //   trxTraceFromReceipt(receipt, {
-    //     beginOrdinal: 13n,
-    //     endOrdinal: 22n,
-    //     calls: [
-    //       rootCallFromReceipt(receipt, {
-    //         beginOrdinal: 0n,
-    //         endOrdinal: 20n,
-    //         value: oneWeiF,
-    //         nonceChanges: [nonceChangeDelta(receipt.from, 1, 16)],
-    //         balanceChanges: [
-    //           balanceChangeDelta(receipt.from, -168000, 14, BalanceChange_Reason.GAS_BUY),
-    //           balanceChangeDelta(receipt.from, -1, 18, BalanceChange_Reason.TRANSFER),
-    //           balanceChangeDelta(receipt.to!, 1, 19, BalanceChange_Reason.TRANSFER),
-    //           balanceChangeDelta(
-    //             chainStaticInfo.coinbase,
-    //             21000,
-    //             21,
-    //             BalanceChange_Reason.REWARD_TRANSACTION_FEE
-    //           ),
-    //         ],
-    //         gasChanges: [gasChange(21000, 0, 15, GasChange_Reason.INTRINSIC_GAS)],
-    //       }),
-    //     ],
-    //   })
-    // )
+    await expect(sendEth(owner, knownExistingAddress, oneWei)).to.trxTraceEqualSnapshot(
+      "transfer/existing_address.expected.json"
+    )
   })
+
+  it("Transfer existing address with custom gas limit", async function () {
+    await expect(
+      sendEth(owner, knownExistingAddress, oneWei, {
+        gasLimit: 75000,
+      })
+    ).to.trxTraceEqualSnapshot("transfer/existing_address_custom_gas_limit.expected.json")
+  })
+
+  // it("pure transfer: to precompile address", async function () {
+  //   await expect(
+  //     sendEth(owner, precompileWithBalance, oneWei, { gasLimit: 75000 })
+  //   ).to.trxTraceEqualSnapshot("./snapshots/pure_transfer_precompile_address.json")
+  // })
 
   // describe("Pure transfers", function () {
   //   //   it("Should set the right owner", async function () {

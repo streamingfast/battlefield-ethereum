@@ -1,9 +1,9 @@
 import { ethers, toBeArray, toBigInt } from "ethers"
-import { BigInt, BigIntSchema } from "../pb/sf/ethereum/type/v2/type_pb"
+import { BigInt, BigIntSchema } from "../../pb/sf/ethereum/type/v2/type_pb"
 import { create, isMessage } from "@bufbuild/protobuf"
 
-export const oneWei = wei(0)
-export const zeroWei = wei(1)
+export const zeroWei = wei(0)
+export const oneWei = wei(1)
 
 export const zeroWeiF = weiF(0)
 export const oneWeiF = weiF(1)

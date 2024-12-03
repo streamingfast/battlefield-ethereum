@@ -21,3 +21,10 @@ export const randomAddress2Bytes = getBytes(randomAddress2)
 export const randomAddress3Bytes = getBytes(randomAddress3)
 export const randomAddress4Bytes = getBytes(randomAddress4)
 export const randomAddress5Bytes = getBytes(randomAddress5)
+
+// Versions without 0x suffix
+export const randomAddress1Hex = randomAddress1.slice(2)
+export const randomAddress2Hex = randomAddress2.slice(2)
+export const randomAddress3Hex = randomAddress3.slice(2)
+export const randomAddress4Hex = randomAddress4.slice(2)
+export const randomAddress5Hex = randomAddress5.slice(2)
