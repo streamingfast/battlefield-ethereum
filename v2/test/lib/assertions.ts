@@ -164,6 +164,8 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
               return trxReceipt.nonce.toString()
             case "$index":
               return trxReceipt.index
+            case "$logsBloom":
+              return trxReceipt.logsBloom.replace("0x", "")
             case "$cumulativeGasUsed":
               return trxReceipt.cumulativeGasUsed.toString()
             case "$coinbase":
@@ -362,6 +364,10 @@ function templatizeJsonTransactionTrace(
   if (receipt != null && typeof receipt === "object") {
     if (receipt["cumulativeGasUsed"] != null) {
       receipt["cumulativeGasUsed"] = "$cumulativeGasUsed"
+    }
+
+    if (receipt["logsBloom"] != null) {
+      receipt["logsBloom"] = "$logsBloom"
     }
   }
 

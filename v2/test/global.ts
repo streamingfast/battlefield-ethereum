@@ -1,7 +1,7 @@
 import { getBytes, NonceManager } from "ethers"
 import { initChainStaticInfo } from "./lib/chain"
 import hre from "hardhat"
-import { Child__factory, Main__factory, Transfers__factory } from "../typechain-types"
+import { Child__factory, Logs__factory, Main__factory, Transfers__factory } from "../typechain-types"
 import debugFactory from "debug"
 import { addFirehoseEthereumMatchers } from "./lib/assertions"
 import { use } from "chai"
@@ -15,6 +15,7 @@ export let ownerAddressBytes: Uint8Array
 
 export let MainFactory: Main__factory
 export let ChildFactory: Child__factory
+export let LogsFactory: Logs__factory
 export let TransfersFactory: Transfers__factory
 
 const debug = debugFactory("battlefield:global")
@@ -28,6 +29,7 @@ before(async () => {
   debug("Initializing contract factories sequentially")
   MainFactory = await hre.ethers.getContractFactory("Main")
   ChildFactory = await hre.ethers.getContractFactory("Child")
+  LogsFactory = await hre.ethers.getContractFactory("Logs")
   TransfersFactory = await hre.ethers.getContractFactory("Transfers")
   debug("Initialized contract factories")
 
