@@ -1,7 +1,7 @@
 {
   "to": "$contract",
   "nonce": "$nonce",
-  "gasLimit": "69967",
+  "gasLimit": "900000",
   "input": "fd1d6ab5000000000000000000000000$childContract000000000000000000000000$randomAddress4",
   "v": "",
   "r": "",
@@ -25,7 +25,7 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$contract",
-      "gasLimit": "48191",
+      "gasLimit": "878224",
       "gasConsumed": "44798",
       "returnData": "",
       "input": "fd1d6ab5000000000000000000000000$childContract000000000000000000000000$randomAddress4",
@@ -38,7 +38,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "1ca2b52e7380",
+          "oldValue": "01705869225000",
           "newValue": ""
         },
         {
@@ -60,7 +60,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "23",
           "oldValue": "",
-          "newValue": "01637f5a1480"
+          "newValue": "015519334df100"
         },
         {
           "address": "0000000000000000000000000000000000000000",
@@ -82,26 +82,26 @@
       "codeChanges": [],
       "gasChanges": [
         {
-          "oldValue": "69967",
-          "newValue": "48191",
+          "oldValue": "900000",
+          "newValue": "878224",
           "reason": "REASON_INTRINSIC_GAS",
           "ordinal": "2"
         },
         {
-          "oldValue": "47337",
-          "newValue": "44837",
+          "oldValue": "877370",
+          "newValue": "874870",
           "reason": "REASON_STATE_COLD_ACCESS",
           "ordinal": "7"
         },
         {
-          "oldValue": "47437",
-          "newValue": "559",
+          "oldValue": "877470",
+          "newValue": "13529",
           "reason": "REASON_CALL",
           "ordinal": "8"
         },
         {
-          "oldValue": "559",
-          "newValue": "3480",
+          "oldValue": "13529",
+          "newValue": "833513",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "21"
         }
@@ -122,7 +122,7 @@
       "callType": "CALL",
       "caller": "$contract",
       "address": "$childContract",
-      "gasLimit": "37578",
+      "gasLimit": "854641",
       "gasConsumed": "34657",
       "returnData": "",
       "input": "a55d0e8e000000000000000000000000$randomAddress4",
@@ -151,20 +151,20 @@
       "codeChanges": [],
       "gasChanges": [
         {
-          "oldValue": "37168",
-          "newValue": "34668",
+          "oldValue": "854231",
+          "newValue": "851731",
           "reason": "REASON_STATE_COLD_ACCESS",
           "ordinal": "12"
         },
         {
-          "oldValue": "37268",
-          "newValue": "668",
+          "oldValue": "854331",
+          "newValue": "817731",
           "reason": "REASON_CALL",
           "ordinal": "13"
         },
         {
-          "oldValue": "668",
-          "newValue": "2968",
+          "oldValue": "817731",
+          "newValue": "820031",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "19"
         }

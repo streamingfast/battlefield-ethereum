@@ -1,7 +1,7 @@
 {
   "to": "$contract",
   "nonce": "$nonce",
-  "gasLimit": "75000",
+  "gasLimit": "900000",
   "input": "a55d0e8e000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
   "v": "",
   "r": "",
@@ -25,7 +25,7 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$contract",
-      "gasLimit": "53568",
+      "gasLimit": "878568",
       "gasConsumed": "9613",
       "returnData": "",
       "input": "a55d0e8e000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
@@ -38,7 +38,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "1eb208c2dc00",
+          "oldValue": "01705869225000",
           "newValue": ""
         },
         {
@@ -60,7 +60,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "15",
           "oldValue": "",
-          "newValue": "11fd54f8f580"
+          "newValue": "0163a3b5586980"
         },
         {
           "address": "0000000000000000000000000000000000000000",
@@ -82,26 +82,26 @@
       "codeChanges": [],
       "gasChanges": [
         {
-          "oldValue": "75000",
-          "newValue": "53568",
+          "oldValue": "900000",
+          "newValue": "878568",
           "reason": "REASON_INTRINSIC_GAS",
           "ordinal": "2"
         },
         {
-          "oldValue": "53202",
-          "newValue": "50702",
+          "oldValue": "878202",
+          "newValue": "875702",
           "reason": "REASON_STATE_COLD_ACCESS",
           "ordinal": "7"
         },
         {
-          "oldValue": "53302",
-          "newValue": "41702",
+          "oldValue": "878302",
+          "newValue": "866702",
           "reason": "REASON_CALL",
           "ordinal": "8"
         },
         {
-          "oldValue": "41702",
-          "newValue": "44002",
+          "oldValue": "866702",
+          "newValue": "869002",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "13"
         }

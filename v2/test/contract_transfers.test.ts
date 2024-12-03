@@ -6,7 +6,7 @@ import {
   randomAddress4,
   randomAddress4Hex,
 } from "./lib/addresses"
-import { Contract, contractCall, deployContract } from "./lib/ethereum"
+import { Contract, contractCall, deployContract, koContractCall } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { Child, Transfers } from "../typechain-types"
 import { ChildFactory, owner, TransfersFactory } from "./global"
@@ -28,15 +28,23 @@ describe("Contract transfers", function () {
 
   it("Existing address", async function () {
     await expect(
-      contractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 75000 })
+      contractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei })
     ).to.trxTraceEqualSnapshot("contract_transfers/existing_address.expected.json", {
+      $contract: Transfers.addressHex,
+    })
+  })
+
+  it("Existing address failing transaction", async function () {
+    await expect(
+      koContractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 22000 })
+    ).to.trxTraceEqualSnapshot("contract_transfers/existing_address_failure.expected.json", {
       $contract: Transfers.addressHex,
     })
   })
 
   it("Inexistent address", async function () {
     await expect(
-      contractCall(owner, Transfers.nativeTransfer, [randomAddress3], { value: oneWei, gasLimit: 95000 })
+      contractCall(owner, Transfers.nativeTransfer, [randomAddress3], { value: oneWei })
     ).to.trxTraceEqualSnapshot("contract_transfers/inexistent_address.expected.json", {
       $contract: Transfers.addressHex,
       $randomAddress3: randomAddress3Hex,

@@ -7,9 +7,12 @@ import {
   TransactionRequest,
   TransactionResponse,
 } from "ethers"
+import hre from "hardhat"
 import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../typechain-types/common"
 
-/// Run all the promises and return the results, if any of the promises fails
+/**
+ * Runs all the promises and return the results, if any of the promises fails
+ */
 export async function executeTransactions(...promises: Promise<any>[]): Promise<any[]> {
   const results = await Promise.allSettled(promises)
   const errors = results
@@ -57,6 +60,7 @@ export async function sendEth(
   const response = await from.sendTransaction({
     to,
     value,
+    gasLimit: 21000,
     gasPrice: 450_000_000,
     ...custom,
   })
@@ -77,18 +81,37 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   from: Signer,
   call: TypedContractMethod<A, R, S>,
   args: ContractMethodArgs<A, S>,
-  customTx: Pick<TransactionRequest, "value" | "gasLimit"> = {}
+  customTx: Pick<TransactionRequest, "value" | "gasLimit"> & { shouldRevert?: boolean } = {}
 ): Promise<TransactionReceiptResult> {
   const trxRequest = await call.populateTransaction(...args)
 
   const response = await from.sendTransaction({
+    gasLimit: 900_000,
     gasPrice: 450_000_000,
     ...trxRequest,
     ...customTx,
   })
-  const receipt = await response.wait(1, 2500)
+
+  const receipt = await response.wait(1, 2500).catch(async (e) => {
+    // It seems `.wait(...)` enforces successful transactions, so we need to check
+    // catch the error, retrieve the receipt and check it ourself.
+    if (customTx.shouldRevert && e.toString().includes("transaction execution reverted")) {
+      const receipt = await hre.ethers.provider.getTransactionReceipt(response.hash)
+      if (receipt !== null) {
+        return receipt
+      }
+
+      return null
+    }
+
+    throw e
+  })
   if (receipt === null) {
-    throw new Error(`Transaction ${response.hash} not mined after 2.5s`)
+    throw new Error(`Transaction ${response.hash} ot mined after 2.5s`)
+  }
+
+  if (customTx.shouldRevert && receipt.status === 1) {
+    throw new Error(`Transaction ${response.hash} (Block #${receipt.blockNumber}) did not revert as expected`)
   }
 
   const out = new TransactionReceiptResult(receipt, receipt.provider)
@@ -96,6 +119,20 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   out.response = response
 
   return out
+}
+
+/**
+ * Send a transaction to the network and wait for it to be mined, but this time,
+ * it is expected to fail, so it will return the receipt but will validate that
+ * it has reverted.
+ */
+export async function koContractCall<A extends Array<any> = Array<any>, R = any, S extends StateMutability = "payable">(
+  from: Signer,
+  call: TypedContractMethod<A, R, S>,
+  args: ContractMethodArgs<A, S>,
+  customTx: Pick<TransactionRequest, "value" | "gasLimit"> & { shouldRevert?: boolean } = {}
+): Promise<TransactionReceiptResult> {
+  return contractCall(from, call, args, { shouldRevert: true, ...customTx })
 }
 
 export type Contract<T extends BaseContract> = T & {
