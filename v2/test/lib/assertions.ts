@@ -1,12 +1,4 @@
-import {
-  clone,
-  create,
-  DescMessage,
-  enumToJson,
-  equals,
-  isMessage,
-  JsonValue,
-} from "@bufbuild/protobuf"
+import { clone, create, DescMessage, enumToJson, equals, isMessage, JsonValue } from "@bufbuild/protobuf"
 import chai from "chai"
 import {
   BalanceChange,
@@ -31,10 +23,11 @@ import {
 } from "./firehose"
 import { weiF, zeroWeiF } from "./money"
 import { readFileSync } from "fs"
-import { TransactionReceiptResult } from "./trxs"
+import { TransactionReceiptResult } from "./ethereum"
 import { chainStaticInfo } from "./chain"
 import { resolveSnapshot, SnapshotKind } from "./snapshots"
 import deepEqual from "deep-equal"
+import { escapeRegex } from "./regexps"
 
 type Chai = typeof chai
 
@@ -97,10 +90,7 @@ declare global {
        * value like a contract address.
        * @param expected The expected TransactionTrace
        */
-      trxTraceEqualSnapshot(
-        snapshotFileID: string,
-        templateVars?: Record<string, string>
-      ): Promise<void>
+      trxTraceEqualSnapshot(snapshotFileID: string, templateVars?: Record<string, string>): Promise<void>
     }
   }
 }
@@ -154,24 +144,15 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
       const snapshot = resolveSnapshot(snapshotIdentifier)
 
-      if (snapshot.userRequestedExpectedUpdate()) {
+      if (snapshot.userRequestedExpectedUpdate() || !snapshot.exists(SnapshotKind.ExpectedTemplatized)) {
         // Here we "templatize" the JSON, for example transforming literal Ethereum addresses into an actual
         // variable like "$contractAddress", so we can later re-inject new variables into the snapshot.
-        const expectedTemplatized = templatizeJsonTransactionTrace(
-          JSON.parse(actualNormalizedJson),
-          templateVars || {}
-        )
+        const expectedTemplatized = templatizeJsonTransactionTrace(JSON.parse(actualNormalizedJson), templateVars || {})
 
         snapshot.writeExpected(JSON.stringify(expectedTemplatized, null, 2))
       }
 
-      let expectedJsonString = "{}"
-      if (snapshot.exists(SnapshotKind.ExpectedTemplatized)) {
-        expectedJsonString = readFileSync(
-          snapshot.toSnapshotPath(SnapshotKind.ExpectedTemplatized),
-          "utf-8"
-        )
-      }
+      const expectedJsonString = readFileSync(snapshot.toSnapshotPath(SnapshotKind.ExpectedTemplatized), "utf-8")
 
       const actual = JSON.parse(actualNormalizedJson)
       const expected = JSON.parse(expectedJsonString, (_key, value) => {
@@ -188,10 +169,15 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
             case "$coinbase":
               return chainStaticInfo.coinbase.replace("0x", "")
             default:
-              const replacement = templateVars?.[value]
-              if (replacement) {
-                return replacement
+              let replaced = value
+              for (const [key, replacement] of Object.entries(templateVars || {})) {
+                if (value.includes(key)) {
+                  const replacer = new RegExp(escapeRegex(key), "g")
+                  replaced = replaced.replace(replacer, replacement)
+                }
               }
+
+              return replaced
           }
         }
 
@@ -238,14 +224,14 @@ function assertTrxOrdinals(
       `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`
     ).to.equal(1)
 
-    // FIXME: It seems Firehose 3.0 in backward compatibility mode is skipping one ordinal, need to investigate
-    // if (previous) {
-    //   new chai.Assertion(
-    //     previous + 1,
-    //     `Ordinal ${ordinal} should have strictly follow ${previous}, so that ${previous} + 1 == ${ordinal} which was not the case here\n\n` +
-    //       toProtoJsonString(trace)
-    //   ).to.be.equal(parseInt(ordinal))
-    // }
+    if (previous) {
+      // FIXME: It seems Firehose 3.0 in backward compatibility mode is skipping one ordinal, need to investigate, allow it for now
+      // new chai.Assertion(
+      //   previous + 1,
+      //   `Ordinal ${ordinal} should have strictly follow ${previous}, so that ${previous} + 1 == ${ordinal} which was not the case here\n\n` +
+      //     toProtoJsonString(trace)
+      // ).to.be.equal(parseInt(ordinal))
+    }
 
     previous = parseInt(ordinal)
   })
@@ -415,8 +401,16 @@ function templatizeJsonTransactionTrace(
       return object
     }
 
-    if (typeof object === "string" && valuesToName[object]) {
-      return valuesToName[object]
+    if (typeof object === "string") {
+      let replaced = object
+      for (const [value, name] of Object.entries(valuesToName)) {
+        if (object.includes(value)) {
+          const replacer = new RegExp(escapeRegex(value), "g")
+          replaced = replaced.replace(replacer, name)
+        }
+      }
+
+      return replaced
     }
 
     return object

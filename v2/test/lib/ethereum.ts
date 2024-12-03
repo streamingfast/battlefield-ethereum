@@ -1,15 +1,13 @@
 import {
+  BaseContract,
   BigNumberish,
+  ContractFactory,
   Signer,
   TransactionReceipt,
   TransactionRequest,
   TransactionResponse,
 } from "ethers"
-import {
-  ContractMethodArgs,
-  StateMutability,
-  TypedContractMethod,
-} from "../../typechain-types/common"
+import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../typechain-types/common"
 
 /// Run all the promises and return the results, if any of the promises fails
 export async function executeTransactions(...promises: Promise<any>[]): Promise<any[]> {
@@ -75,18 +73,19 @@ export async function sendEth(
   return out
 }
 
-export async function contractCall<
-  A extends Array<any> = Array<any>,
-  R = any,
-  S extends StateMutability = "payable"
->(
+export async function contractCall<A extends Array<any> = Array<any>, R = any, S extends StateMutability = "payable">(
   from: Signer,
   call: TypedContractMethod<A, R, S>,
-  ...args: ContractMethodArgs<A, S>
+  args: ContractMethodArgs<A, S>,
+  customTx: Pick<TransactionRequest, "value" | "gasLimit"> = {}
 ): Promise<TransactionReceiptResult> {
   const trxRequest = await call.populateTransaction(...args)
 
-  const response = await from.sendTransaction(trxRequest)
+  const response = await from.sendTransaction({
+    gasPrice: 450_000_000,
+    ...trxRequest,
+    ...customTx,
+  })
   const receipt = await response.wait(1, 2500)
   if (receipt === null) {
     throw new Error(`Transaction ${response.hash} not mined after 2.5s`)
@@ -99,32 +98,43 @@ export async function contractCall<
   return out
 }
 
-// export interface TypedContractMethod<
-//   A extends Array<any> = Array<any>,
-//   R = any,
-//   S extends StateMutability = "payable"
-// > {
-//   (...args: ContractMethodArgs<A, S>): S extends "view"
-//     ? Promise<DefaultReturnType<R>>
-//     : Promise<ContractTransactionResponse>;
+export type Contract<T extends BaseContract> = T & {
+  /**
+   * This will be the address of the contract in the network in hexadecimal,
+   * possibly checksummed (so with mixed casing) and with the 0x prefix.
+   */
+  address: string
 
-//   name: string;
+  /**
+   * This will be the address of the contract in the network in hexadecimal
+   * lower case without the 0x prefix, used for snapshotting.
+   */
+  addressHex: string
+}
 
-//   fragment: FunctionFragment;
+export async function deployContract<C extends BaseContract>(
+  owner: Signer,
+  factory: ContractFactory,
+  setter?: (contract: Contract<C>) => void
+): Promise<Contract<C>> {
+  const ownerAddress = await owner.getAddress()
+  const trx = await factory.getDeployTransaction({ from: ownerAddress })
+  const response = await owner.sendTransaction(trx)
+  const receipt = await response.wait(1, 2500)
+  if (receipt === null) {
+    throw new Error(`Transaction ${response.hash} to deploy contract not mined after 2.5s`)
+  }
 
-//   getFragment(...args: ContractMethodArgs<A, S>): FunctionFragment;
+  const contract = factory.attach(receipt.contractAddress!) as Contract<C>
+  contract.address = receipt.contractAddress!
+  contract.addressHex = contract.address.toLowerCase().slice(2)
 
-//   populateTransaction(
-//     ...args: ContractMethodArgs<A, S>
-//   ): Promise<ContractTransaction>;
-//   staticCall(
-//     ...args: ContractMethodArgs<A, "view">
-//   ): Promise<DefaultReturnType<R>>;
-//   send(...args: ContractMethodArgs<A, S>): Promise<ContractTransactionResponse>;
-//   estimateGas(...args: ContractMethodArgs<A, S>): Promise<bigint>;
-//   staticCallResult(...args: ContractMethodArgs<A, "view">): Promise<R>;
-// }
+  if (setter) {
+    setter(contract)
+  }
 
+  return contract
+}
 /**
  * A TransactionReceipt with additional fields to store the nonce and the response
  * on the initial transaction sending that contains a {@link TransactionResponse}

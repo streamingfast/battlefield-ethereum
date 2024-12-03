@@ -1,4 +1,4 @@
-import { existsSync, writeFileSync } from "fs"
+import { existsSync, writeFileSync, mkdirSync } from "fs"
 import path from "path"
 
 const lib = __dirname
@@ -33,7 +33,18 @@ export class Snapshot {
     return existsSync(this.toSnapshotPath(kind))
   }
 
+  ensureParentDirs() {
+    const filePath = this.toSnapshotPath(SnapshotKind.ExpectedTemplatized)
+    const dir = path.dirname(filePath)
+
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true })
+    }
+  }
+
   writeExpected(expectedTemplatizedJsonString: string) {
+    this.ensureParentDirs()
+
     writeFileSync(
       this.toSnapshotPath(SnapshotKind.ExpectedTemplatized),
       expectedTemplatizedJsonString
@@ -45,6 +56,8 @@ export class Snapshot {
     normalizedJsonString: string,
     expectedResolvedJsonString: string
   ) {
+    this.ensureParentDirs()
+
     writeFileSync(this.toSnapshotPath(SnapshotKind.ActualOriginal), actualJsonString)
     writeFileSync(this.toSnapshotPath(SnapshotKind.ActualNormalized), normalizedJsonString)
     writeFileSync(this.toSnapshotPath(SnapshotKind.ExpectedResolved), expectedResolvedJsonString)

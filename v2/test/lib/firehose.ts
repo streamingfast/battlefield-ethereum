@@ -26,7 +26,7 @@ import { BigNumberish, ethers, getBytes, toBigInt, TransactionReceipt } from "et
 import { anyUnpack } from "@bufbuild/protobuf/wkt"
 import { create, createRegistry, MessageInitShape } from "@bufbuild/protobuf"
 import { weiF } from "./money"
-import { TransactionReceiptResult } from "./trxs"
+import { TransactionReceiptResult } from "./ethereum"
 
 export const emptyBytes = Uint8Array.of()
 
