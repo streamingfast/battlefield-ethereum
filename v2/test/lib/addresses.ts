@@ -1,20 +1,18 @@
 import { getBytes } from "ethers"
 import { ethers } from "hardhat"
 
-export type AddressLike = string | Uint8Array
+export const bytes = 1
 
-const randomHex6chars = () => ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0")
-const randomHex = () =>
-  randomHex6chars() + randomHex6chars() + randomHex6chars() + randomHex6chars()
+export type AddressLike = string | Uint8Array
 
 export const knownExistingAddress = ethers.getAddress("0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd")
 export const knownExistingAddressBytes = getBytes(knownExistingAddress)
 
-export const randomAddress1 = `0xdead1000${randomHex()}0002beef`
-export const randomAddress2 = `0xdead2000${randomHex()}0001beef`
-export const randomAddress3 = `0xdead3000${randomHex()}0004beef`
-export const randomAddress4 = `0xdead4000${randomHex()}0003beef`
-export const randomAddress5 = `0xdead5000${randomHex()}0006beef`
+export const randomAddress1 = `0xdead${randomHex(14 * bytes)}0001beef`
+export const randomAddress2 = `0xdead${randomHex(14 * bytes)}0002beef`
+export const randomAddress3 = `0xdead${randomHex(14 * bytes)}0003beef`
+export const randomAddress4 = `0xdead${randomHex(14 * bytes)}0004beef`
+export const randomAddress5 = `0xdead${randomHex(14 * bytes)}0005beef`
 
 export const randomAddress1Bytes = getBytes(randomAddress1)
 export const randomAddress2Bytes = getBytes(randomAddress2)
@@ -28,3 +26,24 @@ export const randomAddress2Hex = randomAddress2.slice(2)
 export const randomAddress3Hex = randomAddress3.slice(2)
 export const randomAddress4Hex = randomAddress4.slice(2)
 export const randomAddress5Hex = randomAddress5.slice(2)
+
+export function addressHasZeroBytes(address: string | null): boolean {
+  if (address == null) {
+    return true
+  }
+
+  return getBytes(address.startsWith("0x") ? address : "0x" + address).some((byte) => byte === 0)
+}
+
+/**
+ * Generates a random hexadecimal string of the given byte count but there
+ * will be no 0 bytes in the result.
+ */
+export function randomHex(byteCount: number): string {
+  return [...Array(byteCount)].map(() => random1ByteHex()).join("")
+}
+
+function random1ByteHex(): string {
+  // The << 0 is to convert the number to an integer
+  return ((Math.random() * 0xfe + 1) << 0).toString(16).padStart(2, "0")
+}

@@ -45,17 +45,10 @@ export class Snapshot {
   writeExpected(expectedTemplatizedJsonString: string) {
     this.ensureParentDirs()
 
-    writeFileSync(
-      this.toSnapshotPath(SnapshotKind.ExpectedTemplatized),
-      expectedTemplatizedJsonString
-    )
+    writeFileSync(this.toSnapshotPath(SnapshotKind.ExpectedTemplatized), expectedTemplatizedJsonString)
   }
 
-  writeSnapshotDebugFiles(
-    actualJsonString: string,
-    normalizedJsonString: string,
-    expectedResolvedJsonString: string
-  ) {
+  writeSnapshotDebugFiles(actualJsonString: string, normalizedJsonString: string, expectedResolvedJsonString: string) {
     this.ensureParentDirs()
 
     writeFileSync(this.toSnapshotPath(SnapshotKind.ActualOriginal), actualJsonString)
@@ -63,7 +56,7 @@ export class Snapshot {
     writeFileSync(this.toSnapshotPath(SnapshotKind.ExpectedResolved), expectedResolvedJsonString)
   }
 
-  toSnapshotPath(kind: SnapshotKind): string {
+  toSnapshotPath(kind: SnapshotKind, relativeToCwd: boolean = false): string {
     const toQualifier = () => {
       switch (kind) {
         case SnapshotKind.ExpectedTemplatized:
@@ -77,7 +70,12 @@ export class Snapshot {
       }
     }
 
-    return `${snapshotsUrl}/${this.id}.${toQualifier()}.json`
+    const absolute = `${snapshotsUrl}/${this.id}.${toQualifier()}.json`
+    if (relativeToCwd) {
+      return "./" + path.relative(process.cwd(), absolute)
+    }
+
+    return absolute
   }
 
   userRequestedExpectedUpdate(): boolean {

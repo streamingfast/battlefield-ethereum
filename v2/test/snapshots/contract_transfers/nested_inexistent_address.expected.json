@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "66574",
+  "gasUsed": "66586",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,7 +25,7 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$contract",
-      "gasLimit": "878224",
+      "gasLimit": "878212",
       "gasConsumed": "44798",
       "returnData": "",
       "input": "fd1d6ab5000000000000000000000000$childContract000000000000000000000000$randomAddress4",
@@ -60,14 +60,14 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "23",
           "oldValue": "",
-          "newValue": "015519334df100"
+          "newValue": "015517f1707b00"
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "24",
           "oldValue": "",
-          "newValue": "1b3f35cd429e"
+          "newValue": "1b4077aab84a"
         }
       ],
       "nonceChanges": [
@@ -83,25 +83,25 @@
       "gasChanges": [
         {
           "oldValue": "900000",
-          "newValue": "878224",
+          "newValue": "878212",
           "reason": "REASON_INTRINSIC_GAS",
           "ordinal": "2"
         },
         {
-          "oldValue": "877370",
-          "newValue": "874870",
+          "oldValue": "877358",
+          "newValue": "874858",
           "reason": "REASON_STATE_COLD_ACCESS",
           "ordinal": "7"
         },
         {
-          "oldValue": "877470",
+          "oldValue": "877458",
           "newValue": "13529",
           "reason": "REASON_CALL",
           "ordinal": "8"
         },
         {
           "oldValue": "13529",
-          "newValue": "833513",
+          "newValue": "833501",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "21"
         }
@@ -122,7 +122,7 @@
       "callType": "CALL",
       "caller": "$contract",
       "address": "$childContract",
-      "gasLimit": "854641",
+      "gasLimit": "854629",
       "gasConsumed": "34657",
       "returnData": "",
       "input": "a55d0e8e000000000000000000000000$randomAddress4",
@@ -151,20 +151,20 @@
       "codeChanges": [],
       "gasChanges": [
         {
-          "oldValue": "854231",
-          "newValue": "851731",
+          "oldValue": "854219",
+          "newValue": "851719",
           "reason": "REASON_STATE_COLD_ACCESS",
           "ordinal": "12"
         },
         {
-          "oldValue": "854331",
-          "newValue": "817731",
+          "oldValue": "854319",
+          "newValue": "817719",
           "reason": "REASON_CALL",
           "ordinal": "13"
         },
         {
-          "oldValue": "817731",
-          "newValue": "820031",
+          "oldValue": "817719",
+          "newValue": "820019",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "19"
         }
@@ -234,7 +234,7 @@
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",
-    "logsBloom": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "logsBloom": "$logsBloom",
     "logs": []
   }
 }

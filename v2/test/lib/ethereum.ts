@@ -1,14 +1,23 @@
 import {
   BaseContract,
   BigNumberish,
+  BytesLike,
   ContractFactory,
   Signer,
   TransactionReceipt,
   TransactionRequest,
   TransactionResponse,
+  getBytes,
+  getCreate2Address,
+  getCreateAddress,
+  keccak256,
 } from "ethers"
+import debugFactory from "debug"
 import hre from "hardhat"
 import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../typechain-types/common"
+import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
+
+const debug = debugFactory("battlefield:eth")
 
 /**
  * Runs all the promises and return the results, if any of the promises fails
@@ -155,11 +164,27 @@ export async function deployContract<C extends BaseContract>(
   setter?: (contract: Contract<C>) => void
 ): Promise<Contract<C>> {
   const ownerAddress = await owner.getAddress()
-  const trx = await factory.getDeployTransaction({ from: ownerAddress })
-  const response = await owner.sendTransaction(trx)
-  const receipt = await response.wait(1, 2500)
-  if (receipt === null) {
-    throw new Error(`Transaction ${response.hash} to deploy contract not mined after 2.5s`)
+
+  let receipt: TransactionReceipt
+  while (true) {
+    const trx = await factory.getDeployTransaction({ from: ownerAddress })
+    const response = await owner.sendTransaction(trx)
+    const txReceipt = await response.wait(1, 2500)
+    if (txReceipt === null) {
+      throw new Error(`Transaction ${response.hash} to deploy contract not mined after 2.5s`)
+    }
+
+    if (!txReceipt.contractAddress) {
+      throw new Error(`Transaction ${response.hash} to deploy contract did not return a contract address`)
+    }
+
+    receipt = txReceipt
+    if (addressHasZeroBytes(receipt.contractAddress)) {
+      debug("Contract address had zero bytes, this could lead to differences in gas computing, deploying again")
+      continue
+    }
+
+    break
   }
 
   const contract = factory.attach(receipt.contractAddress!) as Contract<C>
@@ -172,6 +197,7 @@ export async function deployContract<C extends BaseContract>(
 
   return contract
 }
+
 /**
  * A TransactionReceipt with additional fields to store the nonce and the response
  * on the initial transaction sending that contains a {@link TransactionResponse}
@@ -183,4 +209,52 @@ export async function deployContract<C extends BaseContract>(
 export class TransactionReceiptResult extends TransactionReceipt {
   public nonce: bigint = 0n
   public response: TransactionResponse = null as any
+}
+
+/**
+ * Convenience for the ethers.getCreateAddress function, but it returns the address
+ * as a string in hexadecimal lower case without the 0x prefix.
+ */
+export function getCreateAddressHex(from: string, nonce: BigNumberish): string {
+  return getCreateAddress({ from, nonce }).toLowerCase().slice(2)
+}
+
+interface Bytecodeable {
+  readonly bytecode: string
+}
+
+/**
+ * Convenience for the ethers.getCreate2Address function, but it returns the address
+ * as a string in hexadecimal lower case without the 0x prefix.
+ */
+export function getCreate2AddressHex<F extends Bytecodeable>(from: string, salt: string, contract: F): string {
+  return getCreate2Address(from, salt.startsWith("0x") ? salt : "0x" + salt, keccak256(contract.bytecode))
+    .toLowerCase()
+    .slice(2)
+}
+
+type Create2Data = {
+  salt: string
+  address: string
+}
+
+/**
+ * Convenience to generate a salt and the address for a create2 operation, but
+ * it will keep generating until the address does not have any zero bytes which
+ * is necessary for stable gas computing.
+ */
+export function getStableCreate2Data<F extends Bytecodeable>(from: string, contract: F): Create2Data {
+  while (true) {
+    const salt = randomHex(32 * bytes)
+    const address = getCreate2AddressHex(from, salt, contract)
+
+    if (addressHasZeroBytes(address)) {
+      debug(
+        "Contract address (for create2) had zero bytes, this could lead to differences in gas computing, re-generating again"
+      )
+      continue
+    }
+
+    return { salt, address }
+  }
 }

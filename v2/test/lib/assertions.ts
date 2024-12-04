@@ -201,7 +201,13 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
           actual,
           `Transaction ${trxReceipt.hash} (Block #${trxReceipt.blockNumber}) trace mismatch against stored snapshot ${snapshot.id}` +
             "\n" +
-            `Use SNAPSHOT_UPDATE=true to update all snapshots or SNAPSHOT_UPDATE="^${snapshot.id}$" this specific snapshot`
+            `Use SNAPSHOT_UPDATE=true to update all snapshots or SNAPSHOT_UPDATE="^${snapshot.id}$" this specific snapshot` +
+            "\n\n" +
+            `See the diff locally by running: ` +
+            `'${process.env.DIFF_EDITOR || "diff -u"} ${snapshot.toSnapshotPath(
+              SnapshotKind.ActualNormalized,
+              true
+            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`
         )
       }
     }

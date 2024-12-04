@@ -4,8 +4,7 @@ import { join as pathJoin } from "path"
 import { toBN } from "web3-utils"
 
 const randomHex6chars = () => ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, "0")
-const randomHex = () =>
-  randomHex6chars() + randomHex6chars() + randomHex6chars() + randomHex6chars()
+const randomHex = () => randomHex6chars() + randomHex6chars() + randomHex6chars() + randomHex6chars()
 
 // It seems the `BN` from `web3-utils` is not fully compatible with the `SendOptions["value"]` type
 // that we use in our codebase. They seems to all come from the same require but for an unknown reason,
@@ -66,8 +65,7 @@ async function main() {
   setDefaultGasConfig(21000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
-    () =>
-      runner.okTransfer("pure transfer: existing address", "default", knownExistingAddress, oneWei),
+    () => runner.okTransfer("pure transfer: existing address", "default", knownExistingAddress, oneWei),
     () =>
       runner.okTransfer(
         "pure transfer: existing address with custom gas limit & price",
@@ -94,13 +92,9 @@ async function main() {
         0
       ),
     () =>
-      runner.okTransfer(
-        "pure transfer: to precompile address",
-        "default",
-        precompileWithBalance,
-        oneWei,
-        { gas: 75000 }
-      )
+      runner.okTransfer("pure transfer: to precompile address", "default", precompileWithBalance, oneWei, {
+        gas: 75000,
+      })
   )
 
   console.log()
@@ -172,8 +166,7 @@ async function main() {
   setDefaultGasConfig(95000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
-    () =>
-      runner.okContractSend("log: no topics (log0)", "logs", logsContract.methods.logNoTopics()),
+    () => runner.okContractSend("log: no topics (log0)", "logs", logsContract.methods.logNoTopics()),
     () => runner.okContractSend("log: empty", "logs", logsContract.methods.logEmpty()),
     () => runner.okContractSend("log: single", "logs", logsContract.methods.logSingle()),
     () => runner.okContractSend("log: all", "logs", logsContract.methods.logAll()),
@@ -210,27 +203,14 @@ async function main() {
     ["string equal 30", "equal directly 30 bytes fillin"],
     ["string equal 31", "equal directly 30 bytes fillin"],
     ["string equal 32", "equal directly 32 bytes filling!"],
-    [
-      "string longer than 32",
-      "really long string larger than 32 bytes to test out solidity splitting stuff",
-    ],
+    ["string longer than 32", "really long string larger than 32 bytes to test out solidity splitting stuff"],
   ]
 
   const promises = [
     ...stringTests.map((input) => {
-      return () =>
-        runner.okContractSend(
-          `input: ${input[0]}`,
-          "main",
-          mainContract.methods.longStringInput(input[1])
-        )
+      return () => runner.okContractSend(`input: ${input[0]}`, "main", mainContract.methods.longStringInput(input[1]))
     }),
-    () =>
-      runner.okContractSend(
-        "storage: set long string",
-        "main",
-        mainContract.methods.setLongString()
-      ),
+    () => runner.okContractSend("storage: set long string", "main", mainContract.methods.setLongString()),
   ]
 
   await runner.parallelize(...promises)
@@ -283,46 +263,46 @@ async function main() {
         gas: 99309,
       }),
 
-    () =>
-      runner.okContractSend(
-        "call: complete call tree",
-        "calls",
-        callsContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
-      ),
+    // () =>
+    //   runner.okContractSend(
+    //     "call: complete call tree",
+    //     "calls",
+    //     callsContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
+    //   ),
 
-    () =>
-      runner.okTxSend("call: call to a precompiled address with balance", {
-        to: precompileWithBalance,
-      }),
+    // () =>
+    //   runner.okTxSend("call: call to a precompiled address with balance", {
+    //     to: precompileWithBalance,
+    //   }),
 
-    () =>
-      runner.okTxSend("call: call to a precompiled address without balance", {
-        to: precompileWithoutBalance,
-      }),
+    // () =>
+    //   runner.okTxSend("call: call to a precompiled address without balance", {
+    //     to: precompileWithoutBalance,
+    //   }),
 
-    () =>
-      runner.okContractSend(
-        "call: contract creation from call, without a constructor",
-        "calls",
-        callsContract.methods.contractWithEmptyConstructor()
-      ),
+    // () =>
+    //   runner.okContractSend(
+    //     "call: contract creation from call, without a constructor",
+    //     "calls",
+    //     callsContract.methods.contractWithEmptyConstructor()
+    //   ),
 
-    () =>
-      runner.okContractSend(
-        "call: contract creation from call, with constructor",
-        "calls",
-        callsContract.methods.contractWithConstructor()
-      ),
+    // () =>
+    //   runner.okContractSend(
+    //     "call: contract creation from call, with constructor",
+    //     "calls",
+    //     callsContract.methods.contractWithConstructor()
+    //   ),
 
-    () =>
-      runner.okContractSend(
-        "call: delegate with value",
-        "calls",
-        callsContract.methods.delegateWithValue(childContractAddress),
-        {
-          value: threeWei,
-        }
-      ),
+    // () =>
+    //   runner.okContractSend(
+    //     "call: delegate with value",
+    //     "calls",
+    //     callsContract.methods.delegateWithValue(childContractAddress),
+    //     {
+    //       value: threeWei,
+    //     }
+    //   ),
 
     () =>
       runner.koContractSend(
@@ -338,73 +318,63 @@ async function main() {
         callsContract.methods.contracFailingRecursiveConstructor()
       ),
 
-    () =>
-      runner.okContractSend(
-        "call: nested fail with native transfer",
-        "transfers",
-        transfersContract.methods.nestedFailtNativeTransfer(childContractAddress, randomAddress5),
-        {
-          value: threeWei,
-        }
-      ),
+    // () =>
+    //   runner.okContractSend(
+    //     "call: nested fail with native transfer",
+    //     "transfers",
+    //     transfersContract.methods.nestedFailtNativeTransfer(childContractAddress, randomAddress5),
+    //     {
+    //       value: threeWei,
+    //     }
+    //   ),
 
-    () =>
-      runner.okContractSend(
-        "call: nested call revert state changes",
-        "calls",
-        callsContract.methods.nestedRevertFailure(childContractAddress)
-      ),
+    // () =>
+    //   runner.okContractSend(
+    //     "call: nested call revert state changes",
+    //     "calls",
+    //     callsContract.methods.nestedRevertFailure(childContractAddress)
+    //   ),
 
-    () =>
-      runner.okContractSend(
-        "call: all pre-compiled",
-        "calls",
-        callsContract.methods.allPrecompiled()
-      ),
+    // () =>
+    //   runner.okContractSend(
+    //     "call: all pre-compiled",
+    //     "calls",
+    //     callsContract.methods.allPrecompiled()
+    //   ),
 
-    () =>
-      runner.koContractSend(
-        "call: assert failure root call",
-        "calls",
-        callsContract.methods.assertFailure()
-      ),
+    // () =>
+    //   runner.koContractSend(
+    //     "call: assert failure root call",
+    //     "calls",
+    //     callsContract.methods.assertFailure()
+    //   ),
 
-    () =>
-      runner.koContractSend(
-        "call: revert failure root call",
-        "calls",
-        callsContract.methods.revertFailure()
-      ),
+    // () =>
+    //   runner.koContractSend(
+    //     "call: revert failure root call",
+    //     "calls",
+    //     callsContract.methods.revertFailure()
+    //   ),
 
-    () =>
-      runner.koContractSend(
-        "call: assert failure on child call",
-        "calls",
-        callsContract.methods.nestedAssertFailure(childContractAddress)
-      ),
+    // () =>
+    //   runner.koContractSend(
+    //     "call: assert failure on child call",
+    //     "calls",
+    //     callsContract.methods.nestedAssertFailure(childContractAddress)
+    //   ),
 
     () =>
       runner.okContractSend(
         "call: contract with create2, inner call fail due to insufficent funds (transaction succeed though)",
         "calls",
-        callsContract.methods.contractCreate2(
-          contractBin,
-          "300000000000000000000000000000",
-          `0x${randomHex()}`,
-          false
-        )
+        callsContract.methods.contractCreate2(contractBin, "300000000000000000000000000000", `0x${randomHex()}`, false)
       ),
 
     () =>
       runner.koContractSend(
         "call: contract with create2, inner call fail due to insufficent funds then revert",
         "calls",
-        callsContract.methods.contractCreate2(
-          contractBin,
-          "300000000000000000000000000000",
-          `0x${randomHex()}`,
-          true
-        )
+        callsContract.methods.contractCreate2(contractBin, "300000000000000000000000000000", `0x${randomHex()}`, true)
       ),
 
     () =>
@@ -436,19 +406,9 @@ async function main() {
   console.log("Performing 'gas' transactions")
 
   await runner.parallelize(
-    () =>
-      runner.okContractSend(
-        "gas: empty call for lowest gas",
-        "main",
-        mainContract.methods.emptyCallForLowestGas()
-      ),
+    () => runner.okContractSend("gas: empty call for lowest gas", "main", mainContract.methods.emptyCallForLowestGas()),
 
-    () =>
-      runner.okContractSend(
-        "gas: nested low gas",
-        "main",
-        mainContract.methods.nestedLowGas(childContractAddress)
-      ),
+    () => runner.okContractSend("gas: nested low gas", "main", mainContract.methods.nestedLowGas(childContractAddress)),
 
     () =>
       runner.okContractSend(
@@ -468,10 +428,7 @@ async function main() {
       runner.okContractSend(
         "gas: deep nested call for lowest gas",
         "main",
-        mainContract.methods.deepNestedCallForLowestGas(
-          childContractAddress,
-          grandChildContractAddress
-        )
+        mainContract.methods.deepNestedCallForLowestGas(childContractAddress, grandChildContractAddress)
       )
   )
 
@@ -482,11 +439,7 @@ async function main() {
 
   await runner.parallelize(
     () =>
-      runner.okContractSend(
-        "suicide: contract does not hold any Ether",
-        "suicidal1",
-        suicidal1Contract.methods.kill()
-      ),
+      runner.okContractSend("suicide: contract does not hold any Ether", "suicidal1", suicidal1Contract.methods.kill()),
 
     () =>
       runner.okContractSend(
