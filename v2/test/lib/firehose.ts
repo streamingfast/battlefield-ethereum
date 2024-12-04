@@ -26,7 +26,7 @@ import { BigNumberish, ethers, getBytes, toBigInt, TransactionReceipt } from "et
 import { anyUnpack } from "@bufbuild/protobuf/wkt"
 import { create, createRegistry, MessageInitShape } from "@bufbuild/protobuf"
 import { weiF } from "./money"
-import { TransactionReceiptResult } from "./ethereum"
+import { TransactionReceiptResult } from "./ethers"
 
 export const emptyBytes = Uint8Array.of()
 
@@ -38,9 +38,7 @@ export const firehose = createClient(Fetch, transport)
 
 const messageRegistry = createRegistry(BlockSchema)
 
-export async function fetchFirehoseTransaction(
-  receipt: TransactionReceipt
-): Promise<TransactionTrace> {
+export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Promise<TransactionTrace> {
   const response = await firehose.block({
     reference: {
       case: "blockHashAndNumber",
@@ -167,11 +165,7 @@ export function nonceChange(
   })
 }
 
-export function nonceChangeDelta(
-  address: string,
-  delta: BigNumberish,
-  ordinal: number
-): NonceChange {
+export function nonceChangeDelta(address: string, delta: BigNumberish, ordinal: number): NonceChange {
   const deltaValue = toBigInt(delta)
   if (deltaValue < 0n) {
     return nonceChange(address, deltaValue * -1n, 0, ordinal)

@@ -21,13 +21,13 @@ describe("Deploys", function () {
     await deployAll(async () => (Calls = await deployContract(owner, CallsFactory, { gasLimit: callsGasLimit })))
   })
 
-  // it("contract fail just enough gas for intrinsic gas", async function () {
-  //   await deployContract(owner, SuicidalFactory, { gas: 59244 })
+  it("Contract fail just enough gas for intrinsic gas", async function () {
+    await deployContract(owner, SuicidalFactory, { gasLimit: 63274 })
 
-  //   await expect(koContractCall(owner, deployContract, ["Suicidal", { gas: 59244 }])).to.trxTraceEqualSnapshot(
-  //     "deploys/contract_fail_intrinsic_gas.expected.json"
-  //   )
-  // })
+    // await expect(koContractCall(owner, deployContract, ["Suicidal", { gas: 59244 }])).to.trxTraceEqualSnapshot(
+    //   "deploys/contract_fail_intrinsic_gas.expected.json"
+    // )
+  })
 
   // it("contract fail not enough gas after code_copy", async function () {
   //   await expect(

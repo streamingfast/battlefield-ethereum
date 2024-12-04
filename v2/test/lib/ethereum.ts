@@ -14,6 +14,7 @@ import debugFactory from "debug"
 import hre from "hardhat"
 import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../typechain-types/common"
 import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
+import { TransactionReceiptResult, waitForTransaction } from "./ethers"
 
 const debug = debugFactory("battlefield:eth")
 
@@ -79,16 +80,7 @@ export async function sendEth(
     ...custom,
   })
 
-  const receipt = await response.wait(1, 2500)
-  if (receipt === null) {
-    throw new Error(`Transaction ${response.hash} not mined after 2.5s`)
-  }
-
-  const out = new TransactionReceiptResult(receipt, receipt.provider)
-  out.nonce = BigInt(response.nonce)
-  out.response = response
-
-  return out
+  return waitForTransaction(response, custom.shouldRevert ?? false)
 }
 
 export async function contractCall<A extends Array<any> = Array<any>, R = any, S extends StateMutability = "payable">(
@@ -105,33 +97,7 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
     ...customTx,
   })
 
-  const receipt = await response.wait(1, 2500).catch(async (e) => {
-    // It seems `.wait(...)` enforces successful transactions, so we need to check
-    // catch the error, retrieve the receipt and check it ourself.
-    if (customTx.shouldRevert && e.toString().includes("transaction execution reverted")) {
-      const receipt = await hre.ethers.provider.getTransactionReceipt(response.hash)
-      if (receipt !== null) {
-        return receipt
-      }
-
-      return null
-    }
-
-    throw e
-  })
-  if (receipt === null) {
-    throw new Error(`Transaction ${response.hash} ot mined after 2.5s`)
-  }
-
-  if (customTx.shouldRevert && receipt.status === 1) {
-    throw new Error(`Transaction ${response.hash} (Block #${receipt.blockNumber}) did not revert as expected`)
-  }
-
-  const out = new TransactionReceiptResult(receipt, receipt.provider)
-  out.nonce = BigInt(response.nonce)
-  out.response = response
-
-  return out
+  return waitForTransaction(response, customTx.shouldRevert ?? false)
 }
 
 /**
@@ -172,22 +138,10 @@ export async function deployContract<C extends BaseContract>(
   let receipt: TransactionReceipt
   while (true) {
     const trx = await factory.getDeployTransaction({ from: ownerAddress })
-    const response = await owner.sendTransaction({
-      ...trx,
-      gasLimit: 1_000_000,
-      gasPrice: 450_000_000,
-      ...customTx,
-    })
-    const txReceipt = await response.wait(1, 2500)
-    if (txReceipt === null) {
-      throw new Error(`Transaction ${response.hash} to deploy contract not mined after 2.5s`)
-    }
+    const response = await owner.sendTransaction(trx)
 
-    if (!txReceipt.contractAddress) {
-      throw new Error(`Transaction ${response.hash} to deploy contract did not return a contract address`)
-    }
+    receipt = await waitForTransaction(response, customTx.shouldRevert ?? false)
 
-    receipt = txReceipt
     if (addressHasZeroBytes(receipt.contractAddress)) {
       debug("Contract address had zero bytes, this could lead to differences in gas computing, deploying again")
       continue
@@ -201,19 +155,6 @@ export async function deployContract<C extends BaseContract>(
   contract.addressHex = contract.address.toLowerCase().slice(2)
 
   return contract
-}
-
-/**
- * A TransactionReceipt with additional fields to store the nonce and the response
- * on the initial transaction sending that contains a {@link TransactionResponse}
- * with extra field available like {@link TransactionResponse.nonce},
- * {@link TransactionResponse.value} and others.
- *
- * The {@link nonce} field is the nonce the resolved nonce in `bigint`.
- */
-export class TransactionReceiptResult extends TransactionReceipt {
-  public nonce: bigint = 0n
-  public response: TransactionResponse = null as any
 }
 
 /**

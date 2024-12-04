@@ -23,11 +23,11 @@ import {
 } from "./firehose"
 import { weiF, zeroWeiF } from "./money"
 import { readFileSync } from "fs"
-import { TransactionReceiptResult } from "./ethereum"
 import { chainStaticInfo } from "./chain"
 import { resolveSnapshot, SnapshotKind } from "./snapshots"
 import deepEqual from "deep-equal"
 import { escapeRegex } from "./regexps"
+import { TransactionReceiptResult } from "./ethers"
 
 type Chai = typeof chai
 
