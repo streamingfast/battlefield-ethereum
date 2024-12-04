@@ -6,7 +6,7 @@ import {
   randomAddress4,
   randomAddress4Hex,
 } from "./lib/addresses"
-import { Contract, contractCall, deployContract, koContractCall } from "./lib/ethereum"
+import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { Child, Transfers } from "../typechain-types"
 import { ChildFactory, owner, TransfersFactory } from "./global"
@@ -16,14 +16,10 @@ describe("Contract transfers", function () {
   let Transfers: Contract<Transfers>
 
   before(async () => {
-    await Promise.all([
-      deployContract<Child>(owner, ChildFactory, (c) => {
-        Child = c
-      }),
-      deployContract<Transfers>(owner, TransfersFactory, (c) => {
-        Transfers = c
-      }),
-    ])
+    await deployAll(
+      async () => (Child = await deployContract(owner, ChildFactory)),
+      async () => (Transfers = await deployContract(owner, TransfersFactory))
+    )
   })
 
   it("Existing address", async function () {

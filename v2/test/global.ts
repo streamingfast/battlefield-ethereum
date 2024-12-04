@@ -1,7 +1,14 @@
 import { getBytes, NonceManager } from "ethers"
 import { initChainStaticInfo } from "./lib/chain"
 import hre from "hardhat"
-import { Calls__factory, Child__factory, Logs__factory, Main__factory, Transfers__factory } from "../typechain-types"
+import {
+  Calls__factory,
+  Child__factory,
+  Logs__factory,
+  Main__factory,
+  Suicidal__factory,
+  Transfers__factory,
+} from "../typechain-types"
 import debugFactory from "debug"
 import { addFirehoseEthereumMatchers } from "./lib/assertions"
 import { use } from "chai"
@@ -18,6 +25,7 @@ export let ChildFactory: Child__factory
 export let CallsFactory: Calls__factory
 export let LogsFactory: Logs__factory
 export let TransfersFactory: Transfers__factory
+export let SuicidalFactory: Suicidal__factory
 
 const debug = debugFactory("battlefield:global")
 
@@ -33,6 +41,7 @@ before(async () => {
   CallsFactory = await hre.ethers.getContractFactory("Calls")
   LogsFactory = await hre.ethers.getContractFactory("Logs")
   TransfersFactory = await hre.ethers.getContractFactory("Transfers")
+  SuicidalFactory = await hre.ethers.getContractFactory("Suicidal")
   debug("Initialized contract factories")
 
   debug("Initializing owner")

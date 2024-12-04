@@ -1,13 +1,11 @@
 import {
   BaseContract,
   BigNumberish,
-  BytesLike,
   ContractFactory,
   Signer,
   TransactionReceipt,
   TransactionRequest,
   TransactionResponse,
-  getBytes,
   getCreate2Address,
   getCreateAddress,
   keccak256,
@@ -18,6 +16,13 @@ import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../
 import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
 
 const debug = debugFactory("battlefield:eth")
+
+/**
+ * Our own internal allowed transaction request, it will only allow the value and gasLimit
+ * fields from the ethers TransactionRequest, but it will also allow a shouldRevert field
+ * that will be used to check if the transaction should revert or not.
+ */
+type TxRequest = Pick<TransactionRequest, "value" | "gasLimit"> & { shouldRevert?: boolean }
 
 /**
  * Runs all the promises and return the results, if any of the promises fails
@@ -64,7 +69,7 @@ export async function sendEth(
   from: Signer,
   to: string,
   value: BigNumberish,
-  custom: TransactionRequest = {}
+  custom: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   const response = await from.sendTransaction({
     to,
@@ -90,14 +95,13 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   from: Signer,
   call: TypedContractMethod<A, R, S>,
   args: ContractMethodArgs<A, S>,
-  customTx: Pick<TransactionRequest, "value" | "gasLimit"> & { shouldRevert?: boolean } = {}
+  customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   const trxRequest = await call.populateTransaction(...args)
-
   const response = await from.sendTransaction({
+    ...trxRequest,
     gasLimit: 900_000,
     gasPrice: 450_000_000,
-    ...trxRequest,
     ...customTx,
   })
 
@@ -139,7 +143,7 @@ export async function koContractCall<A extends Array<any> = Array<any>, R = any,
   from: Signer,
   call: TypedContractMethod<A, R, S>,
   args: ContractMethodArgs<A, S>,
-  customTx: Pick<TransactionRequest, "value" | "gasLimit"> & { shouldRevert?: boolean } = {}
+  customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   return contractCall(from, call, args, { shouldRevert: true, ...customTx })
 }
@@ -161,14 +165,19 @@ export type Contract<T extends BaseContract> = T & {
 export async function deployContract<C extends BaseContract>(
   owner: Signer,
   factory: ContractFactory,
-  setter?: (contract: Contract<C>) => void
+  customTx: TxRequest = {}
 ): Promise<Contract<C>> {
   const ownerAddress = await owner.getAddress()
 
   let receipt: TransactionReceipt
   while (true) {
     const trx = await factory.getDeployTransaction({ from: ownerAddress })
-    const response = await owner.sendTransaction(trx)
+    const response = await owner.sendTransaction({
+      ...trx,
+      gasLimit: 1_000_000,
+      gasPrice: 450_000_000,
+      ...customTx,
+    })
     const txReceipt = await response.wait(1, 2500)
     if (txReceipt === null) {
       throw new Error(`Transaction ${response.hash} to deploy contract not mined after 2.5s`)
@@ -190,10 +199,6 @@ export async function deployContract<C extends BaseContract>(
   const contract = factory.attach(receipt.contractAddress!) as Contract<C>
   contract.address = receipt.contractAddress!
   contract.addressHex = contract.address.toLowerCase().slice(2)
-
-  if (setter) {
-    setter(contract)
-  }
 
   return contract
 }
@@ -257,4 +262,63 @@ export function getStableCreate2Data<F extends Bytecodeable>(from: string, contr
 
     return { salt, address }
   }
+}
+
+type Runner = () => Promise<any>
+
+export async function deployAll(...runners: Runner[]) {
+  await executeTransactions(...runners.map((runner) => runner()))
+}
+
+/**
+ * Deploy a contract and ensures that contract that are going to be created by this newly
+ * deployed contract would only yield addresses without zero bytes, this is necessary for
+ * stable gas computing.
+ *
+ * We verify up to <creationCount> addresses to ensure and not all of them.
+ */
+export async function deployStableContractCreator<C extends BaseContract>(
+  owner: Signer,
+  factory: ContractFactory,
+  creationCount: number,
+  depth = 1,
+  customTx: TxRequest = {}
+): Promise<Contract<C>> {
+  while (true) {
+    const contract = await deployContract<C>(owner, factory, customTx)
+    const addresses = getCreateAddressesHex(contract.address, creationCount)
+
+    // Ensure that for the first <creationCount> contracts, the generated address will contains no zero bytes
+    if (addresses.some(addressHasZeroBytes)) {
+      debug(
+        `Deployed contract would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`
+      )
+      continue
+    }
+
+    if (depth <= 1) {
+      return contract
+    }
+
+    if (depth == 2) {
+      if (addresses.some(wouldCreateSomeZeroBytesAddress(creationCount))) {
+        debug(
+          `Deployed second depth contract would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`
+        )
+        continue
+      }
+
+      return contract
+    }
+
+    throw new Error("Depth > 2 not implemented")
+  }
+}
+
+function getCreateAddressesHex(from: string, count: number): string[] {
+  return Array.from({ length: count }, (_, i) => getCreateAddressHex(from, i + 1))
+}
+
+function wouldCreateSomeZeroBytesAddress(count: number): (from: string) => boolean {
+  return (from) => getCreateAddressesHex(from, count).some(addressHasZeroBytes)
 }

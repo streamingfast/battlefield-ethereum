@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { Contract, contractCall, deployContract, koContractCall } from "./lib/ethereum"
+import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
 import { Child, Logs } from "../typechain-types"
 import { ChildFactory, LogsFactory, owner } from "./global"
 
@@ -8,14 +8,10 @@ describe("Logs", function () {
   let Logs: Contract<Logs>
 
   before(async () => {
-    await Promise.all([
-      deployContract<Child>(owner, ChildFactory, (c) => {
-        Child = c
-      }),
-      deployContract<Logs>(owner, LogsFactory, (c) => {
-        Logs = c
-      }),
-    ])
+    await deployAll(
+      async () => (Child = await deployContract(owner, ChildFactory)),
+      async () => (Logs = await deployContract(owner, LogsFactory))
+    )
   })
 
   it("No topics (log0)", async function () {
