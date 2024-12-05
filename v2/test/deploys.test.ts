@@ -8,9 +8,12 @@ import {
   getCreateAddressHex,
   getStableCreate2Data,
   koContractCall,
+  koContractCreation,
+  stableDeployerFunded,
 } from "./lib/ethereum"
 import { Calls, Calls__factory } from "../typechain-types"
 import { CallsFactory, owner, SuicidalFactory } from "./global"
+import { eth } from "./lib/money"
 
 const callsGasLimit = 3_500_000
 
@@ -22,18 +25,28 @@ describe("Deploys", function () {
   })
 
   it("Contract fail just enough gas for intrinsic gas", async function () {
-    await deployContract(owner, SuicidalFactory, { gasLimit: 63274 })
+    const deployer = await stableDeployerFunded(owner, 1, eth(1))
 
-    // await expect(koContractCall(owner, deployContract, ["Suicidal", { gas: 59244 }])).to.trxTraceEqualSnapshot(
-    //   "deploys/contract_fail_intrinsic_gas.expected.json"
-    // )
+    await expect(koContractCreation(deployer, SuicidalFactory, { gasLimit: 63274 })).to.trxTraceEqualSnapshot(
+      "deploys/contract_fail_intrinsic_gas.expected.json",
+      {
+        $sender: deployer.address.toLowerCase().slice(2),
+        $createdContract: getCreateAddressHex(deployer.address, 0),
+      }
+    )
   })
 
-  // it("contract fail not enough gas after code_copy", async function () {
-  //   await expect(
-  //     koContractCall(owner, deployContract, ["Suicidal", { gas: 99309 }])
-  //   ).to.trxTraceEqualSnapshot("deploys/contract_fail_code_copy.expected.json")
-  // })
+  it("Contract fail not enough gas after code_copy", async function () {
+    const deployer = await stableDeployerFunded(owner, 1, eth(1))
+
+    await expect(koContractCreation(deployer, SuicidalFactory, { gasLimit: 99309 })).to.trxTraceEqualSnapshot(
+      "deploys/contract_fail_code_copy.expected.json",
+      {
+        $sender: deployer.address.toLowerCase().slice(2),
+        $createdContract: getCreateAddressHex(deployer.address, 0),
+      }
+    )
+  })
 
   it("Contract creation from call, without a constructor", async function () {
     let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, { gasLimit: callsGasLimit })

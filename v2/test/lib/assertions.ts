@@ -28,6 +28,9 @@ import { resolveSnapshot, SnapshotKind } from "./snapshots"
 import deepEqual from "deep-equal"
 import { escapeRegex } from "./regexps"
 import { TransactionReceiptResult } from "./ethers"
+import debugFactory from "debug"
+
+const debug = debugFactory("battlefield:assertions")
 
 type Chai = typeof chai
 
@@ -417,6 +420,7 @@ function templatizeJsonTransactionTrace(
       let replaced = object
       for (const [value, name] of Object.entries(valuesToName)) {
         if (object.includes(value)) {
+          debug("Replacing %s with %s", value, name)
           const replacer = new RegExp(escapeRegex(value), "g")
           replaced = replaced.replace(replacer, name)
         }
@@ -428,6 +432,7 @@ function templatizeJsonTransactionTrace(
     return object
   }
 
+  debug("Templatized custom variables: %o", vars, parsed)
   return replaceValuesByTemplateVariables(parsed) as Record<string, any>
 }
 

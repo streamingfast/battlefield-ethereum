@@ -2,10 +2,12 @@ import {
   BaseContract,
   BigNumberish,
   ContractFactory,
+  HDNodeWallet,
   Signer,
   TransactionReceipt,
   TransactionRequest,
   TransactionResponse,
+  Wallet,
   getCreate2Address,
   getCreateAddress,
   keccak256,
@@ -15,6 +17,7 @@ import hre from "hardhat"
 import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../typechain-types/common"
 import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
 import { TransactionReceiptResult, waitForTransaction } from "./ethers"
+import { eth } from "./money"
 
 const debug = debugFactory("battlefield:eth")
 
@@ -72,13 +75,16 @@ export async function sendEth(
   value: BigNumberish,
   custom: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
-  const response = await from.sendTransaction({
+  const trxRequest = {
     to,
     value,
     gasLimit: 21000,
     gasPrice: 450_000_000,
     ...custom,
-  })
+  }
+
+  debug("Send eth call being performed %o", debuggableTrx(trxRequest))
+  const response = await from.sendTransaction(trxRequest)
 
   return waitForTransaction(response, custom.shouldRevert ?? false)
 }
@@ -89,13 +95,16 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   args: ContractMethodArgs<A, S>,
   customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
-  const trxRequest = await call.populateTransaction(...args)
-  const response = await from.sendTransaction({
-    ...trxRequest,
+  const trxCall = await call.populateTransaction(...args)
+  const trxRequest = {
+    ...trxCall,
     gasLimit: 900_000,
     gasPrice: 450_000_000,
     ...customTx,
-  })
+  }
+
+  debug("Contract call being performed %o", debuggableTrx(trxRequest))
+  const response = await from.sendTransaction(trxRequest)
 
   return waitForTransaction(response, customTx.shouldRevert ?? false)
 }
@@ -128,17 +137,55 @@ export type Contract<T extends BaseContract> = T & {
   addressHex: string
 }
 
+/**
+ * Deploy a new contract to the network and wait for it to be mined, but this time,
+ * it is expected to fail, so it will return the receipt but will validate that
+ * it has reverted.
+ */
+export async function koContractCreation(
+  owner: Signer,
+  factory: ContractFactory,
+  customTx: TxRequest = {}
+): Promise<TransactionReceiptResult> {
+  return contractCreation(owner, factory, { shouldRevert: true, ...customTx })
+}
+
+export async function contractCreation<C extends BaseContract>(
+  owner: Signer,
+  factory: ContractFactory,
+  customTx: TxRequest = {}
+): Promise<TransactionReceiptResult> {
+  const [receipt, _] = await _deployContract<C>(owner, factory, customTx)
+  return receipt
+}
+
 export async function deployContract<C extends BaseContract>(
   owner: Signer,
   factory: ContractFactory,
   customTx: TxRequest = {}
 ): Promise<Contract<C>> {
+  const [_, contract] = await _deployContract<C>(owner, factory, customTx)
+  return contract
+}
+
+async function _deployContract<C extends BaseContract>(
+  owner: Signer,
+  factory: ContractFactory,
+  customTx: TxRequest = {}
+): Promise<[TransactionReceiptResult, Contract<C>]> {
   const ownerAddress = await owner.getAddress()
 
-  let receipt: TransactionReceipt
+  let receipt: TransactionReceiptResult
   while (true) {
     const trx = await factory.getDeployTransaction({ from: ownerAddress })
-    const response = await owner.sendTransaction(trx)
+    const trxRequest = {
+      ...trx,
+      gasPrice: 450_000_000,
+      ...customTx,
+    }
+
+    debug("Contract being deployed %o", debuggableTrx(trxRequest))
+    const response = await owner.sendTransaction(trxRequest)
 
     receipt = await waitForTransaction(response, customTx.shouldRevert ?? false)
 
@@ -154,7 +201,19 @@ export async function deployContract<C extends BaseContract>(
   contract.address = receipt.contractAddress!
   contract.addressHex = contract.address.toLowerCase().slice(2)
 
-  return contract
+  return [receipt, contract]
+}
+
+function debuggableTrx(trx: TransactionRequest) {
+  if (trx.data && trx.data.length < 120) {
+    return trx
+  }
+
+  if (!trx.data) {
+    return trx
+  }
+
+  return { ...trx, data: trx.data.slice(0, 16) + `... ${trx.data.length - 16}` }
 }
 
 /**
@@ -212,6 +271,41 @@ export async function deployAll(...runners: Runner[]) {
 }
 
 /**
+ * Creates a new address ensuring that the created address contains no zero bytes
+ * as well as ensuring that contracts deployed from the created address (up to `creationCount`)
+ * will also not contain zero bytes.
+ *
+ * The operation is retried until a valid address is found.
+ *
+ * The address is also automatically funded, with `fundWei` amount of wei,
+ * defaults to 2 ETH if not provided.
+ */
+export async function stableDeployerFunded(
+  from: Signer,
+  creationCount: number,
+  fundWei?: string | BigNumberish
+): Promise<HDNodeWallet> {
+  while (true) {
+    const deployer = Wallet.createRandom(hre.ethers.provider)
+    if (addressHasZeroBytes(deployer.address)) {
+      debug("Deployer address had zero bytes, this could lead to differences in gas computing, re-generating again")
+      continue
+    }
+
+    if (getCreateAddressesHex(deployer.address, creationCount).some(addressHasZeroBytes)) {
+      debug(
+        `Deployer address would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`
+      )
+      continue
+    }
+
+    await sendEth(from, deployer.address, fundWei ?? eth(2))
+
+    return deployer
+  }
+}
+
+/**
  * Deploy a contract and ensures that contract that are going to be created by this newly
  * deployed contract would only yield addresses without zero bytes, this is necessary for
  * stable gas computing.
@@ -257,7 +351,7 @@ export async function deployStableContractCreator<C extends BaseContract>(
 }
 
 function getCreateAddressesHex(from: string, count: number): string[] {
-  return Array.from({ length: count }, (_, i) => getCreateAddressHex(from, i + 1))
+  return Array.from({ length: count }, (_, i) => getCreateAddressHex(from, i))
 }
 
 function wouldCreateSomeZeroBytesAddress(count: number): (from: string) => boolean {
