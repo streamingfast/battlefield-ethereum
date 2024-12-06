@@ -2,11 +2,11 @@
   "to": "$callsContract",
   "nonce": "$nonce",
   "gasLimit": "900000",
-  "input": "34926187",
+  "input": "3e88ca64",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "874338",
+  "gasUsed": "874336",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -26,9 +26,9 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
       "gasLimit": "878936",
-      "gasConsumed": "853274",
+      "gasConsumed": "853272",
       "returnData": "",
-      "input": "34926187",
+      "input": "3e88ca64",
       "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
@@ -46,7 +46,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "27",
           "oldValue": "",
-          "newValue": "0a80b47a3700"
+          "newValue": "0a80ea1f2000"
         },
         {
           "address": "0000000000000000000000000000000000000000",
@@ -74,32 +74,32 @@
           "ordinal": "2"
         },
         {
-          "oldValue": "878697",
-          "newValue": "878625",
+          "oldValue": "878742",
+          "newValue": "878670",
           "reason": "REASON_CODE_COPY",
           "ordinal": "5"
         },
         {
-          "oldValue": "878589",
-          "newValue": "846567",
+          "oldValue": "878634",
+          "newValue": "846612",
           "reason": "REASON_CONTRACT_CREATION",
           "ordinal": "6"
         },
         {
-          "oldValue": "846567",
-          "newValue": "13227",
+          "oldValue": "846612",
+          "newValue": "13228",
           "reason": "REASON_CONTRACT_CREATION",
           "ordinal": "7"
         },
         {
-          "oldValue": "13227",
-          "newValue": "25703",
+          "oldValue": "13228",
+          "newValue": "25705",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "24"
         },
         {
-          "oldValue": "25670",
-          "newValue": "25667",
+          "oldValue": "25672",
+          "newValue": "25669",
           "reason": "REASON_RETURN_DATA_COPY",
           "ordinal": "25"
         }
@@ -119,8 +119,8 @@
       "callType": "CREATE",
       "caller": "$callsContract",
       "address": "$firstCreatedContract",
-      "gasLimit": "833340",
-      "gasConsumed": "820864",
+      "gasLimit": "833384",
+      "gasConsumed": "820907",
       "returnData": "",
       "input": "",
       "executedCode": false,
@@ -146,26 +146,26 @@
       "codeChanges": [],
       "gasChanges": [
         {
-          "oldValue": "833259",
-          "newValue": "833223",
+          "oldValue": "833303",
+          "newValue": "833267",
           "reason": "REASON_CODE_COPY",
           "ordinal": "12"
         },
         {
-          "oldValue": "833153",
-          "newValue": "801141",
+          "oldValue": "833197",
+          "newValue": "801185",
           "reason": "REASON_CONTRACT_CREATION",
           "ordinal": "13"
         },
         {
-          "oldValue": "801141",
-          "newValue": "12517",
+          "oldValue": "801185",
+          "newValue": "12518",
           "reason": "REASON_CONTRACT_CREATION",
           "ordinal": "14"
         },
         {
-          "oldValue": "12484",
-          "newValue": "12481",
+          "oldValue": "12485",
+          "newValue": "12482",
           "reason": "REASON_RETURN_DATA_COPY",
           "ordinal": "22"
         }
@@ -190,8 +190,8 @@
       "callType": "CREATE",
       "caller": "$firstCreatedContract",
       "address": "$secondCreatedContract",
-      "gasLimit": "788624",
-      "gasConsumed": "788624",
+      "gasLimit": "788667",
+      "gasConsumed": "788667",
       "returnData": "",
       "input": "",
       "executedCode": false,
@@ -217,13 +217,13 @@
       "codeChanges": [],
       "gasChanges": [
         {
-          "oldValue": "788559",
-          "newValue": "788547",
+          "oldValue": "788602",
+          "newValue": "788590",
           "reason": "REASON_CODE_COPY",
           "ordinal": "19"
         },
         {
-          "oldValue": "788426",
+          "oldValue": "788469",
           "newValue": "0",
           "reason": "REASON_FAILED_EXECUTION",
           "ordinal": "20"

@@ -15,11 +15,7 @@ contract Child {
 
     function emptyCallForLowestGas() public pure {}
 
-    function nestedRecordGasLeft(
-        address grandchild,
-        uint256 _callerGas,
-        uint256 _callerGasLeft
-    ) public {
+    function nestedRecordGasLeft(address grandchild, uint256 _callerGas, uint256 _callerGasLeft) public {
         callerGas = _callerGas;
         callerGasLeft = _callerGasLeft;
         gasLeft = gasleft();
@@ -35,9 +31,7 @@ contract Child {
     }
 
     function nestedEmptyCallForLowestGas(address grandchild) public view {
-        (bool success, ) = grandchild.staticcall(
-            abi.encodeWithSignature("emptyCallForLowestGas()")
-        );
+        (bool success, ) = grandchild.staticcall(abi.encodeWithSignature("emptyCallForLowestGas()"));
         require(success, "should have succeed");
     }
 
@@ -50,16 +44,11 @@ contract Child {
         to.transfer(msg.value + 900000000000000);
     }
 
-    uint256 asserValue;
-    uint256 revertValue;
-
     function assertFailure() public {
-        asserValue += asserValue + 1;
         assert(false);
     }
 
     function revertFailure() public {
-        revertValue += revertValue + 1;
         revert("reverting");
     }
 
@@ -76,6 +65,11 @@ contract Child {
     function logValue() public payable {
         emit eventValue(msg.value, tx.origin, msg.sender, gasLeft, msg.data);
     }
-    event eventValue(uint256 indexed value, address indexed txOrigin, address indexed sender, uint256 gasLeft, bytes data);
-
+    event eventValue(
+        uint256 indexed value,
+        address indexed txOrigin,
+        address indexed sender,
+        uint256 gasLeft,
+        bytes data
+    );
 }
