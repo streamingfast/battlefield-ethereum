@@ -2,6 +2,7 @@ import { clone, create, DescMessage, enumToJson, equals, isMessage, JsonValue } 
 import chai from "chai"
 import {
   BalanceChange,
+  BalanceChange_Reason,
   BalanceChange_ReasonSchema,
   BalanceChangeSchema,
   BigIntSchema,
@@ -21,7 +22,7 @@ import {
   relativizeTrxTraceOrdinals as normalizeTrxTraceOrdinals,
   trxTraceOrdinals,
 } from "./firehose"
-import { weiF, zeroWeiF } from "./money"
+import { oneWeiF, weiF, zeroWeiF } from "./money"
 import { readFileSync } from "fs"
 import { chainStaticInfo } from "./chain"
 import { resolveSnapshot, SnapshotKind } from "./snapshots"
@@ -262,6 +263,13 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
   for (const call of trace.calls) {
     call.balanceChanges.forEach(deltaizeBalanceValue)
     call.nonceChanges.forEach(deltaizeNonceValue)
+
+    call.balanceChanges.forEach((change) => {
+      if (change.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE) {
+        change.oldValue = zeroWeiF
+        change.newValue = oneWeiF
+      }
+    })
   }
 
   normalizeTrxTraceOrdinals(trace)

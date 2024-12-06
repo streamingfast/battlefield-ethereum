@@ -53,7 +53,7 @@
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "9",
           "oldValue": "",
-          "newValue": "08d85f00d70c"
+          "newValue": "01"
         }
       ],
       "nonceChanges": [

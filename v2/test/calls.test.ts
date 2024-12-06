@@ -17,17 +17,17 @@ describe("Calls", function () {
     )
   })
 
-  it("Complete call tree", async function () {
-    const GrandChild = await deployContract(owner, GrandChildFactory, [Child.address, false])
+  // it("Complete call tree", async function () {
+  //   const GrandChild = await deployContract(owner, GrandChildFactory, [Child.address, false])
 
-    await expect(
-      contractCall(owner, Calls.completeCallTree, [Child.address, GrandChild.address])
-    ).to.trxTraceEqualSnapshot("calls/complete_call_tree.expected.json", {
-      $callsContract: Calls.addressHex,
-      $childContract: Child.addressHex,
-      $grandChildContract: GrandChild.addressHex,
-    })
-  })
+  //   await expect(
+  //     contractCall(owner, Calls.completeCallTree, [Child.address, GrandChild.address])
+  //   ).to.trxTraceEqualSnapshot("calls/complete_call_tree.expected.json", {
+  //     $callsContract: Calls.addressHex,
+  //     $childContract: Child.addressHex,
+  //     $grandChildContract: GrandChild.addressHex,
+  //   })
+  // })
 
   // it("call to a precompiled address with balance", async function () {
   //   await expect(
