@@ -193,8 +193,7 @@ export async function deployContract<F extends ContractFactory, C extends BaseCo
   customTx: TxRequest = {}
 ): Promise<Contract<C>> {
   const [_, contract] = await _deployContract(owner, factory, constructorArgs, customTx)
-  // @ts-ignore Complains that C could be instantiated with a different type, but it's not possible
-  return contract
+  return contract as Contract<C>
 }
 
 async function _deployContract<F extends ContractFactory, C extends BaseContract = SolidityContract<F>>(
@@ -212,7 +211,6 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
       ...customTx,
     }
 
-    debug("Contract being deployed %o", debuggableTrx(trxRequest))
     const response = await owner.sendTransaction(trxRequest)
 
     receipt = await waitForTransaction(response, customTx.shouldRevert ?? false)
@@ -340,16 +338,19 @@ export async function stableDeployerFunded(
  *
  * We verify up to <creationCount> addresses to ensure and not all of them.
  */
-export async function deployStableContractCreator<C extends BaseContract>(
+export async function deployStableContractCreator<
+  F extends ContractFactory,
+  C extends BaseContract = SolidityContract<F>
+>(
   owner: Signer,
-  factory: ContractFactory,
-  creationCount: number,
-  depth = 1,
-  constructorArgs: unknown[] = [],
+  factory: F,
+  constructorArgs: SolidityConstructorArgs<F>,
+  creationCount: number = 1,
+  depth: number = 1,
   customTx: TxRequest = {}
 ): Promise<Contract<C>> {
   while (true) {
-    const contract = await deployContract<C>(owner, factory, constructorArgs, customTx)
+    const contract = await deployContract(owner, factory, constructorArgs, customTx)
     const addresses = getCreateAddressesHex(contract.address, creationCount)
 
     // Ensure that for the first <creationCount> contracts, the generated address will contains no zero bytes
@@ -361,7 +362,7 @@ export async function deployStableContractCreator<C extends BaseContract>(
     }
 
     if (depth <= 1) {
-      return contract
+      return contract as Contract<C>
     }
 
     if (depth == 2) {
@@ -372,7 +373,7 @@ export async function deployStableContractCreator<C extends BaseContract>(
         continue
       }
 
-      return contract
+      return contract as Contract<C>
     }
 
     throw new Error("Depth > 2 not implemented")

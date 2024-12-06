@@ -315,7 +315,7 @@ async function main() {
       runner.koContractSend(
         "call: contract creation from call, recursive constructor, second will fail",
         "calls",
-        callsContract.methods.contracFailingRecursiveConstructor()
+        callsContract.methods.contractFailingRecursiveConstructor()
       ),
 
     // () =>

@@ -1,6 +1,10 @@
 import { expect } from "chai"
 import {
   knownExistingAddress,
+  precompileWithBalanceAddress,
+  precompileWithBalanceAddressHex,
+  precompileWithoutBalanceAddress,
+  precompileWithoutBalanceAddressHex,
   randomAddress1,
   randomAddress1Hex,
   randomAddress2,
@@ -41,5 +45,22 @@ describe("Pure transfers", function () {
         $randomAddress2: randomAddress2Hex,
       }
     )
+  })
+
+  it("Transfer to precompiled address with balance", async function () {
+    await expect(sendEth(owner, precompileWithBalanceAddress, oneWei, { gasLimit: 300000 })).to.trxTraceEqualSnapshot(
+      "pure_transfers/precompiled_address_with_balance.json",
+      {
+        $precompileAddress: precompileWithBalanceAddressHex,
+      }
+    )
+  })
+
+  it("Transfer to precompiled address without balance", async function () {
+    await expect(
+      sendEth(owner, precompileWithoutBalanceAddress, oneWei, { gasLimit: 300000 })
+    ).to.trxTraceEqualSnapshot("pure_transfers/precompiled_address_without_balance.json", {
+      $precompileAddress: precompileWithoutBalanceAddressHex,
+    })
   })
 })

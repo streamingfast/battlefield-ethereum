@@ -1,8 +1,17 @@
 import { expect } from "chai"
-import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
-import { Calls, Child } from "../typechain-types"
-import { CallsFactory, ChildFactory, GrandChildFactory, owner, SuicidalFactory } from "./global"
-import { wei } from "./lib/money"
+import {
+  Contract,
+  contractCall,
+  deployAll,
+  deployContract,
+  deployStableContractCreator,
+  getCreateAddressHex,
+  koContractCall,
+} from "./lib/ethereum"
+import { Calls, Child, GrandChild } from "../typechain-types"
+import { CallsFactory, ChildFactory, GrandChildFactory, owner, TransfersFactory } from "./global"
+import { oneWei, wei } from "./lib/money"
+import { randomAddress5, randomAddress5Hex } from "./lib/addresses"
 
 const callsGasLimit = 3_500_000
 
@@ -17,46 +26,48 @@ describe("Calls", function () {
     )
   })
 
-  // it("Complete call tree", async function () {
-  //   const GrandChild = await deployContract(owner, GrandChildFactory, [Child.address, false])
+  it("Complete call tree", async function () {
+    let Calls: Contract<Calls>
+    let GrandChild: Contract<GrandChild>
 
-  //   await expect(
-  //     contractCall(owner, Calls.completeCallTree, [Child.address, GrandChild.address])
-  //   ).to.trxTraceEqualSnapshot("calls/complete_call_tree.expected.json", {
-  //     $callsContract: Calls.addressHex,
-  //     $childContract: Child.addressHex,
-  //     $grandChildContract: GrandChild.addressHex,
-  //   })
-  // })
+    await deployAll(
+      async () =>
+        (Calls = await deployStableContractCreator(owner, CallsFactory, [], 1, 1, { gasLimit: callsGasLimit })),
+      async () => (GrandChild = await deployContract(owner, GrandChildFactory, [Child.address, false]))
+    )
 
-  // it("call to a precompiled address with balance", async function () {
-  //   await expect(
-  //     contractCall(owner, Calls.callToPrecompiledAddressWithBalance, [], { to: precompileWithBalance })
-  //   ).to.trxTraceEqualSnapshot("calls/call_to_precompiled_address_with_balance.expected.json")
-  // })
-
-  // it("call to a precompiled address without balance", async function () {
-  //   await expect(
-  //     contractCall(owner, Calls.callToPrecompiledAddressWithoutBalance, [], { to: precompileWithoutBalance })
-  //   ).to.trxTraceEqualSnapshot("calls/call_to_precompiled_address_without_balance.expected.json")
-  // })
+    await expect(
+      contractCall(owner, Calls!.completeCallTree, [Child.address, GrandChild!.address])
+    ).to.trxTraceEqualSnapshot("calls/complete_call_tree.expected.json", {
+      $callsContract: Calls!.addressHex,
+      $callsCreatedContract: getCreateAddressHex(Calls!.address, 1),
+      $childContract: Child.addressHex,
+      $grandChildContract: GrandChild!.addressHex,
+    })
+  })
 
   it("Delegate with value", async function () {
     await expect(
-      contractCall(owner, Calls.delegateWithValue, [Child.addressHex], { value: wei(3) })
+      contractCall(owner, Calls.delegateWithValue, [Child.address], { value: wei(3) })
     ).to.trxTraceEqualSnapshot("calls/delegate_with_value.expected.json", {
       $callsContract: Calls.addressHex,
       $childContract: Child.addressHex,
     })
   })
 
-  // it("nested fail with native transfer", async function () {
-  //   await expect(
-  //     contractCall(owner, Transfers.nestedFailtNativeTransfer, [childContractAddress, randomAddress5], {
-  //       value: threeWei,
-  //     })
-  //   ).to.trxTraceEqualSnapshot("transfers/nested_fail_with_native_transfer.expected.json")
-  // })
+  it("Nested fail with native transfer", async function () {
+    let Transfers = await deployContract(owner, TransfersFactory, [])
+
+    await expect(
+      contractCall(owner, Transfers.nestedFailedNativeTransfer, [Child.address, randomAddress5], {
+        value: wei(3),
+      })
+    ).to.trxTraceEqualSnapshot("transfers/nested_fail_with_native_transfer.expected.json", {
+      $transfers: Transfers.addressHex,
+      $childContract: Child.addressHex,
+      $randomAddress5: randomAddress5Hex,
+    })
+  })
 
   it("Nested call revert state changes", async function () {
     await expect(contractCall(owner, Calls.nestedRevertFailure, [Child.address])).to.trxTraceEqualSnapshot(
@@ -96,7 +107,7 @@ describe("Calls", function () {
   })
 
   it("Assert failure on child call", async function () {
-    await expect(koContractCall(owner, Calls.nestedAssertFailure, [Child.address])).to.trxTraceEqualSnapshot(
+    await expect(contractCall(owner, Calls.nestedAssertFailure, [Child.address])).to.trxTraceEqualSnapshot(
       "calls/assert_failure_on_child_call.expected.json",
       {
         $callsContract: Calls.addressHex,

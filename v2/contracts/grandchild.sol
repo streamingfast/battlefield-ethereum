@@ -7,7 +7,7 @@ contract GrandChild {
     uint256 gasLeft;
 
     constructor(address payable to, bool fail) public payable {
-        to.transfer(msg.value);
+        // to.transfer(msg.value);
         if (fail) {
             to.transfer(msg.value + 9000000000000000);
         }

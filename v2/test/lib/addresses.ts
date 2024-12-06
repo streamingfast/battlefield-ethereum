@@ -1,12 +1,19 @@
-import { getBytes } from "ethers"
-import { ethers } from "hardhat"
+import { getAddress, getBytes } from "ethers"
 
 export const bytes = 1
 
 export type AddressLike = string | Uint8Array
 
-export const knownExistingAddress = ethers.getAddress("0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd")
+export const knownExistingAddress = getAddress("0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd")
 export const knownExistingAddressBytes = getBytes(knownExistingAddress)
+
+export const precompileWithBalanceAddress = getAddress("0x0000000000000000000000000000000000000004")
+export const precompileWithBalanceAddressBytes = getBytes(precompileWithBalanceAddress)
+export const precompileWithBalanceAddressHex = precompileWithBalanceAddress.toLowerCase().slice(2)
+
+export const precompileWithoutBalanceAddress = getAddress("0x0000000000000000000000000000000000000005")
+export const precompileWithoutBalanceAddressBytes = getBytes(precompileWithoutBalanceAddress)
+export const precompileWithoutBalanceAddressHex = precompileWithoutBalanceAddress.toLowerCase().slice(2)
 
 export const randomAddress1 = `0xdead${randomHex(14 * bytes)}0001beef`
 export const randomAddress2 = `0xdead${randomHex(14 * bytes)}0002beef`

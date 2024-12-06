@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Firehose Tracers test suites for Ethereum chain(s)",
   "scripts": {
-    "test": "hardhat test"
+    "compile": "hardhat compile",
+    "test": "hardhat test --network firehose"
   },
   "keywords": [],
   "author": "",

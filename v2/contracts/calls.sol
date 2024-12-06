@@ -19,7 +19,7 @@ contract Calls {
         new ContractEmpty();
     }
 
-    function contracFailingRecursiveConstructor() public {
+    function contractFailingRecursiveConstructor() public {
         new ContractTopConstructorOkThenFailing();
     }
 
@@ -32,18 +32,14 @@ contract Calls {
 
         deployment.createContract();
 
-        (bool successKill, bytes memory resultRawKill) = address(deployment).call(
-            abi.encodeWithSignature("kill()")
-        );
+        (bool successKill, bytes memory resultRawKill) = address(deployment).call(abi.encodeWithSignature("kill()"));
         require(successKill, "call to kill() succeed");
         require(resultRawKill.length == 0);
 
         // Contract suicided at this point
         deployment.createContract();
 
-        (bool successKill2, bytes memory resultRawKill2) = address(deployment).call(
-            abi.encodeWithSignature("kill()")
-        );
+        (bool successKill2, bytes memory resultRawKill2) = address(deployment).call(abi.encodeWithSignature("kill()"));
         require(successKill2, "call to kill() failed");
         require(resultRawKill2.length == 0);
 
@@ -51,10 +47,7 @@ contract Calls {
             abi.encodeWithSignature("transferToValue(address,uint256)", msg.sender, 1)
         );
 
-        require(
-            !successTransferToValue,
-            "call to transferToValue(address,uint256) should have failed"
-        );
+        require(!successTransferToValue, "call to transferToValue(address,uint256) should have failed");
 
         (bool successTransferToSuicided, ) = payable(address(deployment)).call{value: 1}("");
         require(!successTransferToSuicided, "Transfer after suicide should revert");
@@ -73,9 +66,7 @@ contract Calls {
         address ownerBefore = deployment.owner();
         require(ownerBefore == msg.sender);
 
-        (bool successKill2, bytes memory resultRawKill2) = address(deployment).call(
-            abi.encodeWithSignature("kill()")
-        );
+        (bool successKill2, bytes memory resultRawKill2) = address(deployment).call(abi.encodeWithSignature("kill()"));
         require(successKill2, "call to kill() failed");
         require(resultRawKill2.length == 0);
 
@@ -83,12 +74,7 @@ contract Calls {
         require(ownerAfter == msg.sender);
     }
 
-    function contractCreate2(
-        bytes memory code,
-        uint256 transferAmount,
-        uint256 salt,
-        bool revertOnFailure
-    ) public {
+    function contractCreate2(bytes memory code, uint256 transferAmount, uint256 salt, bool revertOnFailure) public {
         address addr;
         assembly {
             addr := create2(transferAmount, add(code, 0x20), mload(code), salt)
@@ -135,12 +121,7 @@ contract Calls {
         callGasLimit = 0x40000;
 
         (success, ) = child.call{gas: callGasLimit}(
-            abi.encodeWithSignature(
-                "nestedRecordGasLeft(address,uint256,uint256)",
-                grandChild,
-                callGasLimit,
-                gasleft()
-            )
+            abi.encodeWithSignature("nestedRecordGasLeft(address,uint256,uint256)", grandChild, callGasLimit, gasleft())
         );
         require(success, "should have succeed");
 

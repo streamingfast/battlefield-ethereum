@@ -49,7 +49,7 @@ describe("Deploys", function () {
   })
 
   it("Contract creation from call, without a constructor", async function () {
-    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, [], { gasLimit: callsGasLimit })
+    let Calls = await deployStableContractCreator(owner, CallsFactory, [], 1, 1, { gasLimit: callsGasLimit })
 
     await expect(contractCall(owner, Calls.contractWithEmptyConstructor, [])).to.trxTraceEqualSnapshot(
       "deploys/contract_creation_without_constructor.expected.json",
@@ -61,7 +61,7 @@ describe("Deploys", function () {
   })
 
   it("Contract creation from call, with a constructor", async function () {
-    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, [], { gasLimit: callsGasLimit })
+    let Calls = await deployStableContractCreator(owner, CallsFactory, [], 1, 1, { gasLimit: callsGasLimit })
 
     await expect(contractCall(owner, Calls.contractWithConstructor, [])).to.trxTraceEqualSnapshot(
       "deploys/contract_creation_with_constructor.expected.json",
@@ -73,7 +73,7 @@ describe("Deploys", function () {
   })
 
   it("Contract creation from call, constructor fails", async function () {
-    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, [], { gasLimit: callsGasLimit })
+    let Calls = await deployStableContractCreator(owner, CallsFactory, [], 1, 1, { gasLimit: callsGasLimit })
 
     await expect(koContractCall(owner, Calls.contractWithFailingConstructor, [])).to.trxTraceEqualSnapshot(
       "deploys/contract_creation_fail_constructor.expected.json",
@@ -85,10 +85,10 @@ describe("Deploys", function () {
   })
 
   it("Contract creation from call, recursive constructor, second fails", async function () {
-    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 2, [], { gasLimit: callsGasLimit })
+    let Calls = await deployStableContractCreator(owner, CallsFactory, [], 1, 2, { gasLimit: callsGasLimit })
     let firstCreatedContract = getCreateAddressHex(Calls.address, 1)
 
-    await expect(koContractCall(owner, Calls.contracFailingRecursiveConstructor, [])).to.trxTraceEqualSnapshot(
+    await expect(koContractCall(owner, Calls.contractFailingRecursiveConstructor, [])).to.trxTraceEqualSnapshot(
       "deploys/contract_creation_recursive_fail.expected.json",
       {
         $callsContract: Calls.addressHex,

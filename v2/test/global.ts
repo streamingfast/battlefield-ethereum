@@ -14,7 +14,7 @@ import debugFactory from "debug"
 import { addFirehoseEthereumMatchers } from "./lib/assertions"
 import { use } from "chai"
 import { executeTransactions, sendImmediateEth } from "./lib/ethereum"
-import { knownExistingAddress } from "./lib/addresses"
+import { knownExistingAddress, precompileWithBalanceAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
 
 export let owner: NonceManager
@@ -62,7 +62,10 @@ before(async () => {
     .catch(abort)
 
   const executeTransactionsStart = Date.now()
-  executeTransactions(sendImmediateEth(owner, knownExistingAddress, oneWei))
+  executeTransactions(
+    sendImmediateEth(owner, knownExistingAddress, oneWei),
+    sendImmediateEth(owner, precompileWithBalanceAddress, oneWei)
+  )
     .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
     .catch(abort)
 

@@ -37,7 +37,13 @@ export async function waitForTransaction(
   }
 
   if (shouldRevert && receipt.status === 1) {
-    throw new Error(`Transaction ${response.hash} (Block #${receipt.blockNumber}) did not revert as expected`)
+    throw new Error(
+      `Transaction ${response.hash} (Block #${receipt.blockNumber}) did not revert as expected\n${JSON.stringify(
+        receipt,
+        null,
+        2
+      )}`
+    )
   }
 
   const out = new TransactionReceiptResult(receipt, receipt.provider)
