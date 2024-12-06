@@ -4,6 +4,7 @@ import hre from "hardhat"
 import {
   Calls__factory,
   Child__factory,
+  GrandChild__factory,
   Logs__factory,
   Main__factory,
   Suicidal__factory,
@@ -22,6 +23,7 @@ export let ownerAddressBytes: Uint8Array
 
 export let MainFactory: Main__factory
 export let ChildFactory: Child__factory
+export let GrandChildFactory: GrandChild__factory
 export let CallsFactory: Calls__factory
 export let LogsFactory: Logs__factory
 export let TransfersFactory: Transfers__factory
@@ -38,6 +40,7 @@ before(async () => {
   debug("Initializing contract factories sequentially")
   MainFactory = await hre.ethers.getContractFactory("Main")
   ChildFactory = await hre.ethers.getContractFactory("Child")
+  GrandChildFactory = await hre.ethers.getContractFactory("GrandChild")
   CallsFactory = await hre.ethers.getContractFactory("Calls")
   LogsFactory = await hre.ethers.getContractFactory("Logs")
   TransfersFactory = await hre.ethers.getContractFactory("Transfers")

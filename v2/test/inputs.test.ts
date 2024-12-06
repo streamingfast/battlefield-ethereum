@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
+import { Contract, contractCall, deployAll, deployContract } from "./lib/ethereum"
 import { Main } from "../typechain-types"
 import { MainFactory, owner } from "./global"
 
@@ -7,7 +7,7 @@ describe("Inputs", function () {
   let Input: Contract<Main>
 
   before(async () => {
-    await deployAll(async () => (Input = await deployContract(owner, MainFactory)))
+    await deployAll(async () => (Input = await deployContract(owner, MainFactory, [])))
   })
 
   it("Input variable sizes", async function () {

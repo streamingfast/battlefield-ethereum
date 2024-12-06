@@ -17,8 +17,8 @@ describe("Contract transfers", function () {
 
   before(async () => {
     await deployAll(
-      async () => (Child = await deployContract(owner, ChildFactory)),
-      async () => (Transfers = await deployContract(owner, TransfersFactory))
+      async () => (Child = await deployContract(owner, ChildFactory, [])),
+      async () => (Transfers = await deployContract(owner, TransfersFactory, []))
     )
   })
 

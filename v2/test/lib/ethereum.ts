@@ -4,9 +4,7 @@ import {
   ContractFactory,
   HDNodeWallet,
   Signer,
-  TransactionReceipt,
   TransactionRequest,
-  TransactionResponse,
   Wallet,
   getCreate2Address,
   getCreateAddress,
@@ -123,6 +121,9 @@ export async function koContractCall<A extends Array<any> = Array<any>, R = any,
   return contractCall(from, call, args, { shouldRevert: true, ...customTx })
 }
 
+/**
+ * Same as {@link BaseContract} but with the address field filled in.
+ */
 export type Contract<T extends BaseContract> = T & {
   /**
    * This will be the address of the contract in the network in hexadecimal,
@@ -141,43 +142,70 @@ export type Contract<T extends BaseContract> = T & {
  * Deploy a new contract to the network and wait for it to be mined, but this time,
  * it is expected to fail, so it will return the receipt but will validate that
  * it has reverted.
+ *
+ * The inferred constructorArgs from your specific contract will contains a final optional parameter named
+ * 'overrides', it can be ignored.
  */
-export async function koContractCreation(
+export async function koContractCreation<F extends ContractFactory>(
   owner: Signer,
   factory: ContractFactory,
+  constructorArgs: SolidityConstructorArgs<F>,
   customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
-  return contractCreation(owner, factory, { shouldRevert: true, ...customTx })
+  return contractCreation(owner, factory, constructorArgs, { shouldRevert: true, ...customTx })
 }
 
-export async function contractCreation<C extends BaseContract>(
+/**
+ * The inferred constructorArgs from your specific contract will contains a final optional parameter named
+ * 'overrides', it can be ignored.
+ */
+export async function contractCreation<F extends ContractFactory, C extends BaseContract = SolidityContract<F>>(
   owner: Signer,
   factory: ContractFactory,
+  constructorArgs: SolidityConstructorArgs<F>,
   customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
-  const [receipt, _] = await _deployContract<C>(owner, factory, customTx)
+  const [receipt, _] = await _deployContract(owner, factory, constructorArgs, customTx)
   return receipt
 }
 
-export async function deployContract<C extends BaseContract>(
+/**
+ * This extract Solidity constructor arguments from a ContractFactory type.
+ *
+ * FIXME: This function should strip the last parameter as it's not really a constructor argument
+ * more a transaction overrides which we don't need. But I haven't found a way to do it. Parameters<F["deploy"]>
+ */
+type SolidityConstructorArgs<F extends ContractFactory> = Parameters<F["deploy"]>
+
+/**
+ * From a ContractFactory type, it extracts the concrete contract type that it will be deployed.
+ */
+type SolidityContract<F extends ContractFactory> = Awaited<ReturnType<F["deploy"]>>
+
+/**
+ * The inferred constructorArgs from your specific contract will contains a final optional parameter named
+ * 'overrides', it can be ignored.
+ */
+export async function deployContract<F extends ContractFactory, C extends BaseContract = SolidityContract<F>>(
   owner: Signer,
-  factory: ContractFactory,
+  factory: F,
+  constructorArgs: SolidityConstructorArgs<F>,
   customTx: TxRequest = {}
 ): Promise<Contract<C>> {
-  const [_, contract] = await _deployContract<C>(owner, factory, customTx)
+  const [_, contract] = await _deployContract(owner, factory, constructorArgs, customTx)
+  // @ts-ignore Complains that C could be instantiated with a different type, but it's not possible
   return contract
 }
 
-async function _deployContract<C extends BaseContract>(
+async function _deployContract<F extends ContractFactory, C extends BaseContract = SolidityContract<F>>(
   owner: Signer,
   factory: ContractFactory,
+  constructorArgs: SolidityConstructorArgs<F>,
   customTx: TxRequest = {}
 ): Promise<[TransactionReceiptResult, Contract<C>]> {
-  const ownerAddress = await owner.getAddress()
-
   let receipt: TransactionReceiptResult
   while (true) {
-    const trx = await factory.getDeployTransaction({ from: ownerAddress })
+    const trx = await factory.getDeployTransaction(...constructorArgs)
     const trxRequest = {
       ...trx,
       gasPrice: 450_000_000,
@@ -317,10 +345,11 @@ export async function deployStableContractCreator<C extends BaseContract>(
   factory: ContractFactory,
   creationCount: number,
   depth = 1,
+  constructorArgs: unknown[] = [],
   customTx: TxRequest = {}
 ): Promise<Contract<C>> {
   while (true) {
-    const contract = await deployContract<C>(owner, factory, customTx)
+    const contract = await deployContract<C>(owner, factory, constructorArgs, customTx)
     const addresses = getCreateAddressesHex(contract.address, creationCount)
 
     // Ensure that for the first <creationCount> contracts, the generated address will contains no zero bytes

@@ -21,13 +21,13 @@ describe("Deploys", function () {
   let Calls: Contract<Calls>
 
   before(async () => {
-    await deployAll(async () => (Calls = await deployContract(owner, CallsFactory, { gasLimit: callsGasLimit })))
+    await deployAll(async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })))
   })
 
   it("Contract fail just enough gas for intrinsic gas", async function () {
     const deployer = await stableDeployerFunded(owner, 1, eth(1))
 
-    await expect(koContractCreation(deployer, SuicidalFactory, { gasLimit: 63274 })).to.trxTraceEqualSnapshot(
+    await expect(koContractCreation(deployer, SuicidalFactory, [], { gasLimit: 63274 })).to.trxTraceEqualSnapshot(
       "deploys/contract_fail_intrinsic_gas.expected.json",
       {
         $sender: deployer.address.toLowerCase().slice(2),
@@ -39,7 +39,7 @@ describe("Deploys", function () {
   it("Contract fail not enough gas after code_copy", async function () {
     const deployer = await stableDeployerFunded(owner, 1, eth(1))
 
-    await expect(koContractCreation(deployer, SuicidalFactory, { gasLimit: 99309 })).to.trxTraceEqualSnapshot(
+    await expect(koContractCreation(deployer, SuicidalFactory, [], { gasLimit: 99309 })).to.trxTraceEqualSnapshot(
       "deploys/contract_fail_code_copy.expected.json",
       {
         $sender: deployer.address.toLowerCase().slice(2),
@@ -49,7 +49,7 @@ describe("Deploys", function () {
   })
 
   it("Contract creation from call, without a constructor", async function () {
-    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, { gasLimit: callsGasLimit })
+    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, [], { gasLimit: callsGasLimit })
 
     await expect(contractCall(owner, Calls.contractWithEmptyConstructor, [])).to.trxTraceEqualSnapshot(
       "deploys/contract_creation_without_constructor.expected.json",
@@ -61,7 +61,7 @@ describe("Deploys", function () {
   })
 
   it("Contract creation from call, with a constructor", async function () {
-    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, { gasLimit: callsGasLimit })
+    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, [], { gasLimit: callsGasLimit })
 
     await expect(contractCall(owner, Calls.contractWithConstructor, [])).to.trxTraceEqualSnapshot(
       "deploys/contract_creation_with_constructor.expected.json",
@@ -73,7 +73,7 @@ describe("Deploys", function () {
   })
 
   it("Contract creation from call, constructor fails", async function () {
-    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, { gasLimit: callsGasLimit })
+    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 1, [], { gasLimit: callsGasLimit })
 
     await expect(koContractCall(owner, Calls.contractWithFailingConstructor, [])).to.trxTraceEqualSnapshot(
       "deploys/contract_creation_fail_constructor.expected.json",
@@ -85,7 +85,7 @@ describe("Deploys", function () {
   })
 
   it("Contract creation from call, recursive constructor, second fails", async function () {
-    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 2, { gasLimit: callsGasLimit })
+    let Calls = await deployStableContractCreator<Calls>(owner, CallsFactory, 1, 2, [], { gasLimit: callsGasLimit })
     let firstCreatedContract = getCreateAddressHex(Calls.address, 1)
 
     await expect(koContractCall(owner, Calls.contracFailingRecursiveConstructor, [])).to.trxTraceEqualSnapshot(
@@ -145,7 +145,7 @@ describe("Deploys", function () {
   })
 
   it("Contract with create2, inner call fail due to address already exists (transaction succeed though)", async function () {
-    const Calls = await deployContract<Calls>(owner, CallsFactory, { gasLimit: callsGasLimit })
+    const Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })
     const create2Data = getStableCreate2Data(Calls.address, Calls__factory)
 
     // Perform the first creation that succeeds
@@ -161,7 +161,7 @@ describe("Deploys", function () {
   })
 
   it("Contract with create2, inner call fail due to address already exists and transaction fails too", async function () {
-    const Calls = await deployContract<Calls>(owner, CallsFactory, { gasLimit: callsGasLimit })
+    const Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })
     const create2Data = getStableCreate2Data(Calls.address, Calls__factory)
 
     // Perform the first creation that succeeds

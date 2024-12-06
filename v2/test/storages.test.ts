@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
+import { Contract, contractCall, deployAll, deployContract } from "./lib/ethereum"
 import { Main } from "../typechain-types"
 import { MainFactory, owner } from "./global"
 
@@ -7,7 +7,7 @@ describe("Storages", function () {
   let Storage: Contract<Main>
 
   before(async () => {
-    await deployAll(async () => (Storage = await deployContract(owner, MainFactory)))
+    await deployAll(async () => (Storage = await deployContract(owner, MainFactory, [])))
   })
 
   it("Set long string & array", async function () {

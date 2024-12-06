@@ -9,8 +9,8 @@ describe("Logs", function () {
 
   before(async () => {
     await deployAll(
-      async () => (Child = await deployContract(owner, ChildFactory)),
-      async () => (Logs = await deployContract(owner, LogsFactory))
+      async () => (Child = await deployContract(owner, ChildFactory, [])),
+      async () => (Logs = await deployContract(owner, LogsFactory, []))
     )
   })
 
