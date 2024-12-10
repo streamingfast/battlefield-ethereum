@@ -81,8 +81,8 @@ declare global {
        * - Ordinals are made relative to the lowest ordinal found in the trace, so that it like the transaction
        *   was the first in the block.
        *
-       * The snapshot file can be update using `SNAPSHOT_UPDATE=true` environment variable, or by setting
-       * `SNAPSHOT_UPDATE="^snapshotId$"` to update only this specific snapshot where `snapshotId` is the
+       * The snapshot file can be update using `SNAPSHOTS_UPDATE=true` environment variable, or by setting
+       * `SNAPSHOTS_UPDATE="^snapshotId$"` to update only this specific snapshot where `snapshotId` is the
        * snapshot identifier.
        *
        * Once loaded, a snapshot is resolved with dynamic values that changes on every run. For that, we
@@ -205,7 +205,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
           actual,
           `Transaction ${trxReceipt.hash} (Block #${trxReceipt.blockNumber}) trace mismatch against stored snapshot ${snapshot.id}` +
             "\n" +
-            `Use SNAPSHOT_UPDATE=true to update all snapshots or SNAPSHOT_UPDATE="^${snapshot.id}$" this specific snapshot` +
+            `Use SNAPSHOTS_UPDATE=true to update all snapshots or SNAPSHOTS_UPDATE="^${snapshot.id}$" this specific snapshot` +
             "\n\n" +
             `See the diff locally by running: ` +
             `'${process.env.DIFF_EDITOR || "diff -u"} ${snapshot.toSnapshotPath(

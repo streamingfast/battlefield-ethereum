@@ -77,7 +77,7 @@ export async function sendEth(
     to,
     value,
     gasLimit: 21000,
-    gasPrice: 450_000_000,
+    gasPrice: 4_500_000_000,
     ...custom,
   }
 
@@ -97,7 +97,7 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   const trxRequest = {
     ...trxCall,
     gasLimit: 900_000,
-    gasPrice: 450_000_000,
+    gasPrice: 4_500_000_000,
     ...customTx,
   }
 
@@ -207,7 +207,7 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
     const trx = await factory.getDeployTransaction(...constructorArgs)
     const trxRequest = {
       ...trx,
-      gasPrice: 450_000_000,
+      gasPrice: 4_500_000_000,
       ...customTx,
     }
 

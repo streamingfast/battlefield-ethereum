@@ -18,7 +18,7 @@ export async function waitForTransaction(
   response: TransactionResponse,
   shouldRevert: boolean
 ): Promise<TransactionReceiptResult> {
-  const receipt = await response.wait(1, 2500).catch(async (e) => {
+  const receipt = await response.wait(1, 10_000).catch(async (e) => {
     // It seems `.wait(...)` enforces successful transactions, so we need to check
     // catch the error, retrieve the receipt and check it ourself.
     if (shouldRevert && e.toString().includes("transaction execution reverted")) {

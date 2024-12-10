@@ -62,7 +62,7 @@ describe("Calls", function () {
       contractCall(owner, Transfers.nestedFailedNativeTransfer, [Child.address, randomAddress5], {
         value: wei(3),
       })
-    ).to.trxTraceEqualSnapshot("transfers/nested_fail_with_native_transfer.expected.json", {
+    ).to.trxTraceEqualSnapshot("calls/nested_fail_with_native_transfer.expected.json", {
       $transfers: Transfers.addressHex,
       $childContract: Child.addressHex,
       $randomAddress5: randomAddress5Hex,

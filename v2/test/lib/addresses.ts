@@ -4,6 +4,8 @@ export const bytes = 1
 
 export type AddressLike = string | Uint8Array
 
+export const ownerAddress = getAddress("0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab")
+
 export const knownExistingAddress = getAddress("0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd")
 export const knownExistingAddressBytes = getBytes(knownExistingAddress)
 

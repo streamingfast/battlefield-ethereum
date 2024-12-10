@@ -9,6 +9,21 @@ const snapshotsPrefixRegex = /^(\.(\/|\\))?snapshots(\/|\\)/
 const snapshotsSuffixRegex = /\.([^\.]+\.)?json$/
 
 /**
+ * Globally controls the tag into which snapshots are read and write from.
+ * Should be call before using any snapshots.
+ *
+ * The tag is free-form and will be appended to the snapshot between the first
+ * element and the snapshot name. So for example if snapshot id `calls/test.expected.json`
+ * is received and the tag is set to `fh3.0`, the snapshot will be read from
+ * `calls/fh3.0/test.expected.json` (and derived files too).
+ */
+let globalSnapshotsTag = ""
+
+export function setGlobalSnapshotsTag(tag: string) {
+  globalSnapshotsTag = tag
+}
+
+/**
  * The different variant of snapshots that can be written. The actual
  * snapshot comparison is done between the expected resolved and the actual
  * normalized.
@@ -57,20 +72,28 @@ export class Snapshot {
   }
 
   toSnapshotPath(kind: SnapshotKind, relativeToCwd: boolean = false): string {
-    const toQualifier = () => {
-      switch (kind) {
-        case SnapshotKind.ExpectedTemplatized:
-          return "expected"
-        case SnapshotKind.ExpectedResolved:
-          return "expected.resolved"
-        case SnapshotKind.ActualOriginal:
-          return "actual.original"
-        case SnapshotKind.ActualNormalized:
-          return "actual.normalized"
-      }
+    if (!globalSnapshotsTag) {
+      throw new Error(
+        "The 'globalSnapshotsTag' variable is not set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite."
+      )
     }
 
-    const absolute = `${snapshotsUrl}/${this.id}.${toQualifier()}.json`
+    let filePath: string
+
+    // We want to insert the tag between the first element and the snapshot name
+    // so that `calls/test.expected.json` becomes `calls/<tag>/test.expected.json`.
+    //
+    // We try to extract the dirname from the snapshot id and if it's not the same
+    // as the id, we know it has a "parent" directory and we insert us between them.
+    const dirname = path.dirname(this.id)
+    if (dirname && dirname !== this.id) {
+      let lastSegment = this.id.replace(dirname, "").replace(/^(\/|\\)/, "")
+      filePath = path.join(snapshotsUrl, dirname, globalSnapshotsTag, lastSegment)
+    } else {
+      filePath = path.join(snapshotsUrl, globalSnapshotsTag, this.id)
+    }
+
+    const absolute = `${filePath}.${this.toSnapshotQualifier(kind)}.json`
     if (relativeToCwd) {
       return "./" + path.relative(process.cwd(), absolute)
     }
@@ -78,8 +101,21 @@ export class Snapshot {
     return absolute
   }
 
+  toSnapshotQualifier(kind: SnapshotKind): string {
+    switch (kind) {
+      case SnapshotKind.ExpectedTemplatized:
+        return "expected"
+      case SnapshotKind.ExpectedResolved:
+        return "expected.resolved"
+      case SnapshotKind.ActualOriginal:
+        return "actual.original"
+      case SnapshotKind.ActualNormalized:
+        return "actual.normalized"
+    }
+  }
+
   userRequestedExpectedUpdate(): boolean {
-    const value = process.env.SNAPSHOT_UPDATE
+    const value = process.env.SNAPSHOTS_UPDATE
     if (value === undefined) {
       return false
     }

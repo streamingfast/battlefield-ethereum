@@ -16,6 +16,7 @@ import { use } from "chai"
 import { executeTransactions, sendImmediateEth } from "./lib/ethereum"
 import { knownExistingAddress, precompileWithBalanceAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
+import { setGlobalSnapshotsTag } from "./lib/snapshots"
 
 export let owner: NonceManager
 export let ownerAddress: string
@@ -36,6 +37,14 @@ use(addFirehoseEthereumMatchers)
 before(async () => {
   const start = Date.now()
   console.log("Global setup")
+
+  if (!process.env.SNAPSHOTS_TAG) {
+    throw new Error(
+      "SNAPSHOTS_TAG environment variable must be set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite."
+    )
+  }
+
+  setGlobalSnapshotsTag(process.env.SNAPSHOTS_TAG)
 
   debug("Initializing contract factories sequentially")
   MainFactory = await hre.ethers.getContractFactory("Main")
@@ -59,7 +68,7 @@ before(async () => {
   const initChainStart = Date.now()
   initChainStaticInfo(hre.ethers.provider)
     .then(debugLogTimeTakenOnCompletion(initChainStart, "Initialized chain static info"))
-    .catch(abort)
+    .catch(abortTagged("Initializing chain static info"))
 
   const executeTransactionsStart = Date.now()
   executeTransactions(
@@ -67,7 +76,7 @@ before(async () => {
     sendImmediateEth(owner, precompileWithBalanceAddress, oneWei)
   )
     .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
-    .catch(abort)
+    .catch(abortTagged("Executing initialization transactions"))
 
   debug("Global setup completed in %d ms", Date.now() - start)
 })
@@ -75,6 +84,13 @@ before(async () => {
 function abort(message: unknown) {
   console.error(message)
   process.exit(1)
+}
+
+function abortTagged(tag: string): (message: unknown) => void {
+  return (message: unknown) => {
+    console.log("Error", tag)
+    abort(message)
+  }
 }
 
 function debugLogTimeTakenOnCompletion(start: number, message: string): () => void {
