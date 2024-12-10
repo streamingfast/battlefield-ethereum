@@ -19,6 +19,8 @@ import { eth } from "./money"
 
 const debug = debugFactory("battlefield:eth")
 
+const defaultGasPrice = 450_000_000
+
 /**
  * Our own internal allowed transaction request, it will only allow the value and gasLimit
  * fields from the ethers TransactionRequest, but it will also allow a shouldRevert field
@@ -77,7 +79,7 @@ export async function sendEth(
     to,
     value,
     gasLimit: 21000,
-    gasPrice: 4_500_000_000,
+    gasPrice: defaultGasPrice,
     ...custom,
   }
 
@@ -97,7 +99,7 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   const trxRequest = {
     ...trxCall,
     gasLimit: 900_000,
-    gasPrice: 4_500_000_000,
+    gasPrice: defaultGasPrice,
     ...customTx,
   }
 
@@ -207,7 +209,7 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
     const trx = await factory.getDeployTransaction(...constructorArgs)
     const trxRequest = {
       ...trx,
-      gasPrice: 4_500_000_000,
+      gasPrice: defaultGasPrice,
       ...customTx,
     }
 
