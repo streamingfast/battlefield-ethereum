@@ -38,7 +38,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "01705869225000",
+          "oldValue": "8fe28911674000",
           "newValue": ""
         },
         {
@@ -60,7 +60,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "42",
           "oldValue": "",
-          "newValue": "014116b47eb780"
+          "newValue": "7d6cde817fae00"
         },
         {
           "address": "0000000000000000000000000000000000000000",
@@ -400,7 +400,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "1ad27480",
+  "gasPrice": "0a7a358200",
   "value": "03",
   "receipt": {
     "stateRoot": "",

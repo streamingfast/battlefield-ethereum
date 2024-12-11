@@ -19,7 +19,7 @@ import { eth } from "./money"
 
 const debug = debugFactory("battlefield:eth")
 
-const defaultGasPrice = 450_000_000
+const defaultGasPrice = 45_000_000_000
 
 /**
  * Our own internal allowed transaction request, it will only allow the value and gasLimit

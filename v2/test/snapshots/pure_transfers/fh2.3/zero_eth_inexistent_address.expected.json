@@ -38,7 +38,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "08983fe4a400",
+          "oldValue": "035b78f5501000",
           "newValue": ""
         },
         {
@@ -77,7 +77,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "1ad27480",
+  "gasPrice": "0a7a358200",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",

@@ -46,7 +46,7 @@
           "address": "$sender",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "28a4faf35a80",
+          "oldValue": "0fe072070f5a00",
           "newValue": ""
         },
         {
@@ -108,9 +108,9 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "1ad27480",
-  "maxFeePerGas": "1ad27480",
-  "maxPriorityFeePerGas": "1ad27480",
+  "gasPrice": "0a7a358200",
+  "maxFeePerGas": "0a7a358200",
+  "maxPriorityFeePerGas": "0a7a358200",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",
