@@ -1,12 +1,12 @@
 
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-SCRIPTS="$ROOT/../../scripts"
-PARENT_PID=$$
-
 set -e
 
+PARENT_PID=$$
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source "$ROOT/lib.sh"
+
 main() {
-    address_to_fund="${ADDRESS_TO_FUND:-"0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab"}"
     ipc_path=${IPC_PATH:-"$ROOT/.firehose-data/geth.ipc"}
     # It seems the 'geth attach' only allows specyfing the datadir directly and not the IPC
     # path, so we need to extract the directory from the IPC path
@@ -25,20 +25,21 @@ main() {
 
     echo "Running local Geth --dev chain"
     echo "Address to fund: $address_to_fund"
+    echo "Geth Binary: $geth"
+    echo "Geth Version: $($geth --version)"
     echo "IPC Directory: $ipc_dir"
     echo "IPC Path: $ipc_path"
     echo "Firehose version: $firehose_version"
     echo "Backward compatibility: $backward_compatibility"
     echo ""
 
-    launch_funder "$ipc_path" "$address_to_fund" &
+    launch_funder "$ipc_path" &
 
     exec geth --dev --dev.period=1 --http --http.api eth,web3,net --ipcpath="$ipc_path" --vmtrace=firehose --vmtrace.jsonconfig='{"applyBackwardCompatibility":'$backward_compatibility'}'
 }
 
 launch_funder() {
     ipc_path="$1"
-    address_to_fund="$2"
 
     # A first sleep to let the node start
     sleep 1
