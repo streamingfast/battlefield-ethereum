@@ -29,6 +29,7 @@ main() {
     echo "IPC Path: $ipc_path"
     echo "Firehose version: $firehose_version"
     echo "Backward compatibility: $backward_compatibility"
+    echo ""
 
     launch_funder "$ipc_path" "$address_to_fund" &
 

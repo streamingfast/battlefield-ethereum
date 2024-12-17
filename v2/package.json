@@ -4,7 +4,6 @@
   "description": "Firehose Tracers test suites for Ethereum chain(s)",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "pnpm test:fh2.3",
     "test:fh2.3": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network firehose",
     "test:fh3.0": "cross-env SNAPSHOTS_TAG=fh3.0 hardhat test --network firehose"
   },

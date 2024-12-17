@@ -1,40 +1,33 @@
-
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#!/usr/bin/env bash
 
 set -e
 
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$ROOT/lib.sh"
+
 main() {
-    fireeth="fireeth"
-    if ! command -v "$fireeth" &> /dev/null; then
-        echo "The '$fireeth' binary could not be found, you can install it through one of those means:"
-        echo ""
-        echo "- By running 'brew install streamingfast/tap/firehose-ethereum' on Mac or Linux system (with Homebrew installed)"
-        echo "- By building it from source cloning https://github.com/streamingfast/firehose-ethereum.git and then 'go install ./cmd/fireeth'"
-        echo "- By downloading a pre-compiled binary from https://github.com/streamingfast/firehose-ethereum/releases"
-        exit 1
-    fi
+  check_fireeth
+  check_geth
 
-    geth="geth"
-    if ! command -v "$geth" &> /dev/null; then
-        echo "The '$geth' binary could not be found, you can install it with:"
-        echo ""
-        echo "- go install github.com/ethereum/go-ethereum/cmd/geth@latest"
-    fi
+  if [[ ! $# -eq 1 ]]; then
+    usage_error "Wrong arguments"
+  fi
 
-    data_dir="$ROOT/.firehose-data"
+  tracer_version="$1"
 
-    echo "Running Geth dev node with Firehose tracer activated via 'fireeth'"
-    rm -rf "$data_dir"
+  if [[ "$tracer_version" != "2.3" && "$tracer_version" != "3.0" ]]; then
+    usage_error "Invalid tracer version '$tracer_version'"
+  fi
 
-    "$fireeth" \
-        start \
-        reader-node,relayer,merger,firehose \
-        -c '' \
-        -d "$data_dir" \
-        --common-first-streamable-block=0 \
-        --reader-node-path="bash" \
-        --reader-node-arguments="$ROOT/wrapped_geth_dev.sh" \
-        --firehose-grpc-listen-addr="localhost:8089"
+  echo "Running Geth dev node with Firehose tracer activated via 'fireeth'"
+  FIREHOSE_VERSION="$tracer_version" run_fireeth 0 "bash" "$ROOT/wrapped_geth_dev.sh"
+}
+
+usage() {
+  echo "Usage: $0 <tracer-version>"
+  echo ""
+  echo "Runs a Geth dev with the Firehose tracer activated using version <tracer-version>"
+  echo "which can be either '2.3' or '3.0'."
 }
 
 main "$@"
