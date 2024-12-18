@@ -1,0 +1,9 @@
+version: "3"
+services:
+  miner:
+    build:
+      context: .
+      dockerfile: Dockerfile.miner
+    ports:
+      - "30304:30304"
+      - "8545:8545"

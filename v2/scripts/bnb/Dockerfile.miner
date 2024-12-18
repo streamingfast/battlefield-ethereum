@@ -1,0 +1,43 @@
+FROM ubuntu:22.04
+
+ARG CONTRACT_TAG=v1.2.4
+ARG NPM_VERSION=v22.4.1
+ARG FORGE_VERSION=v1.7.3
+ARG GETH_VERSION=v1.4.16
+
+RUN apt-get update && apt-get -y install ca-certificates python3 git curl build-essential
+
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+
+#RUN echo 'export NVM_DIR="$HOME/.nvm" && . $NVM_DIR/nvm.sh' >> ~/.profile
+
+# use bash as shell, loading the .profile
+SHELL ["/bin/bash", "-c", "-i"]
+
+RUN nvm install $NPM_VERSION && nvm use $NPM_VERSION
+
+RUN git clone https://github.com/bnb-chain/bsc-genesis-contract.git --branch $CONTRACT_TAG /root/genesis \
+    && rm /root/genesis/package-lock.json && cd /root/genesis && npm install
+
+
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
+RUN echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc
+RUN cd /root/genesis && poetry install
+
+RUN  curl -L https://foundry.paradigm.xyz | bash
+RUN cd /root/genesis && foundryup && forge install --no-git --no-commit foundry-rs/forge-std@$FORGE_VERSION
+
+WORKDIR /root/genesis
+RUN poetry run python -m scripts.generate dev
+
+RUN uname -i |grep "aarch64" && binary="geth_linux" || binary="geth-linux-arm64"; curl -L -o /usr/local/bin/geth https://github.com/bnb-chain/bsc/releases/download/$GETH_VERSION/$binary && chmod +x /usr/local/bin/geth
+
+
+RUN geth init genesis.json
+RUN geth account import --password=/dev/null <(echo 9b28f36fbd67381120752d6172ecdcf10e06ab2d9a1367aac00cdcd6ac7855d3)
+
+CMD geth --mine --miner.etherbase=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --unlock=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --password=/dev/null --allow-insecure-unlock --http --http.api=eth,net,web3,debug,admin --http.addr=0.0.0.0 --port=30304
+
+EXPOSE 30304
+EXPOSE 8545

@@ -30,7 +30,24 @@ run_fireeth() {
     --common-first-streamable-block=${first_streamable_block} \
     --reader-node-path="$node_binary" \
     --reader-node-arguments="$node_args" \
+    --advertise-chain-name="localdev" \
     --firehose-grpc-listen-addr="localhost:8089" $@
+}
+
+check_docker() {
+    if ! command -v "docker" &> /dev/null; then
+        echo "The 'docker' command is required for this script, please install it"
+        echo "by following instructions at https://docs.docker.com/get-docker/"
+        exit 1
+    fi
+    if [[ -n "$1" ]]; then
+        if ! docker ps --format '{{.Names}}' | grep -q "^$1$"; then
+            ERR="You should run the appropriate docker-compose recipe first"
+            [[ -n "$2" ]] && ERR="$2"
+            echo "Docker container '$1' is not running. $ERR"
+            exit 1
+        fi
+    fi
 }
 
 check_fireeth() {
@@ -44,13 +61,41 @@ check_fireeth() {
   fi
 }
 
+wait_geth_up() {
+    i=0
+    max_attempts=15
+    echo -n "Waiting for a response from http://$1"
+    while true; do
+        i=$((i+1))
+        if [[ $i -gt $max_attempts ]]; then
+            echo
+            echo "Failed to connect to node after $max_attempts attempts"
+            exit 1
+        fi
+        curl --connect-timeout 1 $1 -s -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'  -H "content-type: application/json" --fail && break
+        sleep 1
+        echo -n "."
+    done
+    echo
+    echo "Node is up"
+    return 0
+}
+
 check_geth() {
   if ! command -v "$geth" &> /dev/null; then
     echo "The '$geth' binary could not be found, you can install it with:"
     echo ""
     echo "- go install github.com/ethereum/go-ethereum/cmd/geth@latest"
+    exit 1
+  fi
+  if [[ -n "$1" ]]; then
+      if ! geth --help |grep -q "$1"; then
+          echo "Your geth version is not compatible with Binance Smart Chain (grepping the string '$1' in 'geth --help' output)"
+          exit 1
+      fi
   fi
 }
+
 
 check_sd() {
   if ! command -v "sd" &> /dev/null; then
