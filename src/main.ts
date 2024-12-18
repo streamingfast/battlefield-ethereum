@@ -263,46 +263,46 @@ async function main() {
         gas: 99309,
       }),
 
-    // () =>
-    //   runner.okContractSend(
-    //     "call: complete call tree",
-    //     "calls",
-    //     callsContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
-    //   ),
+    () =>
+      runner.okContractSend(
+        "call: complete call tree",
+        "calls",
+        callsContract.methods.completeCallTree(childContractAddress, grandChildContractAddress)
+      ),
 
-    // () =>
-    //   runner.okTxSend("call: call to a precompiled address with balance", {
-    //     to: precompileWithBalance,
-    //   }),
+    () =>
+      runner.okTxSend("call: call to a precompiled address with balance", {
+        to: precompileWithBalance,
+      }),
 
-    // () =>
-    //   runner.okTxSend("call: call to a precompiled address without balance", {
-    //     to: precompileWithoutBalance,
-    //   }),
+    () =>
+      runner.okTxSend("call: call to a precompiled address without balance", {
+        to: precompileWithoutBalance,
+      }),
 
-    // () =>
-    //   runner.okContractSend(
-    //     "call: contract creation from call, without a constructor",
-    //     "calls",
-    //     callsContract.methods.contractWithEmptyConstructor()
-    //   ),
+    () =>
+      runner.okContractSend(
+        "call: contract creation from call, without a constructor",
+        "calls",
+        callsContract.methods.contractWithEmptyConstructor()
+      ),
 
-    // () =>
-    //   runner.okContractSend(
-    //     "call: contract creation from call, with constructor",
-    //     "calls",
-    //     callsContract.methods.contractWithConstructor()
-    //   ),
+    () =>
+      runner.okContractSend(
+        "call: contract creation from call, with constructor",
+        "calls",
+        callsContract.methods.contractWithConstructor()
+      ),
 
-    // () =>
-    //   runner.okContractSend(
-    //     "call: delegate with value",
-    //     "calls",
-    //     callsContract.methods.delegateWithValue(childContractAddress),
-    //     {
-    //       value: threeWei,
-    //     }
-    //   ),
+    () =>
+      runner.okContractSend(
+        "call: delegate with value",
+        "calls",
+        callsContract.methods.delegateWithValue(childContractAddress),
+        {
+          value: threeWei,
+        }
+      ),
 
     () =>
       runner.koContractSend(
@@ -318,50 +318,35 @@ async function main() {
         callsContract.methods.contractFailingRecursiveConstructor()
       ),
 
-    // () =>
-    //   runner.okContractSend(
-    //     "call: nested fail with native transfer",
-    //     "transfers",
-    //     transfersContract.methods.nestedFailtNativeTransfer(childContractAddress, randomAddress5),
-    //     {
-    //       value: threeWei,
-    //     }
-    //   ),
+    () =>
+      runner.okContractSend(
+        "call: nested fail with native transfer",
+        "transfers",
+        transfersContract.methods.nestedFailtNativeTransfer(childContractAddress, randomAddress5),
+        {
+          value: threeWei,
+        }
+      ),
 
-    // () =>
-    //   runner.okContractSend(
-    //     "call: nested call revert state changes",
-    //     "calls",
-    //     callsContract.methods.nestedRevertFailure(childContractAddress)
-    //   ),
+    () =>
+      runner.okContractSend(
+        "call: nested call revert state changes",
+        "calls",
+        callsContract.methods.nestedRevertFailure(childContractAddress)
+      ),
 
-    // () =>
-    //   runner.okContractSend(
-    //     "call: all pre-compiled",
-    //     "calls",
-    //     callsContract.methods.allPrecompiled()
-    //   ),
+    () => runner.okContractSend("call: all pre-compiled", "calls", callsContract.methods.allPrecompiled()),
 
-    // () =>
-    //   runner.koContractSend(
-    //     "call: assert failure root call",
-    //     "calls",
-    //     callsContract.methods.assertFailure()
-    //   ),
+    () => runner.koContractSend("call: assert failure root call", "calls", callsContract.methods.assertFailure()),
 
-    // () =>
-    //   runner.koContractSend(
-    //     "call: revert failure root call",
-    //     "calls",
-    //     callsContract.methods.revertFailure()
-    //   ),
+    () => runner.koContractSend("call: revert failure root call", "calls", callsContract.methods.revertFailure()),
 
-    // () =>
-    //   runner.koContractSend(
-    //     "call: assert failure on child call",
-    //     "calls",
-    //     callsContract.methods.nestedAssertFailure(childContractAddress)
-    //   ),
+    () =>
+      runner.koContractSend(
+        "call: assert failure on child call",
+        "calls",
+        callsContract.methods.nestedAssertFailure(childContractAddress)
+      ),
 
     () =>
       runner.okContractSend(

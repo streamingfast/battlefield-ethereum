@@ -10,7 +10,7 @@ import {
 } from "./lib/ethereum"
 import { Calls, Child, GrandChild } from "../typechain-types"
 import { CallsFactory, ChildFactory, GrandChildFactory, owner, TransfersFactory } from "./global"
-import { oneWei, wei } from "./lib/money"
+import { wei } from "./lib/money"
 import { randomAddress5, randomAddress5Hex } from "./lib/addresses"
 
 const callsGasLimit = 3_500_000

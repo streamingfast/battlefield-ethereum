@@ -1,0 +1,8 @@
+{
+  "kind": "ethc-vault-wallet",
+  "version": 1,
+  "comment": "",
+  "meta": null,
+  "secretbox_wrap": "passphrase",
+  "secretbox_ciphertext": "Z5YHstO6ip1Ypn8Pk7t4Mh8HghMsCXzygIKDo4++L5b5xAvPiF44/UvBcK2+SS7kA25VzoZhiRvseogJGBBbcmsflqCamSNguNAAnTJt7d0m85CGiQa/XsbXkpdz41MobeaFEiu4GJZuSwN5kEuU+yMUSJ3BmdBx1G0eXEbIZSOwopS/Pw"
+}
