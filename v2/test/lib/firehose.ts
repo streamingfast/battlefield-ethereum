@@ -39,6 +39,13 @@ export const firehose = createClient(Fetch, transport)
 const messageRegistry = createRegistry(BlockSchema)
 
 export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Promise<TransactionTrace> {
+  const { trace } = await fetchFirehoseTransactionAndBlock(receipt)
+  return trace
+}
+
+export async function fetchFirehoseTransactionAndBlock(
+  receipt: TransactionReceipt
+): Promise<{ block: Block; trace: TransactionTrace }> {
   const response = await firehose.block({
     reference: {
       case: "blockHashAndNumber",
@@ -49,7 +56,7 @@ export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Pro
   const block = anyUnpack(response.block!, messageRegistry) as Block
   for (const tx of block.transactionTraces) {
     if (ethers.hexlify(tx.hash) === receipt.hash) {
-      return tx
+      return { block, trace: tx }
     }
   }
 

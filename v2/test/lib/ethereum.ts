@@ -19,14 +19,17 @@ import { eth } from "./money"
 
 const debug = debugFactory("battlefield:eth")
 
-const defaultGasPrice = 45_000_000_000
+export const defaultGasPrice = 45_000_000_000
 
 /**
  * Our own internal allowed transaction request, it will only allow the value and gasLimit
  * fields from the ethers TransactionRequest, but it will also allow a shouldRevert field
  * that will be used to check if the transaction should revert or not.
  */
-type TxRequest = Pick<TransactionRequest, "value" | "gasLimit"> & { shouldRevert?: boolean }
+type TxRequest = Pick<
+  TransactionRequest,
+  "value" | "gasLimit" | "gasPrice" | "maxFeePerGas" | "maxPriorityFeePerGas"
+> & { shouldRevert?: boolean }
 
 /**
  * Runs all the promises and return the results, if any of the promises fails

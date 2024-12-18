@@ -16,11 +16,7 @@ contract Child {
 
     function emptyCallForLowestGas() public pure {}
 
-    function nestedRecordGasLeft(
-        address grandchild,
-        uint256 _callerGas,
-        uint256 _callerGasLeft
-    ) public {
+    function nestedRecordGasLeft(address grandchild, uint256 _callerGas, uint256 _callerGasLeft) public {
         callerGas = _callerGas;
         callerGasLeft = _callerGasLeft;
         gasLeft = gasleft();
@@ -36,9 +32,7 @@ contract Child {
     }
 
     function nestedEmptyCallForLowestGas(address grandchild) public view {
-        (bool success, ) = grandchild.staticcall(
-            abi.encodeWithSignature("emptyCallForLowestGas()")
-        );
+        (bool success, ) = grandchild.staticcall(abi.encodeWithSignature("emptyCallForLowestGas()"));
         require(success, "should have succeed");
     }
 
