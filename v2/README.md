@@ -26,6 +26,26 @@ First review [Dependencies](#dependencies) section to determine which tool you n
   > [!NOTE]
   > Ensure that you run match command above with the Firehose Tracer Version you use when launching `./scripts/run_firehose_geth_dev.sh`.
 
+### Specific Tests
+
+You can run a specific test group or a specific test by using:
+
+```bash
+pnpm test:<tag> --grep "<filter>"
+```
+
+The `<filter>` works by concatenating the series of `describe` and `it` in the tests handlers using a space. So for example, to run all tests found in `calls.test.ts`, you would use:
+
+```bash
+pnpm test:<tag> --grep "Calls"
+```
+
+As the file as a single `describe("Calls", ...)` definition. And to run specific `Delegate with value` you would use:
+
+```bash
+pnpm test:<tag> --grep "Calls Delegate with value"
+```
+
 ### Tags
 
 The test suite has different tags that can exercises different tests or different tracer behavior. Here the list of tags we currently support:

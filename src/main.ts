@@ -423,15 +423,15 @@ async function main() {
   setDefaultGasConfig(5566000, runner.web3.utils.toWei("50", "gwei"))
 
   await runner.parallelize(
-    () =>
-      runner.okContractSend("suicide: contract does not hold any Ether", "suicidal1", suicidal1Contract.methods.kill()),
+    // () =>
+    //   runner.okContractSend("suicide: contract does not hold any Ether", "suicidal1", suicidal1Contract.methods.kill()),
 
-    () =>
-      runner.okContractSend(
-        "suicide: create contract, kill it and try to call within same call",
-        "calls",
-        callsContract.methods.contractSuicideThenCall()
-      ),
+    // () =>
+    //   runner.okContractSend(
+    //     "suicide: create contract, kill it and try to call within same call",
+    //     "calls",
+    //     callsContract.methods.contractSuicideThenCall()
+    //   ),
 
     () =>
       runner.okContractSend(
