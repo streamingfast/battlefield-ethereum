@@ -1,5 +1,5 @@
 import { createClient } from "@connectrpc/connect"
-import { Fetch } from "../../pb/sf/firehose/v2/firehose_pb"
+import { Fetch, SingleBlockRequest, SingleBlockRequestSchema } from "../../pb/sf/firehose/v2/firehose_pb"
 import { createGrpcTransport } from "@connectrpc/connect-node"
 import {
   BalanceChange,
@@ -27,6 +27,10 @@ import { anyUnpack } from "@bufbuild/protobuf/wkt"
 import { create, createRegistry, MessageInitShape } from "@bufbuild/protobuf"
 import { weiF } from "./money"
 import { TransactionReceiptResult } from "./ethers"
+import debugFactory from "debug"
+import { toProtoJsonObject } from "./proto"
+
+const debug = debugFactory("battlefield:firehose")
 
 export const emptyBytes = Uint8Array.of()
 
@@ -43,19 +47,25 @@ export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Pro
   return trace
 }
 
+export async function fetchFirehoseBlock(
+  tag: number | bigint | string | { hash: string; num: number | bigint }
+): Promise<Block> {
+  const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) })
+  return anyUnpack(response.block!, messageRegistry) as Block
+}
+
 export async function fetchFirehoseTransactionAndBlock(
   receipt: TransactionReceipt
 ): Promise<{ block: Block; trace: TransactionTrace }> {
-  const response = await firehose.block({
-    reference: {
-      case: "blockHashAndNumber",
-      value: { hash: receipt.blockHash, num: BigInt(receipt.blockNumber) },
-    },
-  })
+  const block = await fetchFirehoseBlock({ hash: receipt.blockHash, num: receipt.blockNumber })
 
-  const block = anyUnpack(response.block!, messageRegistry) as Block
   for (const tx of block.transactionTraces) {
     if (ethers.hexlify(tx.hash) === receipt.hash) {
+      debug(
+        `Found transaction ${receipt.hash} in Firehose at block #${receipt.blockNumber} (${receipt.blockHash}) %O`,
+        toProtoJsonObject(block)
+      )
+
       return { block, trace: tx }
     }
   }
@@ -279,4 +289,31 @@ export function relativizeTrxTraceOrdinals(trace: TransactionTrace) {
     adjustChangesOrdinals(call.storageChanges)
     adjustChangesOrdinals(call.codeChanges)
   })
+}
+
+function firehoseBlockTagToRef(
+  tag: string | number | bigint | { hash: string; num: number | bigint }
+): MessageInitShape<typeof SingleBlockRequestSchema>["reference"] {
+  if (typeof tag === "number" || typeof tag === "bigint") {
+    return {
+      case: "blockNumber",
+      value: { num: toBigInt(tag) },
+    }
+  }
+
+  if (typeof tag === "string") {
+    return {
+      case: "blockNumber",
+      value: { num: BigInt(parseInt(tag)) },
+    }
+  }
+
+  if (typeof tag === "object") {
+    return {
+      case: "blockHashAndNumber",
+      value: { hash: tag.hash, num: toBigInt(tag.num) },
+    }
+  }
+
+  throw new Error(`Unsupported tag type: ${typeof tag}`)
 }

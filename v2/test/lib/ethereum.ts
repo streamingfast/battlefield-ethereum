@@ -1,6 +1,8 @@
 import {
   BaseContract,
   BigNumberish,
+  Block,
+  BlockTag,
   ContractFactory,
   HDNodeWallet,
   Signer,
@@ -391,4 +393,62 @@ function getCreateAddressesHex(from: string, count: number): string[] {
 
 function wouldCreateSomeZeroBytesAddress(count: number): (from: string) => boolean {
   return (from) => getCreateAddressesHex(from, count).some(addressHasZeroBytes)
+}
+
+export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<RpcBlock> {
+  let block = tag
+  if (tag !== "latest") {
+    block = "0x" + tag.toString(16)
+  }
+
+  const result = await fetch("http://localhost:8545", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_getBlockByNumber",
+      params: [block, false],
+    }),
+  })
+
+  const response = await result.json()
+
+  if (response["result"] != null) {
+    return response.result
+  }
+
+  throw new Error("Unable to extract block from response: " + JSON.stringify(response))
+}
+
+// It seems the Block provided by ethers is not the same as the one provided by the RPC,
+// some fields like `stateRoot` or `transactionsRoot` are not undefined when fetching the block
+// using Ethers.
+export type RpcBlock = {
+  baseFeePerGas: string
+  blobGasUsed: string
+  difficulty: string
+  excessBlobGas: string
+  extraData: string
+  gasLimit: string
+  gasUsed: string
+  hash: string
+  logsBloom: string
+  miner: string
+  mixHash: string
+  nonce: string
+  number: string
+  parentBeaconBlockRoot: string
+  parentHash: string
+  receiptsRoot: string
+  sha3Uncles: string
+  size: string
+  stateRoot: string
+  timestamp: string
+  totalDifficulty: string
+  transactionsRoot: string
+  withdrawals: Array<any>
+  withdrawalsRoot: string
 }
