@@ -395,12 +395,20 @@ function wouldCreateSomeZeroBytesAddress(count: number): (from: string) => boole
   return (from) => getCreateAddressesHex(from, count).some(addressHasZeroBytes)
 }
 
+/**
+ * Fetches a block using JSON-RPC returning the received payload mostly as-is. We
+ * used to do `provider.getBlock` (from `ethers`) but it seems that the block returned
+ * by the provider is not the same as the one returned by the RPC, some fields like
+ * `stateRoot` or `transactionsRoot` are undefined when fetching the block using Ethers.
+ * while they are actually set in the JSON-RPC response.
+ */
 export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<RpcBlock> {
   let block = tag
   if (tag !== "latest") {
     block = "0x" + tag.toString(16)
   }
 
+  // FIXME: Retrieve address from provider or HardHat config?
   const result = await fetch("http://localhost:8545", {
     method: "POST",
     headers: {
@@ -417,6 +425,7 @@ export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<
   const response = await result.json()
 
   if (response["result"] != null) {
+    debug("Fetched RPC block %O", response["result"])
     return response.result
   }
 
@@ -427,10 +436,7 @@ export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<
 // some fields like `stateRoot` or `transactionsRoot` are not undefined when fetching the block
 // using Ethers.
 export type RpcBlock = {
-  baseFeePerGas: string
-  blobGasUsed: string
   difficulty: string
-  excessBlobGas: string
   extraData: string
   gasLimit: string
   gasUsed: string
@@ -440,7 +446,6 @@ export type RpcBlock = {
   mixHash: string
   nonce: string
   number: string
-  parentBeaconBlockRoot: string
   parentHash: string
   receiptsRoot: string
   sha3Uncles: string
@@ -449,6 +454,21 @@ export type RpcBlock = {
   timestamp: string
   totalDifficulty: string
   transactionsRoot: string
-  withdrawals: Array<any>
-  withdrawalsRoot: string
+
+  // EIP-1559 (London Fork)
+  baseFeePerGas?: string
+
+  // EIP-4895 (Shangai Fork)
+  withdrawals?: Array<any>
+  withdrawalsRoot?: string
+
+  // EIP-4844 (? fork)
+  excessBlobGas?: string
+  blobGasUsed?: string
+
+  // EIP-4788 (? fork)
+  parentBeaconBlockRoot?: string
+
+  // EIP-7685 (? fork)
+  requestsHash?: string
 }

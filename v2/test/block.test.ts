@@ -6,9 +6,10 @@ import { knownExistingAddress } from "./lib/addresses"
 import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
+import { Call } from "../pb/sf/ethereum/type/v2/type_pb"
 
 describe("Blocks", function () {
-  it("Block header corresponds to RPC", async function () {
+  it("Header corresponds to RPC", async function () {
     const result = await sendEth(owner, knownExistingAddress, oneWei)
     const { block } = await fetchFirehoseTransactionAndBlock(result)
 
@@ -35,25 +36,33 @@ describe("Blocks", function () {
     expect(hexlify(firehoseBlock.mixHash)).to.be.equal(rpcBlock.mixHash, field("mixHash"))
     expect(firehoseBlock.nonce).to.be.equal(toBigInt(rpcBlock.nonce), field("nonce"))
     expect(hexlify(firehoseBlock.hash)).to.be.equal(rpcBlock.hash, field("hash"))
-
     expect(toBigInt(firehoseBlock.difficulty)).to.be.equal(rpcBlock.difficulty, field("difficulty"))
     expect(firehoseBlock.timestamp?.seconds).to.be.equal(rpcBlock.timestamp, field("timestamp"))
 
-    expect(hexlify(firehoseBlock.withdrawalsRoot)).to.be.equal(rpcBlock.withdrawalsRoot, field("withdrawalsRoot"))
-    expect(hexlify(firehoseBlock.parentBeaconRoot)).to.be.equal(
-      rpcBlock.parentBeaconBlockRoot,
-      field("parentBeaconRoot")
-    )
-
     expect(toBigInt(firehoseBlock.baseFeePerGas)).to.be.equal(toBigInt(rpcBlock.baseFeePerGas), field("baseFeePerGas"))
-    expect(firehoseBlock.blobGasUsed).to.be.equal(rpcBlock.blobGasUsed, field("blobGasUsed"))
-    expect(firehoseBlock.excessBlobGas).to.be.equal(rpcBlock.excessBlobGas, field("excessBlobGas"))
 
-    // No supported yet
-    // expect(firehoseBlock.requestsHash).to.be.equal(rpcBlock., field("requestsHash"))
+    if (rpcBlock.withdrawalsRoot) {
+      expect(hexlify(firehoseBlock.withdrawalsRoot)).to.be.equal(rpcBlock.withdrawalsRoot, field("withdrawalsRoot"))
+    }
+
+    if (rpcBlock.blobGasUsed) {
+      expect(firehoseBlock.blobGasUsed).to.be.equal(rpcBlock.blobGasUsed, field("blobGasUsed"))
+      expect(firehoseBlock.excessBlobGas).to.be.equal(rpcBlock.excessBlobGas, field("excessBlobGas"))
+    }
+
+    if (rpcBlock.parentBeaconBlockRoot) {
+      expect(hexlify(firehoseBlock.parentBeaconRoot)).to.be.equal(
+        rpcBlock.parentBeaconBlockRoot,
+        field("parentBeaconRoot")
+      )
+    }
+
+    if (rpcBlock.requestsHash) {
+      expect(firehoseBlock.requestsHash).to.be.equal(rpcBlock.requestsHash, field("requestsHash"))
+    }
   })
 
-  it("Block header parentBeaconRoot system call", async function () {
+  it("Header parentBeaconRoot system call recorded correctly", async function () {
     const rpcBlock = await mustGetRpcBlock("latest")
     if (!rpcBlock.parentBeaconBlockRoot) {
       // Test do not apply to this network
@@ -65,12 +74,23 @@ describe("Blocks", function () {
 
     expect(hexlify(header.parentBeaconRoot)).to.be.equal(rpcBlock.parentBeaconBlockRoot)
 
-    const beaconRootCall = firehoseBlock.systemCalls.find(
-      (systemCall) => hexlify(systemCall.caller) === "0xfffffffffffffffffffffffffffffffffffffffe"
-    )
+    const beaconRootCall = firehoseBlock.systemCalls.find(isUpdateBeaconRootCall(rpcBlock.parentBeaconBlockRoot))
     expect(beaconRootCall).to.not.be.undefined
 
-    // There should be a storage change within the system call, not sure why we are not recording
-    // it correctly :$
+    // A storage change could exist but not in `geth --dev` mode, at least not consistently because
+    // in dev mode, the beacon root is also sets to 0x0 and in the tracer, storage changes
+    // with `prev == new` are ignored hence the storage change is not recorded in that case. So
+    // we cannot reliably test for storage changes here.
+    //
+    // We should once we have a way to check for which "network" the test suite is running
+
+    expect(beaconRootCall!.gasChanges.length).to.be.equal(2)
   })
 })
+
+function isUpdateBeaconRootCall(beaconRoot: string): (call: Call) => boolean {
+  return (call: Call) =>
+    hexlify(call.caller) === "0xfffffffffffffffffffffffffffffffffffffffe" &&
+    hexlify(call.address) === "0x000f3df6d732807ef1319fb7b8bb8522d0beac02" &&
+    hexlify(call.input) === beaconRoot
+}

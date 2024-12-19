@@ -27,10 +27,10 @@ run_fireeth() {
     reader-node,relayer,merger,firehose \
     -c '' \
     -d "$data_dir" \
+    --advertise-chain-name=battlefield \
     --common-first-streamable-block=${first_streamable_block} \
     --reader-node-path="$node_binary" \
     --reader-node-arguments="$node_args" \
-    --advertise-chain-name="localdev" \
     --firehose-grpc-listen-addr="localhost:8089" $@
 }
 
