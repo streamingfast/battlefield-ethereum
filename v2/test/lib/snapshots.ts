@@ -19,6 +19,16 @@ const snapshotsSuffixRegex = /\.([^\.]+\.)?json$/
  */
 let globalSnapshotsTag = ""
 
+export function getGlobalSnapshotsTag(): string {
+  if (!globalSnapshotsTag) {
+    throw new Error(
+      "The 'globalSnapshotsTag' variable is not set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite."
+    )
+  }
+
+  return globalSnapshotsTag
+}
+
 export function setGlobalSnapshotsTag(tag: string) {
   globalSnapshotsTag = tag
 }
@@ -72,13 +82,8 @@ export class Snapshot {
   }
 
   toSnapshotPath(kind: SnapshotKind, relativeToCwd: boolean = false): string {
-    if (!globalSnapshotsTag) {
-      throw new Error(
-        "The 'globalSnapshotsTag' variable is not set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite."
-      )
-    }
-
     let filePath: string
+    const snapshotsTag = getGlobalSnapshotsTag()
 
     // We want to insert the tag between the first element and the snapshot name
     // so that `calls/test.expected.json` becomes `calls/<tag>/test.expected.json`.
@@ -88,9 +93,9 @@ export class Snapshot {
     const dirname = path.dirname(this.id)
     if (dirname && dirname !== this.id) {
       let lastSegment = this.id.replace(dirname, "").replace(/^(\/|\\)/, "")
-      filePath = path.join(snapshotsUrl, dirname, globalSnapshotsTag, lastSegment)
+      filePath = path.join(snapshotsUrl, dirname, snapshotsTag, lastSegment)
     } else {
-      filePath = path.join(snapshotsUrl, globalSnapshotsTag, this.id)
+      filePath = path.join(snapshotsUrl, snapshotsTag, this.id)
     }
 
     const absolute = `${filePath}.${this.toSnapshotQualifier(kind)}.json`

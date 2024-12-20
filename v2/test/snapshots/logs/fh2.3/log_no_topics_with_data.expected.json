@@ -2,11 +2,11 @@
   "to": "$logsContract",
   "nonce": "$nonce",
   "gasLimit": "900000",
-  "input": "e7ae8299",
+  "input": "18823169",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "24112",
+  "gasUsed": "21861",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "11",
+  "endOrdinal": "10",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -26,9 +26,9 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$logsContract",
       "gasLimit": "878936",
-      "gasConsumed": "3048",
+      "gasConsumed": "797",
       "returnData": "",
-      "input": "e7ae8299",
+      "input": "18823169",
       "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
@@ -44,14 +44,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "9",
+          "ordinal": "8",
           "oldValue": "",
-          "newValue": "8c07b281a2e000"
+          "newValue": "8c63d31620f600"
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "10",
+          "ordinal": "9",
           "oldValue": "",
           "newValue": "01"
         }
@@ -67,13 +67,11 @@
       "logs": [
         {
           "address": "$logsContract",
-          "topics": [
-            "d41b36b76d8b32ab74deba2ef94d5017b230225c5a1b46122d43c27230652613"
-          ],
-          "data": "00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000d6887000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7abe7ae82990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004e7ae829900000000000000000000000000000000000000000000000000000000",
+          "topics": [],
+          "data": "4200420000000000000000000000000000000000000000000000000000000000",
           "index": 0,
           "blockIndex": 0,
-          "ordinal": "7"
+          "ordinal": "6"
         }
       ],
       "codeChanges": [],
@@ -85,16 +83,10 @@
           "ordinal": "2"
         },
         {
-          "oldValue": "878544",
-          "newValue": "878535",
-          "reason": "REASON_CALL_DATA_COPY",
-          "ordinal": "5"
-        },
-        {
-          "oldValue": "878439",
-          "newValue": "875897",
+          "oldValue": "878783",
+          "newValue": "878152",
           "reason": "REASON_EVENT_LOG",
-          "ordinal": "6"
+          "ordinal": "5"
         }
       ],
       "statusFailed": false,
@@ -102,7 +94,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "0",
-      "endOrdinal": "8",
+      "endOrdinal": "7",
       "accountCreations": []
     }
   ],
@@ -115,13 +107,11 @@
     "logs": [
       {
         "address": "$logsContract",
-        "topics": [
-          "d41b36b76d8b32ab74deba2ef94d5017b230225c5a1b46122d43c27230652613"
-        ],
-        "data": "00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000d6887000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7abe7ae82990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004e7ae829900000000000000000000000000000000000000000000000000000000",
+        "topics": [],
+        "data": "4200420000000000000000000000000000000000000000000000000000000000",
         "index": 0,
         "blockIndex": 0,
-        "ordinal": "7"
+        "ordinal": "6"
       }
     ]
   }

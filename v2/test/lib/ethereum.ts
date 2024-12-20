@@ -1,8 +1,6 @@
 import {
   BaseContract,
   BigNumberish,
-  Block,
-  BlockTag,
   ContractFactory,
   HDNodeWallet,
   Signer,
@@ -89,8 +87,8 @@ export async function sendEth(
   }
 
   debug("Send eth call being performed %o", debuggableTrx(trxRequest))
-  const response = await from.sendTransaction(trxRequest)
 
+  const response = await from.sendTransaction(trxRequest)
   return waitForTransaction(response, custom.shouldRevert ?? false)
 }
 

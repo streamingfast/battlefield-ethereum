@@ -7,6 +7,7 @@ import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
 import { Call } from "../pb/sf/ethereum/type/v2/type_pb"
+import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
 
 describe("Blocks", function () {
   it("Header corresponds to RPC", async function () {
@@ -84,7 +85,11 @@ describe("Blocks", function () {
     //
     // We should once we have a way to check for which "network" the test suite is running
 
-    expect(beaconRootCall!.gasChanges.length).to.be.equal(2)
+    if (getGlobalSnapshotsTag() != "fh2.3") {
+      // Firehose 2.3 does not record some gas changes that are recorded in 3.0, hence why in 2.3
+      // there is 0 gas changes while there are 2 in 3.0.
+      expect(beaconRootCall!.gasChanges.length).to.be.equal(2)
+    }
   })
 })
 

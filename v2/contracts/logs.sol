@@ -75,3 +75,22 @@ contract Logs {
         uint256 value
     );
 }
+
+contract LogsNoTopics {
+    function fullyEmpty() public {
+        assembly {
+            log0(0, 0)
+        }
+    }
+
+    function withData() public {
+        bytes32 id = hex"420042";
+
+        assembly {
+            let p := add(msize(), 0x20)
+            mstore(p, id)
+
+            log0(p, 0x20)
+        }
+    }
+}

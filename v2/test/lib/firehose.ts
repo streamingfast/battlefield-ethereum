@@ -1,5 +1,5 @@
 import { createClient } from "@connectrpc/connect"
-import { Fetch, SingleBlockRequest, SingleBlockRequestSchema } from "../../pb/sf/firehose/v2/firehose_pb"
+import { Fetch, SingleBlockRequestSchema } from "../../pb/sf/firehose/v2/firehose_pb"
 import { createGrpcTransport } from "@connectrpc/connect-node"
 import {
   BalanceChange,
@@ -50,6 +50,17 @@ export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Pro
 export async function fetchFirehoseBlock(
   tag: number | bigint | string | { hash: string; num: number | bigint }
 ): Promise<Block> {
+  const block = await fetchFirehoseBlockNoLogging(tag)
+  if (block) {
+    debug(`Found Firehose block #${block.number} (${block.hash}) %O`, toProtoJsonObject(block))
+  }
+
+  return block
+}
+
+async function fetchFirehoseBlockNoLogging(
+  tag: number | bigint | string | { hash: string; num: number | bigint }
+): Promise<Block> {
   const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) })
   return anyUnpack(response.block!, messageRegistry) as Block
 }
@@ -57,7 +68,7 @@ export async function fetchFirehoseBlock(
 export async function fetchFirehoseTransactionAndBlock(
   receipt: TransactionReceipt
 ): Promise<{ block: Block; trace: TransactionTrace }> {
-  const block = await fetchFirehoseBlock({ hash: receipt.blockHash, num: receipt.blockNumber })
+  const block = await fetchFirehoseBlockNoLogging({ hash: receipt.blockHash, num: receipt.blockNumber })
 
   for (const tx of block.transactionTraces) {
     if (ethers.hexlify(tx.hash) === receipt.hash) {
@@ -289,6 +300,10 @@ export function relativizeTrxTraceOrdinals(trace: TransactionTrace) {
     adjustChangesOrdinals(call.storageChanges)
     adjustChangesOrdinals(call.codeChanges)
   })
+
+  if (trace.receipt) {
+    adjustChangesOrdinals(trace.receipt.logs)
+  }
 }
 
 function firehoseBlockTagToRef(

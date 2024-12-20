@@ -6,6 +6,7 @@ import {
   Child__factory,
   GrandChild__factory,
   Logs__factory,
+  LogsNoTopics__factory,
   Main__factory,
   Suicidal__factory,
   Transfers__factory,
@@ -27,6 +28,7 @@ export let ChildFactory: Child__factory
 export let GrandChildFactory: GrandChild__factory
 export let CallsFactory: Calls__factory
 export let LogsFactory: Logs__factory
+export let LogsNoTopicsFactory: LogsNoTopics__factory
 export let TransfersFactory: Transfers__factory
 export let SuicidalFactory: Suicidal__factory
 
@@ -52,6 +54,7 @@ before(async () => {
   GrandChildFactory = await hre.ethers.getContractFactory("GrandChild")
   CallsFactory = await hre.ethers.getContractFactory("Calls")
   LogsFactory = await hre.ethers.getContractFactory("Logs")
+  LogsNoTopicsFactory = await hre.ethers.getContractFactory("LogsNoTopics")
   TransfersFactory = await hre.ethers.getContractFactory("Transfers")
   SuicidalFactory = await hre.ethers.getContractFactory("Suicidal")
   debug("Initialized contract factories")

@@ -1,16 +1,18 @@
 import { expect } from "chai"
 import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
-import { Child, Logs } from "../typechain-types"
-import { ChildFactory, LogsFactory, owner } from "./global"
+import { Child, Logs, LogsNoTopics } from "../typechain-types"
+import { ChildFactory, LogsFactory, LogsNoTopicsFactory, owner } from "./global"
 
 describe("Logs", function () {
   let Child: Contract<Child>
   let Logs: Contract<Logs>
+  let LogsNoTopics: Contract<LogsNoTopics>
 
   before(async () => {
     await deployAll(
       async () => (Child = await deployContract(owner, ChildFactory, [])),
-      async () => (Logs = await deployContract(owner, LogsFactory, []))
+      async () => (Logs = await deployContract(owner, LogsFactory, [])),
+      async () => (LogsNoTopics = await deployContract(owner, LogsNoTopicsFactory, []))
     )
   })
 
@@ -19,6 +21,15 @@ describe("Logs", function () {
       "logs/log_no_topics.expected.json",
       {
         $logsContract: Logs.addressHex,
+      }
+    )
+  })
+
+  it("No topics but with data (log0)", async function () {
+    await expect(contractCall(owner, LogsNoTopics.withData, [])).to.trxTraceEqualSnapshot(
+      "logs/log_no_topics_with_data.expected.json",
+      {
+        $logsContract: LogsNoTopics.addressHex,
       }
     )
   })
