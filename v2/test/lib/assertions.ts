@@ -110,11 +110,13 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
   }
 
   const resolveTrxTrace = async function (
-    input: TransactionReceiptResult | Promise<TransactionReceiptResult>
+    input: TransactionReceiptResult | Promise<TransactionReceiptResult> | [TransactionReceiptResult, TransactionTrace]
   ): Promise<[TransactionReceiptResult, TransactionTrace]> {
     let next: TransactionTrace | TransactionReceiptResult
     if (input instanceof Promise) {
       next = await input
+    } else if (Array.isArray(input)) {
+      return input
     } else {
       next = input
     }

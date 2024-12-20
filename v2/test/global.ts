@@ -17,7 +17,9 @@ import { use } from "chai"
 import { executeTransactions, sendImmediateEth } from "./lib/ethereum"
 import { knownExistingAddress, precompileWithBalanceAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
-import { setGlobalSnapshotsTag } from "./lib/snapshots"
+import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
+import { fetchFirehoseBlock } from "./lib/firehose"
+import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 
 export let owner: NonceManager
 export let ownerAddress: string
@@ -81,8 +83,31 @@ before(async () => {
     .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
     .catch(abortTagged("Executing initialization transactions"))
 
+  // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall
+  // setup faster and more reliable
+  fetchFirehoseBlock(1).then(validateFirehoseBlockVersion).catch(abortTagged("Validating Firehose block version"))
+
   debug("Global setup completed in %d ms", Date.now() - start)
 })
+
+function validateFirehoseBlockVersion(block: Block) {
+  switch (getGlobalSnapshotsTag()) {
+    case "fh2.3":
+      if (block.ver !== 3) {
+        throw new Error(
+          `You specified testing with fh2.3 but Firehose block version is ${block.ver} while fh2.3 expect version 3, it seems your geth instance is not running with the correct geth/Firehose version`
+        )
+      }
+      break
+
+    case "fh3.0":
+      if (block.ver !== 4) {
+        throw new Error(
+          `You specified testing with fh3.0 but Firehose block version is ${block.ver} while fh3.0 expect version 4, it seems your geth instance is not running with the correct geth/Firehose version`
+        )
+      }
+  }
+}
 
 function abort(message: unknown) {
   console.error(message)

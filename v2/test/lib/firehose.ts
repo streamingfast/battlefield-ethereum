@@ -1,5 +1,5 @@
 import { createClient } from "@connectrpc/connect"
-import { Fetch, SingleBlockRequestSchema } from "../../pb/sf/firehose/v2/firehose_pb"
+import { Fetch, SingleBlockRequest, SingleBlockRequestSchema } from "../../pb/sf/firehose/v2/firehose_pb"
 import { createGrpcTransport } from "@connectrpc/connect-node"
 import {
   BalanceChange,
@@ -68,7 +68,7 @@ async function fetchFirehoseBlockNoLogging(
 export async function fetchFirehoseTransactionAndBlock(
   receipt: TransactionReceipt
 ): Promise<{ block: Block; trace: TransactionTrace }> {
-  const block = await fetchFirehoseBlockNoLogging({ hash: receipt.blockHash, num: receipt.blockNumber })
+  const block = await fetchFirehoseBlock({ hash: receipt.blockHash, num: receipt.blockNumber })
 
   for (const tx of block.transactionTraces) {
     if (ethers.hexlify(tx.hash) === receipt.hash) {

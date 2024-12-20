@@ -83,6 +83,14 @@ contract LogsNoTopics {
         }
     }
 
+    function fullyEmptyReverts() public {
+        assembly {
+            log0(0, 0)
+        }
+
+        revert("failed call");
+    }
+
     function withData() public {
         bytes32 id = hex"420042";
 
@@ -92,5 +100,18 @@ contract LogsNoTopics {
 
             log0(p, 0x20)
         }
+    }
+
+    function withDataReverts() public {
+        bytes32 id = hex"420042";
+
+        assembly {
+            let p := add(msize(), 0x20)
+            mstore(p, id)
+
+            log0(p, 0x20)
+        }
+
+        revert("failed call");
     }
 }

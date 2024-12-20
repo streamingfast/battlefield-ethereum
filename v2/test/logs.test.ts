@@ -2,6 +2,7 @@ import { expect } from "chai"
 import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
 import { Child, Logs, LogsNoTopics } from "../typechain-types"
 import { ChildFactory, LogsFactory, LogsNoTopicsFactory, owner } from "./global"
+import { fetchFirehoseTransaction } from "./lib/firehose"
 
 describe("Logs", function () {
   let Child: Contract<Child>
@@ -28,6 +29,29 @@ describe("Logs", function () {
   it("No topics but with data (log0)", async function () {
     await expect(contractCall(owner, LogsNoTopics.withData, [])).to.trxTraceEqualSnapshot(
       "logs/log_no_topics_with_data.expected.json",
+      {
+        $logsContract: LogsNoTopics.addressHex,
+      }
+    )
+  })
+
+  it("No topics (log0) but call reverts", async function () {
+    // Firehose 2.3 had a wrong behavior for failed call with log0.
+    const result = await koContractCall(owner, LogsNoTopics.fullyEmptyReverts, [])
+    const trace = await fetchFirehoseTransaction(result)
+
+    await expect([result, trace]).to.trxTraceEqualSnapshot("logs/log_no_topics_but_call_reverts.expected.json", {
+      $logsContract: LogsNoTopics.addressHex,
+    })
+
+    // if (getGlobalSnapshotsTag() == "fh2.3") {
+    //   expect(trace.calls[0].logs[0].topics).to.length(1)
+    // }
+  })
+
+  it("No topics but with data (log0) but call reverts", async function () {
+    await expect(koContractCall(owner, LogsNoTopics.withDataReverts, [])).to.trxTraceEqualSnapshot(
+      "logs/log_no_topics_with_data_but_call_reverts.expected.json",
       {
         $logsContract: LogsNoTopics.addressHex,
       }
