@@ -1,4 +1,4 @@
-import { createClient } from "@connectrpc/connect"
+import { Code, ConnectError, createClient } from "@connectrpc/connect"
 import { Fetch, SingleBlockRequest, SingleBlockRequestSchema } from "../../pb/sf/firehose/v2/firehose_pb"
 import { createGrpcTransport } from "@connectrpc/connect-node"
 import {
@@ -29,6 +29,7 @@ import { weiF } from "./money"
 import { TransactionReceiptResult } from "./ethers"
 import debugFactory from "debug"
 import { toProtoJsonObject } from "./proto"
+import { isConnectError } from "./connectrpc"
 
 const debug = debugFactory("battlefield:firehose")
 
@@ -61,8 +62,31 @@ export async function fetchFirehoseBlock(
 async function fetchFirehoseBlockNoLogging(
   tag: number | bigint | string | { hash: string; num: number | bigint }
 ): Promise<Block> {
-  const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) })
-  return anyUnpack(response.block!, messageRegistry) as Block
+  let attempts = 0
+  let lastError: unknown
+
+  while (attempts <= 10) {
+    attempts += 1
+
+    try {
+      const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) })
+      return anyUnpack(response.block!, messageRegistry) as Block
+    } catch (error) {
+      lastError = error
+
+      if (isConnectError(error) && error.code !== Code.InvalidArgument) {
+        let retryIn = 125 + 250 * (attempts - 1)
+        debug(`Block ${tag} not found in Firehose yet, retrying in ${retryIn}ms`)
+        await new Promise((resolve) => setTimeout(resolve, retryIn))
+
+        continue
+      }
+
+      throw error
+    }
+  }
+
+  throw new ConnectError(`Block not found in Firehose after 3 attempts, last error: ${lastError}`)
 }
 
 export async function fetchFirehoseTransactionAndBlock(

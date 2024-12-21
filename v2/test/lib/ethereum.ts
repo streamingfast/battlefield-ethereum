@@ -13,7 +13,7 @@ import {
 import debugFactory from "debug"
 import hre from "hardhat"
 import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../typechain-types/common"
-import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
+import { addressHasZeroBytes, AddressLike, bytes, randomHex } from "./addresses"
 import { TransactionReceiptResult, waitForTransaction } from "./ethers"
 import { eth } from "./money"
 
@@ -469,4 +469,11 @@ export type RpcBlock = {
 
   // EIP-7685 (? fork)
   requestsHash?: string
+}
+
+export function getBalance(address: string): Promise<BigInt> {
+  const balance = hre.ethers.provider.getBalance(address)
+  debug("Balance of %s is %s", address, balance.toString())
+
+  return balance
 }

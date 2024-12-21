@@ -399,5 +399,18 @@ function isFreeformObject(obj: any): obj is Record<string, any> {
 }
 
 function findBlockMiner(block: Block): string {
+  for (const tx of block.transactionTraces) {
+    for (const call of tx.calls) {
+      for (const change of call.balanceChanges) {
+        if (
+          change.reason === BalanceChange_Reason.REWARD_MINE_BLOCK ||
+          change.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE
+        ) {
+          return hexlify(change.address).slice(2)
+        }
+      }
+    }
+  }
+
   return hexlify(block.header!.coinbase).slice(2)
 }

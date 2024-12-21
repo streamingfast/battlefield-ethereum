@@ -9,11 +9,11 @@ export const ownerAddress = getAddress("0x821b55d8abe79bc98f05eb675fdc50dfe796b7
 export const knownExistingAddress = getAddress("0xd549d2fd4b177767b84ab2fd17423cee1cf1d7bd")
 export const knownExistingAddressBytes = getBytes(knownExistingAddress)
 
-export const precompileWithBalanceAddress = getAddress("0x0000000000000000000000000000000000000004")
+export const precompileWithBalanceAddress = getAddress("0x0000000000000000000000000000000000000003")
 export const precompileWithBalanceAddressBytes = getBytes(precompileWithBalanceAddress)
 export const precompileWithBalanceAddressHex = precompileWithBalanceAddress.toLowerCase().slice(2)
 
-export const precompileWithoutBalanceAddress = getAddress("0x0000000000000000000000000000000000000005")
+export const precompileWithoutBalanceAddress = getAddress("0x0000000000000000000000000000000000000004")
 export const precompileWithoutBalanceAddressBytes = getBytes(precompileWithoutBalanceAddress)
 export const precompileWithoutBalanceAddressHex = precompileWithoutBalanceAddress.toLowerCase().slice(2)
 
