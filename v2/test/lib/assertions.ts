@@ -6,6 +6,7 @@ import {
   BalanceChange_ReasonSchema,
   BalanceChangeSchema,
   BigIntSchema,
+  Block,
   CallTypeSchema,
   GasChange_ReasonSchema,
   GasChangeSchema,
@@ -15,10 +16,11 @@ import {
   TransactionTraceSchema,
   TransactionTraceStatusSchema,
 } from "../../pb/sf/ethereum/type/v2/type_pb"
-import { toBigInt } from "ethers"
+import { hexlify, toBigInt } from "ethers"
 import {
   emptyBytes,
   fetchFirehoseTransaction,
+  fetchFirehoseTransactionAndBlock,
   relativizeTrxTraceOrdinals as normalizeTrxTraceOrdinals,
   trxTraceOrdinals,
 } from "./firehose"
@@ -110,20 +112,25 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
   }
 
   const resolveTrxTrace = async function (
-    input: TransactionReceiptResult | Promise<TransactionReceiptResult> | [TransactionReceiptResult, TransactionTrace]
-  ): Promise<[TransactionReceiptResult, TransactionTrace]> {
+    input:
+      | TransactionReceiptResult
+      | Promise<TransactionReceiptResult>
+      | [TransactionReceiptResult, TransactionTrace, Block]
+  ): Promise<[TransactionReceiptResult, TransactionTrace, Block]> {
+    if (Array.isArray(input)) {
+      return input
+    }
+
     let next: TransactionTrace | TransactionReceiptResult
     if (input instanceof Promise) {
       next = await input
-    } else if (Array.isArray(input)) {
-      return input
     } else {
       next = input
     }
 
     if (next instanceof TransactionReceiptResult) {
-      const trace = await fetchFirehoseTransaction(next)
-      return [next, trace]
+      const { block, trace } = await fetchFirehoseTransactionAndBlock(next)
+      return [next, trace, block]
     }
 
     throw new Error(`Invalid input received: ${next}`)
@@ -140,7 +147,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
   chai.Assertion.addMethod(
     "trxTraceEqualSnapshot",
     async function (snapshotIdentifier: string, templateVars?: Record<string, string>) {
-      const [trxReceipt, actualTrace] = await resolveTrxTrace(this._obj)
+      const [trxReceipt, actualTrace, actualBlock] = await resolveTrxTrace(this._obj)
 
       // Check on original trace for correctness of ordinal handling
       const ordinals = trxTraceOrdinals(actualTrace)
@@ -176,7 +183,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
             case "$cumulativeGasUsed":
               return trxReceipt.cumulativeGasUsed.toString()
             case "$coinbase":
-              return chainStaticInfo.coinbase.replace("0x", "")
+              return findBlockMiner(actualBlock)
             default:
               let replaced = value
               for (const [key, replacement] of Object.entries(templateVars || {})) {
@@ -340,9 +347,7 @@ function templatizeJsonTransactionTrace(
     }
 
     for (const change of changes) {
-      if (change["reason"] === "REWARD_TRANSACTION_FEE") {
-        change["address"] = "$coinbase"
-      } else if (change["reason"] === "REWARD_MINE_BLOCK") {
+      if (["REASON_REWARD_TRANSACTION_FEE", "REASON_REWARD_MINE_BLOCK"].includes(change["reason"])) {
         change["address"] = "$coinbase"
       }
     }
@@ -391,4 +396,8 @@ function templatizeJsonTransactionTrace(
 
 function isFreeformObject(obj: any): obj is Record<string, any> {
   return typeof obj === "object" && obj != null && !Array.isArray(obj)
+}
+
+function findBlockMiner(block: Block): string {
+  return hexlify(block.header!.coinbase).slice(2)
 }

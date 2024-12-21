@@ -2,7 +2,7 @@ import { expect } from "chai"
 import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
 import { Child, Logs, LogsNoTopics } from "../typechain-types"
 import { ChildFactory, LogsFactory, LogsNoTopicsFactory, owner } from "./global"
-import { fetchFirehoseTransaction } from "./lib/firehose"
+import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 
 describe("Logs", function () {
   let Child: Contract<Child>
@@ -38,9 +38,9 @@ describe("Logs", function () {
   it("No topics (log0) but call reverts", async function () {
     // Firehose 2.3 had a wrong behavior for failed call with log0.
     const result = await koContractCall(owner, LogsNoTopics.fullyEmptyReverts, [])
-    const trace = await fetchFirehoseTransaction(result)
+    const { block, trace } = await fetchFirehoseTransactionAndBlock(result)
 
-    await expect([result, trace]).to.trxTraceEqualSnapshot("logs/log_no_topics_but_call_reverts.expected.json", {
+    await expect([result, trace, block]).to.trxTraceEqualSnapshot("logs/log_no_topics_but_call_reverts.expected.json", {
       $logsContract: LogsNoTopics.addressHex,
     })
 

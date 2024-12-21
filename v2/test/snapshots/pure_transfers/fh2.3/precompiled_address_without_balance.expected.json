@@ -63,7 +63,7 @@
           "newValue": "2c9285415a2000"
         },
         {
-          "address": "0000000000000000000000000000000000000000",
+          "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "10",
           "oldValue": "",

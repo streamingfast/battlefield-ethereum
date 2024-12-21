@@ -88,7 +88,7 @@
           "newValue": "880a65fde0ec00"
         },
         {
-          "address": "0000000000000000000000000000000000000000",
+          "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "17",
           "oldValue": "",

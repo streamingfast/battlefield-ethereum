@@ -57,7 +57,7 @@
           "newValue": "0210201920d000"
         },
         {
-          "address": "0000000000000000000000000000000000000000",
+          "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "19",
           "oldValue": "",

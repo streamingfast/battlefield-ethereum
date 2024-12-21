@@ -91,11 +91,13 @@ before(async () => {
 })
 
 function validateFirehoseBlockVersion(block: Block) {
-  switch (getGlobalSnapshotsTag()) {
+  const tag = getGlobalSnapshotsTag()
+
+  switch (tag) {
     case "fh2.3":
       if (block.ver !== 3) {
         throw new Error(
-          `You specified testing with fh2.3 but Firehose block version is ${block.ver} while fh2.3 expect version 3, it seems your geth instance is not running with the correct geth/Firehose version`
+          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh2.3 expect version 3, it seems your geth instance is not running with the correct geth/Firehose version`
         )
       }
       break
@@ -103,9 +105,13 @@ function validateFirehoseBlockVersion(block: Block) {
     case "fh3.0":
       if (block.ver !== 4) {
         throw new Error(
-          `You specified testing with fh3.0 but Firehose block version is ${block.ver} while fh3.0 expect version 4, it seems your geth instance is not running with the correct geth/Firehose version`
+          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh3.0 expect version 4, it seems your geth instance is not running with the correct geth/Firehose version`
         )
       }
+      break
+
+    default:
+      throw new Error(`Unhandled snapshots tag value ${tag}`)
   }
 }
 

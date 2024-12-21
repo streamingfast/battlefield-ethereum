@@ -49,7 +49,7 @@
           "newValue": "0194baccf2c200"
         },
         {
-          "address": "0000000000000000000000000000000000000000",
+          "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "21",
           "oldValue": "",
