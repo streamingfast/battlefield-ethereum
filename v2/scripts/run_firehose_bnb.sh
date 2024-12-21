@@ -18,8 +18,8 @@ main() {
   pushd "$RUNDIR"
     echo "Running geth with Firehose tracer activated via 'fireeth'"
     echo "Running geth in '$RUNDIR'"
-    ENODE=$($BNB_SCRIPTS_FOLDER/get-genesis-and-enode.sh 127.0.0.1:30304)
-    $BNB_SCRIPTS_FOLDER/get-funds.sh
+    ENODE=$("$BNB_SCRIPTS_FOLDER/get-genesis-and-enode.sh" 127.0.0.1:30304)
+    "$BNB_SCRIPTS_FOLDER/get-funds.sh"
     "$geth" --datadir="$RUNDIR" init genesis.json
     geth_args="--datadir=\"$RUNDIR\" --bootnodes=$ENODE --firehose-enabled --firehose-genesis-file=genesis.json"
     echo "running '$geth' '$geth_args'"

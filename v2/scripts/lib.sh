@@ -1,5 +1,7 @@
 root_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+firehose_data_dir="$root_dir/.firehose-data"
+
 address_to_fund="${ADDRESS_TO_FUND:-"0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab"}"
 
 fireeth="${FIREETH_BINARY:-fireeth}"
@@ -64,7 +66,9 @@ check_fireeth() {
 wait_geth_up() {
     i=0
     max_attempts=15
-    echo -n "Waiting for a response from http://$1"
+
+    # The ending space is on-purpose
+    echo -n "Waiting for a response from http://$1 "
     while true; do
         i=$((i+1))
         if [[ $i -gt $max_attempts ]]; then
@@ -72,7 +76,7 @@ wait_geth_up() {
             echo "Failed to connect to node after $max_attempts attempts"
             exit 1
         fi
-        curl --connect-timeout 1 $1 -s -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'  -H "content-type: application/json" --fail && break
+        curl --connect-timeout 1 $1 -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' -H "content-type: application/json" --fail &> /dev/null && break
         sleep 1
         echo -n "."
     done
@@ -96,6 +100,13 @@ check_geth() {
   fi
 }
 
+check_jq() {
+  if ! command -v "jq" &> /dev/null; then
+    echo "The 'jw' command is required for this script, please install it"
+    echo "by following instructions at https://jqlang.github.io/jq/download"
+    exit 1
+  fi
+}
 
 check_sd() {
   if ! command -v "sd" &> /dev/null; then
@@ -116,6 +127,59 @@ check_env() {
       echo "$message_if_unset"
     fi
     exit 1
+  fi
+}
+
+# usage <name> <pid> <parent_pid> [<process_log>]
+monitor_child_process() {
+  name=$1
+  pid=$2
+  parent_pid=$3
+  process_log=
+
+  if [[ $# -gt 3 ]]; then
+    process_log=$4
+  fi
+
+  while true; do
+    if ! kill -0 $pid &> /dev/null; then
+      sleep 2
+
+      # If parent is not running, exit, nothing else to do (since our monitored process is also dead)
+      if ! ps -p $parent_pid > /dev/null; then
+        exit
+      fi
+
+      echo "Process $name ($pid) died, exiting parent"
+      if [[ "$process_log" != "" ]]; then
+        echo "Last 50 lines of log"
+        tail -n 50 $process_log
+
+        echo
+        echo "See full logs with 'less `relative_path "$process_log"`'"
+      fi
+
+      kill -s TERM $parent_pid &> /dev/null
+      exit 0
+    fi
+
+    sleep 1
+
+    # If parent is not running, terminate the child and exit
+    if ! ps -p $parent_pid > /dev/null; then
+      kill -s TERM $pid &> /dev/null
+      exit
+    fi
+  done
+}
+
+relative_path() {
+  if [[ $1 =~ /* ]]; then
+    # Works only if path is already absolute and do not contain ,
+    echo "$1" | sed s,$PWD,.,g
+  else
+    # Print as-is
+    echo $1
   fi
 }
 

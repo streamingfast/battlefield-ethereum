@@ -35,7 +35,7 @@ main() {
 
     launch_funder "$ipc_path" &
 
-    exec geth --dev --dev.period=1 --http --http.api eth,web3,net --ipcpath="$ipc_path" --vmtrace=firehose --vmtrace.jsonconfig='{"applyBackwardCompatibility":'$backward_compatibility'}'
+    exec "$geth" --dev --dev.period=1 --http --http.api eth,web3,net --ipcpath="$ipc_path" --vmtrace=firehose --vmtrace.jsonconfig='{"applyBackwardCompatibility":'$backward_compatibility'}'
 }
 
 launch_funder() {
