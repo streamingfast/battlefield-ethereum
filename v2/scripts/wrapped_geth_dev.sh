@@ -23,6 +23,11 @@ main() {
         exit 1
     fi
 
+    geth_extra_args=()
+    if has_vmtrace_jsonconfig_flag; then
+        geth_extra_args+=("--vmtrace.jsonconfig='{\"applyBackwardCompatibility\":$backward_compatibility}'")
+    fi
+
     echo "Running local Geth --dev chain"
     echo "Address to fund: $address_to_fund"
     echo "Geth Binary: $geth"
@@ -35,7 +40,11 @@ main() {
 
     launch_funder "$ipc_path" &
 
-    exec "$geth" --dev --dev.period=1 --http --http.api eth,web3,net --ipcpath="$ipc_path" --vmtrace=firehose --vmtrace.jsonconfig='{"applyBackwardCompatibility":'$backward_compatibility'}'
+    exec "$geth" --dev --dev.period=1 --http --http.api eth,web3,net --ipcpath="$ipc_path" --vmtrace=firehose $geth_extra_args
+}
+
+has_vmtrace_jsonconfig_flag() {
+    geth --help 2>&1 | grep -q -- '--vmtrace.jsonconfig'
 }
 
 launch_funder() {

@@ -115,6 +115,9 @@ describe("Logs", function () {
       {
         $logsContract: Logs.addressHex,
         $childContract: Child.addressHex,
+      },
+      {
+        networkSnapshotOverrides: ["arbitrum-geth-dev"],
       }
     )
   })
@@ -125,6 +128,9 @@ describe("Logs", function () {
       {
         $logsContract: Logs.addressHex,
         $childContract: Child.addressHex,
+      },
+      {
+        networkSnapshotOverrides: ["arbitrum-geth-dev"],
       }
     )
   })

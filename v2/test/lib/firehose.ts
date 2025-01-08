@@ -330,6 +330,20 @@ export function relativizeTrxTraceOrdinals(trace: TransactionTrace) {
   }
 }
 
+export function normalizeTrxCallFailureReasons(trx: TransactionTrace) {
+  trx.calls.forEach((call) => {
+    call.failureReason = normalizeCallFailureReason(call.failureReason)
+  })
+}
+
+function normalizeCallFailureReason(reason: string): string {
+  if (reason === "out of gas: out of gas") {
+    return "out of gas"
+  }
+
+  return reason
+}
+
 function firehoseBlockTagToRef(
   tag: string | number | bigint | { hash: string; num: number | bigint }
 ): MessageInitShape<typeof SingleBlockRequestSchema>["reference"] {

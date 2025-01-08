@@ -1,5 +1,9 @@
 import { existsSync, writeFileSync, mkdirSync } from "fs"
 import path from "path"
+import hre from "hardhat"
+import debugFactory from "debug"
+
+const debug = debugFactory("battlefield:snapshots")
 
 const lib = __dirname
 const testUrl = path.join(lib, "..")
@@ -46,10 +50,26 @@ export enum SnapshotKind {
 }
 
 export class Snapshot {
-  constructor(public id: string) {
+  public networkOverride: string | undefined
+
+  constructor(public id: string, networkSnapshotOverrides: string[]) {
     let local = id.replace("./", "")
     local = local.replace(snapshotsPrefixRegex, "")
     local = local.replace(snapshotsSuffixRegex, "")
+
+    if (local.split(path.sep).length <= 1) {
+      throw new Error(`Snapshot id ${id} is not valid, it must contain at least one directory`)
+    }
+
+    debug(
+      `Looking for network specific overrides again current network ${hre.network.name}: %o`,
+      networkSnapshotOverrides
+    )
+    const hasNetworkOverride = networkSnapshotOverrides.some((network) => hre.network.name === network)
+    if (hasNetworkOverride) {
+      debug("Network specific override found, using it")
+      this.networkOverride = hre.network.name
+    }
 
     this.id = local
   }
@@ -82,22 +102,18 @@ export class Snapshot {
   }
 
   toSnapshotPath(kind: SnapshotKind, relativeToCwd: boolean = false): string {
-    let filePath: string
     const snapshotsTag = getGlobalSnapshotsTag()
 
-    // We want to insert the tag between the first element and the snapshot name
-    // so that `calls/test.expected.json` becomes `calls/<tag>/test.expected.json`.
-    //
-    // We try to extract the dirname from the snapshot id and if it's not the same
-    // as the id, we know it has a "parent" directory and we insert us between them.
-    const dirname = path.dirname(this.id)
-    if (dirname && dirname !== this.id) {
-      let lastSegment = this.id.replace(dirname, "").replace(/^(\/|\\)/, "")
-      filePath = path.join(snapshotsUrl, dirname, snapshotsTag, lastSegment)
-    } else {
-      filePath = path.join(snapshotsUrl, snapshotsTag, this.id)
-    }
+    const group = path.dirname(this.id)
+    const lastSegment = this.id.replace(group, "").replace(/^(\/|\\)/, "")
 
+    const segments = [snapshotsUrl, group, snapshotsTag]
+    if (this.networkOverride) {
+      segments.push(this.networkOverride)
+    }
+    segments.push(lastSegment)
+
+    const filePath = path.join(...segments)
     const absolute = `${filePath}.${this.toSnapshotQualifier(kind)}.json`
     if (relativeToCwd) {
       return "./" + path.relative(process.cwd(), absolute)
@@ -133,6 +149,6 @@ export class Snapshot {
   }
 }
 
-export function resolveSnapshot(identifier: string): Snapshot {
-  return new Snapshot(identifier)
+export function resolveSnapshot(identifier: string, networkSnapshotOverrides: string[] = []): Snapshot {
+  return new Snapshot(identifier, networkSnapshotOverrides)
 }

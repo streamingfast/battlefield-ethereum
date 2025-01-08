@@ -1,32 +1,23 @@
-import { clone, create, DescMessage, enumToJson, equals, isMessage, JsonValue } from "@bufbuild/protobuf"
+import { clone, create, DescMessage, equals } from "@bufbuild/protobuf"
 import chai from "chai"
 import {
   BalanceChange,
   BalanceChange_Reason,
-  BalanceChange_ReasonSchema,
-  BalanceChangeSchema,
-  BigIntSchema,
   Block,
-  CallTypeSchema,
-  GasChange_ReasonSchema,
-  GasChangeSchema,
   NonceChange,
   TransactionTrace,
-  TransactionTrace_TypeSchema,
   TransactionTraceSchema,
-  TransactionTraceStatusSchema,
 } from "../../pb/sf/ethereum/type/v2/type_pb"
 import { hexlify, toBigInt } from "ethers"
 import {
   emptyBytes,
-  fetchFirehoseTransaction,
   fetchFirehoseTransactionAndBlock,
-  relativizeTrxTraceOrdinals as normalizeTrxTraceOrdinals,
+  normalizeTrxCallFailureReasons,
+  relativizeTrxTraceOrdinals,
   trxTraceOrdinals,
 } from "./firehose"
 import { oneWeiF, weiF, zeroWeiF } from "./money"
 import { readFileSync } from "fs"
-import { chainStaticInfo } from "./chain"
 import { resolveSnapshot, SnapshotKind } from "./snapshots"
 import deepEqual from "deep-equal"
 import { escapeRegex } from "./regexps"
@@ -37,6 +28,23 @@ import { toProtoJsonString } from "./proto"
 const debug = debugFactory("battlefield:assertions")
 
 type Chai = typeof chai
+
+type TrxTracerEqualSnapshotOptions = {
+  /**
+   * This option list networks for which network specific snapshots should be used. Certain networks
+   * like Arbitrum have discrepancies either from the tracing implementation of because of the chain
+   * itself on certain situations.
+   *
+   * The input element should be a network name, as defined in `./hardhat.config.ts` file. If the tests
+   * are running on a network that is in this list, the snapshot file loaded will be
+   * `<groupOf(snapshotFileID)>/<network-name>/<nameOf(snapshotFileID)>` instead of
+   * being picked up as `<groupOf(snapshotFileID)>/<nameOf(snapshotFileID)>`.
+   *
+   * If the test are running on a network that is not in this list, the snapshot file loaded will be
+   * as usual, e.g. `<groupOf(snapshotFileID)>/<nameOf(snapshotFileID)>`.
+   */
+  networkSnapshotOverrides?: string[]
+}
 
 declare global {
   export namespace Chai {
@@ -97,7 +105,11 @@ declare global {
        * value like a contract address.
        * @param expected The expected TransactionTrace
        */
-      trxTraceEqualSnapshot(snapshotFileID: string, templateVars?: Record<string, string>): Promise<void>
+      trxTraceEqualSnapshot(
+        snapshotFileID: string | Record<string, string>,
+        templateVars?: Record<string, string>,
+        options?: TrxTracerEqualSnapshotOptions
+      ): Promise<void>
     }
   }
 }
@@ -146,7 +158,11 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
   chai.Assertion.addMethod(
     "trxTraceEqualSnapshot",
-    async function (snapshotIdentifier: string, templateVars?: Record<string, string>) {
+    async function (
+      snapshotIdentifier: string,
+      templateVars?: Record<string, string>,
+      options?: TrxTracerEqualSnapshotOptions
+    ) {
       const [trxReceipt, actualTrace, actualBlock] = await resolveTrxTrace(this._obj)
 
       // Check on original trace for correctness of ordinal handling
@@ -156,7 +172,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       const actualNormalized = normalizeTrace(clone(TransactionTraceSchema, actualTrace))
       const actualNormalizedJson = toProtoJsonString(actualNormalized)
 
-      const snapshot = resolveSnapshot(snapshotIdentifier)
+      const snapshot = resolveSnapshot(snapshotIdentifier, options?.networkSnapshotOverrides)
 
       if (snapshot.userRequestedExpectedUpdate() || !snapshot.exists(SnapshotKind.ExpectedTemplatized)) {
         // Here we "templatize" the JSON, for example transforming literal Ethereum addresses into an actual
@@ -282,7 +298,8 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
     })
   }
 
-  normalizeTrxTraceOrdinals(trace)
+  normalizeTrxCallFailureReasons(trace)
+  relativizeTrxTraceOrdinals(trace)
 
   return trace
 }

@@ -101,7 +101,7 @@
       ],
       "statusFailed": true,
       "statusReverted": false,
-      "failureReason": "out of gas: out of gas",
+      "failureReason": "out of gas",
       "stateReverted": true,
       "beginOrdinal": "5",
       "endOrdinal": "10",
