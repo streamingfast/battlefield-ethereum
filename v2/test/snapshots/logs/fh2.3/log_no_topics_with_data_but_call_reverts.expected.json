@@ -67,7 +67,9 @@
       "logs": [
         {
           "address": "$logsContract",
-          "topics": [],
+          "topics": [
+            ""
+          ],
           "data": "4200420000000000000000000000000000000000000000000000000000000000",
           "index": 0,
           "blockIndex": 0,
