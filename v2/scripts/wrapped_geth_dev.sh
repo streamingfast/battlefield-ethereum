@@ -40,7 +40,7 @@ main() {
 
     launch_funder "$ipc_path" &
 
-    exec "$geth" --dev --dev.firehose --dev.period=1 --http --http.api eth,web3,net --ipcpath="$ipc_path" --vmtrace=firehose ${geth_extra_args[@]}
+    exec "$geth" --dev --dev.period=1 --http --http.api eth,web3,net --ipcpath="$ipc_path" --vmtrace=firehose ${geth_extra_args[@]}
 }
 
 has_vmtrace_jsonconfig_flag() {
