@@ -78,9 +78,24 @@ describe("Pure transfers", function () {
 
     await expect(
       sendEth(owner, precompileWithoutBalanceAddress, oneWei, { gasLimit: 300000 })
-    ).to.trxTraceEqualSnapshot("pure_transfers/precompiled_address_without_balance.json", {
-      $precompileAddress: precompileWithoutBalanceAddressHex,
-    })
+    ).to.trxTraceEqualSnapshot(
+      "pure_transfers/precompiled_address_without_balance.json",
+      {
+        $precompileAddress: precompileWithoutBalanceAddressHex,
+      },
+      {
+        networkSnapshotOverrides: [
+          // Arbitrum Geth uses Firehose 3.0-beta tracer but using backwards compatibility mode
+          // generating Firehose 2.3 block model. However the tracer had a bug not correctly aligning
+          // with Firehose 2.3 model when a precompile address was being transferred some ETH while
+          // it never had a balance before.
+          //
+          // Firehose 2.3 model is generating `"accountCreations": [{"account": "$precompileAddress","ordinal": "5"}]`
+          // while bogus Arbitrum Geth model generates `accountCreations: []`.
+          "arbitrum-geth-dev",
+        ],
+      }
+    )
   })
 })
 

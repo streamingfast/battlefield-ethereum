@@ -15,6 +15,20 @@ import { oneWei } from "./lib/money"
 
 const callsGasLimit = 3_500_000
 
+// Arbitrum Geth Dev Suicide Note (comment ref id 5564fd945748)
+//
+// Arbitrum Geth uses Firehose 3.0-beta tracer but using backwards compatibility mode
+// generating Firehose 2.3 block model. However the tracer had a bug not correctly aligning
+// with Firehose 2.3 model when dealing with balance change happening due to a selfdestruct
+// withdraw.
+//
+// When a contracts suicide, if the contract had **no** balance, Firehose 2.3 model is
+// not generating any `BalanceChange` in this situation because there is actually no balance
+// change since there is no balance on the destructed contract.
+//
+// The bogus Arbitrum Geth model generates one in those cases where the old and new
+// amount are the same, e.g. 0.
+
 describe("Suicide", function () {
   let Suicidal1: Contract<Suicidal>
   let Suicidal2: Contract<Suicidal>
@@ -33,6 +47,12 @@ describe("Suicide", function () {
       "suicide/contract_does_not_hold_any_ether.expected.json",
       {
         $suicidal1Contract: Suicidal1.addressHex,
+      },
+      {
+        networkSnapshotOverrides: [
+          // See comment with ref id 5564fd945748 in this file
+          "arbitrum-geth-dev",
+        ],
       }
     )
 
@@ -40,6 +60,12 @@ describe("Suicide", function () {
       "suicide/contract_does_not_hold_any_ether_already_killed.expected.json",
       {
         $suicidal1Contract: Suicidal1.addressHex,
+      },
+      {
+        networkSnapshotOverrides: [
+          // See comment with ref id 5564fd945748 in this file
+          "arbitrum-geth-dev",
+        ],
       }
     )
   })
@@ -51,6 +77,19 @@ describe("Suicide", function () {
       "suicide/contract_does_hold_ether.expected.json",
       {
         $suicidal2Contract: Suicidal2.addressHex,
+      },
+      {
+        networkSnapshotOverrides: [
+          // Arbitrum Geth uses Firehose 3.0-beta tracer but using backwards compatibility mode
+          // generating Firehose 2.3 block model. However the tracer had a bug not correctly aligning
+          // with Firehose 2.3 model when dealing with balance change happening due to a selfdestruct.
+          //
+          // When a contracts suicide, if the contract had a balance, Firehose 2.3 model is
+          // generating one `BalanceChange` with reason `REASON_SUICIDE_WITHDRAW` but the bogus
+          // Arbitrum Geth model is generating two, twice the same. The second one being a duplicate
+          // of the first and shouldn't have been there
+          "arbitrum-geth-dev",
+        ],
       }
     )
   })
@@ -66,6 +105,12 @@ describe("Suicide", function () {
         $firstCreatedContract: firstCreatedContract,
         $secondCreatedContract: getCreateAddressHex("0x" + firstCreatedContract, 1),
         $thirdCreatedContract: getCreateAddressHex("0x" + firstCreatedContract, 2),
+      },
+      {
+        networkSnapshotOverrides: [
+          // See comment with ref id 5564fd945748 in this file
+          "arbitrum-geth-dev",
+        ],
       }
     )
   })
@@ -76,16 +121,34 @@ describe("Suicide", function () {
 
     await expect(
       contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, [])
-    ).to.trxTraceEqualSnapshot("suicide/create_contract_to_fixed_address_kill_it.expected.json", {
-      $callsContract: Calls.addressHex,
-      $createdContract: createdContract,
-    })
+    ).to.trxTraceEqualSnapshot(
+      "suicide/create_contract_to_fixed_address_kill_it.expected.json",
+      {
+        $callsContract: Calls.addressHex,
+        $createdContract: createdContract,
+      },
+      {
+        networkSnapshotOverrides: [
+          // See comment with ref id 5564fd945748 in this file
+          "arbitrum-geth-dev",
+        ],
+      }
+    )
 
     await expect(
       contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, [])
-    ).to.trxTraceEqualSnapshot("suicide/create_contract_to_fixed_address_kill_it_while_already_killed.expected.json", {
-      $callsContract: Calls.addressHex,
-      $createdContract: createdContract,
-    })
+    ).to.trxTraceEqualSnapshot(
+      "suicide/create_contract_to_fixed_address_kill_it_while_already_killed.expected.json",
+      {
+        $callsContract: Calls.addressHex,
+        $createdContract: createdContract,
+      },
+      {
+        networkSnapshotOverrides: [
+          // See comment with ref id 5564fd945748 in this file
+          "arbitrum-geth-dev",
+        ],
+      }
+    )
   })
 })
