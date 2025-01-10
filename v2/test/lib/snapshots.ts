@@ -1,9 +1,9 @@
 import { existsSync, writeFileSync, mkdirSync } from "fs"
 import path from "path"
-import hre from "hardhat"
 import debugFactory from "debug"
 import { EIP, isEIPActive } from "./chain_eips"
 import { chainStaticInfo } from "./chain"
+import { networkName } from "./network"
 
 const debug = debugFactory("battlefield:snapshots")
 
@@ -66,7 +66,7 @@ export class Snapshot {
 
     const eipOverrides = options.eipSnapshotOverrides || {}
     debug(
-      `Looking for EIP overrides again current network ${hre.network.name} (EIPS %o): %o`,
+      `Looking for EIP overrides again current network ${networkName()} (EIPS %o): %o`,
       chainStaticInfo.eips,
       eipOverrides
     )
@@ -97,11 +97,11 @@ export class Snapshot {
     }
 
     const networkOverrides = options.networkSnapshotOverrides || []
-    debug(`Looking for network specific overrides again current network ${hre.network.name}: %o`, networkOverrides)
-    const hasNetworkOverride = networkOverrides.some((network) => hre.network.name === network)
+    debug(`Looking for network specific overrides again current network ${networkName()}: %o`, networkOverrides)
+    const hasNetworkOverride = networkOverrides.some((network) => networkName() === network)
     if (hasNetworkOverride) {
       debug("Network specific override found, using it")
-      this.networkOverride = hre.network.name
+      this.networkOverride = networkName()
     }
 
     this.id = local

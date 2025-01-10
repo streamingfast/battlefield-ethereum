@@ -12,6 +12,8 @@ import {
 import { Suicidal, Calls, ContractSuicideNoConstructor__factory } from "../typechain-types"
 import { SuicidalFactory, CallsFactory, owner } from "./global"
 import { oneWei } from "./lib/money"
+import { EIP } from "./lib/chain_eips"
+import { isNetwork } from "./lib/network"
 
 const callsGasLimit = 3_500_000
 
@@ -43,12 +45,23 @@ describe("Suicide", function () {
   })
 
   it("Contract does not hold any Ether", async function () {
+    let eipSnapshotOverrides: Record<string, EIP[]> = {}
+    if (isNetwork("arbitrum-geth-dev")) {
+      // Arbitrum when running under Cancun doesn't have have the actual bug referred
+      // in comment 5564fd945748 as the code path is different and the bug doesn't
+      // exist there.
+      eipSnapshotOverrides = {
+        cancun: ["eip6780"],
+      }
+    }
+
     await expect(contractCall(owner, Suicidal1.kill, [])).to.trxTraceEqualSnapshot(
       "suicide/contract_does_not_hold_any_ether.expected.json",
       {
         $suicidal1Contract: Suicidal1.addressHex,
       },
       {
+        eipSnapshotOverrides,
         networkSnapshotOverrides: [
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",

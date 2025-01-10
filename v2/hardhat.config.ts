@@ -1,13 +1,7 @@
-import { HardhatUserConfig } from "hardhat/config"
 import "@nomicfoundation/hardhat-toolbox"
+import { HardhatUserConfig } from "hardhat/config"
 import { HttpNetworkUserConfig } from "hardhat/types"
 import { EIP, EIPs, newEIPsFromList } from "./test/lib/chain_eips"
-
-const firehoseNetwork = (enforcedEips: EIP[]): HttpNetworkUserConfig & { eips: EIPs } => ({
-  url: "http://127.0.0.1:8545",
-  accounts: ["0x52e1cc4b9c8b4fc9b202adf06462bdcc248e170c9abd56b2adb84c8d87bee674"],
-  eips: newEIPsFromList(enforcedEips),
-})
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -42,6 +36,14 @@ const config: HardhatUserConfig = {
       maxDiffSize: "100000",
     },
   },
+}
+
+function firehoseNetwork(enforcedEips: EIP[]): HttpNetworkUserConfig & { eips: EIPs } {
+  return {
+    url: "http://127.0.0.1:8545",
+    accounts: ["0x52e1cc4b9c8b4fc9b202adf06462bdcc248e170c9abd56b2adb84c8d87bee674"],
+    eips: newEIPsFromList(enforcedEips),
+  }
 }
 
 export default config

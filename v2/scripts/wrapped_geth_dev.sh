@@ -44,7 +44,7 @@ main() {
 }
 
 has_vmtrace_jsonconfig_flag() {
-    geth --help 2>&1 | grep -q -- '--vmtrace.jsonconfig'
+    $geth --help 2>&1 | grep -q -- '--vmtrace.jsonconfig'
 }
 
 launch_funder() {

@@ -2,7 +2,7 @@ import { Provider } from "ethers"
 import debugFactory from "debug"
 import hre from "hardhat"
 import { EIPs, inferEIPsFromBlock, newEmptyEIPs } from "./chain_eips"
-import { HttpNetworkConfig, HttpNetworkUserConfig } from "hardhat/types"
+import { HttpNetworkUserConfig } from "hardhat/types"
 import { mustGetRpcBlock } from "./ethereum"
 
 const debug = debugFactory("battlefield:chain")
