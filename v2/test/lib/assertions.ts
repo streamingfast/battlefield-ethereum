@@ -24,12 +24,48 @@ import { escapeRegex } from "./regexps"
 import { TransactionReceiptResult } from "./ethers"
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
+import { EIP } from "./chain_eips"
 
 const debug = debugFactory("battlefield:assertions")
 
 type Chai = typeof chai
 
 type TrxTracerEqualSnapshotOptions = {
+  /**
+   * This option list EIPs for which specific snapshots should be used. Certain EIP
+   * like EIP6780 changed the overall behavior of a transaction creating differences on the
+   * traced transaction that could be desirable to have a specific snapshot for so that
+   * both behavior can be tested, as long as the test is run on multiple environments.
+   *
+   * The input should a key/value pair where the key being user-defined, usually the fork in
+   * which this was activated, and the value a list of EIPs that should be active on the
+   * network tested to be taken into account.
+   *
+   * EIPs being additive over time, you must list all prior EIPs that had an override
+   * before to ensure the right one is picked. For example, if you now need to deal with a
+   * new fork that changes old behavior of EIP6780, you should define the input like this:
+   *
+   * { cancun: ["eip6780"], prague: ["eip6780", "eip7890"] }
+   *
+   * The current network EIPs are inferred from the block and also can be enforced from the network
+   * definition in the `./hardhat.config.ts` file directly. See [./chain_eips.ts](./chain_eips.ts) is
+   * you need to modify EIPs inference
+   *
+   * If the tests are running on a network that matches one of the input (the one with most matching
+   * EIPs win the race), the snapshot file loaded will be
+   * `<groupOf(snapshotFileID)>/<eip-key>/<nameOf(snapshotFileID)>` instead of
+   * being picked up as `<groupOf(snapshotFileID)>/<nameOf(snapshotFileID)>`.
+   *
+   * If the test are running on a network that is not matching any EIPs, the snapshot file loaded will be
+   * as usual, e.g. `<groupOf(snapshotFileID)>/<nameOf(snapshotFileID)>`.
+   *
+   * This value works in conjunction with `networkSnapshotOverrides` to allow for a more fine-grained
+   * snapshot override. In the possibility that both matches, the EIP is put first in the snapshot path
+   * and the overridden network name second so a test matching both would be picked as
+   * `<groupOf(snapshotFileID)>/<eip-key>/<network-name>/<nameOf(snapshotFileID)>`.
+   */
+  eipSnapshotOverrides?: Record<string, EIP[]>
+
   /**
    * This option list networks for which network specific snapshots should be used. Certain networks
    * like Arbitrum have discrepancies either from the tracing implementation of because of the chain
@@ -42,6 +78,11 @@ type TrxTracerEqualSnapshotOptions = {
    *
    * If the test are running on a network that is not in this list, the snapshot file loaded will be
    * as usual, e.g. `<groupOf(snapshotFileID)>/<nameOf(snapshotFileID)>`.
+   *
+   * This value works in conjunction with `eipSnapshotOverrides` to allow for a more fine-grained
+   * snapshot override. In the possibility that both matches, the EIP is put first in the snapshot path
+   * and the overridden network name second so a test matching both would be picked as
+   * `<groupOf(snapshotFileID)>/<eip-key>/<network-name>/<nameOf(snapshotFileID)>`.
    */
   networkSnapshotOverrides?: string[]
 }
@@ -172,7 +213,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       const actualNormalized = normalizeTrace(clone(TransactionTraceSchema, actualTrace))
       const actualNormalizedJson = toProtoJsonString(actualNormalized)
 
-      const snapshot = resolveSnapshot(snapshotIdentifier, options?.networkSnapshotOverrides)
+      const snapshot = resolveSnapshot(snapshotIdentifier, options)
 
       if (snapshot.userRequestedExpectedUpdate() || !snapshot.exists(SnapshotKind.ExpectedTemplatized)) {
         // Here we "templatize" the JSON, for example transforming literal Ethereum addresses into an actual
@@ -227,8 +268,8 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       // (which Chai uses under the hood) to check differences, and if there are differences
       // we use to.equal so the diff is clear.
       if (!deepEqual(actual, expected)) {
-        new chai.Assertion(expected).to.equal(
-          actual,
+        new chai.Assertion(actual).to.equal(
+          expected,
           `Transaction ${trxReceipt.hash} (Block #${trxReceipt.blockNumber}) trace mismatch against stored snapshot ${snapshot.id}` +
             "\n" +
             `Use SNAPSHOTS_UPDATE=true to update all snapshots or SNAPSHOTS_UPDATE="^${snapshot.id}$" this specific snapshot` +

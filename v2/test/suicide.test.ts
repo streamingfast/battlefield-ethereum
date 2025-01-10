@@ -62,6 +62,9 @@ describe("Suicide", function () {
         $suicidal1Contract: Suicidal1.addressHex,
       },
       {
+        eipSnapshotOverrides: {
+          cancun: ["eip6780"],
+        },
         networkSnapshotOverrides: [
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",

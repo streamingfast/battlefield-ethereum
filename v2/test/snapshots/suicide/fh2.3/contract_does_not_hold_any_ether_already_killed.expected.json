@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "28484",
+  "gasUsed": "21064",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "9",
+  "endOrdinal": "8",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -26,11 +26,11 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$suicidal1Contract",
       "gasLimit": "878936",
-      "gasConsumed": "7420",
+      "gasConsumed": "0",
       "returnData": "",
       "input": "41c0e1b5",
       "executedCode": true,
-      "suicide": true,
+      "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
       "balanceChanges": [
@@ -44,14 +44,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "7",
+          "ordinal": "6",
           "oldValue": "",
-          "newValue": "8b54c367d2b800"
+          "newValue": "8c84718eb6b000"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "8",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "01"
         }
@@ -72,12 +72,6 @@
           "newValue": "878936",
           "reason": "REASON_INTRINSIC_GAS",
           "ordinal": "2"
-        },
-        {
-          "oldValue": "876516",
-          "newValue": "871516",
-          "reason": "REASON_SELF_DESTRUCT",
-          "ordinal": "5"
         }
       ],
       "statusFailed": false,
@@ -85,7 +79,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "0",
-      "endOrdinal": "6",
+      "endOrdinal": "5",
       "accountCreations": []
     }
   ],

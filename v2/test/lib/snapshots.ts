@@ -2,6 +2,8 @@ import { existsSync, writeFileSync, mkdirSync } from "fs"
 import path from "path"
 import hre from "hardhat"
 import debugFactory from "debug"
+import { EIP } from "./chain_eips"
+import { chainStaticInfo } from "./chain"
 
 const debug = debugFactory("battlefield:snapshots")
 
@@ -50,9 +52,10 @@ export enum SnapshotKind {
 }
 
 export class Snapshot {
+  public eipOverride: string | undefined
   public networkOverride: string | undefined
 
-  constructor(public id: string, networkSnapshotOverrides: string[]) {
+  constructor(public id: string, options: ResolveSnapshotOptions = {}) {
     let local = id.replace("./", "")
     local = local.replace(snapshotsPrefixRegex, "")
     local = local.replace(snapshotsSuffixRegex, "")
@@ -61,11 +64,41 @@ export class Snapshot {
       throw new Error(`Snapshot id ${id} is not valid, it must contain at least one directory`)
     }
 
+    const eipOverrides = options.eipSnapshotOverrides || {}
     debug(
-      `Looking for network specific overrides again current network ${hre.network.name}: %o`,
-      networkSnapshotOverrides
+      `Looking for EIP overrides again current network ${hre.network.name} (EIPS %o): %o`,
+      chainStaticInfo.eips,
+      eipOverrides
     )
-    const hasNetworkOverride = networkSnapshotOverrides.some((network) => hre.network.name === network)
+
+    if (Object.keys(eipOverrides).length > 0) {
+      const matchingEipsPerOverride = Object.fromEntries(
+        Object.entries(eipOverrides).map(([network, eips]) => [
+          network,
+          eips.filter((eip) => chainStaticInfo.eips[eip] === true).length,
+        ])
+      )
+      const maxMatchingEips = Math.max(...Object.values(matchingEipsPerOverride))
+      if (maxMatchingEips !== 0) {
+        const eipOverridesMatchingMax = Object.keys(matchingEipsPerOverride).filter(
+          (network) => matchingEipsPerOverride[network] === maxMatchingEips
+        )
+
+        if (eipOverridesMatchingMax.length > 1) {
+          throw new Error(
+            `Multiple network overrides with the same number of matching EIPs: ${eipOverridesMatchingMax}`
+          )
+        }
+
+        const eipSnapshotOverride = eipOverridesMatchingMax[0]
+        debug("EIP specific override(s) found, using it: %o", eipOverrides)
+        this.eipOverride = eipSnapshotOverride
+      }
+    }
+
+    const networkOverrides = options.networkSnapshotOverrides || []
+    debug(`Looking for network specific overrides again current network ${hre.network.name}: %o`, networkOverrides)
+    const hasNetworkOverride = networkOverrides.some((network) => hre.network.name === network)
     if (hasNetworkOverride) {
       debug("Network specific override found, using it")
       this.networkOverride = hre.network.name
@@ -108,6 +141,9 @@ export class Snapshot {
     const lastSegment = this.id.replace(group, "").replace(/^(\/|\\)/, "")
 
     const segments = [snapshotsUrl, group, snapshotsTag]
+    if (this.eipOverride) {
+      segments.push(this.eipOverride)
+    }
     if (this.networkOverride) {
       segments.push(this.networkOverride)
     }
@@ -149,6 +185,11 @@ export class Snapshot {
   }
 }
 
-export function resolveSnapshot(identifier: string, networkSnapshotOverrides: string[] = []): Snapshot {
-  return new Snapshot(identifier, networkSnapshotOverrides)
+type ResolveSnapshotOptions = {
+  eipSnapshotOverrides?: Record<string, EIP[]>
+  networkSnapshotOverrides?: string[]
+}
+
+export function resolveSnapshot(identifier: string, options: ResolveSnapshotOptions = {}): Snapshot {
+  return new Snapshot(identifier, options)
 }
