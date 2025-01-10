@@ -2,7 +2,7 @@ import { existsSync, writeFileSync, mkdirSync } from "fs"
 import path from "path"
 import hre from "hardhat"
 import debugFactory from "debug"
-import { EIP } from "./chain_eips"
+import { EIP, isEIPActive } from "./chain_eips"
 import { chainStaticInfo } from "./chain"
 
 const debug = debugFactory("battlefield:snapshots")
@@ -75,7 +75,7 @@ export class Snapshot {
       const matchingEipsPerOverride = Object.fromEntries(
         Object.entries(eipOverrides).map(([network, eips]) => [
           network,
-          eips.filter((eip) => chainStaticInfo.eips[eip] === true).length,
+          eips.filter((eip) => isEIPActive(chainStaticInfo.eips, eip)).length,
         ])
       )
       const maxMatchingEips = Math.max(...Object.values(matchingEipsPerOverride))

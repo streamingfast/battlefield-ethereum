@@ -1,4 +1,4 @@
-import { Block } from "ethers"
+import { RpcBlock } from "./ethereum"
 
 // This is not an exhaustive list of EIPs, just the ones we need to know about
 export type EIP =
@@ -22,13 +22,13 @@ export function newEmptyEIPs(): EIPs {
   }
 }
 
-export function inferEIPsFromBlock(block: Block | undefined): EIPs {
+export function inferEIPsFromBlock(block: RpcBlock | undefined): EIPs {
   const eips: EIPs = newEmptyEIPs()
   if (!block) {
     return eips
   }
 
-  eips.eip6780 = block.baseFeePerGas != null && block.baseFeePerGas != undefined
+  eips.eip6780 = block.blobGasUsed != null && block.blobGasUsed != undefined
 
   return eips
 }

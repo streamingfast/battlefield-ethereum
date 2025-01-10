@@ -3,6 +3,7 @@ import debugFactory from "debug"
 import hre from "hardhat"
 import { EIPs, inferEIPsFromBlock, newEmptyEIPs } from "./chain_eips"
 import { HttpNetworkConfig, HttpNetworkUserConfig } from "hardhat/types"
+import { mustGetRpcBlock } from "./ethereum"
 
 const debug = debugFactory("battlefield:chain")
 
@@ -19,7 +20,7 @@ export const chainStaticInfo: ChainStaticInfo = {
 export async function initChainStaticInfo(provider: Provider): Promise<void> {
   debug("Initializing chain static info")
 
-  provider.getBlock("latest").then((block) => {
+  mustGetRpcBlock("latest").then(async (block) => {
     chainStaticInfo.eips = newEmptyEIPs()
 
     if (block) {
@@ -31,7 +32,7 @@ export async function initChainStaticInfo(provider: Provider): Promise<void> {
         debug("Initializing enforced network's EIPs", config.eips)
 
         Object.keys(config.eips).forEach((eip) => {
-          if (chainStaticInfo.eips[eip as keyof EIPs] !== undefined) {
+          if (config.eips[eip as keyof EIPs] != undefined) {
             chainStaticInfo.eips[eip as keyof EIPs] = config.eips[eip as keyof EIPs]
           }
         })
