@@ -13,7 +13,7 @@ import {
 import debugFactory from "debug"
 import hre from "hardhat"
 import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../typechain-types/common"
-import { addressHasZeroBytes, AddressLike, bytes, randomHex } from "./addresses"
+import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
 import { TransactionReceiptResult, waitForTransaction } from "./ethers"
 import { eth } from "./money"
 
@@ -85,7 +85,6 @@ export async function sendEth(
     gasPrice: defaultGasPrice,
     ...custom,
   }
-
   debug("Send eth call being performed %o", debuggableTrx(trxRequest))
 
   const response = await from.sendTransaction(trxRequest)

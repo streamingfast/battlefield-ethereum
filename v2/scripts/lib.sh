@@ -6,6 +6,7 @@ address_to_fund="${ADDRESS_TO_FUND:-"0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
 
 fireeth="${FIREETH_BINARY:-fireeth}"
 geth="${GETH_BINARY:-geth}"
+nitro="${NITRO_BINARY:-nitro}"
 seid="${SEID_BINARY:-seid}"
 
 # Usage: run_fireeth <first_streamable_block> <node_binary> <node_args>

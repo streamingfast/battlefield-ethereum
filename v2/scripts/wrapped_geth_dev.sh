@@ -66,7 +66,7 @@ launch_funder() {
         fi
     done
 
-    # It seems the 'geth attach' only allows specyfing the datadir directly and not the IPC
+    # It seems the 'geth attach' only allows specifying the datadir directly and not the IPC
     # path, so we need to extract the directory from the IPC path
     ipc_dir=$(dirname "$ipc_path")
 
