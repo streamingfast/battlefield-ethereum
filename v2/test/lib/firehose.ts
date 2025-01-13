@@ -76,7 +76,7 @@ async function fetchFirehoseBlockNoLogging(
 
       if (isConnectError(error) && error.code !== Code.InvalidArgument) {
         let retryIn = 125 + 250 * (attempts - 1)
-        debug(`Block ${tag} not found in Firehose yet, retrying in ${retryIn}ms`)
+        debug(`Block ${firehoseBlockTagToString(tag)} not found in Firehose yet, retrying in ${retryIn}ms`)
         await new Promise((resolve) => setTimeout(resolve, retryIn))
 
         continue
@@ -344,9 +344,9 @@ function normalizeCallFailureReason(reason: string): string {
   return reason
 }
 
-function firehoseBlockTagToRef(
-  tag: string | number | bigint | { hash: string; num: number | bigint }
-): MessageInitShape<typeof SingleBlockRequestSchema>["reference"] {
+type FirehoseBlockTag = string | number | bigint | { hash: string; num: number | bigint }
+
+function firehoseBlockTagToRef(tag: FirehoseBlockTag): MessageInitShape<typeof SingleBlockRequestSchema>["reference"] {
   if (typeof tag === "number" || typeof tag === "bigint") {
     return {
       case: "blockNumber",
@@ -369,4 +369,20 @@ function firehoseBlockTagToRef(
   }
 
   throw new Error(`Unsupported tag type: ${typeof tag}`)
+}
+
+function firehoseBlockTagToString(tag: FirehoseBlockTag): string {
+  if (typeof tag === "number" || typeof tag === "bigint") {
+    return `#${tag}`
+  }
+
+  if (typeof tag === "string") {
+    return tag
+  }
+
+  if (typeof tag === "object") {
+    return `#${tag.num} (${tag.hash})`
+  }
+
+  return `${tag}`
 }
