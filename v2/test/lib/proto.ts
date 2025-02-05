@@ -23,6 +23,17 @@ function protoJsonReplacer(this: any, key: string, value: any): any {
     return undefined
   }
 
+  if (typeof value === "object" && value["type"] === "Buffer" && value["data"]) {
+    // Not sure where this came from but some fields looked like wrapped Buffer objects,
+    // unclear if it comes from bufbuild/protobuf, Node.js or something else. For now
+    // treat them as buffer by converting them to hex.
+    return Buffer.from(value["data"]).toString("hex")
+  }
+
+  if (Buffer.isBuffer(value)) {
+    return value.toString("hex")
+  }
+
   if (value instanceof Uint8Array) {
     return Buffer.from(value).toString("hex")
   }
@@ -47,6 +58,11 @@ function protoJsonReplacer(this: any, key: string, value: any): any {
 // directly for now. We would need to find the corresponding paths from
 // the Proto schema to the value to know if it's an enum.
 function maybeEnumToJson(parent: any, key: string, value: any): JsonValue | undefined {
+  // All enums are number, so we can check that first and return early if it's not a number
+  if (typeof value !== "number") {
+    return undefined
+  }
+
   if (key === "type") {
     return enumToJson(TransactionTrace_TypeSchema, value)
   }

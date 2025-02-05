@@ -1277,8 +1277,9 @@ export type BalanceChange = Message<"sf.ethereum.type.v2.BalanceChange"> & {
    *
    * If you consume this from a Substreams, you can safely use:
    *
+   * ```ignore
    *     let old_value = old_value.unwrap_or_default();
-   *
+   * ```
    *
    * @generated from field: sf.ethereum.type.v2.BigInt old_value = 2;
    */
@@ -1292,8 +1293,9 @@ export type BalanceChange = Message<"sf.ethereum.type.v2.BalanceChange"> & {
    *
    * If you consume this from a Substreams, you can safely use:
    *
+   * ```ignore
    *     let new_value = new_value.unwrap_or_default();
-   *
+   * ```
    *
    * @generated from field: sf.ethereum.type.v2.BigInt new_value = 3;
    */

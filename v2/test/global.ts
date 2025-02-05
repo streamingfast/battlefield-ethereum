@@ -9,6 +9,7 @@ import {
   LogsNoTopics__factory,
   Main__factory,
   Suicidal__factory,
+  SuicideOnConstructor__factory,
   Transfers__factory,
 } from "../typechain-types"
 import debugFactory from "debug"
@@ -33,6 +34,7 @@ export let LogsFactory: Logs__factory
 export let LogsNoTopicsFactory: LogsNoTopics__factory
 export let TransfersFactory: Transfers__factory
 export let SuicidalFactory: Suicidal__factory
+export let SuicideOnConstructorFactory: SuicideOnConstructor__factory
 
 const debug = debugFactory("battlefield:global")
 
@@ -59,6 +61,7 @@ before(async () => {
   LogsNoTopicsFactory = await hre.ethers.getContractFactory("LogsNoTopics")
   TransfersFactory = await hre.ethers.getContractFactory("Transfers")
   SuicidalFactory = await hre.ethers.getContractFactory("Suicidal")
+  SuicideOnConstructorFactory = await hre.ethers.getContractFactory("SuicideOnConstructor")
   debug("Initialized contract factories")
 
   debug("Initializing owner")

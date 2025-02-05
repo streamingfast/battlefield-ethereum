@@ -4,6 +4,7 @@
   "description": "Firehose Tracers test suites for Ethereum chain(s)",
   "scripts": {
     "compile": "hardhat compile",
+    "generate": "buf generate buf.build/streamingfast/firehose-ethereum",
     "test:fh2.3:geth-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network geth-dev",
     "test:fh2.3:arbitrum-geth-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network arbitrum-geth-dev",
     "test:fh2.3:arbitrum-nitro-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network arbitrum-nitro-dev",

@@ -117,6 +117,16 @@ The snapshots comparison process could be defined as:
 
 - The `<id>.original.normalized.json` and `<id>.expected.resolved.json` content are then compared deeply, if there is a difference the diff is presented.
 
+### Protobuf Generation
+
+If you have a weird Protobuf decoding error like `Error: Buffer is not a value in enum sf.ethereum.type.v2.TransactionTrace.Typ` or in that vein, it probably means that the block you receives and the Protobuf representation of the Block have diverged.
+
+You can re-generate the Ethereum Protobuf ES code by doing:
+
+```bash
+pnpm generate
+```
+
 ## Installation Instructions
 
 ### Dependencies

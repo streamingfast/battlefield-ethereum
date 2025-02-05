@@ -306,15 +306,8 @@ export async function deployAll(...runners: Runner[]) {
  * will also not contain zero bytes.
  *
  * The operation is retried until a valid address is found.
- *
- * The address is also automatically funded, with `fundWei` amount of wei,
- * defaults to 2 ETH if not provided.
  */
-export async function stableDeployerFunded(
-  from: Signer,
-  creationCount: number,
-  fundWei?: string | BigNumberish
-): Promise<HDNodeWallet> {
+export async function stableDeployer(from: Signer, creationCount: number): Promise<HDNodeWallet> {
   while (true) {
     const deployer = Wallet.createRandom(hre.ethers.provider)
     if (addressHasZeroBytes(deployer.address)) {
@@ -329,6 +322,27 @@ export async function stableDeployerFunded(
       continue
     }
 
+    return deployer
+  }
+}
+
+/**
+ * Creates a new address ensuring that the created address contains no zero bytes
+ * as well as ensuring that contracts deployed from the created address (up to `creationCount`)
+ * will also not contain zero bytes.
+ *
+ * The operation is retried until a valid address is found.
+ *
+ * The address is also automatically funded, with `fundWei` amount of wei,
+ * defaults to 2 ETH if not provided.
+ */
+export async function stableDeployerFunded(
+  from: Signer,
+  creationCount: number,
+  fundWei?: string | BigNumberish
+): Promise<HDNodeWallet> {
+  while (true) {
+    const deployer = await stableDeployer(from, creationCount)
     await sendEth(from, deployer.address, fundWei ?? eth(2))
 
     return deployer

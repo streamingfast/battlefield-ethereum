@@ -2,16 +2,20 @@ import { expect } from "chai"
 import {
   Contract,
   contractCall,
+  contractCreation,
   deployAll,
   deployContract,
   deployStableContractCreator,
   getCreate2AddressHex,
   getCreateAddressHex,
+  koContractCreation,
   sendEth,
+  stableDeployer,
+  stableDeployerFunded,
 } from "./lib/ethereum"
 import { Suicidal, Calls, ContractSuicideNoConstructor__factory } from "../typechain-types"
-import { SuicidalFactory, CallsFactory, owner } from "./global"
-import { oneWei } from "./lib/money"
+import { SuicidalFactory, CallsFactory, owner, SuicideOnConstructorFactory } from "./global"
+import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
 import { isNetwork } from "./lib/network"
 
@@ -164,6 +168,18 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
+      }
+    )
+  })
+
+  it("Contract created in trx and suicides in constructor", async function () {
+    const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
+
+    await expect(contractCreation(deployer, SuicideOnConstructorFactory, [])).to.trxTraceEqualSnapshot(
+      "suicide/create_contract_suicide_in_constructor.json",
+      {
+        $sender: deployer.address.toLowerCase().slice(2),
+        $createdContract: getCreateAddressHex(deployer.address, 0),
       }
     )
   })
