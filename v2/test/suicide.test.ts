@@ -8,9 +8,7 @@ import {
   deployStableContractCreator,
   getCreate2AddressHex,
   getCreateAddressHex,
-  koContractCreation,
   sendEth,
-  stableDeployer,
   stableDeployerFunded,
 } from "./lib/ethereum"
 import { Suicidal, Calls, ContractSuicideNoConstructor__factory } from "../typechain-types"
