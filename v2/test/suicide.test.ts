@@ -178,6 +178,12 @@ describe("Suicide", function () {
       {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: getCreateAddressHex(deployer.address, 0),
+      },
+      {
+        networkSnapshotOverrides: [
+          // See comment with ref id 5564fd945748 in this file
+          "arbitrum-geth-dev",
+        ],
       }
     )
   })
