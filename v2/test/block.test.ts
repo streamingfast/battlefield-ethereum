@@ -7,7 +7,7 @@ import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
 import { Call } from "../pb/sf/ethereum/type/v2/type_pb"
-import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
+import { getGlobalSnapshotsTag } from "./lib/snapshots"
 
 describe("Blocks", function () {
   it("Header corresponds to RPC", async function () {

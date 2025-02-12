@@ -2,6 +2,7 @@ import { expect } from "chai"
 import {
   Contract,
   contractCall,
+  contractCreation,
   deployAll,
   deployContract,
   deployStableContractCreator,
@@ -9,11 +10,12 @@ import {
   getStableCreate2Data,
   koContractCall,
   koContractCreation,
+  sendEth,
   stableDeployerFunded,
 } from "./lib/ethereum"
 import { Calls, Calls__factory } from "../typechain-types"
-import { CallsFactory, owner, SuicidalFactory } from "./global"
-import { eth } from "./lib/money"
+import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./global"
+import { eth, oneWei } from "./lib/money"
 
 const callsGasLimit = 3_500_000
 
@@ -22,6 +24,33 @@ describe("Deploys", function () {
 
   before(async () => {
     await deployAll(async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })))
+  })
+
+  it("Contract create on previously funded address", async function () {
+    const deployer = await stableDeployerFunded(owner, 1, eth(1))
+    const createdContract = getCreateAddressHex(deployer.address, 0)
+
+    await sendEth(owner, "0x" + createdContract, oneWei)
+
+    await expect(contractCreation(deployer, ContractEmptyFactory, [], { gasLimit: 500000 })).to.trxTraceEqualSnapshot(
+      "deploys/contract_create_on_previously_funded_address.expected.json",
+      {
+        $sender: deployer.address.toLowerCase().slice(2),
+        $createdContract: createdContract,
+      },
+      {
+        networkSnapshotOverrides: [
+          // Arbitrum Geth uses Firehose 3.0-beta tracer but using backwards compatibility mode
+          // generating Firehose 2.3 block model. However the tracer had a bug not correctly aligning
+          // with Firehose 2.3 model when dealing account creation.
+          //
+          // In Arbitrum Firehose tracer, the account creation are emitted only if the account did not
+          // previously existed while on Firehose 2.3, they are emitted in every cases (it previously
+          // existed or not).
+          "arbitrum-geth-dev",
+        ],
+      }
+    )
   })
 
   it("Contract fail just enough gas for intrinsic gas", async function () {

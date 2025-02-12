@@ -4,6 +4,7 @@ import hre from "hardhat"
 import {
   Calls__factory,
   Child__factory,
+  ContractEmpty__factory,
   GrandChild__factory,
   Logs__factory,
   LogsNoTopics__factory,
@@ -30,6 +31,7 @@ export let MainFactory: Main__factory
 export let ChildFactory: Child__factory
 export let GrandChildFactory: GrandChild__factory
 export let CallsFactory: Calls__factory
+export let ContractEmptyFactory: ContractEmpty__factory
 export let LogsFactory: Logs__factory
 export let LogsNoTopicsFactory: LogsNoTopics__factory
 export let TransfersFactory: Transfers__factory
@@ -53,6 +55,7 @@ before(async () => {
   setGlobalSnapshotsTag(process.env.SNAPSHOTS_TAG)
 
   debug("Initializing contract factories sequentially")
+  ContractEmptyFactory = await hre.ethers.getContractFactory("ContractEmpty")
   MainFactory = await hre.ethers.getContractFactory("Main")
   ChildFactory = await hre.ethers.getContractFactory("Child")
   GrandChildFactory = await hre.ethers.getContractFactory("GrandChild")
