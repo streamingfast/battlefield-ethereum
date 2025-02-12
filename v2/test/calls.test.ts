@@ -9,7 +9,14 @@ import {
   koContractCall,
 } from "./lib/ethereum"
 import { Calls, Child, GrandChild } from "../typechain-types"
-import { CallsFactory, ChildFactory, GrandChildFactory, owner, TransfersFactory } from "./global"
+import {
+  CallsFactory,
+  ChildFactory,
+  DelegateToEmptyContract,
+  GrandChildFactory,
+  owner,
+  TransfersFactory,
+} from "./global"
 import { wei } from "./lib/money"
 import { randomAddress5, randomAddress5Hex } from "./lib/addresses"
 
@@ -53,6 +60,17 @@ describe("Calls", function () {
       $callsContract: Calls.addressHex,
       $childContract: Child.addressHex,
     })
+  })
+
+  it("Delegate to empty contract", async function () {
+    let Contract = await deployContract(owner, DelegateToEmptyContract, [])
+
+    await expect(contractCall(owner, Contract.run, [])).to.trxTraceEqualSnapshot(
+      "calls/delegate_to_empty_contract.expected.json",
+      {
+        $contract: Contract.addressHex,
+      }
+    )
   })
 
   it("Nested fail with native transfer", async function () {
