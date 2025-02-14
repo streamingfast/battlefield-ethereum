@@ -1,28 +1,20 @@
-.DS_Store
-
+node_modules
+.env
 .envrc
-/boot/genesis/geth/nodekey
-/boot/genesis/bor/nodekey
-/boot/genesis/alloc.json
-/boot/genesis/keystore
-/contract/build/
-/run/data/bootstrap
-/run/data/miner
-/run/data/syncer*
-/run/data/oracle_common/bor
-/run/data/oracle_common/geth.ipc
-/run/data/oracle_polygon/geth
-/run/data/oracle_polygon/bor.ipc
-/run/miner.dmlog
-/run/syncer*.dmlog
-/run/miner.firelog
-/run/syncer*.firelog
-/run/syncer*.json
-/run/syncer*.binpb
-/run/*.log
-/node_modules
-yarn-error.log
-.idea
 
-.env*
-.vault*
+# Hardhat files
+/cache
+/artifacts
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
+
+scripts/.firehose-data

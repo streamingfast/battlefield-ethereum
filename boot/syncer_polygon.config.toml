@@ -1,3 +1,0 @@
-[Eth.ParallelEVM]
-# Set's to `true` to test parallel execution mode
-Enable = false
