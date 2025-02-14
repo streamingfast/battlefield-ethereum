@@ -1,4 +1,4 @@
-import { getAddress, getBytes } from "ethers"
+import { getAddress, getBytes, hexlify } from "ethers"
 
 export const bytes = 1
 
@@ -36,6 +36,33 @@ export const randomAddress3Hex = randomAddress3.slice(2)
 export const randomAddress4Hex = randomAddress4.slice(2)
 export const randomAddress5Hex = randomAddress5.slice(2)
 
+// System Contracts
+
+/** SystemAddress is where the system-transaction is sent from as per EIP-4788 */
+export const systemAddress = getAddress("0xfffffffffffffffffffffffffffffffffffffffe")
+/** SystemAddress is where the system-transaction is sent from as per EIP-4788 */
+export const systemAddressHex = systemAddress.toLowerCase().slice(2)
+
+/** EIP-4788 - Beacon block root in the EVM */
+export const systemBeaconRootsAddress = getAddress("0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02")
+/** EIP-4788 - Beacon block root in the EVM */
+export const systemBeaconRootsAddressHex = systemBeaconRootsAddress.toLowerCase().slice(2)
+
+/** EIP-2935 - Serve historical block hashes from state */
+export const systemHistoryStorageAddress = getAddress("0x0000F90827F1C53a10cb7A02335B175320002935")
+/** EIP-2935 - Serve historical block hashes from state */
+export const systemHistoryStorageAddressHex = systemHistoryStorageAddress.toLowerCase().slice(2)
+
+/** EIP-7002 - Execution layer triggerable withdrawals */
+export const systemWithdrawalQueueAddress = getAddress("0x00000961Ef480Eb55e80D19ad83579A64c007002")
+/** EIP-7002 - Execution layer triggerable withdrawals */
+export const systemWithdrawalQueueAddressHex = systemWithdrawalQueueAddress.toLowerCase().slice(2)
+
+/** EIP-7251 - Increase the MAX_EFFECTIVE_BALANCE */
+export const systemConsolidationQueueAddress = getAddress("0x0000BBdDc7CE488642fb579F8B00f3a590007251")
+/** EIP-7251 - Increase the MAX_EFFECTIVE_BALANCE */
+export const systemConsolidationQueueAddressHex = systemConsolidationQueueAddress.toLowerCase().slice(2)
+
 export function addressHasZeroBytes(address: string | null): boolean {
   if (address == null) {
     return true
@@ -55,4 +82,20 @@ export function randomHex(byteCount: number): string {
 function random1ByteHex(): string {
   // The << 0 is to convert the number to an integer
   return ((Math.random() * 0xfe + 1) << 0).toString(16).padStart(2, "0")
+}
+
+export function isSameAddress(leftRaw: string | Uint8Array, rightRaw: string | Uint8Array): boolean {
+  return anyAddress(leftRaw) === anyAddress(rightRaw)
+}
+
+function anyAddress(input: string | Uint8Array): string {
+  if (typeof input === "string") {
+    if (!input.startsWith("0x")) {
+      input = "0x" + input
+    }
+
+    return getAddress(input)
+  }
+
+  return getAddress(hexlify(input))
 }

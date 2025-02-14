@@ -2,7 +2,14 @@ import { expect } from "chai"
 import { mustGetRpcBlock, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { fetchFirehoseBlock, fetchFirehoseTransactionAndBlock } from "./lib/firehose"
-import { knownExistingAddress } from "./lib/addresses"
+import {
+  isSameAddress,
+  knownExistingAddress,
+  systemAddress,
+  systemBeaconRootsAddress,
+  systemBeaconRootsAddressHex,
+  systemHistoryStorageAddress,
+} from "./lib/addresses"
 import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
@@ -59,11 +66,11 @@ describe("Blocks", function () {
     }
 
     if (rpcBlock.requestsHash) {
-      expect(firehoseBlock.requestsHash).to.be.equal(rpcBlock.requestsHash, field("requestsHash"))
+      expect(hexlify(firehoseBlock.requestsHash)).to.be.equal(rpcBlock.requestsHash, field("requestsHash"))
     }
   })
 
-  it("Header parentBeaconRoot system call recorded correctly", async function () {
+  it("System call ProcessBeaconRoot recorded correctly", async function () {
     const rpcBlock = await mustGetRpcBlock("latest")
     if (!rpcBlock.parentBeaconBlockRoot) {
       // Test do not apply to this network
@@ -91,11 +98,43 @@ describe("Blocks", function () {
       expect(beaconRootCall!.gasChanges.length).to.be.equal(2)
     }
   })
+
+  it("System call ProcessParentBlockHash recorded correctly", async function () {
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (!rpcBlock.requestsHash) {
+      // Test do not apply to this network
+      return
+    }
+
+    const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
+    const header = firehoseBlock.header!
+
+    expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
+
+    const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
+    expect(updateParentBlockHashCall).to.not.be.undefined
+
+    expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
+    expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
+
+    if (getGlobalSnapshotsTag() != "fh2.3") {
+      // Firehose 2.3 does not record some gas changes that are recorded in 3.0, hence why in 2.3
+      // there is 0 gas changes while there are 2 in 3.0.
+      expect(updateParentBlockHashCall!.gasChanges.length).to.be.equal(2)
+    }
+  })
 })
 
 function isUpdateBeaconRootCall(beaconRoot: string): (call: Call) => boolean {
   return (call: Call) =>
-    hexlify(call.caller) === "0xfffffffffffffffffffffffffffffffffffffffe" &&
-    hexlify(call.address) === "0x000f3df6d732807ef1319fb7b8bb8522d0beac02" &&
+    isSameAddress(call.caller, systemAddress) &&
+    isSameAddress(call.address, systemBeaconRootsAddress) &&
     hexlify(call.input) === beaconRoot
+}
+
+function isUpdateParentBlockHash(parentHash: string): (call: Call) => boolean {
+  return (call: Call) =>
+    isSameAddress(call.caller, systemAddress) &&
+    isSameAddress(call.address, systemHistoryStorageAddress) &&
+    hexlify(call.input) === parentHash
 }
