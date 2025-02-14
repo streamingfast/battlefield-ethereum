@@ -65,11 +65,13 @@ check_fireeth() {
 }
 
 wait_geth_up() {
+    endpoint="$1"
+
     i=0
     max_attempts=15
 
     # The ending space is on-purpose
-    echo -n "Waiting for a response from http://$1 "
+    printf "Waiting for Geth to be ready at $endpoint "
     while true; do
         i=$((i+1))
         if [[ $i -gt $max_attempts ]]; then
@@ -77,12 +79,13 @@ wait_geth_up() {
             echo "Failed to connect to node after $max_attempts attempts"
             exit 1
         fi
-        curl --connect-timeout 1 $1 -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' -H "content-type: application/json" --fail &> /dev/null && break
+        curl --connect-timeout 1 "$endpoint" -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' -H "content-type: application/json" --fail &> /dev/null && break
         sleep 1
-        echo -n "."
+        printf "."
     done
-    echo
-    echo "Node is up"
+
+    # The leading space is on-purpose
+    printf " now up and running\n"
     return 0
 }
 
@@ -197,6 +200,15 @@ usage_error() {
 
   usage
   exit 1
+}
+
+kill_pid() {
+  pid=$1
+
+  if [[ $pid != "" ]]; then
+    kill -s TERM $pid &> /dev/null || true
+    wait "$pid" &> /dev/null
+  fi
 }
 
 lib_error() {

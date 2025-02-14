@@ -12,7 +12,7 @@ main() {
   check_geth BSC
   check_docker "bnb-miner-1" "You should launch the Binance Smart Chain miner with '${BNB_SCRIPTS_FOLDER}/up.sh -c'"
 
-  wait_geth_up localhost:8545
+  wait_geth_up "http://localhost:8545"
   RUNDIR=$(mktemp -d)
 
   pushd "$RUNDIR"

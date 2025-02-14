@@ -13,7 +13,7 @@ main() {
   check_sd
 
   launch_miner
-  wait_geth_up http://localhost:8545
+  wait_geth_up "http://localhost:8545"
 
   enode_raw=$(curl -sS --data '{"method":"admin_nodeInfo","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST http://localhost:8545 | jq -r .result.enode)
   enode=$(echo $enode_raw | sd '\?.*$' '')

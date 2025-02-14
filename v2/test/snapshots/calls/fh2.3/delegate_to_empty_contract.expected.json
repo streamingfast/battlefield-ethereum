@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "24213",
+  "gasUsed": "21713",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "13",
+  "endOrdinal": "12",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -26,7 +26,7 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$contract",
       "gasLimit": "878936",
-      "gasConsumed": "3149",
+      "gasConsumed": "649",
       "returnData": "",
       "input": "c0406226",
       "executedCode": true,
@@ -44,14 +44,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "11",
+          "ordinal": "10",
           "oldValue": "",
-          "newValue": "8c03904a869600"
+          "newValue": "8c69e1bd101e00"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "12",
+          "ordinal": "11",
           "oldValue": "",
           "newValue": "01"
         }
@@ -74,22 +74,16 @@
           "ordinal": "2"
         },
         {
-          "oldValue": "878353",
-          "newValue": "875853",
-          "reason": "REASON_STATE_COLD_ACCESS",
+          "oldValue": "878453",
+          "newValue": "13724",
+          "reason": "REASON_DELEGATE_CALL",
           "ordinal": "5"
         },
         {
-          "oldValue": "878453",
-          "newValue": "13685",
-          "reason": "REASON_DELEGATE_CALL",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "13685",
-          "newValue": "875853",
+          "oldValue": "13724",
+          "newValue": "878353",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "9"
+          "ordinal": "8"
         }
       ],
       "statusFailed": false,
@@ -97,7 +91,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "0",
-      "endOrdinal": "10",
+      "endOrdinal": "9",
       "accountCreations": []
     },
     {
@@ -107,7 +101,7 @@
       "callType": "DELEGATE",
       "caller": "$contract",
       "address": "0000000000000000000000000000000000000000",
-      "gasLimit": "862168",
+      "gasLimit": "864629",
       "gasConsumed": "0",
       "returnData": "",
       "input": "e4608b73",
@@ -124,8 +118,8 @@
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "7",
-      "endOrdinal": "8",
+      "beginOrdinal": "6",
+      "endOrdinal": "7",
       "accountCreations": []
     }
   ],
