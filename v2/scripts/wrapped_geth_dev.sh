@@ -9,6 +9,7 @@ source "$ROOT/lib.sh"
 main() {
     data_dir="$(mktemp -d)"
     firehose_version=${FIREHOSE_VERSION:-"2.3"}
+    fork_version=${FORK_VERSION:-"cancun"}
 
     backward_compatibility="true"
     if [[ "$firehose_version" == "2.3" ]]; then
@@ -20,7 +21,7 @@ main() {
         exit 1
     fi
 
-    "$geth" --dev --datadir="$data_dir" init "$ROOT/geth_dev/genesis.json" 2> /dev/null
+    "$geth" --dev --datadir="$data_dir" init "$ROOT/geth_dev/genesis.$fork_version.json" 2> /dev/null
 
     geth_extra_args=("--dev" "--dev.period=1" "--http" "--http.api=eth,web3,net" "--datadir=$data_dir")
     if has_vmtrace; then
@@ -31,13 +32,10 @@ main() {
         fi
     fi
 
-    if has_firehose_enabled_flag; then
-        geth_extra_args+=("--firehose-enabled")
-    fi
-
     echo "Running local Geth --dev chain"
     echo "Address to fund: $address_to_fund"
     echo "Geth Binary: $geth"
+    echo "Geth Fork Version: $fork_version"
     echo "Geth Version: $($geth --version)"
     echo "IPC Directory: $ipc_dir"
     echo "IPC Path: $ipc_path"
@@ -55,10 +53,6 @@ has_vmtrace() {
 
 has_vmtrace_jsonconfig_flag() {
     $geth --help 2>&1 | grep -q -- '--vmtrace.jsonconfig'
-}
-
-has_firehose_enabled_flag() {
-    $geth --help 2>&1 | grep -q -- '--firehose-enabled'
 }
 
 main "$@"

@@ -23,11 +23,6 @@
         "target": 3,
         "max": 6,
         "baseFeeUpdateFraction": 3338477
-      },
-      "prague": {
-        "target": 6,
-        "max": 9,
-        "baseFeeUpdateFraction": 5007716
       }
     }
   },
@@ -61,9 +56,6 @@
       "code": "0x3373fffffffffffffffffffffffffffffffffffffffe14604d57602036146024575f5ffd5b5f35801560495762001fff810690815414603c575f5ffd5b62001fff01545f5260205ff35b5f5ffd5b62001fff42064281555f359062001fff015500",
       "balance": "0x0",
       "nonce": "0x1"
-    },
-    "9f9c3b65ab5e2ccfeb392a7ef23888e692660ceb": {
-      "balance": "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7"
     }
   },
   "number": "0x0",
