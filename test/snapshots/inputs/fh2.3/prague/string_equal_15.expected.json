@@ -1,12 +1,12 @@
 {
-  "to": "$contract",
+  "to": "$inputContract",
   "nonce": "$nonce",
-  "gasLimit": "22080",
-  "input": "a55d0e8e000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
+  "gasLimit": "900000",
+  "input": "f93d3def0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000f6a75737420313520636861727321210000000000000000000000000000000000",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "22080",
+  "gasUsed": "22630",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -16,7 +16,7 @@
   "publicKey": "",
   "beginOrdinal": "0",
   "endOrdinal": "10",
-  "status": "FAILED",
+  "status": "SUCCEEDED",
   "calls": [
     {
       "index": 1,
@@ -24,11 +24,11 @@
       "depth": 0,
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-      "address": "$contract",
-      "gasLimit": "648",
-      "gasConsumed": "648",
-      "returnData": "",
-      "input": "a55d0e8e000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
+      "address": "$inputContract",
+      "gasLimit": "878348",
+      "gasConsumed": "705",
+      "returnData": "0000000000000000000000000000000000000000000000000000000000000000",
+      "input": "f93d3def0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000f6a75737420313520636861727321210000000000000000000000000000000000",
       "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
@@ -38,22 +38,15 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "0387ac870c8000",
+          "oldValue": "8fe28911674000",
           "newValue": ""
         },
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_TRANSFER",
-          "ordinal": "5",
-          "oldValue": "01",
-          "newValue": ""
-        },
-        {
-          "address": "$contract",
-          "reason": "REASON_TRANSFER",
-          "ordinal": "6",
-          "newValue": "01",
-          "oldValue": ""
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "8",
+          "oldValue": "",
+          "newValue": "8c4459fb657400"
         },
         {
           "address": "$coinbase",
@@ -75,31 +68,35 @@
       "codeChanges": [],
       "gasChanges": [
         {
-          "oldValue": "22080",
-          "newValue": "648",
+          "oldValue": "900000",
+          "newValue": "878348",
           "reason": "REASON_INTRINSIC_GAS",
           "ordinal": "2"
         },
         {
-          "oldValue": "304",
-          "newValue": "0",
-          "reason": "REASON_FAILED_EXECUTION",
+          "oldValue": "877821",
+          "newValue": "877812",
+          "reason": "REASON_CALL_DATA_COPY",
+          "ordinal": "5"
+        },
+        {
+          "oldValue": "877643",
+          "newValue": "877370",
+          "reason": "REASON_TX_DATA_FLOOR",
           "ordinal": "7"
         }
       ],
-      "statusFailed": true,
+      "statusFailed": false,
       "statusReverted": false,
-      "failureReason": "out of gas",
-      "stateReverted": true,
+      "failureReason": "",
+      "stateReverted": false,
       "beginOrdinal": "0",
-      "endOrdinal": "8",
-      "accountCreations": [],
-      "value": "01"
+      "endOrdinal": "6",
+      "accountCreations": []
     }
   ],
   "blobHashes": [],
   "gasPrice": "0a7a358200",
-  "value": "01",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",

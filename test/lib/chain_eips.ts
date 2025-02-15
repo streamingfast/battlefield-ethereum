@@ -1,6 +1,8 @@
 import { RpcBlock } from "./ethereum"
 
-// This is not an exhaustive list of EIPs, just the ones we need to know about
+// This is not an exhaustive list of EIPs, just the ones we need to know about. I usually refer
+// to https://github.com/ethereum/execution-spec-tests/releases for the list of EIPs found for
+// a particular fork.
 export type EIP = CancunEIP | PragueEIP
 
 export type CancunEIP =
@@ -14,7 +16,7 @@ export type PragueEIP =
   | "eip6110"
   // Execution layer triggerable withdrawals
   | "eip7002"
-  // Increase calldata cost
+  // Increase calldata cost (contract creation & calldata floor gas)
   | "eip7623"
   // General purpose execution layer requests
   | "eip7685"

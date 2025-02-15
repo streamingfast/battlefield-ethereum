@@ -27,6 +27,12 @@ describe("Inputs", function () {
           `inputs/${name}.expected.json`,
           {
             $inputContract: Input.addressHex,
+          },
+          {
+            eipSnapshotOverrides: {
+              // New gas cost for contract creation & calldata
+              prague: ["eip7623"],
+            },
           }
         )
       })

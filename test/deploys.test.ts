@@ -137,11 +137,20 @@ describe("Deploys", function () {
         `0x${create2Data.salt}`,
         false,
       ])
-    ).to.trxTraceEqualSnapshot("deploys/contract_create2_insufficient_funds_succeed.expected.json", {
-      $callsContract: Calls.addressHex,
-      $createdContract: create2Data.address,
-      $salt: create2Data.salt,
-    })
+    ).to.trxTraceEqualSnapshot(
+      "deploys/contract_create2_insufficient_funds_succeed.expected.json",
+      {
+        $callsContract: Calls.addressHex,
+        $createdContract: create2Data.address,
+        $salt: create2Data.salt,
+      },
+      {
+        eipSnapshotOverrides: {
+          // New gas cost for contract creation & calldata
+          prague: ["eip7623"],
+        },
+      }
+    )
   })
 
   it("Contract with create2, inner call fail due to insufficient funds then revert", async function () {
@@ -154,11 +163,19 @@ describe("Deploys", function () {
         `0x${create2Data.salt}`,
         true,
       ])
-    ).to.trxTraceEqualSnapshot("deploys/contract_create2_insufficient_funds_revert.expected.json", {
-      $callsContract: Calls.addressHex,
-      $createdContract: create2Data.address,
-      $salt: create2Data.salt,
-    })
+    ).to.trxTraceEqualSnapshot(
+      "deploys/contract_create2_insufficient_funds_revert.expected.json",
+      {
+        $callsContract: Calls.addressHex,
+        $createdContract: create2Data.address,
+        $salt: create2Data.salt,
+      },
+      {
+        eipSnapshotOverrides: {
+          prague: ["eip7623"],
+        },
+      }
+    )
   })
 
   it("Contract with create2, successful creation", async function () {

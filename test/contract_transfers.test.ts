@@ -32,7 +32,7 @@ describe("Contract transfers", function () {
 
   it("Existing address failing transaction", async function () {
     await expect(
-      koContractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 22000 })
+      koContractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 22080 })
     ).to.trxTraceEqualSnapshot("contract_transfers/existing_address_failure.expected.json", {
       $contract: Transfers.addressHex,
     })
