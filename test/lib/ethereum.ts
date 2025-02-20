@@ -473,14 +473,14 @@ export type RpcBlock = {
   withdrawals?: Array<any>
   withdrawalsRoot?: string
 
-  // EIP-4844 (? fork)
+  // EIP-4844 (Cancun fork)
   excessBlobGas?: string
   blobGasUsed?: string
 
-  // EIP-4788 (? fork)
+  // EIP-4788 (Cancun fork)
   parentBeaconBlockRoot?: string
 
-  // EIP-7685 (? fork)
+  // EIP-7685 (Prague fork)
   requestsHash?: string
 }
 

@@ -69,6 +69,13 @@ describe("Calls", function () {
       "calls/delegate_to_empty_contract.expected.json",
       {
         $contract: Contract.addressHex,
+      },
+      {
+        networkSnapshotOverrides: [
+          // Arbitrum had a bogus apply backward compatibility change around executed code
+          // when dealing with a call going into an empty contract.
+          "arbitrum-geth-dev",
+        ],
       }
     )
   })
