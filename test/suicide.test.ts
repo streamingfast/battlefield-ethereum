@@ -12,7 +12,14 @@ import {
   stableDeployerFunded,
 } from "./lib/ethereum"
 import { Suicidal, Calls, ContractSuicideNoConstructor__factory } from "../typechain-types"
-import { SuicidalFactory, CallsFactory, owner, SuicideOnConstructorFactory } from "./global"
+import {
+  SuicidalFactory,
+  CallsFactory,
+  owner,
+  SuicideOnConstructorFactory,
+  SuicideContractAsBeneficiary,
+  SuicideContractAsBeneficiarySameTrx,
+} from "./global"
 import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
 import { isNetwork } from "./lib/network"
@@ -184,6 +191,36 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
+      }
+    )
+  })
+
+  it("Contract and suicide beneficiary are the same", async function () {
+    const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
+    const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [])
+
+    await sendEth(owner, Contract.address, oneWei, { gasLimit: 45000 })
+
+    await expect(contractCall(owner, Contract.killSelf, [])).to.trxTraceEqualSnapshot(
+      "suicide/contract_and_suicide_beneficiary_are_the_same.json",
+      {
+        $sender: deployer.address.toLowerCase().slice(2),
+        $createdContract: Contract.addressHex,
+      }
+    )
+  })
+
+  it("Contract and suicide beneficiary are the same, in same trx", async function () {
+    const Contract = await deployStableContractCreator(owner, SuicideContractAsBeneficiarySameTrx, [], 1, 1, {
+      gasLimit: callsGasLimit,
+    })
+    const createdContract = getCreateAddressHex(Contract.address, 1)
+
+    await expect(contractCall(owner, Contract.execute, [], { value: oneWei })).to.trxTraceEqualSnapshot(
+      "suicide/contract_and_suicide_beneficiary_are_the_same_in_same_trx.json",
+      {
+        $contract: Contract.addressHex,
+        $createdContract: createdContract,
       }
     )
   })

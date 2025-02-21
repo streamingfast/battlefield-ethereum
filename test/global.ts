@@ -38,6 +38,8 @@ export let LogsNoTopicsFactory: LogsNoTopics__factory
 export let TransfersFactory: Transfers__factory
 export let SuicidalFactory: Suicidal__factory
 export let SuicideOnConstructorFactory: SuicideOnConstructor__factory
+export let SuicideContractAsBeneficiary: SuicideContractAsBeneficiary__factory
+export let SuicideContractAsBeneficiarySameTrx: SuicideContractAsBeneficiarySameTrx__factory
 
 const debug = debugFactory("battlefield:global")
 
@@ -67,6 +69,8 @@ before(async () => {
   TransfersFactory = await hre.ethers.getContractFactory("Transfers")
   SuicidalFactory = await hre.ethers.getContractFactory("Suicidal")
   SuicideOnConstructorFactory = await hre.ethers.getContractFactory("SuicideOnConstructor")
+  SuicideContractAsBeneficiary = await hre.ethers.getContractFactory("SuicideContractAsBeneficiary")
+  SuicideContractAsBeneficiarySameTrx = await hre.ethers.getContractFactory("SuicideContractAsBeneficiarySameTrx")
   debug("Initialized contract factories")
 
   debug("Initializing owner")
