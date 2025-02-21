@@ -1,12 +1,12 @@
 {
   "to": "$contract",
   "nonce": "$nonce",
-  "gasLimit": "22000",
+  "gasLimit": "22080",
   "input": "a55d0e8e000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "22000",
+  "gasUsed": "22080",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$contract",
-      "gasLimit": "568",
-      "gasConsumed": "568",
+      "gasLimit": "648",
+      "gasConsumed": "648",
       "returnData": "",
       "input": "a55d0e8e000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
       "executedCode": true,
@@ -38,7 +38,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "2",
-          "oldValue": "0384665653e000",
+          "oldValue": "0387ac870c8000",
           "newValue": ""
         },
         {
@@ -76,24 +76,24 @@
       "gasChanges": [
         {
           "oldValue": "0",
-          "newValue": "22000",
+          "newValue": "22080",
           "reason": "REASON_TX_INITIAL_BALANCE",
           "ordinal": "1"
         },
         {
-          "oldValue": "22000",
-          "newValue": "568",
+          "oldValue": "22080",
+          "newValue": "648",
           "reason": "REASON_INTRINSIC_GAS",
           "ordinal": "3"
         },
         {
           "oldValue": "0",
-          "newValue": "568",
+          "newValue": "648",
           "reason": "REASON_CALL_INITIAL_BALANCE",
           "ordinal": "6"
         },
         {
-          "oldValue": "224",
+          "oldValue": "304",
           "newValue": "0",
           "reason": "REASON_FAILED_EXECUTION",
           "ordinal": "9"
