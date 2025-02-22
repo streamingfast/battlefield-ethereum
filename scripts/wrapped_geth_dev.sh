@@ -28,7 +28,15 @@ main() {
         geth_extra_args+=("--vmtrace=firehose")
 
         if has_vmtrace_jsonconfig_flag; then
-            geth_extra_args+=("--vmtrace.jsonconfig={\"applyBackwardCompatibility\":$backward_compatibility}")
+            forced_backward_compatibility=""
+            if [[ $FIREHOSE_ETHEREUM_TRACER_FORCED_BACKWARD_COMPATIBILITY == "true" ]]; then
+                forced_backward_compatibility=",\"_private\":{\"forcedBackwardCompatibility\":true}"
+            else
+                forced_backward_compatibility=""
+            fi
+
+            # There must be no spaces in the JSON config string otherwise bash is not happy
+            geth_extra_args+=("--vmtrace.jsonconfig={\"applyBackwardCompatibility\":${backward_compatibility}${forced_backward_compatibility}}")
         fi
     fi
 
