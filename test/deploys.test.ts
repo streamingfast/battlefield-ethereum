@@ -109,6 +109,10 @@ describe("Deploys", function () {
       {
         $callsContract: Calls.addressHex,
         $createdContract: getCreateAddressHex(Calls.address, 1),
+      },
+      {
+        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
+        networkSnapshotOverrides: ["optimism-geth-dev"],
       }
     )
   })
@@ -123,6 +127,10 @@ describe("Deploys", function () {
         $callsContract: Calls.addressHex,
         $firstCreatedContract: firstCreatedContract,
         $secondCreatedContract: getCreateAddressHex("0x" + firstCreatedContract, 1),
+      },
+      {
+        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
+        networkSnapshotOverrides: ["optimism-geth-dev"],
       }
     )
   })
@@ -174,6 +182,8 @@ describe("Deploys", function () {
         eipSnapshotOverrides: {
           prague: ["eip7623"],
         },
+        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
+        networkSnapshotOverrides: ["optimism-geth-dev"],
       }
     )
   })
@@ -221,6 +231,10 @@ describe("Deploys", function () {
         $callsContract: Calls.addressHex,
         $createdContract: create2Data.address,
         $salt: create2Data.salt,
+      },
+      {
+        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
+        networkSnapshotOverrides: ["optimism-geth-dev"],
       }
     )
   })

@@ -29,6 +29,7 @@ const config: HardhatUserConfig = {
     "geth-dev": firehoseNetwork([]),
     "arbitrum-geth-dev": firehoseNetwork([]),
     "arbitrum-nitro-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
+    "optimism-geth-dev": firehoseNetwork([]),
   },
 
   mocha: {

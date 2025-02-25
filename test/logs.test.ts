@@ -54,6 +54,9 @@ describe("Logs", function () {
           // Firehose 2.3 model generates `topics: [""]` while bogus Arbitrum Geth model
           // generates `topics: []`.
           "arbitrum-geth-dev",
+
+          // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
+          "optimism-geth-dev",
         ],
       }
     )
@@ -74,6 +77,9 @@ describe("Logs", function () {
           // Firehose 2.3 model generates `topics: [""]` while bogus Arbitrum Geth model
           // generates `topics: []`.
           "arbitrum-geth-dev",
+
+          // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
+          "optimism-geth-dev",
         ],
       }
     )

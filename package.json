@@ -9,7 +9,8 @@
     "test:fh2.3:geth-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network geth-dev",
     "test:fh2.3:arbitrum-geth-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network arbitrum-geth-dev",
     "test:fh2.3:arbitrum-nitro-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network arbitrum-nitro-dev",
-    "test:fh3.0:geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0 hardhat test --network geth-dev"
+    "test:fh3.0:geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0 hardhat test --network geth-dev",
+    "test:fh3.0:optimism-geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0 hardhat test --network optimism-geth-dev"
   },
   "keywords": [],
   "author": "",

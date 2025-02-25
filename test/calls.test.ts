@@ -20,6 +20,19 @@ import {
 import { wei } from "./lib/money"
 import { randomAddress5, randomAddress5Hex } from "./lib/addresses"
 
+// Optimism Geth Dev Failed vs Revert Note (comment ref id 1be64cf0820f)
+//
+// The Optimism Firehose 3.0 model seems to have introduced a small change in how we
+// choose the transaction's status. While on the stock Firehose 3.0 model, if a transaction
+// as a failed receipt but the its root call has reverted, we change the transactions's status
+// to reverted.
+//
+// On the Optimism Firehose 3.0 model, we keep the transaction's status as failed in all cases.
+// This was done to align with RPC's behavior, where the transaction's status cannot be reverted.
+// Don't think it was a good idea, we should have sticked to Firehose 3.0 behavior.
+//
+// See https://github.com/streamingfast/go-ethereum/blob/3b1a1dc9b92d5fd13b36b0030f744b547cf4e6cc/eth/tracers/firehose.go#L658-L665
+
 const callsGasLimit = 3_500_000
 
 describe("Calls", function () {
@@ -127,6 +140,10 @@ describe("Calls", function () {
       "calls/revert_failure_root_call.expected.json",
       {
         $callsContract: Calls.addressHex,
+      },
+      {
+        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
+        networkSnapshotOverrides: ["optimism-geth-dev"],
       }
     )
   })
