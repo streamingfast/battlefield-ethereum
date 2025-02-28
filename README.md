@@ -2,12 +2,15 @@
 
 This repository contains an Hardhat project and scripts to test the various Firehose Ethereum integrations we support. It contains Solidity smart contracts and test cases that exercises all corner cases of tracing an Ethereum node.
 
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Ensure you have `node` version 20 or more recent as as the chain's binary compiled on your machine. Review [Dependencies](#dependencies) section to determine which tool you need to have locally for the commands below to work.
+
 ## Run Test Suite
-
-First review [Dependencies](#dependencies) section to determine which tool you need to have locally for the commands below to work.
-
-> [!NOTE]
-> We have instructions/scripts only for `geth` in `--dev` mode for now.
 
 - Launch Firehose instance using `geth --dev` model (requires [geth](#build-firehose-geth) and [fireeth](#get-fireeth) to be available locally) in a terminal by running:
 
@@ -23,8 +26,21 @@ First review [Dependencies](#dependencies) section to determine which tool you n
   pnpm test:fh2.3:geth-dev
   ```
 
-  > [!NOTE]
-  > Ensure that you run match command above with the Firehose Tracer Version you use when launching `./scripts/run_firehose_geth_dev.sh`.
+Ensure that you run match command above with the Firehose Tracer Version you use when launching `./scripts/run_firehose_geth_dev.sh` as well
+as for the chain your are testing against. See below for chain details and how you should launch the chain and the corresponding tests.
+
+### Chain Tests
+
+Battlefield supports testing across various forks of Ethereum. Usually, you need to run the specific tests, here the list of currently supported/known chain and how to test them:
+
+| Chain | Firehose Launcher | Tests Launcher | Notes |
+| ----------------------- | ----------------------------------------------- | ----------------------------------- | None |
+| Ethereum (Firehose 2.3) | `./scripts/run_firehose_geth_dev.sh 2.3 cancun` | `pnpm test:fh2.3:geth-dev` | None |
+| Ethereum (Firehose 3.0) | `./scripts/run_firehose_geth_dev.sh 3.0 prague` | `pnpm test:fh3.0:geth-dev` | None |
+| Arbitrum | `./scripts/run_firehose_geth_dev.sh 2.3 cancun` | `pnpm test:fh2.3:arbitrum-geth-dev` | None |
+| Optimism | `./scripts/run_firehose_geth_dev.sh 3.0 prague` | `pnpm test:fh3.0:optimism-geth-dev` | None |
+| Sei | `./scripts/run_firehose_sei.sh sequential` | `pnpm test:fh3.0:sei-dev` | The `sequential` tag refers to transaction execution algorithm, test both |
+| Sei | `./scripts/run_firehose_sei.sh parallel` | `pnpm test:fh3.0:sei-dev` | The `parallel` tag refers to transaction execution algorithm, test both |
 
 ### Specific Tests
 
@@ -133,6 +149,7 @@ pnpm generate
 
 Dependencies you will need to have locally to run the scripts contained in this project:
 
+- [Node.js](https://nodejs.org/) ([Installation](https://nodejs.org/en/download))
 - [pnpm](https://pnpm.io/) ([Installation](https://pnpm.io/installation))
 - [jq](https://jqlang.github.io/jq/) (`brew install jq`, `apt-get install jq`, [others](https://jqlang.github.io/jq/download/))
 - [sd](https://github.com/chmln/sd?tab=readme-ov-file#sd---search--displace) (`brew install sd`, `apt-get install sd`, [others](https://github.com/chmln/sd?tab=readme-ov-file#installation))
@@ -153,7 +170,7 @@ To install `fireeth`, you can simply do `brew install tap/streamingfast/firehose
 - Install it locally:
 
   ```bash
-  GOTOOLCHAIN=go1.22.10 go install ./cmd/geth
+  go install ./cmd/geth
   ```
 
   > [!NOTE]

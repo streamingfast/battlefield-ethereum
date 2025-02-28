@@ -136,6 +136,12 @@ export class Snapshot {
 
   toSnapshotPath(kind: SnapshotKind, relativeToCwd: boolean = false): string {
     const snapshotsTag = getGlobalSnapshotsTag()
+    const snapshotsTagParts = this.id.split("/")
+
+    let globalNetworkOverride: string | undefined
+    if (snapshotsTagParts.length > 1) {
+      globalNetworkOverride = snapshotsTagParts[1]
+    }
 
     const group = path.dirname(this.id)
     const lastSegment = this.id.replace(group, "").replace(/^(\/|\\)/, "")
@@ -144,9 +150,21 @@ export class Snapshot {
     if (this.eipOverride) {
       segments.push(this.eipOverride)
     }
-    if (this.networkOverride) {
-      segments.push(this.networkOverride)
+
+    if (globalNetworkOverride) {
+      if (this.networkOverride) {
+        throw new Error(
+          `Snapshot ${this.id} has both a global network override and a local network override that matched, this is not allowed`
+        )
+      }
+
+      segments.push(globalNetworkOverride)
+    } else {
+      if (this.networkOverride) {
+        segments.push(this.networkOverride)
+      }
     }
+
     segments.push(lastSegment)
 
     const filePath = path.join(...segments)

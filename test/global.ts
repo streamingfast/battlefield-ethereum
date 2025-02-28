@@ -103,7 +103,8 @@ before(async () => {
 })
 
 function validateFirehoseBlockVersion(block: Block) {
-  const tag = getGlobalSnapshotsTag()
+  const globalTag = getGlobalSnapshotsTag()
+  const tag = globalTag.split("/")[0]
 
   switch (tag) {
     case "fh2.3":

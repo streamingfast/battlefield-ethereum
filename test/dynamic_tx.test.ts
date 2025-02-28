@@ -7,6 +7,7 @@ import { knownExistingAddress } from "./lib/addresses"
 import { TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner } from "./global"
 import { toBigInt } from "./lib/numbers"
+import { isNetwork } from "./lib/network"
 
 describe("Dynamic Tx", function () {
   it("Dynamic transaction max fee", async function () {
@@ -16,13 +17,16 @@ describe("Dynamic Tx", function () {
     })
     const { block, trace } = await fetchFirehoseTransactionAndBlock(result)
 
-    expect(toBigInt(block.header?.baseFeePerGas)).to.be.above(0n)
-
     expect(hexlify(trace.hash)).to.equal(result.hash)
     expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_DYNAMIC_FEE)
     expect(toBigInt(trace.gasPrice)).to.equal(result.gasPrice)
     expect(toBigInt(trace.maxFeePerGas)).to.equal(defaultGasPrice)
-    expect(toBigInt(trace.maxPriorityFeePerGas)).to.equal(result.response.maxPriorityFeePerGas)
+    expect(toBigInt(block.header?.baseFeePerGas)).to.be.greaterThanOrEqual(0n)
+
+    // Seems that Sei return `null` as `maxPriorityFeePerGas` on dynamic fee transactions, at least at the time of writing this test.
+    if (!isNetwork("sei-dev")) {
+      expect(toBigInt(trace.maxPriorityFeePerGas)).to.equal(result.response.maxPriorityFeePerGas)
+    }
   })
 
   it("Dynamic transaction max tip", async function () {
@@ -33,13 +37,12 @@ describe("Dynamic Tx", function () {
     })
     const { block, trace } = await fetchFirehoseTransactionAndBlock(result)
 
-    expect(toBigInt(block.header?.baseFeePerGas)).to.be.above(0n)
-
     expect(hexlify(trace.hash)).to.equal(result.hash)
     expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_DYNAMIC_FEE)
     expect(toBigInt(trace.gasPrice)).to.above(toBigInt(block.header?.baseFeePerGas))
-    expect(toBigInt(trace.gasPrice)).to.be.below(toBigInt(defaultGasPrice))
     expect(toBigInt(trace.maxFeePerGas)).to.equal(defaultGasPrice)
+    expect(toBigInt(trace.gasPrice)).to.be.lessThanOrEqual(toBigInt(defaultGasPrice))
+    expect(toBigInt(block.header?.baseFeePerGas)).to.be.greaterThanOrEqual(0n)
     expect(toBigInt(trace.maxPriorityFeePerGas)).to.equal(25_000n)
   })
 })

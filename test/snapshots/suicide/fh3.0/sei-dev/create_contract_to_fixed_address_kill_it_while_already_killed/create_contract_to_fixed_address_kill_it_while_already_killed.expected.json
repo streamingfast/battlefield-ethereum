@@ -1,0 +1,519 @@
+{
+  "to": "$callsContract",
+  "nonce": "$nonce",
+  "gasLimit": "900000",
+  "input": "c2471eea",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "242236",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "58",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$callsContract",
+      "gasLimit": "878936",
+      "gasConsumed": "221172",
+      "returnData": "",
+      "input": "c2471eea",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "55",
+          "oldValue": "",
+          "newValue": "69287ab278c800"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "57",
+          "newValue": "01",
+          "oldValue": ""
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "3"
+        }
+      ],
+      "logs": [
+        {
+          "address": "$callsContract",
+          "topics": [
+            "8ffcdc15a283d706d38281f500270d8b5a656918f555de0913d7455e3e6bc1bf",
+            "000000000000000000000000$createdContract"
+          ],
+          "data": "",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "20"
+        }
+      ],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "900000",
+          "reason": "REASON_TX_INITIAL_BALANCE",
+          "ordinal": "1"
+        },
+        {
+          "oldValue": "900000",
+          "newValue": "878936",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "2"
+        },
+        {
+          "oldValue": "0",
+          "newValue": "878936",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "5"
+        },
+        {
+          "oldValue": "878705",
+          "newValue": "878542",
+          "reason": "REASON_CODE_COPY",
+          "ordinal": "6"
+        },
+        {
+          "oldValue": "878500",
+          "newValue": "846292",
+          "reason": "REASON_CONTRACT_CREATION2",
+          "ordinal": "7"
+        },
+        {
+          "oldValue": "846292",
+          "newValue": "13223",
+          "reason": "REASON_CONTRACT_CREATION2",
+          "ordinal": "8"
+        },
+        {
+          "oldValue": "13223",
+          "newValue": "690090",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
+          "ordinal": "18"
+        },
+        {
+          "oldValue": "690016",
+          "newValue": "688891",
+          "reason": "REASON_EVENT_LOG",
+          "ordinal": "19"
+        },
+        {
+          "oldValue": "688689",
+          "newValue": "10759",
+          "reason": "REASON_STATIC_CALL",
+          "ordinal": "21"
+        },
+        {
+          "oldValue": "10759",
+          "newValue": "686201",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
+          "ordinal": "26"
+        },
+        {
+          "oldValue": "685816",
+          "newValue": "10714",
+          "reason": "REASON_CALL",
+          "ordinal": "27"
+        },
+        {
+          "oldValue": "10714",
+          "newValue": "665337",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
+          "ordinal": "33"
+        },
+        {
+          "oldValue": "665104",
+          "newValue": "10390",
+          "reason": "REASON_STATIC_CALL",
+          "ordinal": "34"
+        },
+        {
+          "oldValue": "10390",
+          "newValue": "664616",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
+          "ordinal": "39"
+        },
+        {
+          "oldValue": "664106",
+          "newValue": "10375",
+          "reason": "REASON_CALL",
+          "ordinal": "40"
+        },
+        {
+          "oldValue": "10375",
+          "newValue": "658725",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
+          "ordinal": "46"
+        },
+        {
+          "oldValue": "658424",
+          "newValue": "10286",
+          "reason": "REASON_STATIC_CALL",
+          "ordinal": "47"
+        },
+        {
+          "oldValue": "10286",
+          "newValue": "657936",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
+          "ordinal": "52"
+        },
+        {
+          "oldValue": "657764",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "53"
+        },
+        {
+          "oldValue": "657764",
+          "newValue": "0",
+          "reason": "REASON_TX_LEFT_OVER_RETURNED",
+          "ordinal": "56"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "4",
+      "endOrdinal": "54",
+      "accountCreations": []
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "CREATE",
+      "caller": "$callsContract",
+      "address": "$createdContract",
+      "gasLimit": "833069",
+      "gasConsumed": "156202",
+      "returnData": "",
+      "input": "608060405234801561001057600080fd5b5061030c806100206000396000f3fe60806040526004361061003f5760003560e01c806313af403514610044578063412a5a6d1461009557806341c0e1b5146100ac5780638da5cb5b146100cc575b600080fd5b34801561005057600080fd5b506100936004803603602081101561006757600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061010d565b005b3480156100a157600080fd5b506100aa610150565b005b6100b46101d0565b60405180821515815260200191505060405180910390f35b3480156100d857600080fd5b506100e161020c565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008060405161015f90610230565b808215158152602001915050604051809103906000f080158015610187573d6000803e3d6000fd5b5090508073ffffffffffffffffffffffffffffffffffffffff167f8ffcdc15a283d706d38281f500270d8b5a656918f555de0913d7455e3e6bc1bf60405160405180910390a250565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16ff5b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b609a8061023d8339019056fe6080604052348015600f57600080fd5b50604051609a380380609a83398181016040526020811015602f57600080fd5b81019080805190602001909291905050508015604d576000604c57fe5b5b50603f80605b6000396000f3fe6080604052600080fdfea2646970667358221220576419740318f8cd23647c635b12ad73cda79d434d8e3a4e074b3e9da5df7ea264736f6c634300060c0033a2646970667358221220ad3c8cbbeadc4597f0327145bcf28b6170c13a8172c0534e4ad55f28e7cae64b64736f6c634300060c0033",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [
+        {
+          "address": "$callsContract",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "11"
+        },
+        {
+          "address": "$createdContract",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "12"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [
+        {
+          "address": "$createdContract",
+          "oldHash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "oldCode": "",
+          "newHash": "12c3e679dace1da5ddb389df85075a571eea4e19d16d8c1715110b1e29b4226f",
+          "newCode": "60806040526004361061003f5760003560e01c806313af403514610044578063412a5a6d1461009557806341c0e1b5146100ac5780638da5cb5b146100cc575b600080fd5b34801561005057600080fd5b506100936004803603602081101561006757600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061010d565b005b3480156100a157600080fd5b506100aa610150565b005b6100b46101d0565b60405180821515815260200191505060405180910390f35b3480156100d857600080fd5b506100e161020c565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008060405161015f90610230565b808215158152602001915050604051809103906000f080158015610187573d6000803e3d6000fd5b5090508073ffffffffffffffffffffffffffffffffffffffff167f8ffcdc15a283d706d38281f500270d8b5a656918f555de0913d7455e3e6bc1bf60405160405180910390a250565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16ff5b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b609a8061023d8339019056fe6080604052348015600f57600080fd5b50604051609a380380609a83398181016040526020811015602f57600080fd5b81019080805190602001909291905050508015604d576000604c57fe5b5b50603f80605b6000396000f3fe6080604052600080fdfea2646970667358221220576419740318f8cd23647c635b12ad73cda79d434d8e3a4e074b3e9da5df7ea264736f6c634300060c0033a2646970667358221220ad3c8cbbeadc4597f0327145bcf28b6170c13a8172c0534e4ad55f28e7cae64b64736f6c634300060c0033",
+          "ordinal": "15"
+        }
+      ],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "833069",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "10"
+        },
+        {
+          "oldValue": "833015",
+          "newValue": "832870",
+          "reason": "REASON_CODE_COPY",
+          "ordinal": "13"
+        },
+        {
+          "oldValue": "832867",
+          "newValue": "676867",
+          "reason": "REASON_CODE_STORAGE",
+          "ordinal": "14"
+        },
+        {
+          "oldValue": "676867",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "16"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "9",
+      "endOrdinal": "17",
+      "accountCreations": []
+    },
+    {
+      "index": 3,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "STATIC",
+      "caller": "$callsContract",
+      "address": "$createdContract",
+      "gasLimit": "677830",
+      "gasConsumed": "2388",
+      "returnData": "0000000000000000000000000000000000000000000000000000000000000000",
+      "input": "8da5cb5b",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "677830",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "23"
+        },
+        {
+          "oldValue": "675442",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "24"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "22",
+      "endOrdinal": "25",
+      "accountCreations": []
+    },
+    {
+      "index": 4,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "CALL",
+      "caller": "$callsContract",
+      "address": "$createdContract",
+      "gasLimit": "675002",
+      "gasConsumed": "20379",
+      "returnData": "",
+      "input": "13af4035000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [
+        {
+          "address": "$createdContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000000",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
+          "newValue": "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "ordinal": "30"
+        }
+      ],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "675002",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "29"
+        },
+        {
+          "oldValue": "654623",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "31"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "28",
+      "endOrdinal": "32",
+      "accountCreations": []
+    },
+    {
+      "index": 5,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "STATIC",
+      "caller": "$callsContract",
+      "address": "$createdContract",
+      "gasLimit": "654614",
+      "gasConsumed": "388",
+      "returnData": "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "input": "8da5cb5b",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "654614",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "36"
+        },
+        {
+          "oldValue": "654226",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "37"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "35",
+      "endOrdinal": "38",
+      "accountCreations": []
+    },
+    {
+      "index": 6,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "CALL",
+      "caller": "$callsContract",
+      "address": "$createdContract",
+      "gasLimit": "653631",
+      "gasConsumed": "5281",
+      "returnData": "",
+      "input": "41c0e1b5",
+      "executedCode": true,
+      "suicide": true,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "653631",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "42"
+        },
+        {
+          "oldValue": "653350",
+          "newValue": "648350",
+          "reason": "REASON_SELF_DESTRUCT",
+          "ordinal": "43"
+        },
+        {
+          "oldValue": "648350",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "44"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "41",
+      "endOrdinal": "45",
+      "accountCreations": []
+    },
+    {
+      "index": 7,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "STATIC",
+      "caller": "$callsContract",
+      "address": "$createdContract",
+      "gasLimit": "648038",
+      "gasConsumed": "388",
+      "returnData": "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "input": "8da5cb5b",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "648038",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "49"
+        },
+        {
+          "oldValue": "647650",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "50"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "48",
+      "endOrdinal": "51",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0a7a358200",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": [
+      {
+        "address": "$callsContract",
+        "topics": [
+          "8ffcdc15a283d706d38281f500270d8b5a656918f555de0913d7455e3e6bc1bf",
+          "000000000000000000000000$createdContract"
+        ],
+        "data": "",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "20"
+      }
+    ]
+  }
+}
