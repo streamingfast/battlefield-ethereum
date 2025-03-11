@@ -136,7 +136,7 @@ export class Snapshot {
 
   toSnapshotPath(kind: SnapshotKind, relativeToCwd: boolean = false): string {
     const snapshotsTag = getGlobalSnapshotsTag()
-    const snapshotsTagParts = this.id.split("/")
+    const snapshotsTagParts = snapshotsTag.split("/")
 
     let globalNetworkOverride: string | undefined
     if (snapshotsTagParts.length > 1) {
