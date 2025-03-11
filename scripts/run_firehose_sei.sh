@@ -8,30 +8,30 @@ source "$ROOT/lib.sh"
 
 main() {
   check_fireeth
-  check_env "SEI_CHAIN_REPOSITORY_HOME" "You need to set the SEI_CHAIN_REPOSITORY_HOME environment variable pointing to our Sei fork at https://github.com/streamingfast/sei-chain"
+  check_seid
 
   if [[ ! $# -eq 1 ]]; then
     usage_error "Wrong arguments"
   fi
 
-  seid_args="start --home \"$HOME/.sei\" --trace --chain-id sei-chain"
   transaction_executor="$1"
-
   if [[ "$transaction_executor" != "sequential" && "$transaction_executor" != "parallel" ]]; then
     usage_error "Invalid transaction executor config '$transaction_executor'"
   fi
 
-  # This is done here because the script compiles some Golang code which takes time usually. By doing
-  # it once here, we will wait until the compilation is done before starting the node. This will enable
-  # 'launch_funder' to work properly since it it has ~15 seconds to fund the address before exiting
-  pushd "$SEI_CHAIN_REPOSITORY_HOME" > /dev/null
-    NO_RUN=1 "./scripts/initialize_local_chain.sh"
-  popd > /dev/null
+  occ_enabled="true"
+  if [[ "${transaction_executor}" == "sequential" ]]; then
+      occ_enabled="false"
+  fi
+
+  run_dir=$(mktemp -d)
+  cp -R "$ROOT/sei_dev/chain_data" "$run_dir/sei"
+  sd 'occ-enabled *=.*' "occ-enabled = ${occ_enabled}" "$run_dir/sei/config/app.toml"
 
   launch_funder &
 
   echo "Running Sei node with Firehose tracer activated via 'fireeth'"
-  run_fireeth 1 "$seid" "$seid_args" --reader-node-bootstrap-data-url="bash://$ROOT/bootstrap_sei.sh?env_TRANSACTION_EXECUTOR=${transaction_executor}"
+  run_fireeth 1 "$seid" "start --home \"$run_dir/sei\" --trace --chain-id sei-chain"
 }
 
 launch_funder() {

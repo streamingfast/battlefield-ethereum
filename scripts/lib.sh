@@ -93,7 +93,9 @@ check_geth() {
   if ! command -v "$geth" &> /dev/null; then
     echo "The '$geth' binary could not be found, you can install it with:"
     echo ""
-    echo "- go install github.com/ethereum/go-ethereum/cmd/geth@latest"
+    echo "- go install github.com/streamingfast/go-ethereum/cmd/geth@latest"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
     exit 1
   fi
   if [[ -n "$1" ]]; then
@@ -101,6 +103,15 @@ check_geth() {
           echo "Your geth version is not compatible with Binance Smart Chain (grepping the string '$1' in 'geth --help' output)"
           exit 1
       fi
+  fi
+}
+
+check_seid() {
+  if ! command -v "$seid" &> /dev/null; then
+    echo "The '$seid' binary could not be found, you can install it with:"
+    echo ""
+    echo "- go install github.com/streamingfast/sei-chain/cmd/seid@latest"
+    exit 1
   fi
 }
 

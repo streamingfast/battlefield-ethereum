@@ -146,7 +146,7 @@ export class Snapshot {
     const group = path.dirname(this.id)
     const lastSegment = this.id.replace(group, "").replace(/^(\/|\\)/, "")
 
-    const segments = [snapshotsUrl, group, snapshotsTag]
+    const segments = [snapshotsUrl, group, snapshotsTagParts[0]]
     if (this.eipOverride) {
       segments.push(this.eipOverride)
     }
