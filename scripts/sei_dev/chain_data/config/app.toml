@@ -21,7 +21,7 @@ pruning = "default"
 # These are applied if and only if the pruning strategy is custom, and seidb is not enabled
 pruning-keep-recent = "0"
 pruning-keep-every = "0"
-pruning-interval = "2963"
+pruning-interval = "2887"
 
 # HaltHeight contains a non-zero block height at which a node will gracefully
 # halt and shutdown that can be used to assist upgrades and testing.
