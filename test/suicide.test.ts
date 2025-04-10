@@ -206,6 +206,12 @@ describe("Suicide", function () {
       {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: Contract.addressHex,
+      },
+      {
+        networkSnapshotOverrides: [
+          // See comment with ref id 5564fd945748 in this file
+          "arbitrum-geth-dev",
+        ],
       }
     )
   })
@@ -221,6 +227,12 @@ describe("Suicide", function () {
       {
         $contract: Contract.addressHex,
         $createdContract: createdContract,
+      },
+      {
+        networkSnapshotOverrides: [
+          // See comment with ref id 5564fd945748 in this file
+          "arbitrum-geth-dev",
+        ],
       }
     )
   })
