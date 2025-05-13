@@ -42,9 +42,9 @@ main() {
             fi
 
             # There must be no spaces in the JSON config string otherwise bash is not happy
-            json_config="{\"applyBackwardCompatibility\":${backward_compatibility},\"concurrentBlockFlushing\":false${forced_backward_compatibility}}"
+            json_config="{\"applyBackwardCompatibility\":${backward_compatibility},\"concurrentBlockFlushing\":${concurrent_block_flushing}${forced_backward_compatibility}}"
             echo "Using vmtrace.jsonconfig: $json_config"
-            geth_extra_args+=("--vmtrace.jsonconfig={\"applyBackwardCompatibility\":${backward_compatibility},\"concurrentBlockFlushing\":${concurrent_block_flushing}${forced_backward_compatibility}}")
+            geth_extra_args+=("--vmtrace.jsonconfig=$json_config")
         fi
     fi
 
