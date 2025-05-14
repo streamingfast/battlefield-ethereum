@@ -49,7 +49,7 @@ describe("Deploys", function () {
           // existed or not).
           "arbitrum-geth-dev",
         ],
-      }
+      },
     )
   })
 
@@ -61,7 +61,7 @@ describe("Deploys", function () {
       {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: getCreateAddressHex(deployer.address, 0),
-      }
+      },
     )
   })
 
@@ -73,7 +73,7 @@ describe("Deploys", function () {
       {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: getCreateAddressHex(deployer.address, 0),
-      }
+      },
     )
   })
 
@@ -85,7 +85,7 @@ describe("Deploys", function () {
       {
         $callsContract: Calls.addressHex,
         $createdContract: getCreateAddressHex(Calls.address, 1),
-      }
+      },
     )
   })
 
@@ -97,7 +97,7 @@ describe("Deploys", function () {
       {
         $callsContract: Calls.addressHex,
         $createdContract: getCreateAddressHex(Calls.address, 1),
-      }
+      },
     )
   })
 
@@ -113,7 +113,7 @@ describe("Deploys", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev"],
-      }
+      },
     )
   })
 
@@ -131,7 +131,7 @@ describe("Deploys", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev"],
-      }
+      },
     )
   })
 
@@ -144,7 +144,7 @@ describe("Deploys", function () {
         "300000000000000000000000000000",
         `0x${create2Data.salt}`,
         false,
-      ])
+      ]),
     ).to.trxTraceEqualSnapshot(
       "deploys/contract_create2_insufficient_funds_succeed.expected.json",
       {
@@ -157,7 +157,8 @@ describe("Deploys", function () {
           // New gas cost for contract creation & calldata
           prague: ["eip7623"],
         },
-      }
+        networkSnapshotOverrides: ["bnb-dev"],
+      },
     )
   })
 
@@ -170,7 +171,7 @@ describe("Deploys", function () {
         "300000000000000000000000000000",
         `0x${create2Data.salt}`,
         true,
-      ])
+      ]),
     ).to.trxTraceEqualSnapshot(
       "deploys/contract_create2_insufficient_funds_revert.expected.json",
       {
@@ -183,8 +184,8 @@ describe("Deploys", function () {
           prague: ["eip7623"],
         },
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev"],
-      }
+        networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"],
+      },
     )
   })
 
@@ -192,12 +193,18 @@ describe("Deploys", function () {
     const create2Data = getStableCreate2Data(Calls.address, Calls__factory)
 
     await expect(
-      contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false])
-    ).to.trxTraceEqualSnapshot("deploys/contract_create2_successful_creation.expected.json", {
-      $callsContract: Calls.addressHex,
-      $createdContract: create2Data.address,
-      $salt: create2Data.salt,
-    })
+      contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false]),
+    ).to.trxTraceEqualSnapshot(
+      "deploys/contract_create2_successful_creation.expected.json",
+      {
+        $callsContract: Calls.addressHex,
+        $createdContract: create2Data.address,
+        $salt: create2Data.salt,
+      },
+      {
+        networkSnapshotOverrides: ["bnb-dev"],
+      },
+    )
   })
 
   it("Contract with create2, inner call fail due to address already exists (transaction succeed though)", async function () {
@@ -208,12 +215,18 @@ describe("Deploys", function () {
     await contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false])
 
     await expect(
-      contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false])
-    ).to.trxTraceEqualSnapshot("deploys/contract_create2_inner_call_fails_address_already_exists.expected.json", {
-      $callsContract: Calls.addressHex,
-      $createdContract: create2Data.address,
-      $salt: create2Data.salt,
-    })
+      contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false]),
+    ).to.trxTraceEqualSnapshot(
+      "deploys/contract_create2_inner_call_fails_address_already_exists.expected.json",
+      {
+        $callsContract: Calls.addressHex,
+        $createdContract: create2Data.address,
+        $salt: create2Data.salt,
+      },
+      {
+        networkSnapshotOverrides: ["bnb-dev"],
+      },
+    )
   })
 
   it("Contract with create2, inner call fail due to address already exists and transaction fails too", async function () {
@@ -224,7 +237,7 @@ describe("Deploys", function () {
     await contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false])
 
     await expect(
-      koContractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, true])
+      koContractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, true]),
     ).to.trxTraceEqualSnapshot(
       "deploys/contract_create2_inner_call_fails_address_already_exists_and_trx_fails.expected.json",
       {
@@ -234,8 +247,8 @@ describe("Deploys", function () {
       },
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev"],
-      }
+        networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"],
+      },
     )
   })
 })

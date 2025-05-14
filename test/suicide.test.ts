@@ -49,7 +49,7 @@ describe("Suicide", function () {
     await deployAll(
       async () => (Suicidal1 = await deployContract(owner, SuicidalFactory, [])),
       async () => (Suicidal2 = await deployContract(owner, SuicidalFactory, [])),
-      async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit }))
+      async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })),
     )
   })
 
@@ -75,7 +75,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      }
+      },
     )
 
     await expect(contractCall(owner, Suicidal1.kill, [])).to.trxTraceEqualSnapshot(
@@ -90,8 +90,9 @@ describe("Suicide", function () {
         networkSnapshotOverrides: [
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
+          "bnb-dev",
         ],
-      }
+      },
     )
   })
 
@@ -114,8 +115,9 @@ describe("Suicide", function () {
           // Arbitrum Geth model is generating two, twice the same. The second one being a duplicate
           // of the first and shouldn't have been there
           "arbitrum-geth-dev",
+          "bnb-dev",
         ],
-      }
+      },
     )
   })
 
@@ -136,7 +138,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      }
+      },
     )
   })
 
@@ -145,7 +147,7 @@ describe("Suicide", function () {
     let createdContract = getCreate2AddressHex(Calls.addressHex, salt, ContractSuicideNoConstructor__factory)
 
     await expect(
-      contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, [])
+      contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, []),
     ).to.trxTraceEqualSnapshot(
       "suicide/create_contract_to_fixed_address_kill_it.expected.json",
       {
@@ -157,11 +159,11 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      }
+      },
     )
 
     await expect(
-      contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, [])
+      contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, []),
     ).to.trxTraceEqualSnapshot(
       "suicide/create_contract_to_fixed_address_kill_it_while_already_killed.expected.json",
       {
@@ -173,7 +175,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      }
+      },
     )
   })
 
@@ -191,7 +193,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      }
+      },
     )
   })
 
@@ -211,8 +213,9 @@ describe("Suicide", function () {
         networkSnapshotOverrides: [
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
+          "bnb-dev",
         ],
-      }
+      },
     )
   })
 
@@ -232,8 +235,9 @@ describe("Suicide", function () {
         networkSnapshotOverrides: [
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
+          "bnb-dev",
         ],
-      }
+      },
     )
   })
 })

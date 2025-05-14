@@ -1,11 +1,11 @@
 FROM ubuntu:22.04
 
-ARG CONTRACT_TAG=v1.2.4
-ARG NPM_VERSION=v22.4.1
-ARG FORGE_VERSION=v1.7.3
-ARG GETH_VERSION=v1.4.16
+ARG CONTRACT_TAG=v1.2.4 # https://github.com/bnb-chain/bsc-genesis-contract/tags
+ARG NPM_VERSION=v22.4.1 # need something decent, unlike it says in bsc-genesis-contract repo...
+ARG FORGE_VERSION=v1.7.3 # from https://github.com/bnb-chain/bsc-genesis-contract?tab=readme-ov-file#prepare
+ARG GETH_VERSION=v1.5.12 # https://github.com/bnb-chain/bsc/releases/
 
-RUN apt-get update && apt-get -y install ca-certificates python3 git curl build-essential
+RUN apt-get update && apt-get -y install ca-certificates python3 git curl build-essential jq
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
 
@@ -26,10 +26,13 @@ RUN echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc
 RUN cd /root/genesis && poetry install
 
 RUN  curl -L https://foundry.paradigm.xyz | bash
-RUN cd /root/genesis && foundryup && forge install --no-git --no-commit foundry-rs/forge-std@$FORGE_VERSION
+RUN cd /root/genesis && foundryup && forge install --no-git foundry-rs/forge-std@$FORGE_VERSION
 
 WORKDIR /root/genesis
 RUN poetry run python -m scripts.generate dev
+
+# activate pascal and lorentz
+jq '.config.lorentzTime = 0 | .config.pascalTime = 0 | .config.parlia.period = 1'  genesis.json> genesis.json.new && mv genesis.json.new genesis.json
 
 RUN uname -i |grep "aarch64" && binary="geth_linux" || binary="geth-linux-arm64"; curl -L -o /usr/local/bin/geth https://github.com/bnb-chain/bsc/releases/download/$GETH_VERSION/$binary && chmod +x /usr/local/bin/geth
 
