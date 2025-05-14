@@ -88,7 +88,7 @@ describe("Calls", function () {
           // Arbitrum had a bogus apply backward compatibility change around executed code
           // when dealing with a call going into an empty contract.
           "arbitrum-geth-dev",
-          "bnb-dev",
+          "bnb-dev", // less gas used on bnb here, also an extra 'REASON_STATE_COLD_ACCESS' gas change
         ],
       },
     )

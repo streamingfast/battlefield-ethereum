@@ -157,7 +157,7 @@ describe("Deploys", function () {
           // New gas cost for contract creation & calldata
           prague: ["eip7623"],
         },
-        networkSnapshotOverrides: ["bnb-dev"],
+        networkSnapshotOverrides: ["bnb-dev"], // less gas used on bnb here
       },
     )
   })
@@ -184,7 +184,7 @@ describe("Deploys", function () {
           prague: ["eip7623"],
         },
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"],
+        networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"], // less gas used on bnb here
       },
     )
   })
@@ -202,7 +202,7 @@ describe("Deploys", function () {
         $salt: create2Data.salt,
       },
       {
-        networkSnapshotOverrides: ["bnb-dev"],
+        networkSnapshotOverrides: ["bnb-dev"], // less gas used on bnb here
       },
     )
   })
@@ -224,7 +224,7 @@ describe("Deploys", function () {
         $salt: create2Data.salt,
       },
       {
-        networkSnapshotOverrides: ["bnb-dev"],
+        networkSnapshotOverrides: ["bnb-dev"], // less gas used on bnb here
       },
     )
   })
@@ -247,7 +247,7 @@ describe("Deploys", function () {
       },
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"],
+        networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"], // less gas used on bnb here
       },
     )
   })

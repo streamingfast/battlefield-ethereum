@@ -90,7 +90,7 @@ describe("Suicide", function () {
         networkSnapshotOverrides: [
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
-          "bnb-dev",
+          "bnb-dev", // on bnb, there is no executedCode, no suicide, no gas change for REASON_SELF_DESTRUCT
         ],
       },
     )
@@ -115,7 +115,7 @@ describe("Suicide", function () {
           // Arbitrum Geth model is generating two, twice the same. The second one being a duplicate
           // of the first and shouldn't have been there
           "arbitrum-geth-dev",
-          "bnb-dev",
+          "bnb-dev", // on bnb, the refund happens BEFORE the withdraw
         ],
       },
     )
@@ -213,7 +213,7 @@ describe("Suicide", function () {
         networkSnapshotOverrides: [
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
-          "bnb-dev",
+          "bnb-dev", // on bnb, the refund happens BEFORE the withdraw
         ],
       },
     )
@@ -235,7 +235,7 @@ describe("Suicide", function () {
         networkSnapshotOverrides: [
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
-          "bnb-dev",
+          "bnb-dev", // bnb does not show the 'double withdraw' behavior, but the result is the same because the account gets drained.
         ],
       },
     )
