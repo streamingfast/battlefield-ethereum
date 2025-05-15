@@ -22,9 +22,10 @@ main() {
     fi
 
     # CONCURRENT_BLOCK_FLUSHING=true ./scripts/run_firehose_geth_dev.sh 3.0 prague
-    concurrent_block_flushing="false"
-    if [[ "$CONCURRENT_BLOCK_FLUSHING" == "true" ]]; then
-        concurrent_block_flushing="true"
+    concurrent_block_flushing="${CONCURRENT_BLOCK_FLUSHING:-0}"
+    if ! [[ "$concurrent_block_flushing" =~ ^[0-9]+$ ]]; then
+        echo "Invalid CONCURRENT_BLOCK_FLUSHING value: '$concurrent_block_flushing'. Must be a non-negative integer."
+        exit 1
     fi
 
     "$geth" --dev --datadir="$data_dir" "--gcmode=archive" "--state.scheme=hash" init "$ROOT/geth_dev/genesis.$fork_version.json" 2> /dev/null
