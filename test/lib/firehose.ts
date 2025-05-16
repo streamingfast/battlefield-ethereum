@@ -67,7 +67,6 @@ async function fetchFirehoseBlockNoLogging(
 
   while (attempts <= 10) {
     attempts += 1
-    console.log("attempt", attempts)
 
     try {
       const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) })
