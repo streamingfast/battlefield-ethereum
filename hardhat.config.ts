@@ -32,6 +32,7 @@ const config: HardhatUserConfig = {
     "optimism-geth-dev": firehoseNetwork([]),
     "sei-dev": firehoseNetwork([]),
     "bnb-dev": firehoseNetwork([]),
+    "polygon-dev": firehoseNetwork([]),
   },
 
   mocha: {

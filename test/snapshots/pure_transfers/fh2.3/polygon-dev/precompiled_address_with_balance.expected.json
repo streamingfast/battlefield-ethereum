@@ -1,0 +1,177 @@
+{
+  "to": "$precompileAddress",
+  "nonce": "$nonce",
+  "gasLimit": "300000",
+  "input": "",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "21600",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "14",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$precompileAddress",
+      "gasLimit": "279000",
+      "gasConsumed": "600",
+      "returnData": "0000000000000000000000009c1185a5c5e9fc54612808977ee8f548b2258d31",
+      "input": "",
+      "executedCode": false,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "2ff62db077c000",
+          "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "5",
+          "oldValue": "01",
+          "newValue": ""
+        },
+        {
+          "address": "$precompileAddress",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "6",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "10",
+          "oldValue": "",
+          "newValue": "2c82264dbf0000"
+        },
+        {
+          "address": "000000000000000000000000000000000000dead",
+          "reason": "REASON_BURN",
+          "ordinal": "11",
+          "oldValue": "",
+          "newValue": "01f4fa00"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "12",
+          "oldValue": "",
+          "newValue": "01"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "3"
+        }
+      ],
+      "logs": [
+        {
+          "address": "0000000000000000000000000000000000001010",
+          "topics": [
+            "e6497e3ee548a3372136af2fcb0696db31fc6cf20260707645068bd3fe97f3c4",
+            "0000000000000000000000000000000000000000000000000000000000001010",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "000000000000000000000000$precompileAddress"
+          ],
+          "data": "000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000d3c1d3be67e024846865000000000000000000000000000000000000000000000000000000000000000900000000000000000000000000000000000000000000d3c1d3be67e024846864000000000000000000000000000000000000000000000000000000000000000a",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "7"
+        },
+        {
+          "address": "0000000000000000000000000000000000001010",
+          "topics": [
+            "4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+            "0000000000000000000000000000000000000000000000000000000000001010",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "0000000000000000000000004196a1a1e21a53e1baa3a0a5a2a1203571b250cd"
+          ],
+          "data": "000000000000$precompileAddress740760c3c60000000000000000000000000000000000000000000000d3c1d3ee5e0dd4fc286500$precompileAddress3a5a7aa263558444b0ae6300000000000000000000000000000000000000000000d3c1d3eaea067438626500$precompileAddress3a5a7aa266c98ba5747463",
+          "index": 1,
+          "blockIndex": 1,
+          "ordinal": "13"
+        }
+      ],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "300000",
+          "newValue": "279000",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "2"
+        },
+        {
+          "oldValue": "279000",
+          "newValue": "278400",
+          "reason": "REASON_PRECOMPILED_CONTRACT",
+          "ordinal": "8"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "0",
+      "endOrdinal": "9",
+      "accountCreations": [],
+      "value": "01"
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0a7a358200",
+  "value": "01",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": [
+      {
+        "address": "0000000000000000000000000000000000001010",
+        "topics": [
+          "e6497e3ee548a3372136af2fcb0696db31fc6cf20260707645068bd3fe97f3c4",
+          "0000000000000000000000000000000000000000000000000000000000001010",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "000000000000000000000000$precompileAddress"
+        ],
+        "data": "000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000d3c1d3be67e024846865000000000000000000000000000000000000000000000000000000000000000900000000000000000000000000000000000000000000d3c1d3be67e024846864000000000000000000000000000000000000000000000000000000000000000a",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "7"
+      },
+      {
+        "address": "0000000000000000000000000000000000001010",
+        "topics": [
+          "4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0000000000000000000000000000000000000000000000000000000000001010",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "0000000000000000000000004196a1a1e21a53e1baa3a0a5a2a1203571b250cd"
+        ],
+        "data": "000000000000$precompileAddress740760c3c60000000000000000000000000000000000000000000000d3c1d3ee5e0dd4fc286500$precompileAddress3a5a7aa263558444b0ae6300000000000000000000000000000000000000000000d3c1d3eaea067438626500$precompileAddress3a5a7aa266c98ba5747463",
+        "index": 1,
+        "blockIndex": 1,
+        "ordinal": "13"
+      }
+    ]
+  }
+}

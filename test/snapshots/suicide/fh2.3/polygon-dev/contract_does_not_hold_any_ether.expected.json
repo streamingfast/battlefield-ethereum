@@ -1,0 +1,135 @@
+{
+  "to": "$suicidal1Contract",
+  "nonce": "$nonce",
+  "gasLimit": "900000",
+  "input": "41c0e1b5",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "28484",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "11",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$suicidal1Contract",
+      "gasLimit": "878936",
+      "gasConsumed": "7420",
+      "returnData": "",
+      "input": "41c0e1b5",
+      "executedCode": true,
+      "suicide": true,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "8fe28911674000",
+          "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "7",
+          "oldValue": "",
+          "newValue": "8b54c367d2b800"
+        },
+        {
+          "address": "000000000000000000000000000000000000dead",
+          "reason": "REASON_BURN",
+          "ordinal": "8",
+          "oldValue": "",
+          "newValue": "fb3788"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "9",
+          "oldValue": "",
+          "newValue": "01"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "3"
+        }
+      ],
+      "logs": [
+        {
+          "address": "0000000000000000000000000000000000001010",
+          "topics": [
+            "4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+            "0000000000000000000000000000000000000000000000000000000000001010",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "0000000000000000000000004196a1a1e21a53e1baa3a0a5a2a1203571b250cd"
+          ],
+          "data": "00000000000000000000000000000000000000000000000000048dc5a899507800000000000000000000000000000000000000000000d3c1d0ba4b4af257c79f0000000000000000000000000000000000000000033a5a7aa59768462c2a65ce00000000000000000000000000000000000000000000d3c1d0b5bd8549be77270000000000000000000000000000000000000000033a5a7aa59bf60bd4c3b646",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "10"
+        }
+      ],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "900000",
+          "newValue": "878936",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "2"
+        },
+        {
+          "oldValue": "876516",
+          "newValue": "871516",
+          "reason": "REASON_SELF_DESTRUCT",
+          "ordinal": "5"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "0",
+      "endOrdinal": "6",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0a7a358200",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": [
+      {
+        "address": "0000000000000000000000000000000000001010",
+        "topics": [
+          "4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0000000000000000000000000000000000000000000000000000000000001010",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "0000000000000000000000004196a1a1e21a53e1baa3a0a5a2a1203571b250cd"
+        ],
+        "data": "00000000000000000000000000000000000000000000000000048dc5a899507800000000000000000000000000000000000000000000d3c1d0ba4b4af257c79f0000000000000000000000000000000000000000033a5a7aa59768462c2a65ce00000000000000000000000000000000000000000000d3c1d0b5bd8549be77270000000000000000000000000000000000000000033a5a7aa59bf60bd4c3b646",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "10"
+      }
+    ]
+  }
+}

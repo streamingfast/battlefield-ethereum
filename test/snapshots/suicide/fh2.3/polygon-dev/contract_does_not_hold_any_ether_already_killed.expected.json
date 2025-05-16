@@ -1,0 +1,129 @@
+{
+  "to": "$suicidal1Contract",
+  "nonce": "$nonce",
+  "gasLimit": "900000",
+  "input": "41c0e1b5",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "21064",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "10",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$suicidal1Contract",
+      "gasLimit": "878936",
+      "gasConsumed": "0",
+      "returnData": "",
+      "input": "41c0e1b5",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "8fe28911674000",
+          "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "6",
+          "oldValue": "",
+          "newValue": "8c84718eb6b000"
+        },
+        {
+          "address": "000000000000000000000000000000000000dead",
+          "reason": "REASON_BURN",
+          "ordinal": "7",
+          "oldValue": "",
+          "newValue": "a3eb70"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "8",
+          "oldValue": "",
+          "newValue": "01"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "3"
+        }
+      ],
+      "logs": [
+        {
+          "address": "0000000000000000000000000000000000001010",
+          "topics": [
+            "4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+            "0000000000000000000000000000000000000000000000000000000000001010",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "0000000000000000000000004196a1a1e21a53e1baa3a0a5a2a1203571b250cd"
+          ],
+          "data": "00000000000000000000000000000000000000000000000000035e17820ca49000000000000000000000000000000000000000000000d3c1d0b5bd8548c33f9f0000000000000000000000000000000000000000033a5a7aa59bf60bd4c3b64600000000000000000000000000000000000000000000d3c1d0b25f6dc6b69b0f0000000000000000000000000000000000000000033a5a7aa59f542356d05ad6",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "9"
+        }
+      ],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "900000",
+          "newValue": "878936",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "2"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "0",
+      "endOrdinal": "5",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0a7a358200",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": [
+      {
+        "address": "0000000000000000000000000000000000001010",
+        "topics": [
+          "4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0000000000000000000000000000000000000000000000000000000000001010",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "0000000000000000000000004196a1a1e21a53e1baa3a0a5a2a1203571b250cd"
+        ],
+        "data": "00000000000000000000000000000000000000000000000000035e17820ca49000000000000000000000000000000000000000000000d3c1d0b5bd8548c33f9f0000000000000000000000000000000000000000033a5a7aa59bf60bd4c3b64600000000000000000000000000000000000000000000d3c1d0b25f6dc6b69b0f0000000000000000000000000000000000000000033a5a7aa59f542356d05ad6",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "9"
+      }
+    ]
+  }
+}

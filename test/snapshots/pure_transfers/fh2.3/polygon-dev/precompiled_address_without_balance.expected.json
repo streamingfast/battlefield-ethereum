@@ -1,0 +1,182 @@
+{
+  "to": "$precompileAddress",
+  "nonce": "$nonce",
+  "gasLimit": "300000",
+  "input": "",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "21015",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "15",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$precompileAddress",
+      "gasLimit": "279000",
+      "gasConsumed": "15",
+      "returnData": "",
+      "input": "",
+      "executedCode": false,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "2ff62db077c000",
+          "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "6",
+          "oldValue": "01",
+          "newValue": ""
+        },
+        {
+          "address": "$precompileAddress",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "7",
+          "newValue": "01",
+          "oldValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "11",
+          "oldValue": "",
+          "newValue": "2c9a1792051200"
+        },
+        {
+          "address": "000000000000000000000000000000000000dead",
+          "reason": "REASON_BURN",
+          "ordinal": "12",
+          "oldValue": "",
+          "newValue": "01acba1f"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "13",
+          "oldValue": "",
+          "newValue": "01"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "3"
+        }
+      ],
+      "logs": [
+        {
+          "address": "0000000000000000000000000000000000001010",
+          "topics": [
+            "e6497e3ee548a3372136af2fcb0696db31fc6cf20260707645068bd3fe97f3c4",
+            "0000000000000000000000000000000000000000000000000000000000001010",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "000000000000000000000000$precompileAddress"
+          ],
+          "data": "000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000d3c1d3baf3d8c1cba864000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d3c1d3baf3d8c1cba8630000000000000000000000000000000000000000000000000000000000000001",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "8"
+        },
+        {
+          "address": "0000000000000000000000000000000000001010",
+          "topics": [
+            "4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+            "0000000000000000000000000000000000000000000000000000000000001010",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "0000000000000000000000004196a1a1e21a53e1baa3a0a5a2a1203571b250cd"
+          ],
+          "data": "00000000000000000000000000000000000000000000000000035c161cc5f3e100000000000000000000000000000000000000000000d3c1d3eaea06724368640000000000000000000000000000000000000000033a5a7aa266c98ba574746300000000000000000000000000000000000000000000d3c1d3e78df0557d74830000000000000000000000000000000000000000033a5a7aa26a25a1c23a6844",
+          "index": 1,
+          "blockIndex": 1,
+          "ordinal": "14"
+        }
+      ],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "300000",
+          "newValue": "279000",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "2"
+        },
+        {
+          "oldValue": "279000",
+          "newValue": "278985",
+          "reason": "REASON_PRECOMPILED_CONTRACT",
+          "ordinal": "9"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "0",
+      "endOrdinal": "10",
+      "accountCreations": [
+        {
+          "account": "$precompileAddress",
+          "ordinal": "5"
+        }
+      ],
+      "value": "01"
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0a7a358200",
+  "value": "01",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": [
+      {
+        "address": "0000000000000000000000000000000000001010",
+        "topics": [
+          "e6497e3ee548a3372136af2fcb0696db31fc6cf20260707645068bd3fe97f3c4",
+          "0000000000000000000000000000000000000000000000000000000000001010",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "000000000000000000000000$precompileAddress"
+        ],
+        "data": "000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000d3c1d3baf3d8c1cba864000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d3c1d3baf3d8c1cba8630000000000000000000000000000000000000000000000000000000000000001",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "8"
+      },
+      {
+        "address": "0000000000000000000000000000000000001010",
+        "topics": [
+          "4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0000000000000000000000000000000000000000000000000000000000001010",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "0000000000000000000000004196a1a1e21a53e1baa3a0a5a2a1203571b250cd"
+        ],
+        "data": "00000000000000000000000000000000000000000000000000035c161cc5f3e100000000000000000000000000000000000000000000d3c1d3eaea06724368640000000000000000000000000000000000000000033a5a7aa266c98ba574746300000000000000000000000000000000000000000000d3c1d3e78df0557d74830000000000000000000000000000000000000000033a5a7aa26a25a1c23a6844",
+        "index": 1,
+        "blockIndex": 1,
+        "ordinal": "14"
+      }
+    ]
+  }
+}

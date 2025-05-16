@@ -100,7 +100,7 @@ check_geth() {
   fi
   if [[ -n "$1" ]]; then
       if ! geth --help |grep -q "$1"; then
-          echo "Your geth version is not compatible with Binance Smart Chain (grepping the string '$1' in 'geth --help' output)"
+          echo "Your geth version is not compatible with '$1' Chain (grepping the string '$1' in 'geth --help' output)"
           exit 1
       fi
   fi
