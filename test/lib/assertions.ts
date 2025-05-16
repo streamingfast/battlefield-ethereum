@@ -25,6 +25,7 @@ import { TransactionReceiptResult } from "./ethers"
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
+import { isNetwork } from "./network"
 
 const debug = debugFactory("battlefield:assertions")
 
@@ -149,7 +150,7 @@ declare global {
       trxTraceEqualSnapshot(
         snapshotFileID: string | Record<string, string>,
         templateVars?: Record<string, string>,
-        options?: TrxTracerEqualSnapshotOptions
+        options?: TrxTracerEqualSnapshotOptions,
       ): Promise<void>
     }
   }
@@ -168,7 +169,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
     input:
       | TransactionReceiptResult
       | Promise<TransactionReceiptResult>
-      | [TransactionReceiptResult, TransactionTrace, Block]
+      | [TransactionReceiptResult, TransactionTrace, Block],
   ): Promise<[TransactionReceiptResult, TransactionTrace, Block]> {
     if (Array.isArray(input)) {
       return input
@@ -202,10 +203,28 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
     async function (
       snapshotIdentifier: string,
       templateVars?: Record<string, string>,
-      options?: TrxTracerEqualSnapshotOptions
+      options?: TrxTracerEqualSnapshotOptions,
     ) {
       const [trxReceipt, actualTrace, actualBlock] = await resolveTrxTrace(this._obj)
-
+      if (isNetwork("polygon-dev")) {
+        // filter logs from special contract
+        if (actualTrace.receipt && actualTrace.receipt.logs) {
+          actualTrace.receipt.logs = actualTrace.receipt.logs.filter((log) => {
+            return hexlify(log.address) !== "0x0000000000000000000000000000000000001010"
+          })
+        }
+        actualTrace.calls.forEach((call) => {
+          call.logs = call.logs.filter((log) => {
+            return hexlify(log.address) !== "0x0000000000000000000000000000000000001010"
+          })
+          call.balanceChanges.forEach((bc) => {
+            if (hexlify(bc.address) === "0x000000000000000000000000000000000000dead") {
+              bc.oldValue = undefined // undeterministic value for that polygon system account
+              bc.newValue = undefined // undeterministic value for that polygon system account
+            }
+          })
+        })
+      }
       // Check on original trace for correctness of ordinal handling
       const ordinals = trxTraceOrdinals(actualTrace)
       assertTrxOrdinals(chai, ordinals, actualTrace, trxReceipt.blockNumber)
@@ -260,7 +279,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       snapshot.writeSnapshotDebugFiles(
         toProtoJsonString(actualTrace),
         JSON.stringify(actual, null, 2),
-        JSON.stringify(expected, null, 2)
+        JSON.stringify(expected, null, 2),
       )
 
       // Using directly to.deep.equal leads to losing the actual diff, but using to.equal
@@ -277,11 +296,11 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
             `See the diff locally by running: ` +
             `'${process.env.DIFF_EDITOR || "diff -u"} ${snapshot.toSnapshotPath(
               SnapshotKind.ActualNormalized,
-              true
-            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`
+              true,
+            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`,
         )
       }
-    }
+    },
   )
 }
 
@@ -289,7 +308,7 @@ function assertTrxOrdinals(
   chai: Chai,
   ordinalsMap: Record<number, number>,
   trace: TransactionTrace,
-  blockNumber: number
+  blockNumber: number,
 ) {
   const ordinals = Object.entries(ordinalsMap)
   ordinals.sort(([a], [b]) => parseInt(a) - parseInt(b))
@@ -300,7 +319,7 @@ function assertTrxOrdinals(
   ordinals.forEach(([ordinal, count]) => {
     new chai.Assertion(
       count,
-      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`
+      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`,
     ).to.equal(1)
 
     if (previous) {
@@ -372,7 +391,7 @@ function deltaizeNonceValue(change: NonceChange) {
 
 function templatizeJsonTransactionTrace(
   parsed: Record<string, any>,
-  vars: Record<string, string>
+  vars: Record<string, string>,
 ): Record<string, any> {
   const valuesToName: Record<string, string> = {}
   for (const [key, value] of Object.entries(vars)) {
