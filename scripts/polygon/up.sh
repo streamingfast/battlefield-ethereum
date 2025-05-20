@@ -30,8 +30,8 @@ popd
 i=0
 while sleep 2; do
     docker logs heimdall0|grep -q 'Creating and broadcasting new milestone'  && exit 0
-    echo "Waiting for create its first milestone... (this may take a minute) - $i"
-    i=$((i+1))
+    echo "Waiting for create its first milestone... (this may take a minute) - ${i}s"
+    i=$((i+2))
 done
 )
 
