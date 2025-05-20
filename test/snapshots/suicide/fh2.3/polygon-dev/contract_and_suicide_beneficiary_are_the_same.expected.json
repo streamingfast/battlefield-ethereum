@@ -1,0 +1,163 @@
+{
+  "to": "$createdContract",
+  "nonce": "$nonce",
+  "gasLimit": "900000",
+  "input": "1bb943fd",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "26870",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "17",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$createdContract",
+      "gasLimit": "878936",
+      "gasConsumed": "5806",
+      "returnData": "",
+      "input": "1bb943fd",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "8fe28911674000",
+          "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "13",
+          "oldValue": "",
+          "newValue": "8b96d1e52c5400"
+        },
+        {
+          "address": "000000000000000000000000000000000000dead",
+          "reason": "REASON_BURN",
+          "ordinal": "14",
+          "oldValue": "",
+          "newValue": ""
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "15",
+          "oldValue": "",
+          "newValue": "01"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "3"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "900000",
+          "newValue": "878936",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "2"
+        },
+        {
+          "oldValue": "878454",
+          "newValue": "13724",
+          "reason": "REASON_CALL",
+          "ordinal": "5"
+        },
+        {
+          "oldValue": "13724",
+          "newValue": "873211",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
+          "ordinal": "11"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "0",
+      "endOrdinal": "12",
+      "accountCreations": []
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "CALL",
+      "caller": "$createdContract",
+      "address": "$createdContract",
+      "gasLimit": "864630",
+      "gasConsumed": "5143",
+      "returnData": "",
+      "input": "41c0e1b5",
+      "executedCode": true,
+      "suicide": true,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "$createdContract",
+          "reason": "REASON_SUICIDE_REFUND",
+          "ordinal": "8",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$createdContract",
+          "reason": "REASON_SUICIDE_WITHDRAW",
+          "ordinal": "9",
+          "oldValue": "02",
+          "newValue": ""
+        }
+      ],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "864487",
+          "newValue": "859487",
+          "reason": "REASON_SELF_DESTRUCT",
+          "ordinal": "7"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "6",
+      "endOrdinal": "10",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0a7a358200",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}

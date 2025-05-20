@@ -49,7 +49,7 @@ export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Pro
 }
 
 export async function fetchFirehoseBlock(
-  tag: number | bigint | string | { hash: string; num: number | bigint }
+  tag: number | bigint | string | { hash: string; num: number | bigint },
 ): Promise<Block> {
   const block = await fetchFirehoseBlockNoLogging(tag)
   if (block) {
@@ -60,7 +60,7 @@ export async function fetchFirehoseBlock(
 }
 
 async function fetchFirehoseBlockNoLogging(
-  tag: number | bigint | string | { hash: string; num: number | bigint }
+  tag: number | bigint | string | { hash: string; num: number | bigint },
 ): Promise<Block> {
   let attempts = 0
   let lastError: unknown
@@ -90,7 +90,7 @@ async function fetchFirehoseBlockNoLogging(
 }
 
 export async function fetchFirehoseTransactionAndBlock(
-  receipt: TransactionReceipt
+  receipt: TransactionReceipt,
 ): Promise<{ block: Block; trace: TransactionTrace }> {
   const block = await fetchFirehoseBlock({ hash: receipt.blockHash, num: receipt.blockNumber })
 
@@ -98,7 +98,7 @@ export async function fetchFirehoseTransactionAndBlock(
     if (ethers.hexlify(tx.hash) === receipt.hash) {
       debug(
         `Found transaction ${receipt.hash} in Firehose at block #${receipt.blockNumber} (${receipt.blockHash}) %O`,
-        toProtoJsonObject(block)
+        toProtoJsonObject(block),
       )
 
       return { block, trace: tx }
@@ -106,14 +106,14 @@ export async function fetchFirehoseTransactionAndBlock(
   }
 
   throw new Error(
-    `Transaction ${receipt.hash} not found in Firehose at block #${receipt.blockNumber} (${receipt.blockHash})`
+    `Transaction ${receipt.hash} not found in Firehose at block #${receipt.blockNumber} (${receipt.blockHash})`,
   )
 }
 
 /** Make it easier to create a transaction trace from a receipt */
 export function trxTraceFromReceipt(
   receipt: TransactionReceiptResult,
-  init?: MessageInitShape<typeof TransactionTraceSchema>
+  init?: MessageInitShape<typeof TransactionTraceSchema>,
 ): TransactionTrace {
   return create(TransactionTraceSchema, {
     hash: getBytes(receipt.hash),
@@ -138,7 +138,7 @@ export function trxTraceFromReceipt(
       cumulativeGasUsed: receipt.cumulativeGasUsed,
       logs: [],
       logsBloom: getBytes(
-        "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
       ),
       stateRoot: getBytes("0x"),
     }),
@@ -151,7 +151,7 @@ export function trxTraceFromReceipt(
 /** Make it easier to create a transaction trace from a receipt */
 export function rootCallFromReceipt(
   receipt: TransactionReceiptResult,
-  init?: MessageInitShape<typeof CallSchema>
+  init?: MessageInitShape<typeof CallSchema>,
 ): Call {
   return call({
     caller: getBytes(receipt.from),
@@ -178,7 +178,7 @@ export function balanceChange(
   oldValue: BigNumberish | BigIntF,
   newValue: BigNumberish | BigIntF,
   ordinal: number,
-  reason: BalanceChange_Reason
+  reason: BalanceChange_Reason,
 ): BalanceChange {
   return create(BalanceChangeSchema, {
     address: getBytes(address),
@@ -193,7 +193,7 @@ export function balanceChangeDelta(
   address: string,
   delta: BigNumberish,
   ordinal: number,
-  reason: BalanceChange_Reason
+  reason: BalanceChange_Reason,
 ): BalanceChange {
   const deltaValue = toBigInt(delta)
   if (deltaValue < 0n) {
@@ -207,7 +207,7 @@ export function nonceChange(
   address: string,
   oldValue: BigNumberish,
   newValue: BigNumberish,
-  ordinal: number
+  ordinal: number,
 ): NonceChange {
   return create(NonceChangeSchema, {
     address: getBytes(address),
@@ -230,7 +230,7 @@ export function gasChange(
   oldValue: BigNumberish,
   newValue: BigNumberish,
   ordinal: number,
-  reason: GasChange_Reason
+  reason: GasChange_Reason,
 ): GasChange {
   return create(GasChangeSchema, {
     oldValue: BigInt(oldValue),

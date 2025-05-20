@@ -42,7 +42,8 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Sei | `./scripts/run_firehose_sei.sh sequential` | `pnpm test:fh3.0:sei-dev` | The `sequential` tag refers to transaction execution algorithm, test both |
 | Sei | `./scripts/run_firehose_sei.sh parallel` | `pnpm test:fh3.0:sei-dev` | The `parallel` tag refers to transaction execution algorithm, test both |
 | BNB | docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh` | `pnpm test:fh3.0:bnb-dev` | |
-| Polygon | docker miner: `./scripts/polygon/up.sh`, then `./scripts/run_firehose_polygon.sh` | `pnpm test:fh3.0:polygon-dev` | |
+| Polygon (fh 2.3) | docker miner: `./scripts/polygon/up.sh 2.3`, then `./scripts/run_firehose_polygon.sh 2.3` | `pnpm test:fh2.3:polygon-dev` | |
+| Polygon (fh 3.0) | docker miner: `./scripts/polygon/up.sh 3.0`, then `./scripts/run_firehose_polygon.sh 3.0` | `pnpm test:fh3.0:polygon-dev` | |
 
 ### Specific Tests
 

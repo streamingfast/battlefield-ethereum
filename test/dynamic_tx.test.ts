@@ -7,7 +7,7 @@ import { knownExistingAddress } from "./lib/addresses"
 import { TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner } from "./global"
 import { toBigInt } from "./lib/numbers"
-import { isNetwork } from "./lib/network"
+import { isNetwork, networkName } from "./lib/network"
 
 describe("Dynamic Tx", function () {
   it("Dynamic transaction max fee", async function () {
@@ -30,10 +30,14 @@ describe("Dynamic Tx", function () {
   })
 
   it("Dynamic transaction max tip", async function () {
+    let maxPriorityFeePerGas = 25_000
+    if (isNetwork("polygon-dev")) {
+      maxPriorityFeePerGas = 25_000_000_000
+    }
     const result = await sendEth(owner, knownExistingAddress, oneWei, {
       gasPrice: undefined,
       maxFeePerGas: defaultGasPrice,
-      maxPriorityFeePerGas: 25_000,
+      maxPriorityFeePerGas: maxPriorityFeePerGas,
     })
     const { block, trace } = await fetchFirehoseTransactionAndBlock(result)
 
@@ -43,6 +47,6 @@ describe("Dynamic Tx", function () {
     expect(toBigInt(trace.maxFeePerGas)).to.equal(defaultGasPrice)
     expect(toBigInt(trace.gasPrice)).to.be.lessThanOrEqual(toBigInt(defaultGasPrice))
     expect(toBigInt(block.header?.baseFeePerGas)).to.be.greaterThanOrEqual(0n)
-    expect(toBigInt(trace.maxPriorityFeePerGas)).to.equal(25_000n)
+    expect(toBigInt(trace.maxPriorityFeePerGas)).to.equal(maxPriorityFeePerGas)
   })
 })
