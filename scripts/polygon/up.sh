@@ -26,18 +26,17 @@ pushd "$(dirname "${BASH_SOURCE[0]}")"
     docker-compose up --build --detach
 popd
 
-(
-i=0
+( i=0
 while sleep 2; do
     docker logs heimdall0|grep -q 'Creating and broadcasting new milestone'  && exit 0
     echo "Waiting for create its first milestone... (this may take a minute) - ${i}s"
     i=$((i+2))
-done
-)
+done )
 
-if [ $? -eq 0 ]; then
-    echo "Milestone created successfully!"
+if [[ "$?" == 0 ]]; then
+    echo "----------------------------"
+    echo 'Milestone created successfully!'
     echo "- You may now run './scripts/run_firehose_polygon.sh $1'"
     echo ""
-    echo "Additionally, you may run './scripts/load-polygon-system-contracts.sh $1', but it is not required for the firehose tests"
+    echo "Additionally, you may run './scripts/polygon/load-polygon-system-contracts.sh $1', but it is not required for the firehose tests"
 fi
