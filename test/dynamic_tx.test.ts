@@ -34,6 +34,9 @@ describe("Dynamic Tx", function () {
     if (isNetwork("polygon-dev")) {
       maxPriorityFeePerGas = 25_000_000_000
     }
+    if (isNetwork("bnb-dev")) {
+      maxPriorityFeePerGas = 1_000_000_000
+    }
     const result = await sendEth(owner, knownExistingAddress, oneWei, {
       gasPrice: undefined,
       maxFeePerGas: defaultGasPrice,
