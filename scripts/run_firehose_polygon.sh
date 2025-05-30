@@ -23,7 +23,7 @@ source "$SCRIPTS_FOLDER/lib.sh"
 
 main() {
   check_fireeth
-  check_geth BSC
+  # check_geth BSC
   check_docker "bor0" "You should launch the polygon miner with '${BOR_SCRIPTS_FOLDER}/up.sh $ARG -c'"
 
   wait_geth_up "http://localhost:8545"
