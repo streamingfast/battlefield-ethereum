@@ -8,6 +8,7 @@ fireeth="${FIREETH_BINARY:-fireeth}"
 geth="${GETH_BINARY:-geth}"
 nitro="${NITRO_BINARY:-nitro}"
 seid="${SEID_BINARY:-seid}"
+bor="${BOR_BINARY:-bor}"
 
 # Usage: run_fireeth <first_streamable_block> <node_binary> <node_args>
 run_fireeth() {
@@ -103,6 +104,17 @@ check_geth() {
           echo "Your geth version is not compatible with '$1' Chain (grepping the string '$1' in 'geth --help' output)"
           exit 1
       fi
+  fi
+}
+
+check_bor() {
+  if ! command -v "$bor" &> /dev/null; then
+    echo "The '$bor' binary could not be found, you can install it with:"
+    echo ""
+    echo "- make bor"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
   fi
 }
 
