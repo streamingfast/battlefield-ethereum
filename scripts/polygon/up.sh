@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [ "$1" == "2.3" ]; then
     export TAG=v1.5.5

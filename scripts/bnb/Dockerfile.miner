@@ -31,8 +31,8 @@ RUN cd /root/genesis && foundryup && forge install --no-git foundry-rs/forge-std
 WORKDIR /root/genesis
 RUN poetry run python -m scripts.generate dev
 
-# activate pascal and lorentz
-jq '.config.lorentzTime = 0 | .config.pascalTime = 0 | .config.parlia.period = 1'  genesis.json> genesis.json.new && mv genesis.json.new genesis.json
+# activate pascal, lorentz and maxwell
+RUN jq '.config.lorentzTime = 0 | .config.pascalTime = 0 | .config.parlia.period = 1 | .config.bohrTime = 0 | .config.haberFixTime = 0 | .config.haberTime = 0 | .config.cancunTime = 0 | .config.feynmanFixTime = 0 | .config.pragueTime = 0 | .config.MaxwellTime=0 | .config.blobSchedule = { "cancun": { "target": 3, "max": 6, "baseFeeUpdateFraction": 3338477 }, "prague": { "target": 6, "max": 9, "baseFeeUpdateFraction": 5007716 }}'  genesis.json> genesis.json.new && mv genesis.json.new genesis.json
 
 RUN uname -i |grep "aarch64" && binary="geth_linux" || binary="geth-linux-arm64"; curl -L -o /usr/local/bin/geth https://github.com/bnb-chain/bsc/releases/download/$GETH_VERSION/$binary && chmod +x /usr/local/bin/geth
 
