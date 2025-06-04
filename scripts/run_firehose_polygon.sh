@@ -4,8 +4,10 @@ set -e
 
 ARG=$1
 if [[ "$ARG" == "2.3" ]]; then
+    ENABLE_FIREHOSE="--vmtrace=firehose --vmtrace.jsonconfig='{\"applyBackwardCompatibility\":true}'"
+elif [[ "$ARG" == "2.3-old" ]]; then
     ENABLE_FIREHOSE="--firehose-enabled"
-  elif [[ "$ARG" == "3.0" ]]; then
+elif [[ "$ARG" == "3.0" ]]; then
     ENABLE_FIREHOSE="--vmtrace=firehose"
 elif [[ "$ARG" == "" ]]; then
     echo "You must specify version 2.3 or 3.0 as argument (ex: $0 2.3)"
