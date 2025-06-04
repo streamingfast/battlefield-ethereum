@@ -1,5 +1,5 @@
 {
-  "to": "$suicidal2Contract",
+  "to": "$suicidal1Contract",
   "nonce": "$nonce",
   "gasLimit": "900000",
   "input": "41c0e1b5",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "15",
+  "endOrdinal": "13",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -24,7 +24,7 @@
       "depth": 0,
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-      "address": "$suicidal2Contract",
+      "address": "$suicidal1Contract",
       "gasLimit": "878936",
       "gasConsumed": "7420",
       "returnData": "",
@@ -42,30 +42,16 @@
           "newValue": ""
         },
         {
-          "address": "$suicidal2Contract",
-          "reason": "REASON_SUICIDE_WITHDRAW",
-          "ordinal": "8",
-          "oldValue": "01",
-          "newValue": ""
-        },
-        {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_SUICIDE_REFUND",
-          "ordinal": "9",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "12",
+          "ordinal": "10",
           "oldValue": "",
           "newValue": "8b54c367d2b800"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "14",
+          "ordinal": "12",
           "newValue": "01",
           "oldValue": ""
         }
@@ -109,13 +95,13 @@
           "oldValue": "871516",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "10"
+          "ordinal": "8"
         },
         {
           "oldValue": "871516",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "13"
+          "ordinal": "11"
         }
       ],
       "statusFailed": false,
@@ -123,7 +109,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "5",
-      "endOrdinal": "11",
+      "endOrdinal": "9",
       "accountCreations": []
     }
   ],

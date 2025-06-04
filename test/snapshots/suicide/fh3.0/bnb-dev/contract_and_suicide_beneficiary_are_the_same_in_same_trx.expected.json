@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "50",
+  "endOrdinal": "51",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -58,14 +58,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "47",
+          "ordinal": "48",
           "oldValue": "",
           "newValue": "71963497f22a00"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "49",
+          "ordinal": "50",
           "newValue": "01",
           "oldValue": ""
         }
@@ -145,19 +145,19 @@
           "oldValue": "11192",
           "newValue": "710527",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "44"
-        },
-        {
-          "oldValue": "710485",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "45"
         },
         {
           "oldValue": "710485",
           "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "46"
+        },
+        {
+          "oldValue": "710485",
+          "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "48"
+          "ordinal": "49"
         }
       ],
       "statusFailed": false,
@@ -165,7 +165,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "5",
-      "endOrdinal": "46",
+      "endOrdinal": "47",
       "accountCreations": [],
       "value": "01"
     },
@@ -337,13 +337,13 @@
           "oldValue": "11008",
           "newValue": "699416",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "41"
+          "ordinal": "42"
         },
         {
           "oldValue": "699335",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "42"
+          "ordinal": "43"
         }
       ],
       "statusFailed": false,
@@ -351,7 +351,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "31",
-      "endOrdinal": "43",
+      "endOrdinal": "44",
       "accountCreations": []
     },
     {
@@ -372,16 +372,23 @@
       "balanceChanges": [
         {
           "address": "$createdContract",
-          "reason": "REASON_SUICIDE_REFUND",
+          "reason": "REASON_SUICIDE_WITHDRAW",
           "ordinal": "37",
-          "oldValue": "",
-          "newValue": "01"
+          "oldValue": "01",
+          "newValue": ""
+        },
+        {
+          "address": "$createdContract",
+          "reason": "REASON_SUICIDE_REFUND",
+          "ordinal": "38",
+          "newValue": "01",
+          "oldValue": ""
         },
         {
           "address": "$createdContract",
           "reason": "REASON_SUICIDE_WITHDRAW",
-          "ordinal": "38",
-          "oldValue": "02",
+          "ordinal": "39",
+          "oldValue": "01",
           "newValue": ""
         }
       ],
@@ -405,7 +412,7 @@
           "oldValue": "688408",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "39"
+          "ordinal": "40"
         }
       ],
       "statusFailed": false,
@@ -413,7 +420,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "34",
-      "endOrdinal": "40",
+      "endOrdinal": "41",
       "accountCreations": []
     }
   ],

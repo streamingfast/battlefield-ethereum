@@ -21,7 +21,7 @@ main() {
     ENODE=$("$BNB_SCRIPTS_FOLDER/get-genesis-and-enode.sh" 127.0.0.1:30304)
     "$BNB_SCRIPTS_FOLDER/get-funds.sh"
     "$geth" --datadir="$RUNDIR" --state.scheme=hash init genesis.json
-    geth_args="--datadir=\"$RUNDIR\" --bootnodes=$ENODE --vmtrace=firehose --syncmode=full --gcmode=archive --state.scheme=hash"
+    geth_args="--datadir=\"$RUNDIR\" --bootnodes=$ENODE --vmtrace=firehose --vmtrace.jsonconfig='{\"applyBackwardCompatibility\":false}' --syncmode=full --gcmode=archive --state.scheme=hash"
     echo "running '$geth' '$geth_args'"
     run_fireeth 0 "$geth" "$geth_args"
   popd > /dev/null
