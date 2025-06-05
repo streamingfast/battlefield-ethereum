@@ -174,7 +174,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
   ): Promise<[TransactionReceiptResult, TransactionTrace, Block]> {
     if (Array.isArray(input)) {
       if (input.length === 2) {
-        const receipt = await getReceiptForTransactionTrace(input[1], input[0])
+        const receipt = await getReceiptForTransactionTrace(input[0], input[1])
         return [receipt, input[0], input[1]]
       }
 

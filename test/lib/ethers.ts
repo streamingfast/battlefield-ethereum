@@ -56,8 +56,8 @@ export async function waitForTransaction(
 }
 
 export async function getReceiptForTransactionTrace(
-  block: Block,
-  trxTrace: TransactionTrace
+  trxTrace: TransactionTrace,
+  block: Block
 ): Promise<TransactionReceiptResult> {
   let effectiveGasPriceCalc: bigint
   if (trxTrace.type === 2) {
@@ -140,11 +140,17 @@ export async function getReceiptForTransactionTrace(
       data: hexlify(trxTrace.input),
       value: toBigInt(trxTrace.value),
       chainId: BigInt(0),
-      signature: Signature.from({
-        r: hexlify(trxTrace.r),
-        s: hexlify(trxTrace.s),
-        v: trxTrace.v[0], // Assuming v is Uint8Array of length 1
-      }),
+      signature: trxTrace.r.length === 0 || trxTrace.s.length === 0 || trxTrace.v.length === 0
+        ? Signature.from({
+          r: "0x" + "00".repeat(32),
+          s: "0x" + "00".repeat(32),
+          v: 27,
+        })
+        : Signature.from({
+          r: hexlify(trxTrace.r),
+          s: hexlify(trxTrace.s),
+          v: trxTrace.v[0],
+        }),
       accessList: accessListify(
         trxTrace.accessList.map((item) => ({
           address: hexlify(item.address),
