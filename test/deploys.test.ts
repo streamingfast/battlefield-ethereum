@@ -157,7 +157,10 @@ describe("Deploys", function () {
           // New gas cost for contract creation & calldata
           prague: ["eip7623"],
         },
-        networkSnapshotOverrides: ["bnb-dev"], // less gas used on bnb here
+        networkSnapshotOverrides: [
+          "bnb-dev",
+          "optimism-geth-dev",
+        ], // less gas used on bnb here
       },
     )
   })
@@ -202,7 +205,10 @@ describe("Deploys", function () {
         $salt: create2Data.salt,
       },
       {
-        networkSnapshotOverrides: ["bnb-dev"], // less gas used on bnb here
+        networkSnapshotOverrides: [
+          "bnb-dev",
+          "optimism-geth-dev",
+        ], // less gas used on bnb here
       },
     )
   })
@@ -224,7 +230,10 @@ describe("Deploys", function () {
         $salt: create2Data.salt,
       },
       {
-        networkSnapshotOverrides: ["bnb-dev"], // less gas used on bnb here
+        networkSnapshotOverrides: [
+          "bnb-dev",
+          "optimism-geth-dev",
+        ], // less gas used on bnb here
       },
     )
   })

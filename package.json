@@ -42,7 +42,7 @@
     "debug": "^4.3.7",
     "deep-equal": "^2.2.3",
     "ethers": "^6.4.0",
-    "hardhat": "^2.22.16",
+    "hardhat": "^2.24.2",
     "hardhat-gas-reporter": "^1.0.8",
     "solidity-coverage": "^0.8.0",
     "ts-node": ">=8.0.0",

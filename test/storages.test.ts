@@ -15,7 +15,12 @@ describe("Storages", function () {
       "storages/set_long_string.expected.json",
       {
         $storageContract: Storage.addressHex,
-      }
+      },
+      {
+        networkSnapshotOverrides: [
+          "optimism-geth-dev",
+        ], // less gas used on bnb here
+      },
     )
 
     await expect(contractCall(owner, Storage.setAfter, [])).to.trxTraceEqualSnapshot(
