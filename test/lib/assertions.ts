@@ -1,4 +1,4 @@
-import { clone, create, DescMessage, equals } from "@bufbuild/protobuf"
+import { clone, create, DescMessage, equals, isMessage } from "@bufbuild/protobuf"
 import chai from "chai"
 import {
   BalanceChange,
@@ -21,7 +21,7 @@ import { readFileSync } from "fs"
 import { resolveSnapshot, SnapshotKind } from "./snapshots"
 import deepEqual from "deep-equal"
 import { escapeRegex } from "./regexps"
-import { TransactionReceiptResult } from "./ethers"
+import { getReceiptForTransactionTrace, TransactionReceiptResult } from "./ethers"
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
@@ -169,9 +169,15 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
     input:
       | TransactionReceiptResult
       | Promise<TransactionReceiptResult>
-      | [TransactionReceiptResult, TransactionTrace, Block],
+      | [TransactionReceiptResult, TransactionTrace, Block]
+      | [TransactionTrace, Block],
   ): Promise<[TransactionReceiptResult, TransactionTrace, Block]> {
     if (Array.isArray(input)) {
+      if (input.length === 2) {
+        const receipt = await getReceiptForTransactionTrace(input[0], input[1])
+        return [receipt, input[0], input[1]]
+      }
+
       return input
     }
 
