@@ -51,7 +51,7 @@ describe("Blocks", function () {
       expect(firehoseBlock.gasUsed).to.be.equal(rpcBlock.gasUsed, field("gasUsed"))
       expect(toBigInt(firehoseBlock.baseFeePerGas)).to.be.equal(
         toBigInt(rpcBlock.baseFeePerGas),
-        field("baseFeePerGas")
+        field("baseFeePerGas"),
       )
     }
 
@@ -67,7 +67,7 @@ describe("Blocks", function () {
     if (rpcBlock.parentBeaconBlockRoot) {
       expect(hexlify(firehoseBlock.parentBeaconRoot)).to.be.equal(
         rpcBlock.parentBeaconBlockRoot,
-        field("parentBeaconRoot")
+        field("parentBeaconRoot"),
       )
     }
 
@@ -76,34 +76,37 @@ describe("Blocks", function () {
     }
   })
 
-  it("System call ProcessBeaconRoot recorded correctly", async function () {
-    const rpcBlock = await mustGetRpcBlock("latest")
-    if (!rpcBlock.parentBeaconBlockRoot) {
-      // Test do not apply to this network
-      return
-    }
+  // bnb-dev in dev mode does not seem to update any parentBeaconRoot. being set to 00000000000 makes it skip that, so I skipped the test
+  if (!isNetwork("bnb-dev")) {
+    it("System call ProcessBeaconRoot recorded correctly", async function () {
+      const rpcBlock = await mustGetRpcBlock("latest")
+      if (!rpcBlock.parentBeaconBlockRoot) {
+        // Test do not apply to this network
+        return
+      }
 
-    const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
-    const header = firehoseBlock.header!
+      const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
+      const header = firehoseBlock.header!
 
-    expect(hexlify(header.parentBeaconRoot)).to.be.equal(rpcBlock.parentBeaconBlockRoot)
+      expect(hexlify(header.parentBeaconRoot)).to.be.equal(rpcBlock.parentBeaconBlockRoot)
 
-    const beaconRootCall = firehoseBlock.systemCalls.find(isUpdateBeaconRootCall(rpcBlock.parentBeaconBlockRoot))
-    expect(beaconRootCall).to.not.be.undefined
+      const beaconRootCall = firehoseBlock.systemCalls.find(isUpdateBeaconRootCall(rpcBlock.parentBeaconBlockRoot))
+      expect(beaconRootCall).to.not.be.undefined
 
-    // A storage change could exist but not in `geth --dev` mode, at least not consistently because
-    // in dev mode, the beacon root is also sets to 0x0 and in the tracer, storage changes
-    // with `prev == new` are ignored hence the storage change is not recorded in that case. So
-    // we cannot reliably test for storage changes here.
-    //
-    // We should once we have a way to check for which "network" the test suite is running
+      // A storage change could exist but not in `geth --dev` mode, at least not consistently because
+      // in dev mode, the beacon root is also sets to 0x0 and in the tracer, storage changes
+      // with `prev == new` are ignored hence the storage change is not recorded in that case. So
+      // we cannot reliably test for storage changes here.
+      //
+      // We should once we have a way to check for which "network" the test suite is running
 
-    if (getGlobalSnapshotsTag().startsWith("fh3.0")) {
-      // Firehose 2.3 does not record some gas changes that are recorded in 3.0, hence why in 2.3
-      // there is 0 gas changes while there are 2 in 3.0.
-      expect(beaconRootCall!.gasChanges.length).to.be.equal(2)
-    }
-  })
+      if (getGlobalSnapshotsTag().startsWith("fh3.0")) {
+        // Firehose 2.3 does not record some gas changes that are recorded in 3.0, hence why in 2.3
+        // there is 0 gas changes while there are 2 in 3.0.
+        expect(beaconRootCall!.gasChanges.length).to.be.equal(2)
+      }
+    })
+  }
 
   it("System call ProcessParentBlockHash recorded correctly", async function () {
     const rpcBlock = await mustGetRpcBlock("latest")
