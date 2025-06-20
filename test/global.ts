@@ -40,7 +40,6 @@ export let SuicidalFactory: Suicidal__factory
 export let SuicideOnConstructorFactory: SuicideOnConstructor__factory
 export let SuicideContractAsBeneficiary: SuicideContractAsBeneficiary__factory
 export let SuicideContractAsBeneficiarySameTrx: SuicideContractAsBeneficiarySameTrx__factory
-export let PolygonFeeCallReverted: PolygonFeeCallReverted__factory
 
 const debug = debugFactory("battlefield:global")
 
@@ -72,7 +71,6 @@ before(async () => {
   SuicideOnConstructorFactory = await hre.ethers.getContractFactory("SuicideOnConstructor")
   SuicideContractAsBeneficiary = await hre.ethers.getContractFactory("SuicideContractAsBeneficiary")
   SuicideContractAsBeneficiarySameTrx = await hre.ethers.getContractFactory("SuicideContractAsBeneficiarySameTrx")
-  PolygonFeeCallReverted = await hre.ethers.getContractFactory("PolygonFeeCallReverted")
   debug("Initialized contract factories")
 
   debug("Initializing owner")
