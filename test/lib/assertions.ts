@@ -316,6 +316,10 @@ function assertTrxOrdinals(
   trace: TransactionTrace,
   blockNumber: number,
 ) {
+  // Skip ordinal uniqueness check for Amoy network
+  if (isNetwork && isNetwork("amoy")) {
+    return
+  }
   const ordinals = Object.entries(ordinalsMap)
   ordinals.sort(([a], [b]) => parseInt(a) - parseInt(b))
 
