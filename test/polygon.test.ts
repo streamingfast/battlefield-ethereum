@@ -108,9 +108,11 @@ if (isNetwork("polygon-dev")) {
       expect(log2.ordinal).to.be.greaterThan(log1.ordinal)
     })
   })
+}
 
+if (isNetwork("amoy")) {
   describe("Amoy", function (){
-    it("Validate Amoy unmergeable system tx (block 16)", async function () {
+    it("Validate unmergeable system tx (block 16)", async function () {
       const block = await fetchFirehoseBlock(16)
       expect(block).to.exist
       expect(block.number).to.be.equal(16)
