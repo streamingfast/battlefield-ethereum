@@ -32,13 +32,7 @@ main() {
   RUNDIR=$(mktemp -d)
 
   pushd "$RUNDIR"
-    if [[ "$NETWORK" == "amoy" ]]; then
-      echo "Running fireeth for Amoy network with custom arguments"
-      fireeth start -c '' \
-        --advertise-chain-name=amoy \
-        --reader-node-path=bor \
-        --reader-node-arguments="server --chain=amoy --datadir=bor-data --bor.heimdall='https://heimdall-api-amoy.polygon.technology' --parallelevm.enable=false --vmtrace=firehose --vmtrace.jsonconfig='{\"concurrentBlockFlushing\":16}' --port=30403"
-    else
+    if [[ -z "$NETWORK" ]]; then
       echo "Running bor with Firehose tracer activated via 'fireeth'"
       echo "Running bor in '$RUNDIR'"
       ENODE=$("$BOR_SCRIPTS_FOLDER/get-genesis-and-enode.sh" 127.0.0.1:30303)
@@ -46,6 +40,16 @@ main() {
       bor_args="server --parallelevm.enable=false --db.engine=leveldb --chain=genesis.json --datadir \"$RUNDIR\" --port 30403 --bor.heimdall http://localhost:1317 --http --http.addr 0.0.0.0 --ws --ws.addr 0.0.0.0 --ws.port 8646 --ws.api eth,txpool,net,web3,bor --http.vhosts '*' --http.corsdomain '*' --ws.origins '*' --http.port 8645 --http.api personal,eth,net,web3,txpool,miner,admin,bor,debug --syncmode full --bootnodes=enode://10c10bdc4dbdfd4114c11cf34ac7340ea2db8c664221ba97d32223ebda34121e394d7739e3e6d1ec837ce7f4199978581a0425265b8f509cfcc29aa1f19e911f@127.0.0.1:30303 $ENABLE_FIREHOSE"
       echo "running '$bor' '$bor_args'"
       run_fireeth 0 "$bor" "$bor_args"
+    elif [[ "$NETWORK" == "amoy" ]]; then
+      echo "Running fireeth for Amoy network with custom arguments"
+
+      amoy_args="server --chain=amoy --datadir=bor-data --bor.heimdall='https://heimdall-api-amoy.polygon.technology' --parallelevm.enable=false --vmtrace=firehose --vmtrace.jsonconfig='{\"concurrentBlockFlushing\":16}' --port=30403"
+
+      run_fireeth 0 "$bor" "$amoy_args"
+    else
+      echo "Unsupported network: $NETWORK"
+      echo "Usage: $0 <version> [amoy]"
+      exit 1
     fi
   popd > /dev/null
 
