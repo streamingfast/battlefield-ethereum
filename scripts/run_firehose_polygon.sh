@@ -45,7 +45,7 @@ main() {
 
       amoy_args="server --chain=amoy --datadir=bor-data --bor.heimdall='https://heimdall-api-amoy.polygon.technology' --parallelevm.enable=false --vmtrace=firehose --vmtrace.jsonconfig='{\"concurrentBlockFlushing\":16}' --port=30403"
 
-      run_fireeth 0 "$bor" "$amoy_args"
+      run_fireeth2 0 "$bor" "$amoy_args"
     else
       echo "Unsupported network: $NETWORK"
       echo "Usage: $0 <version> [amoy]"
@@ -66,5 +66,32 @@ if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
   usage
   exit 0
 fi
+
+run_fireeth2() {
+  if [[ $# -lt 3 ]]; then
+    lib_error "Wrong method call 'run_fireeth <first_streamable_block> <node_binary> <node_args>'"
+  fi
+
+  first_streamable_block="$1"; shift
+  node_binary="$1"; shift
+  node_args="$1"; shift
+
+  data_dir="$root_dir/.firehose-data"
+
+  if [[ -d "$data_dir" ]]; then
+    rm -rf "$data_dir"
+  fi
+
+  "$fireeth" \
+    start \
+    reader-node,relayer,merger,firehose \
+    -c '' \
+    -d "$data_dir" \
+    --advertise-chain-name=amoy \
+    --common-first-streamable-block=${first_streamable_block} \
+    --reader-node-path="$node_binary" \
+    --reader-node-arguments="$node_args" \
+    --firehose-grpc-listen-addr="localhost:8089" $@
+}
 
 main "$@"
