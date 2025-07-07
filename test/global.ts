@@ -12,6 +12,9 @@ import {
   Suicidal__factory,
   SuicideOnConstructor__factory,
   Transfers__factory,
+  DelegateToEmptyContract__factory,
+  SuicideContractAsBeneficiary__factory,
+  SuicideContractAsBeneficiarySameTrx__factory,
 } from "../typechain-types"
 import debugFactory from "debug"
 import { addFirehoseEthereumMatchers } from "./lib/assertions"
@@ -22,6 +25,7 @@ import { oneWei } from "./lib/money"
 import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
 import { fetchFirehoseBlock } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
+import { isNetwork } from "./lib/network"
 
 export let owner: NonceManager
 export let ownerAddress: string
@@ -88,12 +92,16 @@ before(async () => {
     .catch(abortTagged("Initializing chain static info"))
 
   const executeTransactionsStart = Date.now()
-  executeTransactions(
-    sendImmediateEth(owner, knownExistingAddress, oneWei),
-    sendImmediateEth(owner, precompileWithBalanceAddress, oneWei)
-  )
-    .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
-    .catch(abortTagged("Executing initialization transactions"))
+  if (!isNetwork("amoy")) {
+    executeTransactions(
+      sendImmediateEth(owner, knownExistingAddress, oneWei),
+      sendImmediateEth(owner, precompileWithBalanceAddress, oneWei)
+    )
+      .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
+      .catch(abortTagged("Executing initialization transactions"))
+  } else {
+    debug("Skipping initial funding transactions on Amoy testnet")
+  }
 
   // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall
   // setup faster and more reliable
