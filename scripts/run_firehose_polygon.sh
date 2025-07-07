@@ -43,7 +43,7 @@ main() {
     elif [[ "$NETWORK" == "amoy" ]]; then
       echo "Running fireeth for Amoy network with custom arguments"
 
-      amoy_args="server --chain=amoy --datadir=bor-data --bor.heimdall='https://heimdall-api-amoy.polygon.technology' --parallelevm.enable=false --vmtrace=firehose --vmtrace.jsonconfig='{\"concurrentBlockFlushing\":16}' --port=30403"
+      amoy_args="server --chain=amoy --datadir=bor-data --bor.heimdall='https://heimdall-api-amoy.polygon.technology' --parallelevm.enable=false --vmtrace=firehose --vmtrace.jsonconfig='{\"concurrentBlockFlushing\":16, \"applyBackwardCompatibility\":false}' --port=30403"
 
       data_dir="$SCRIPTS_FOLDER/.firehose-data"
       if [[ -d "$data_dir" ]]; then
