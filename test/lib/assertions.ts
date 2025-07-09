@@ -233,7 +233,8 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       }
       // Check on original trace for correctness of ordinal handling
       const ordinals = trxTraceOrdinals(actualTrace)
-      assertTrxOrdinals(chai, ordinals, actualTrace, trxReceipt.blockNumber)
+      const skipOrdinalCheck = options && (options as any).skipOrdinalCheck
+      assertTrxOrdinals(chai, ordinals, actualTrace, trxReceipt.blockNumber, { skipOrdinalCheck })
 
       const actualNormalized = normalizeTrace(clone(TransactionTraceSchema, actualTrace))
       const actualNormalizedJson = toProtoJsonString(actualNormalized)
@@ -315,9 +316,9 @@ function assertTrxOrdinals(
   ordinalsMap: Record<number, number>,
   trace: TransactionTrace,
   blockNumber: number,
+  options?: { skipOrdinalCheck?: boolean }
 ) {
-  // Skip ordinal uniqueness check for Amoy network
-  if (isNetwork && isNetwork("amoy")) {
+  if (options?.skipOrdinalCheck) {
     return
   }
   const ordinals = Object.entries(ordinalsMap)

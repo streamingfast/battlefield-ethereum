@@ -44,7 +44,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | BNB                     | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                 | `pnpm test:fh3.0:bnb-dev`            | None                                                                      |
 | Polygon (fh 2.3)        | Docker miner: `./scripts/polygon/up.sh 2.3`, then `./scripts/run_firehose_polygon.sh 2.3` | `pnpm test:fh2.3:polygon-dev`        | None                                                                      |
 | Polygon (fh 3.0)        | Docker miner: `./scripts/polygon/up.sh 3.0`, then `./scripts/run_firehose_polygon.sh 3.0` | `pnpm test:fh3.0:polygon-dev`        | None                                                                      |
-| Amoy                    | `./scripts/run_firehose_polygon.sh 3.0 amoy`                                              | `pnpm test:fh2.3:amoy --grep "Amoy"` | None                                                                      |
+| Amoy                    | `./scripts/run_firehose_polygon.sh 3.0 amoy`                                              | `pnpm test:fh3.0:amoy --grep "Amoy"` | None                                                                      |
 
 ### Specific Tests
 
