@@ -28,7 +28,7 @@ run_fireeth() {
 
   "$fireeth" \
     start \
-    reader-node,relayer,merger,firehose \
+    reader-node,relayer,merger,firehose,substreams-tier1,substreams-tier2 \
     -c '' \
     -d "$data_dir" \
     --advertise-chain-name=battlefield \

@@ -30,7 +30,7 @@ main() {
 
     "$geth" --dev --datadir="$data_dir" "--gcmode=archive" "--state.scheme=hash" init "$ROOT/geth_dev/genesis.$fork_version.json" 2> /dev/null
 
-    geth_extra_args=("--dev" "--dev.period=1" "--http" "--http.api=eth,web3,net" "--datadir=$data_dir" "--gcmode=archive" "--state.scheme=hash")
+    geth_extra_args=("--dev" "--dev.period=1" "--http" "--http.api=debug,eth,web3,net" "--datadir=$data_dir" "--gcmode=archive" "--state.scheme=hash")
     if has_vmtrace; then
         geth_extra_args+=("--vmtrace=firehose")
 
