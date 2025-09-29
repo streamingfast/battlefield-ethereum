@@ -998,7 +998,7 @@
       ],
       "statusFailed": true,
       "statusReverted": false,
-      "failureReason": "bn256: malformed point",
+      "failureReason": "point is not on curve",
       "stateReverted": true,
       "beginOrdinal": "104",
       "endOrdinal": "108",
