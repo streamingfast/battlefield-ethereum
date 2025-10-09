@@ -63,9 +63,13 @@ describe("Pure transfers", function () {
   })
 
   it("Transfer to precompiled address without balance", async function () {
+    if (process.env.BATTLEFIELD_SKIP_VALIDATION === "true") {
+        this.skip()
+    }
     // This is a tricky test as once run, the address will have a balance so it cannot run twice.
     if ((await getBalance(precompileWithoutBalanceAddress)) !== 0n) {
       if (canSkipFreshChainOnlyTests()) {
+        this.skip()
       }
 
       throw new Error(

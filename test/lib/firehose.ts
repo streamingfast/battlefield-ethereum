@@ -36,7 +36,7 @@ const debug = debugFactory("battlefield:firehose")
 export const emptyBytes = Uint8Array.of()
 
 const transport = createGrpcTransport({
-  baseUrl: "http://localhost:8089",
+  baseUrl: process.env.FIREHOSE_GRPC_URL || "http://localhost:8089",
 })
 
 export const firehose = createClient(Fetch, transport)

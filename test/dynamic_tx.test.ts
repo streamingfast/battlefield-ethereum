@@ -11,6 +11,10 @@ import { isNetwork, networkName } from "./lib/network"
 
 describe("Dynamic Tx", function () {
   it("Dynamic transaction max fee", async function () {
+    if (process.env.BATTLEFIELD_SKIP_VALIDATION === "true") {
+      this.skip()
+    }
+
     const result = await sendEth(owner, knownExistingAddress, oneWei, {
       gasPrice: undefined,
       maxFeePerGas: defaultGasPrice,
@@ -30,6 +34,10 @@ describe("Dynamic Tx", function () {
   })
 
   it("Dynamic transaction max tip", async function () {
+    if (process.env.BATTLEFIELD_SKIP_VALIDATION === "true") {
+      this.skip()
+    }
+
     let maxPriorityFeePerGas = 25_000
     if (isNetwork("polygon-dev")) {
       maxPriorityFeePerGas = 25_000_000_000

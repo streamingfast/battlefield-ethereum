@@ -79,6 +79,10 @@ describe("Blocks", function () {
   // bnb-dev in dev mode does not seem to update any parentBeaconRoot. being set to 00000000000 makes it skip that, so I skipped the test
   if (!isNetwork("bnb-dev")) {
     it("System call ProcessBeaconRoot recorded correctly", async function () {
+      if (process.env.BATTLEFIELD_SKIP_VALIDATION === "true") {
+        this.skip()
+      }
+
       const rpcBlock = await mustGetRpcBlock("latest")
       if (!rpcBlock.parentBeaconBlockRoot) {
         // Test do not apply to this network
@@ -109,6 +113,10 @@ describe("Blocks", function () {
   }
 
   it("System call ProcessParentBlockHash recorded correctly", async function () {
+    if (process.env.BATTLEFIELD_SKIP_VALIDATION === "true") {
+      this.skip()
+    }
+
     const rpcBlock = await mustGetRpcBlock("latest")
     if (!rpcBlock.requestsHash) {
       // Test do not apply to this network
