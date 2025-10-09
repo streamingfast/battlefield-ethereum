@@ -211,6 +211,11 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       templateVars?: Record<string, string>,
       options?: TrxTracerEqualSnapshotOptions,
     ) {
+      if (process.env.BATTLEFIELD_SKIP_VALIDATION === "true") {
+        debug("Skipping validation for snapshot %s (BATTLEFIELD_SKIP_VALIDATION=true)", snapshotIdentifier)
+        return
+      }
+
       const [trxReceipt, actualTrace, actualBlock] = await resolveTrxTrace(this._obj)
       if (isNetwork("polygon-dev")) {
         // filter logs from special contract

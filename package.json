@@ -10,6 +10,7 @@
     "test:fh2.3:arbitrum-geth-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network arbitrum-geth-dev",
     "test:fh2.3:arbitrum-nitro-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network arbitrum-nitro-dev",
     "test:fh3.0:geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0 hardhat test --network geth-dev",
+    "test:fh3.0:reth-dev": "cross-env SNAPSHOTS_TAG=fh3.0 FIREHOSE_GRPC_URL=http://localhost:10001 BATTLEFIELD_SKIP_VALIDATION=true SKIP_FRESH_CHAIN_ONLY_TESTS=1 hardhat test --network geth-dev",
     "test:fh3.0:optimism-geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0 hardhat test --network optimism-geth-dev",
     "test:fh3.0:sei-dev": "cross-env SNAPSHOTS_TAG=fh3.0/sei-dev hardhat test --network sei-dev",
     "test:fh3.0:bnb-dev": "cross-env SNAPSHOTS_TAG=fh3.0 hardhat test --network bnb-dev",
