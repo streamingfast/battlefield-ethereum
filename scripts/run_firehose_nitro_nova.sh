@@ -23,7 +23,17 @@ main() {
   fi
 
   data_dir="$(mktemp -d)"
-  nitro_args="--parent-chain.connection.url=$NITRO_NOVA_PARENT_CHAIN_URL --parent-chain.blob-client.beacon-url=$NITRO_NOVA_BEACON_URL --chain.id=42170 --init.latest=genesis --http.api=net,web3,eth --http.corsdomain=* --http.addr=0.0.0.0 --http.vhosts=* --node.firehose"
+  nitro_args=(
+    "--parent-chain.connection.url=$NITRO_NOVA_PARENT_CHAIN_URL"
+    "--parent-chain.blob-client.beacon-url=$NITRO_NOVA_BEACON_URL"
+    "--chain.id=42170"
+    "--init.latest=genesis"
+    "--http.api=net,web3,eth"
+    "--http.corsdomain=*"
+    "--http.addr=0.0.0.0"
+    "--http.vhosts=*"
+    "--node.firehose"
+  )
 
   echo "Running Nitro Nova node with Firehose tracer activated via 'fireeth'"
   echo "Parent Chain URL: $NITRO_NOVA_PARENT_CHAIN_URL"
@@ -33,7 +43,7 @@ main() {
   echo "Nitro Data Directory: $data_dir"
   echo ""
 
-  run_fireeth 1 "$nitro" "$nitro_args"
+  run_fireeth 1 "$nitro" "${nitro_args[*]}"
 }
 
 usage() {

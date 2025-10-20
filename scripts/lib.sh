@@ -9,6 +9,7 @@ geth="${GETH_BINARY:-geth}"
 nitro="${NITRO_BINARY:-nitro}"
 seid="${SEID_BINARY:-seid}"
 bor="${BOR_BINARY:-bor}"
+reth="${RETH_BINARY:-reth-firehose-tracer}"
 
 # Usage: run_fireeth <first_streamable_block> <node_binary> <node_args>
 run_fireeth() {
@@ -102,6 +103,23 @@ check_geth() {
   if [[ -n "$1" ]]; then
       if ! geth --help |grep -q "$1"; then
           echo "Your geth version is not compatible with '$1' Chain (grepping the string '$1' in 'geth --help' output)"
+          exit 1
+      fi
+  fi
+}
+
+check_reth_firehose_tracer() {
+  if ! command -v "$reth" &> /dev/null; then
+    echo "The '$reth' binary could not be found, you can install it with:"
+    echo ""
+    echo "- cargo install reth-firehose-tracer --git"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
+  fi
+  if [[ -n "$1" ]]; then
+      if ! "$reth" --help | grep -q "$1"; then
+          echo "Your $reth version is not compatible with '$1' Chain (grepping the string '$1' in '$reth --help' output)"
           exit 1
       fi
   fi
