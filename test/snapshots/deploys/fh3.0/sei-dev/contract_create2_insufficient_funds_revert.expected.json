@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "260481",
+  "gasUsed": "515930",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "19",
+  "endOrdinal": "20",
   "status": "REVERTED",
   "calls": [
     {
@@ -37,14 +37,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "16",
+          "ordinal": "17",
           "oldValue": "",
-          "newValue": "663dc2eafebe00"
+          "newValue": "3d66eef0598c00"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "18",
+          "ordinal": "19",
           "newValue": "01",
           "oldValue": ""
         }
@@ -110,9 +110,15 @@
         },
         {
           "oldValue": "639519",
+          "newValue": "384070",
+          "reason": "REASON_TX_DATA_FLOOR",
+          "ordinal": "16"
+        },
+        {
+          "oldValue": "384070",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "17"
+          "ordinal": "18"
         }
       ],
       "statusFailed": true,
