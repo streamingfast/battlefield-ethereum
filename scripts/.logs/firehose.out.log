@@ -1,0 +1,91 @@
+Running Reth dev node with Firehose tracer via 'fireeth'
+2025-10-10T15:56:35.180-0400 INFO (dtracing) registering development exporters from environment variables
+2025-10-10T15:56:35.180-0400 INFO (fireeth) starting Firehose on Ethereum with config file ''
+2025-10-10T15:56:35.338-0400 INFO (fireeth) launching applications: firehose,merger,reader-node,relayer,substreams-tier1,substreams-tier2
+2025-10-10T15:56:35.338-0400 INFO (firehose) auth plugin instantiation {"plugin_kind": "null"}
+2025-10-10T15:56:35.338-0400 INFO (firehose) local session pool initialized {"max_sessions": 30, "max_sessions_per_user": 3, "max_workers": 100, "max_workers_per_session": 100, "max_workers_per_user": 100}
+2025-10-10T15:56:35.338-0400 INFO (reader-node) parsing backup configs {"configs": [], "factory_count": 1}
+2025-10-10T15:56:35.338-0400 INFO (reader-node) parsing backup known factory {"name": "gke-pvc-snapshot"}
+2025-10-10T15:56:35.338-0400 INFO (reader-node) adding superviser shutdown to plugins {"plugin_name": "ToConsoleLogPlugin"}
+2025-10-10T15:56:35.338-0400 INFO (reader-node) registered log plugin {"plugin count": 1}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) creating operator {"options": {"Bootstrapper":null,"EnableSupervisorMonitoring":true,"ShutdownDelay":0}}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) creating mindreader plugin {"one_blocks_store_url": "file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/one-blocks", "one_block_suffix": "default", "working_directory": "/Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/reader/work", "start_block_num": 0, "stop_block_num": 0, "channel_capacity": 100, "with_head_block_updater": true, "with_shutdown_func": true}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) creating new mindreader plugin
+2025-10-10T15:56:35.339-0400 INFO (reader-node) adding superviser shutdown to plugins {"plugin_name": "MindReaderPlugin"}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) registered log plugin {"plugin count": 2}
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier1) auth plugin instantiation {"plugin_kind": "null"}
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier1) local session pool initialized {"max_sessions": 30, "max_sessions_per_user": 3, "max_workers": 100, "max_workers_per_session": 100, "max_workers_per_user": 100}
+2025-10-10T15:56:35.339-0400 INFO (relayer) starting relayer {"sources_addr": [":10010"], "grpc_listen_addr": ":10014", "source_request_burst": 0, "max_source_latency": "999999h0m0s", "one_blocks_url": "file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/one-blocks"}
+2025-10-10T15:56:35.339-0400 INFO (dgrpc) standard server created
+2025-10-10T15:56:35.339-0400 INFO (firehose) running firehose {"config": {"MergedBlocksStoreURL":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/merged-blocks","OneBlocksStoreURL":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/one-blocks","ForkedBlocksStoreURL":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/forked-blocks","BlockStreamAddr":":10014","GRPCListenAddr":":10001","GRPCShutdownGracePeriod":1000000000,"ServiceDiscoveryURL":null}}
+2025-10-10T15:56:35.339-0400 INFO (merger) running merger {"config": {"StorageOneBlockFilesPath":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/one-blocks","StorageMergedBlocksFilesPath":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/merged-blocks","StorageForkedBlocksFilesPath":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/forked-blocks","FilesDeleteThreads":8,"GRPCListenAddr":":10012","PruneForkedBlocksAfter":50000,"TimeBetweenPruning":60000000000,"TimeBetweenPolling":1000000000,"StopBlock":0}}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) running node manager app {"config": {"StartupDelay":0,"HTTPAddr":":10011","ConnectionWatchdog":false,"GRPCAddr":":10010"}, "mindreader": true}
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier2) running substreams-tier2 {"config": {"GRPCListenAddr":":10017","ServiceDiscoveryURL":null,"PipelineOptions":null,"MaximumConcurrentRequests":0,"WASMExtensions":{},"BlockExecutionTimeout":180000000000,"SegmentExecutionTimeout":3600000000000,"TmpDir":"/Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/tmp","Tracing":false}}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) retrieved hostname from os {"hostname": "Ulysses-MacBook-Pro.local"}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) starting mindreader gRPC server
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier1) running substreams-tier1 {"config": {"MeteringConfig":"null://","FoundationalStoresConfigPath":"","MergedBlocksStoreURL":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/merged-blocks","OneBlocksStoreURL":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/one-blocks","ForkedBlocksStoreURL":"file:///Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/storage/forked-blocks","BlockStreamAddr":":10014","GRPCListenAddr":":10016","GRPCShutdownGracePeriod":1000000000,"ServiceDiscoveryURL":null,"BlockExecutionTimeout":180000000000,"TmpDir":"/Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/tmp","StateStoreURL":"/Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/.firehose-data/localdata","QuickSaveStoreURL":"","StateStoreDefaultTag":"","BlockType":"","StateBundleSize":1000,"EnforceCompression":true,"ActiveRequestsSoftLimit":0,"ActiveRequestsHardLimit":0,"MaxSubrequests":4,"SubrequestsEndpoint":":10017","SubrequestsInsecure":false,"SubrequestsPlaintext":true,"SharedCacheSize":15,"WASMExtensions":{},"Tracing":false}}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) standard server created
+2025-10-10T15:56:35.339-0400 INFO (bstream) New forkable hub initialized {"source_chan_size": 100, "keep_final_blocks": 10}
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier2) registering substreams metrics
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier2) setting up trust authenticator
+2025-10-10T15:56:35.339-0400 INFO (bstream) New forkable hub initialized {"source_chan_size": 100, "keep_final_blocks": 500}
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier2) launching gRPC server
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier2) standard server created
+2025-10-10T15:56:35.339-0400 INFO (bstream) New forkable hub initialized {"source_chan_size": 100, "keep_final_blocks": 200}
+2025-10-10T15:56:35.339-0400 INFO (substreams-tier2) launching gRPC server {"listen_addr": ":10017"}
+2025-10-10T15:56:35.339-0400 INFO (substreams-clients) setting up basic grpc client factory (no XDS bootstrap)
+2025-10-10T15:56:35.339-0400 INFO (relayer) waiting for hub to be ready...
+2025-10-10T15:56:35.339-0400 INFO (merger) merger initiated
+2025-10-10T15:56:35.339-0400 WARN (bstream) bootstrapping from one-block-files incomplete. Will bootstrap from incoming live blocks {"error": "no one blocks found"}
+2025-10-10T15:56:35.340-0400 WARN (bstream) bootstrapping from one-block-files incomplete. Will bootstrap from incoming live blocks {"error": "no one blocks found"}
+2025-10-10T15:56:35.339-0400 INFO (reader-node) launching operator
+2025-10-10T15:56:35.340-0400 INFO (reader-node) launching operator HTTP server {"http_listen_addr": ":10011"}
+2025-10-10T15:56:35.340-0400 WARN (bstream) bootstrapping from one-block-files incomplete. Will bootstrap from incoming live blocks {"error": "no one blocks found"}
+2025-10-10T15:56:35.340-0400 INFO (merger) merger running
+2025-10-10T15:56:35.340-0400 INFO (firehose) waiting until hub is real-time synced
+2025-10-10T15:56:35.340-0400 INFO (reader-node) launching gRPC server {"listen_addr": ":10010"}
+2025-10-10T15:56:35.340-0400 ERRO (fireeth) 
+################################################################
+Fatal error in app substreams-tier2:
+
+tcp listening to ":10017": listen tcp :10017: bind: address already in use
+################################################################
+2025-10-10T15:56:35.340-0400 INFO (relayer) new source factory created
+2025-10-10T15:56:35.340-0400 INFO (reader-node) operator is terminating {"error": "tcp listening to \":10010\": listen tcp :10010: bind: address already in use"}
+2025-10-10T15:56:35.340-0400 INFO (reader-node) superviser is terminating
+2025-10-10T15:56:35.340-0400 INFO (reader-node) supervisor received a stop request, terminating supervised node process
+2025-10-10T15:56:35.340-0400 INFO (reader-node) underlying process is not running, nothing to do
+2025-10-10T15:56:35.340-0400 INFO (reader-node) shutting down plugins {"last_exit_code": 0}
+2025-10-10T15:56:35.340-0400 INFO (fireeth) application substreams-tier2 shutdown unexpectedly, quitting
+2025-10-10T15:56:35.340-0400 INFO (fireeth) waiting for all apps termination...
+2025-10-10T15:56:35.340-0400 INFO (merger) starting merger
+2025-10-10T15:56:35.340-0400 INFO (reader-node) stopping plugin {"plugin_name": "ToConsoleLogPlugin"}
+2025-10-10T15:56:35.340-0400 INFO (dgrpc) standard server created
+2025-10-10T15:56:35.340-0400 INFO (reader-node) stopping plugin {"plugin_name": "MindReaderPlugin"}
+2025-10-10T15:56:35.340-0400 INFO (reader-node) mindreader is stopping
+2025-10-10T15:56:35.340-0400 INFO (reader-node) all plugins closed
+2025-10-10T15:56:35.340-0400 INFO (reader-node) operator is waiting for superviser to shutdown {"error": "tcp listening to \":10010\": listen tcp :10010: bind: address already in use"}
+2025-10-10T15:56:35.340-0400 INFO (merger) grpc server created
+2025-10-10T15:56:35.340-0400 INFO (reader-node) operator done waiting for superviser to shutdown {"error": "tcp listening to \":10010\": listen tcp :10010: bind: address already in use"}
+2025-10-10T15:56:35.340-0400 INFO (merger) server registered
+2025-10-10T15:56:35.340-0400 INFO (reader-node) chain operator terminated shutting down mindreader app
+2025-10-10T15:56:35.340-0400 INFO (merger) starting pruning of unused (old) one-block-files {"pruning_distance_to_lib": 100, "time_between_pruning": "1m0s"}
+2025-10-10T15:56:35.340-0400 INFO (merger) starting pruning of forked files {"pruning_distance_to_lib": 50000, "time_between_pruning": "1m0s"}
+2025-10-10T15:56:35.340-0400 INFO (reader-node) starting webserver {"http_addr": ":10011"}
+2025-10-10T15:56:35.340-0400 INFO (reader-node) operator ready to receive commands
+2025-10-10T15:56:35.340-0400 INFO (fireeth) all apps terminated gracefully
+Error: unable to launch: tcp listening to ":10017": listen tcp :10017: bind: address already in use
+2025-10-10T15:56:35.340-0400 ERRO (fireeth) failed to run {"error": "unable to launch: tcp listening to \":10017\": listen tcp :10017: bind: address already in use"}
+2025-10-10T15:56:35.340-0400 INFO (reader-node) received operator command {"command": "start", "params": null}
+2025-10-10T15:56:35.340-0400 INFO (dgrpc) launching gRPC server {"listen_addr": ":10012"}
+2025-10-10T15:56:35.340-0400 INFO (reader-node) http server did not close correctly
+2025-10-10T15:56:35.345-0400 INFO (reader-node) preparing for start
+2025-10-10T15:56:35.346-0400 INFO (reader-node) preparing to start chain
+2025-10-10T15:56:35.346-0400 INFO (reader-node) starting mindreader
+2025-10-10T15:56:35.346-0400 INFO (reader-node) launching blocks reading loop {"capacity": 100}
+2025-10-10T15:56:35.346-0400 INFO (reader-node) creating new command instance and launch read loop {"binary": "bash", "arguments": ["/Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/wrapped_reth_dev.sh"], "env": ""}
+2025-10-10T15:56:35.346-0400 INFO (dgrpc) serving gRPC {"listen_addr": ":10012"}
+2025-10-10T15:56:35.346-0400 INFO (reader-node) creating new command instance and launch read loop {"binary": "bash", "arguments": ["/Users/ulyssecorbeil/Documents/SF/battlefield-ethereum/scripts/wrapped_reth_dev.sh"], "env": {"<inherited from process>":"{61 vars}"}}
+2025-10-10T15:56:35.346-0400 INFO (reader-node) successfully start service
+2025-10-10T15:56:35.346-0400 INFO (reader-node) operator ready to receive commands
+2025-10-10T15:56:35.346-0400 INFO (reader-node) starting consume flow
