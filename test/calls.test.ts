@@ -68,7 +68,7 @@ describe("Calls", function () {
       },
       {
         // Seems BNB has different error message `bn256: malformed point` vs `point is not on curve`
-        networkSnapshotOverrides: ["bnb-dev"],
+        networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"],
       }
     )
   })
