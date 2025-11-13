@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "This takes about 10 minutes and generates state-sync transactions on chain:"
+
+# Clone the e2e test repository if it doesn't exist
+if [ ! -d "polygon-e2e-tests" ]; then
+    git clone https://github.com/agglayer/e2e.git polygon-e2e-tests
+fi
+cd polygon-e2e-tests
+git checkout 9fd2d09  # this is the version for bor v2.4.0-beta5
+
+# Run the bridge e2e tests
+bats --filter-tags pos --recursive tests/
+
+echo "Note: 4/5 tests should pass, ignore the 'prune TxIndexer' test failing"

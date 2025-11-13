@@ -143,17 +143,17 @@
       "balanceChanges": [
         {
           "address": "$createdContract",
-          "reason": "REASON_SUICIDE_REFUND",
+          "reason": "REASON_SUICIDE_WITHDRAW",
           "ordinal": "11",
-          "oldValue": "",
-          "newValue": "01"
+          "oldValue": "01",
+          "newValue": ""
         },
         {
           "address": "$createdContract",
-          "reason": "REASON_SUICIDE_WITHDRAW",
+          "reason": "REASON_SUICIDE_REFUND",
           "ordinal": "12",
-          "oldValue": "02",
-          "newValue": ""
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [],

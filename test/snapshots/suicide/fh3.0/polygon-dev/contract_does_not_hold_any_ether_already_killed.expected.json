@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "21064",
+  "gasUsed": "28484",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "14",
+  "endOrdinal": "15",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -26,11 +26,11 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$suicidal1Contract",
       "gasLimit": "878936",
-      "gasConsumed": "0",
+      "gasConsumed": "7420",
       "returnData": "",
       "input": "41c0e1b5",
-      "executedCode": false,
-      "suicide": false,
+      "executedCode": true,
+      "suicide": true,
       "keccakPreimages": {},
       "storageChanges": [],
       "balanceChanges": [
@@ -44,21 +44,21 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "9",
+          "ordinal": "10",
           "oldValue": "",
-          "newValue": "8c84718eb6b000"
+          "newValue": "8b54c367d2b800"
         },
         {
           "address": "000000000000000000000000000000000000dead",
           "reason": "REASON_BURN",
-          "ordinal": "11",
+          "ordinal": "12",
           "oldValue": "",
           "newValue": ""
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "12",
+          "ordinal": "13",
           "oldValue": "",
           "newValue": "01"
         }
@@ -93,16 +93,22 @@
           "ordinal": "6"
         },
         {
-          "oldValue": "878936",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "oldValue": "876516",
+          "newValue": "871516",
+          "reason": "REASON_SELF_DESTRUCT",
           "ordinal": "7"
         },
         {
-          "oldValue": "878936",
+          "oldValue": "871516",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "8"
+        },
+        {
+          "oldValue": "871516",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "10"
+          "ordinal": "11"
         }
       ],
       "statusFailed": false,
@@ -110,7 +116,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "5",
-      "endOrdinal": "8",
+      "endOrdinal": "9",
       "accountCreations": []
     }
   ],

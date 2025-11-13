@@ -156,28 +156,6 @@ prepare_local_node() {
     echo "$TEMP_DIR" > /tmp/bor_temp_dir
 }
 
-# Function to display bridge test instructions
-display_bridge_test_instructions() {
-    echo "=============================================="
-    echo "NEXT STEPS: Run Bridge Tests"
-    echo "=============================================="
-    echo ""
-    echo "Please run the following commands to execute bridge tests."
-    echo "This takes about 10 minutes and generates state-sync transactions on chain:"
-    echo ""
-    echo "# Clone the e2e test repository"
-    echo "git clone https://github.com/agglayer/e2e.git"
-    echo "cd e2e"
-    echo "git checkout 9fd2d09  # this is the version for bor v2.4.0-beta5"
-    echo ""
-    echo "# Run the bridge e2e tests"
-    echo "bats --filter-tags pos --recursive tests/"
-    echo ""
-    echo "Note: 4/5 tests should pass, ignore the 'prune TxIndexer' test failing"
-    echo ""
-    echo "=============================================="
-}
-
 # Function to run local bor
 run_local_bor() {
     echo "Running local Bor node..."
@@ -215,14 +193,7 @@ main() {
     # Step 3: Prepare local node
     prepare_local_node
 
-    # Step 4: Display bridge test instructions
-    display_bridge_test_instructions
-
-    # Press any key to continue
-    echo "Press any key to continue..."
-    read -n 1 -s
-
-    # Step 5: Run local bor
+    # Step 4: Run local bor
     run_local_bor
 }
 

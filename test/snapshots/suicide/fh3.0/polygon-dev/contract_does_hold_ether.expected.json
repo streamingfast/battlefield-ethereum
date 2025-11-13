@@ -42,18 +42,18 @@
           "newValue": ""
         },
         {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_SUICIDE_REFUND",
-          "ordinal": "8",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
           "address": "$suicidal2Contract",
           "reason": "REASON_SUICIDE_WITHDRAW",
-          "ordinal": "9",
+          "ordinal": "8",
           "oldValue": "01",
           "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_SUICIDE_REFUND",
+          "ordinal": "9",
+          "oldValue": "",
+          "newValue": "01"
         },
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
