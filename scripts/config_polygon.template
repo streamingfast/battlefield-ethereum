@@ -1,0 +1,33 @@
+chain = "$CONFIGDIR/genesis.json"
+datadir = "$DATADIR"
+identity = "localbor"
+syncmode = "full"
+verbosity = 3
+
+"bor.logs" = true
+
+[witness]
+    fastforwardthreshold=30
+
+[p2p]
+    maxpeers = 200
+    bind = "0.0.0.0"
+    port = 30303
+    nodiscover = true
+    nodekey = "$CONFIGDIR/nodekey"
+    [p2p.discovery]
+        static-nodes = ["$ENODE"]
+
+[heimdall]
+    url = "$CLHTTPADDR"
+    ws-address = "$CLWSADDR"
+
+[jsonrpc]
+    ipcpath = "$CONFIGDIR/bor.ipc"
+    [jsonrpc.http]
+        enabled = true
+        host = "0.0.0.0"
+        port = 8545
+        api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
+        vhosts = ["*"]
+        corsdomain = ["*"]
