@@ -218,6 +218,10 @@ main() {
     # Step 4: Display bridge test instructions
     display_bridge_test_instructions
 
+    # Press any key to continue
+    echo "Press any key to continue..."
+    read -n 1 -s
+
     # Step 5: Run local bor
     run_local_bor
 }
