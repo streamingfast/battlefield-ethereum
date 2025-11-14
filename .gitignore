@@ -18,6 +18,8 @@ node_modules
 ignition/deployments/chain-31337
 
 scripts/.firehose-data
+scripts/optimism/op-chain
+scripts/optimism/op-node-db
 
 # E2E test repository (cloned by polygon-bridge script)
 polygon-e2e-tests/

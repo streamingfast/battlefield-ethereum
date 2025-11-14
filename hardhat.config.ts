@@ -33,7 +33,7 @@ const config: HardhatUserConfig = {
     "sei-dev": firehoseNetwork([]),
     "bnb-dev": firehoseNetwork([]),
     "polygon-dev": firehoseNetwork([]),
-    amoy: firehoseNetwork([]),
+    "optimism-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
   },
 
   mocha: {

@@ -110,7 +110,7 @@ prepare_kurtosis_environment() {
     cast send --private-key "$pk" --value 0.01ether $(cast address-zero) --priority-gas-price=25000000000 --gas-price=250000000000
 
     # Sending funds to the test account
-    cast send --private-key "$pk" --value 1000000ether 0x821B55D8AbE79bC98f05Eb675fDc50dFe796B7Ab  --priority-gas-price=25000000000 --gas-price=250000000000
+    cast send --private-key "$pk" --value 1000000ether "$address_to_fund" --priority-gas-price=25000000000 --gas-price=250000000000
 
     echo "Kurtosis environment prepared successfully! ✅"
     echo ""

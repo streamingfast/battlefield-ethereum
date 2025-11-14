@@ -10,6 +10,8 @@ nitro="${NITRO_BINARY:-nitro}"
 seid="${SEID_BINARY:-seid}"
 bor="${BOR_BINARY:-bor}"
 reth="${RETH_BINARY:-reth-firehose-tracer}"
+op_node="${OP_NODE_BINARY:-op-node}"
+op_geth="${OP_GETH_BINARY:-op-geth}"
 
 # Usage: run_fireeth <first_streamable_block> <node_binary> <node_args>
 run_fireeth() {
@@ -136,6 +138,55 @@ check_bor() {
   fi
 }
 
+check_bor() {
+  if ! command -v "$bor" &> /dev/null; then
+    echo "The '$bor' binary could not be found, you can install it with:"
+    echo ""
+    echo "- make bor"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
+  fi
+}
+
+check_bor() {
+  if ! command -v "$bor" &> /dev/null; then
+    echo "The '$bor' binary could not be found, you can install it with:"
+    echo ""
+    echo "- make bor"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
+  fi
+}
+
+check_op_node() {
+  if ! command -v "$op_node" &> /dev/null; then
+    echo "The '$op_node' binary could not be found, you can install it with"
+    echo ""
+    echo "- brew install just"
+    echo "- git clone https://github.com/ethereum-optimism/optimism.git"
+    echo "- cd optimism/op-node"
+    echo "- just"
+    echo "- cp ./bin/op-node \"\`go env GOPATH\`/bin/\""
+    exit 1
+  fi
+}
+
+check_op_geth() {
+  if ! command -v "$op_node" &> /dev/null; then
+    echo "The '$op_node' binary could not be found, install required"
+    echo "binary from our fork."
+    echo ""
+    echo "- git clone https://github.com/streamingfast/go-ethereum.git"
+    echo "- cd go-ethereum"
+    echo "- go build -o \`go env GOPATH\`/bin/op-geth ./cmd/geth"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
+  fi
+}
+
 check_seid() {
   if ! command -v "$seid" &> /dev/null; then
     echo "The '$seid' binary could not be found, you can install it with:"
@@ -159,6 +210,33 @@ check_sd() {
     echo "by following instructions at https://github.com/chmln/sd?tab=readme-ov-file#installation"
     exit 1
   fi
+}
+
+check_builder_playground() {
+  if ! command -v builder-playground &> /dev/null; then
+    echo "The 'builder-playground' command is required for this script, please install it"
+    echo "by following instructions at https://github.com/flashbots/builder-playground."
+    echo ""
+    echo "For now 'main' branch is required, you can install it by running:"
+    echo ""
+    echo "go install github.com/flashbots/builder-playground@main"
+    exit 1
+  fi
+}
+
+check_cast() {
+  # Check Cast (part of Foundry)
+  if ! command_exists cast; then
+      missing_deps+=("cast")
+      echo "❌ Cast (Foundry) is not installed"
+      echo "   Install with:"
+      echo "   curl -L https://foundry.paradigm.xyz | bash"
+      echo "   foundryup"
+  fi
+}
+
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
 }
 
 # usage: check_env <name> [<message_if_unset>]
