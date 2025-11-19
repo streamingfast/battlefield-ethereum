@@ -37,6 +37,10 @@ main() {
     fi
 
     op_geth_args="--datadir=\"$db_path\" --verbosity=$verbosity --http --http.corsdomain="*" --http.vhosts="*" --http.addr=0.0.0.0 --http.port=28545 --http.api="web3,debug,eth,txpool,net,engine,miner" --ws --ws.addr=0.0.0.0 --ws.port=28546 --ws.origins="*" --ws.api="debug,eth,txpool,net,engine,miner" --syncmode="full" --nodiscover --maxpeers=5 --rpc.allow-unprotected-txs --authrpc.addr=0.0.0.0 --authrpc.port=28551 --authrpc.vhosts="*" --authrpc.jwtsecret="$op_stack_path/jwtsecret" --port=20303 --metrics --metrics.addr=0.0.0.0 --metrics.port=16061 --vmtrace=firehose --vmtrace.jsonconfig='{\"applyBackwardCompatibility\":false}' --gcmode=archive --state.scheme=hash"
+    if [[ $# -gt 1 && $1 == "flashblocks" ]]; then
+      op_geth_args="$op_geth_args --flashblock.address=ws://localhost:1114"
+    fi
+
     run_fireeth 0 "$op_geth" "$op_geth_args"
   popd > /dev/null
 
