@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "16",
+  "endOrdinal": "18",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -46,7 +46,7 @@
           "address": "$sender",
           "reason": "REASON_GAS_BUY",
           "ordinal": "2",
-          "oldValue": "0d3c7328c2d000",
+          "oldValue": "0d3c7334a0a30b",
           "newValue": ""
         },
         {
@@ -60,6 +60,20 @@
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "15",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "16",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "17",
           "oldValue": "",
           "newValue": "01"
         }

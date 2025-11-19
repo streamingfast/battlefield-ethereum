@@ -17,9 +17,6 @@ main() {
   check_op_geth
   check_docker "$chain_docker_op_node" "You should launch the Op Stack chain with './scripts/optimism/run_optimism_devnet.sh'"
 
-  # wait_geth_up "http://localhost:18545"
-
-
   run_dir=$(mktemp -d)
 
   pushd "$run_dir"

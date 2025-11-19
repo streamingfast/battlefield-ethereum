@@ -9,6 +9,18 @@ playground_pid=""
 db_path="$ROOT/op-node-db"
 op_stack_path="$ROOT/op-chain"
 docker_op_node_name="`basename "$op_stack_path"`-op-node-1"
+docker_op_geth_name="`basename "$op_stack_path"`-op-geth-1"
+
+# This is el `http` port (container named `op-chain-el-1`)
+l1_rpc_url="http://localhost:8545"
+# This is beacon 'http' port (container named `op-chain-beacon-1`)
+l1_beacon_rpc_url="http://localhost:3500"
+# This is rollup-boost `authrpc` port (container named `op-chain-rollup-boost-1`)
+l2_sequencer_rpc_url="http://localhost:8554"
+# This is op-geth `http` port (container named `op-chain-op-geth-1`)
+l2_geth_rpc_url="http://localhost:8547"
+# This is op-geth address that will be started by the `./scripts/run_firehose_optimism_devnet.sh` script
+local_op_geth_authrpc_url="http://localhost:28551"
 
 main() {
   pushd "$ROOT" &> /dev/null
@@ -29,9 +41,13 @@ main() {
   trap "cleanup_on_exit" EXIT
   builder-playground cook opstack --output="$op_stack_path" --external-builder op-rbuilder --flashblocks &
   playground_pid=$!
+  echo ""
 
-  echo "Waiting for builder-playground to start OP stack correctly..."
   wait_for_chain_op_node
+  echo ""
+
+  wait_for_chain_op_geth
+  echo ""
 
   # The op-stack above always starts from scratch, so we need to do the same here
   if [[ -d "$db_path" ]]; then
@@ -46,28 +62,17 @@ main() {
   op_node_peer_id="$(extract_chain_op_node_peer_id)"
   op_node_peer="/ip4/127.0.0.1/tcp/9003/p2p/$op_node_peer_id"
 
-  pk="0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
-  pushd /tmp &> /dev/null
-  sleep 15
-  echo "Funding the default address with 1,000,000 ETH on L2"
-  cast send --rpc-url=http://localhost:8547  --private-key "$pk" --value 1000000ether "$address_to_fund" --priority-gas-price=25000000000 --gas-price=250000000000
-  popd &> /dev/null
+  fund_l2_address &
 
   echo "Starting op-node"
   echo " DB path: $db_path"
   echo " OP node peer: $op_node_peer"
   echo ""
 
-  # Configuration
-  # - http://localhost:8545 -> points to el RPC address
-  # - http://localhost:3500 -> points to beacon RPC address
-  # - http://localhost:28551 -> points to op-geth authrpc address
-  # - /ip4/127.0.0.1/tcp/9003 -> points to op-node P2P address
-
   op-node \
-    --l1=http://localhost:8545 \
-    --l1.beacon=http://localhost:3500 \
-    --l2=http://localhost:28551  \
+    --l1="$l1_rpc_url" \
+    --l1.beacon="$l1_beacon_rpc_url" \
+    --l2="$local_op_geth_authrpc_url"  \
     --l2.engine-rpc-timeout=60s \
     --l2.jwt-secret="$op_stack_path/jwtsecret" \
     --log.level=error \
@@ -154,8 +159,92 @@ wait_for_chain_op_node_peer_id() {
   return 1
 }
 
+wait_for_chain_op_geth() {
+  echo "Waiting for OP geth..."
+  local attempts=0
+  local max_attempts=30
+
+  wait_for_block="1"
+
+  while [ $attempts -lt $max_attempts ]; do
+    imported_block="$(docker logs "$docker_op_geth_name" 2>&1 | grep "Imported new potential chain segment" | grep -oE "number=$wait_for_block")"
+
+    if [ -n "$imported_block" ]; then
+      echo "Found imported block: $imported_block"
+      return 0
+    fi
+
+    sleep 1
+    attempts=$((attempts + 1))
+  done
+
+  echo "Failed to find Op Geth imported block after $max_attempts attempts"
+  return 1
+}
+
 extract_chain_op_node_peer_id() {
   echo "$(docker logs "$docker_op_node_name" 2>&1 | grep "started p2p host" | cut -d ' ' -f 8- | sd 'peerID=' '')"
+}
+
+fund_l2_address() {
+  local pk="0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
+  local attempts=0
+  local max_attempts=15
+
+  echo "Funding the default address with 1,000,000 ETH on L2 (background)..."
+
+  # It seems cast does not like being run from the project's root, it complains about not
+  # finding the project root, probably a wrong heuristic on cast side think he is in a Forge
+  # project. So run it from ROOT folder which is outside of root.
+  pushd "$ROOT" &> /dev/null
+
+  while [ $attempts -lt $max_attempts ]; do
+    if cast send --async --rpc-url="$rpc_url" --private-key "$pk" --value 1000000ether "$address_to_fund" --priority-gas-price=25000000000 --gas-price=250000000000; then
+      echo "Successfully funded address $address_to_fund on L2"
+      return 0
+    fi
+
+    sleep 1
+    attempts=$((attempts + 1))
+  done
+
+  popd &> /dev/null
+
+  echo "ERROR: Failed to fund L2 address after $max_attempts attempts"
+  kill -s SIGTERM $$
+  return 1
+}
+
+fund_l2_address() {
+  local pk="0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
+
+  # It seems cast does not like being run from the project's root, it complains about not
+  # finding the project root, probably a wrong heuristic on cast side think he is in a Forge
+  # project. So run it from ROOT folder which is outside of root.
+  pushd "$ROOT" &> /dev/null
+
+  echo "Funding the default address with 1,000,000 ETH on L2 (background)..."
+  cast send --async --rpc-url="$l2_sequencer_rpc_url" --private-key "$pk" --value 1000000ether "$address_to_fund" --priority-gas-price=25000000000 --gas-price=250000000000 > /dev/null
+
+  echo "Waiting for fund to arrive"
+  local attempts=0
+  local max_attempts=15
+  while [ $attempts -lt $max_attempts ]; do
+    balance=`cast balance --rpc-url "$l2_geth_rpc_url" "$address_to_fund"`
+    if [[ $? -eq 0 && $balance != "0" ]]; then
+      echo "L2 address properly funded"
+      return 0
+    fi
+
+    sleep 1
+    attempts=$((attempts + 1))
+  done
+
+  popd &> /dev/null
+
+  echo "ERROR: Failed to fund L2 address after $max_attempts attempts"
+  kill -s SIGTERM $$
+  return 1
 }
 
 check_builder_playground() {

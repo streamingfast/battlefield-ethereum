@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "21713",
+  "gasUsed": "24213",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "18",
+  "endOrdinal": "21",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -26,7 +26,7 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$contract",
       "gasLimit": "878936",
-      "gasConsumed": "649",
+      "gasConsumed": "3149",
       "returnData": "",
       "input": "c0406226",
       "executedCode": true,
@@ -38,20 +38,34 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "2",
-          "oldValue": "8fe28911674000",
+          "oldValue": "8fe28944ae2b36",
           "newValue": ""
         },
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "15",
+          "ordinal": "16",
           "oldValue": "",
-          "newValue": "8c69e1bd101e00"
+          "newValue": "8c03904a869600"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "17",
+          "ordinal": "18",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "19",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "20",
           "oldValue": "",
           "newValue": "01"
         }
@@ -86,28 +100,34 @@
           "ordinal": "6"
         },
         {
-          "oldValue": "878453",
-          "newValue": "13724",
-          "reason": "REASON_DELEGATE_CALL",
+          "oldValue": "878353",
+          "newValue": "875853",
+          "reason": "REASON_STATE_COLD_ACCESS",
           "ordinal": "7"
         },
         {
-          "oldValue": "13724",
-          "newValue": "878353",
-          "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "12"
+          "oldValue": "878453",
+          "newValue": "13685",
+          "reason": "REASON_DELEGATE_CALL",
+          "ordinal": "8"
         },
         {
-          "oldValue": "878287",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "oldValue": "13685",
+          "newValue": "875853",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "13"
         },
         {
-          "oldValue": "878287",
+          "oldValue": "875787",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "14"
+        },
+        {
+          "oldValue": "875787",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "16"
+          "ordinal": "17"
         }
       ],
       "statusFailed": false,
@@ -115,7 +135,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "5",
-      "endOrdinal": "14",
+      "endOrdinal": "15",
       "accountCreations": []
     },
     {
@@ -125,7 +145,7 @@
       "callType": "DELEGATE",
       "caller": "$contract",
       "address": "0000000000000000000000000000000000000000",
-      "gasLimit": "864629",
+      "gasLimit": "862168",
       "gasConsumed": "0",
       "returnData": "",
       "input": "e4608b73",
@@ -140,23 +160,23 @@
       "gasChanges": [
         {
           "oldValue": "0",
-          "newValue": "864629",
+          "newValue": "862168",
           "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "9"
+          "ordinal": "10"
         },
         {
-          "oldValue": "864629",
+          "oldValue": "862168",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "10"
+          "ordinal": "11"
         }
       ],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "8",
-      "endOrdinal": "11",
+      "beginOrdinal": "9",
+      "endOrdinal": "12",
       "accountCreations": []
     }
   ],
