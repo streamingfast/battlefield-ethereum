@@ -12,6 +12,7 @@ bor="${BOR_BINARY:-bor}"
 reth="${RETH_BINARY:-reth-firehose-tracer}"
 op_node="${OP_NODE_BINARY:-op-node}"
 op_geth="${OP_GETH_BINARY:-op-geth}"
+besu="${BESU_BINARY:-besu}"
 
 # Usage: run_fireeth <first_streamable_block> <node_binary> <node_args>
 run_fireeth() {
@@ -192,6 +193,30 @@ check_seid() {
     echo "The '$seid' binary could not be found, you can install it with:"
     echo ""
     echo "- go install github.com/streamingfast/sei-chain/cmd/seid@latest"
+    exit 1
+  fi
+}
+
+check_besu() {
+  if ! command -v "$besu" &> /dev/null; then
+    echo "The '$besu' binary could not be found, you can build it from the StreamingFast Besu repository:"
+    echo ""
+    echo "Prerequisites:"
+    echo "- Java 21 (required, Java 22+ is incompatible with Gradle 8.7)"
+    echo "- Git (for cloning the repository)"
+    echo ""
+    echo "Java installation:"
+    echo "- Ubuntu/Debian: sudo apt install openjdk-21-jdk"
+    echo "- macOS: brew install openjdk@21 && export PATH=\"/opt/homebrew/opt/openjdk@21/bin:\$PATH\""
+    echo "- Windows: Download from https://adoptium.net/ (Temurin JDK 21)"
+    echo ""
+    echo "Build using the provided script:"
+    echo "./scripts/besu_dev/build_besu.sh"
+    echo ""
+    echo "Or build manually:"
+    echo "- Clone: git clone https://github.com/streamingfast/besu.git"
+    echo "- Build: cd besu && ./gradlew build -x test"
+    echo "- Binary: build/install/besu/bin/besu"
     exit 1
   fi
 }

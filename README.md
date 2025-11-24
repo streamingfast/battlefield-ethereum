@@ -45,6 +45,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, bats...)                       |
 | Optimism Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_optimism_devnet.sh`. | `pnpm test:fh3.0:optimism-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
 
+
 After each test, you should also run:
 
 ```
@@ -184,3 +185,31 @@ To install `fireeth`, you can simply do `brew install tap/streamingfast/firehose
 
   > [!NOTE]
   > If you have some problem running the built binary on OSX, it could be due to OSX code signing issue, fix signature of the built binary with `codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,runtime $(which geth)`
+
+### Alternative: Use Besu
+
+As an alternative to Geth, you can use Besu directly. This provides a Java-based Ethereum client option for battlefield testing.
+
+#### Setup Besu for Battlefield
+
+1. **Setup Java 21** (if needed, see [Besu Dev README](./scripts/besu_dev/README.md))
+2. **Build Besu from source**:
+
+  ```bash
+  ./scripts/besu_dev/build_besu.sh
+  ```
+
+3. **Run Besu dev node**:
+
+  ```bash
+  # Default (Cancun fork)
+  ./scripts/run_besu_dev.sh
+
+  # Explicit Cancun fork
+  ./scripts/run_besu_dev.sh --fork cancun
+
+  # Prague fork
+  ./scripts/run_besu_dev.sh --fork prague
+  ```
+
+The Besu setup uses PoW dev mode with ethash consensus, providing continuous block production similar to `geth --dev`.
