@@ -33,7 +33,12 @@ const config: HardhatUserConfig = {
     "sei-dev": firehoseNetwork([]),
     "bnb-dev": firehoseNetwork([]),
     "polygon-dev": firehoseNetwork([]),
-    "optimism-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
+    amoy: firehoseNetwork([]),
+    "monad-dev": {
+      ...firehoseNetwork([]),
+      accounts: ["0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+      gasPrice: 100_000_000_000,
+    },
   },
 
   mocha: {

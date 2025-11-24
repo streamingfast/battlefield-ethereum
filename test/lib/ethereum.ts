@@ -21,6 +21,14 @@ const debug = debugFactory("battlefield:eth")
 
 export const defaultGasPrice = 45_000_000_000
 
+function getGasPrice(): bigint {
+  const networkName = hre.network.name
+  if (networkName === "monad-dev") {
+    return 100_000_000_000n
+  }
+  return BigInt(defaultGasPrice)
+}
+
 /**
  * Our own internal allowed transaction request, it will only allow the value and gasLimit
  * fields from the ethers TransactionRequest, but it will also allow a shouldRevert field
@@ -82,7 +90,7 @@ export async function sendEth(
     to,
     value,
     gasLimit: 21000,
-    gasPrice: defaultGasPrice,
+    gasPrice: getGasPrice(),
     ...custom,
   }
   debug("Send eth call being performed %o", debuggableTrx(trxRequest))
@@ -101,7 +109,7 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   const trxRequest = {
     ...trxCall,
     gasLimit: 900_000,
-    gasPrice: defaultGasPrice,
+    gasPrice: getGasPrice(),
     ...customTx,
   }
 
@@ -211,7 +219,7 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
     const trx = await factory.getDeployTransaction(...constructorArgs)
     const trxRequest = {
       ...trx,
-      gasPrice: defaultGasPrice,
+      gasPrice: getGasPrice(),
       ...customTx,
     }
 
