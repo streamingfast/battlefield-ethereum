@@ -12,7 +12,7 @@ docker_node_name="`basename "$playground_path"`-reth-1"
 # This is el `http` port (container named `playground-reth-1`)
 l1_rpc_url="http://localhost:8545"
 # This is secondary el `http` port for additional clients to connect
-l1_secondary_rpc_url="http://localhost:8546"
+l1_secondary_rpc_url="http://localhost:8547"
 # This is beacon 'http' port (container named `playground-beacon-1`)
 l1_beacon_rpc_url="http://localhost:3500"
 
@@ -32,7 +32,7 @@ main() {
   maybe_cleanup_previous
 
   trap "cleanup_on_exit" EXIT
-  builder-playground cook l1 --output="$playground_path" --secondary-el 8546 &
+  builder-playground cook l1 --output="$playground_path" --secondary-el 8547 &
   playground_pid=$!
   echo ""
 
