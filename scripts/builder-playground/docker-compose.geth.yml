@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  geth-secondary:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chain-geth-secondary
+    networks:
+      - chain_default
+    ports:
+      - "8547:8545"  # Map container port 8545 to host port 8547 (secondary EL port)
+      - "30304:30303"  # P2P port to avoid conflicts
+    volumes:
+      - ../.playground/chain:/playground-chain:ro
+      - chain-geth-data:/data
+    environment:
+      - GETH_DATA_DIR=/data
+      - GETH_GENESIS=/genesis.json
+      - GETH_JWT_SECRET=/jwtsecret
+    command: >
+      --datadir=/data
+      --http
+      --http.addr=0.0.0.0
+      --http.port=8545
+      --http.api=engine,eth,net,web3,debug,admin
+      --authrpc.jwtsecret=/playground-chain/jwtsecret
+      --authrpc.port=8551
+      --syncmode=full
+      --gcmode=archive
+      --state.scheme=hash
+      --networkid=1337
+      --verbosity=3
+      --maxpeers=10
+      --port=30303
+      --bootnodes=enode://$(curl -s http://chain-el-1:8545 -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"admin_nodeInfo","params":[],"id":1}' | jq -r '.result.enode' | sed 's/@[^[^@]*:/@chain-el-1:/')
+      --beacon.api=http://chain-beacon-1:3500
+      --beacon.nofilter
+      --beacon.threshold=1
+    depends_on:
+      - chain-el-1
+      - chain-beacon-1
+    restart: unless-stopped
+
+volumes:
+  chain-geth-data:
+
+networks:
+  chain_default:
+    external: true
+    name: chain_default

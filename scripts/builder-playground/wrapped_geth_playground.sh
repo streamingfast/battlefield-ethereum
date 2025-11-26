@@ -11,7 +11,6 @@ main() {
     playground_path="$ROOT/.playground/chain"
     jwt_secret_file="$playground_path/jwtsecret"
     data_dir="/tmp/geth-playground-data"
-    el_enode="${EL_ENODE:-}"
     l1_beacon_rpc_url="http://localhost:3500"
 
     # Clean up any existing data
@@ -34,7 +33,6 @@ main() {
         "--http.api=engine,eth,net,debug,admin"
         "--authrpc.jwtsecret=$jwt_secret_file"
         "--authrpc.port=8552"
-        "--beacon.api=$l1_beacon_rpc_url"
         "--syncmode=full"
         "--gcmode=archive"
         "--state.scheme=hash"
@@ -45,10 +43,6 @@ main() {
 
     if [[ -n "$genesis_root" && "$genesis_root" != "null" && "$genesis_root" != "0x0000000000000000000000000000000000000000000000000000000000000000" ]]; then
         geth_extra_args+=("--beacon.checkpoint=$genesis_root")
-    fi
-
-    if [[ -n "$el_enode" ]]; then
-        geth_extra_args+=("--bootnodes=$el_enode")
     fi
 
     if has_vmtrace; then

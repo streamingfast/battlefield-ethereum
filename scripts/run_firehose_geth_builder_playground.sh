@@ -42,8 +42,13 @@ main() {
   echo ""
 
   echo "Running Geth playground node with Firehose tracer activated via 'fireeth'"
-  echo "Note: Geth may show beacon light client sync errors, but should still sync from EL peer"
-  EL_ENODE="$el_enode" run_fireeth 0 "bash" "$ROOT/wrapped_geth_playground.sh"
+  echo "Note: Adding EL peer via RPC call after Geth starts"
+
+  # Start geth in background and add peer
+  trap 'kill $(jobs -p) 2>/dev/null' EXIT
+  add_peer "$el_enode" &
+
+  run_fireeth 0 "bash" "$ROOT/wrapped_geth_playground.sh"
 }
 
 wait_for_chain_beacon() {
@@ -108,6 +113,18 @@ get_el_enode() {
   done
 
   return 1
+}
+
+add_peer() {
+    local data_dir="/tmp/geth-playground-data"
+    echo "Waiting for Geth to be ready to accept peers..."
+    until [ -S "$data_dir/geth.ipc" ]; do
+        sleep 1
+    done
+
+    local peer_addr=$1
+    echo "Adding EL peer: $peer_addr"
+    "$geth" attach --datadir="$data_dir" --exec "admin.addPeer('$peer_addr')"
 }
 
 usage() {
