@@ -157,6 +157,8 @@ echo ""
 "$besu" "${besu_extra_args[@]}" &
 BESU_PID=$!
 
+trap 'kill -TERM $BESU_PID 2>/dev/null' SIGTERM SIGINT
+
 # Try to add peer manually
 add_peer
 
