@@ -35,7 +35,12 @@ main() {
 
   trap "cleanup_on_exit" EXIT
 
-  builder-playground cook l1 --output="$playground_path" --secondary-el http://host.docker.internal:8552 --prefunded-account="$private_key_to_fund" --log-level debug &
+  builder-playground cook l1 \
+    --output="$playground_path" \
+    --block-time=1s \
+    --secondary-el http://host.docker.internal:8552 \
+    --prefunded-account="$private_key_to_fund" \
+    --log-level debug &
   playground_pid=$!
   echo ""
 
