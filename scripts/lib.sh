@@ -147,28 +147,6 @@ check_bor() {
   fi
 }
 
-check_bor() {
-  if ! command -v "$bor" &> /dev/null; then
-    echo "The '$bor' binary could not be found, you can install it with:"
-    echo ""
-    echo "- make bor"
-    echo ""
-    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
-    exit 1
-  fi
-}
-
-check_bor() {
-  if ! command -v "$bor" &> /dev/null; then
-    echo "The '$bor' binary could not be found, you can install it with:"
-    echo ""
-    echo "- make bor"
-    echo ""
-    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
-    exit 1
-  fi
-}
-
 check_op_node() {
   if ! command -v "$op_node" &> /dev/null; then
     echo "The '$op_node' binary could not be found, you can install it with"
