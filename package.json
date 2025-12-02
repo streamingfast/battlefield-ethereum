@@ -15,6 +15,7 @@
     "test:fh3.0:bnb-dev": "cross-env SNAPSHOTS_TAG=fh3.0 hardhat test --network bnb-dev",
     "test:fh3.0:polygon-dev": "cross-env SNAPSHOTS_TAG=fh3.0/polygon-dev hardhat test --network polygon-dev",
     "test:fh3.0:optimism-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/optimism-devnet hardhat test --network optimism-devnet",
+    "test:fh3.0:besu-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/besu-devnet hardhat test --network besu-devnet",
     "test:fh3.0:amoy": "cross-env SNAPSHOTS_TAG=fh3.0/amoy hardhat test --network amoy"
   },
   "keywords": [],

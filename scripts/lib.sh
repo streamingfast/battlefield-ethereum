@@ -2,6 +2,8 @@ root_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 firehose_data_dir="$root_dir/.firehose-data"
 
+private_key_to_fund="${PRIVATE_KEY_TO_FUND:-"0x52e1cc4b9c8b4fc9b202adf06462bdcc248e170c9abd56b2adb84c8d87bee674"}"
+# FIXME: Ideally we would derive the address from the private key to fund directly, for now, they must both match
 address_to_fund="${ADDRESS_TO_FUND:-"0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab"}"
 
 fireeth="${FIREETH_BINARY:-fireeth}"
@@ -13,6 +15,12 @@ reth="${RETH_BINARY:-reth-firehose-tracer}"
 op_node="${OP_NODE_BINARY:-op-node}"
 op_geth="${OP_GETH_BINARY:-op-geth}"
 besu="${BESU_BINARY:-besu}"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
 # Usage: run_fireeth <first_streamable_block> <node_binary> <node_args>
 run_fireeth() {

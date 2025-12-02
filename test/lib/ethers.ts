@@ -20,7 +20,7 @@ export async function waitForTransaction(
   response: TransactionResponse,
   shouldRevert: boolean
 ): Promise<TransactionReceiptResult> {
-  const receipt = await response.wait(1, 10_000).catch(async (e) => {
+  const receipt = await response.wait(1, 30_000).catch(async (e) => {
     // It seems `.wait(...)` enforces successful transactions, so we need to check
     // catch the error, retrieve the receipt and check it ourself.
     if (shouldRevert && e.toString().includes("transaction execution reverted")) {
@@ -140,17 +140,18 @@ export async function getReceiptForTransactionTrace(
       data: hexlify(trxTrace.input),
       value: toBigInt(trxTrace.value),
       chainId: BigInt(0),
-      signature: trxTrace.r.length === 0 || trxTrace.s.length === 0 || trxTrace.v.length === 0
-        ? Signature.from({
-          r: "0x" + "00".repeat(32),
-          s: "0x" + "00".repeat(32),
-          v: 27,
-        })
-        : Signature.from({
-          r: hexlify(trxTrace.r),
-          s: hexlify(trxTrace.s),
-          v: trxTrace.v[0],
-        }),
+      signature:
+        trxTrace.r.length === 0 || trxTrace.s.length === 0 || trxTrace.v.length === 0
+          ? Signature.from({
+              r: "0x" + "00".repeat(32),
+              s: "0x" + "00".repeat(32),
+              v: 27,
+            })
+          : Signature.from({
+              r: hexlify(trxTrace.r),
+              s: hexlify(trxTrace.s),
+              v: trxTrace.v[0],
+            }),
       accessList: accessListify(
         trxTrace.accessList.map((item) => ({
           address: hexlify(item.address),

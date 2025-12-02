@@ -34,10 +34,13 @@ const config: HardhatUserConfig = {
     "bnb-dev": firehoseNetwork([]),
     "polygon-dev": firehoseNetwork([]),
     "optimism-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
+    "besu-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
   },
 
   mocha: {
     require: ["global"],
+    // Gives up to 2 minutes for each test to complete
+    timeout: 2 * 60 * 1000,
     reporterOptions: {
       maxDiffSize: "100000",
     },
@@ -47,7 +50,10 @@ const config: HardhatUserConfig = {
 function firehoseNetwork(enforcedEips: EIP[]): HttpNetworkUserConfig & { eips: EIPs } {
   return {
     url: "http://127.0.0.1:8545",
-    accounts: ["0x52e1cc4b9c8b4fc9b202adf06462bdcc248e170c9abd56b2adb84c8d87bee674"],
+    accounts: [
+      // This private key maps to address 0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab
+      "0x52e1cc4b9c8b4fc9b202adf06462bdcc248e170c9abd56b2adb84c8d87bee674",
+    ],
     eips: newEIPsFromList(enforcedEips),
   }
 }
