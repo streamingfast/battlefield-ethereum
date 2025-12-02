@@ -41,7 +41,7 @@ main() {
     "$SCRIPT_DIR/build-geth.sh"
   fi
 
-  builder-playground cook l1 --output="$playground_path" --secondary-el host.docker.internal:8552 --use-reth-for-validation --log-level debug &
+  builder-playground cook l1 --output="$playground_path" --secondary-el http://host.docker.internal:8552  --log-level debug &
   playground_pid=$!
   echo ""
 

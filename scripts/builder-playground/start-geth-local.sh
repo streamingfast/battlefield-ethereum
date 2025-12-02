@@ -95,6 +95,7 @@ if [ -z "$RETH_ENODE" ] || [ "$RETH_ENODE" = "null" ]; then
     echo -e "${RED}Error: Could not get Reth enode${NC}"
     exit 1
 fi
+RETH_ENODE=$(printf "$RETH_ENODE" | sed 's/@[^@]*:/@127.0.0.1:/')
 
 echo "Reth enode: $RETH_ENODE"
 
@@ -105,19 +106,18 @@ geth_extra_args=(
     "--http.addr=0.0.0.0"
     "--http.port=8547"
     "--http.api=engine,eth,net,web3,debug,admin"
+    "--http.vhosts=*"
+    "--authrpc.addr=0.0.0.0"
     "--authrpc.jwtsecret=$jwt_secret_file"
-    "--authrpc.port=8551"
+    "--authrpc.port=8552"
+    "--authrpc.vhosts=*"
     "--syncmode=full"
     "--gcmode=archive"
     "--state.scheme=hash"
     "--networkid=1337"
-    "--verbosity=3"
-    "--maxpeers=10"
+    "--verbosity=4"
+    "--nodiscover=true"
     "--port=30304"
-    "--bootnodes=$RETH_ENODE"
-    "--beacon.api=$l1_beacon_rpc_url"
-    "--beacon.nofilter"
-    "--beacon.threshold=1"
 )
 
 if [[ -n "$genesis_root" && "$genesis_root" != "null" && "$genesis_root" != "0x0000000000000000000000000000000000000000000000000000000000000000" ]]; then
@@ -126,12 +126,12 @@ if [[ -n "$genesis_root" && "$genesis_root" != "null" && "$genesis_root" != "0x0
 fi
 
 # Add firehose tracing if available
-if "$geth" --help 2>/dev/null | grep -q -- '--vmtrace'; then
-    geth_extra_args+=("--vmtrace=firehose")
-    if "$geth" --help 2>/dev/null | grep -q -- '--vmtrace.jsonconfig'; then
-        geth_extra_args+=("--vmtrace.jsonconfig={\"applyBackwardCompatibility\":false}")
-    fi
-fi
+# if "$geth" --help 2>/dev/null | grep -q -- '--vmtrace'; then
+#     geth_extra_args+=("--vmtrace=firehose")
+#     if "$geth" --help 2>/dev/null | grep -q -- '--vmtrace.jsonconfig'; then
+#         geth_extra_args+=("--vmtrace.jsonconfig={\"applyBackwardCompatibility\":false}")
+#     fi
+# fi
 
 # Function to add Reth peer manually
 add_reth_peer() {
