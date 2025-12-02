@@ -41,19 +41,19 @@ main() {
     "$SCRIPT_DIR/build-geth.sh"
   fi
 
-  builder-playground cook l1 --output="$playground_path" --secondary-el 8547 --log-level debug &
+  builder-playground cook l1 --output="$playground_path" --secondary-el host.docker.internal:8552 --use-reth-for-validation --log-level debug &
   playground_pid=$!
   echo ""
 
   wait_for_playground_ready
   echo ""
 
-  # Start Geth secondary client
-  echo "Starting Firehose Geth secondary client..."
-  popd &> /dev/null  # Return to script directory to run start-geth.sh
-  "$SCRIPT_DIR/start-geth.sh" &
-  geth_pid=$!
-  pushd "$ROOT" &> /dev/null  # Go back to root
+  # Note: Geth secondary client should be started locally using start-geth-local.sh
+  # echo "Starting Firehose Geth secondary client..."
+  # popd &> /dev/null  # Return to script directory to run start-geth.sh
+  # "$SCRIPT_DIR/start-geth-local.sh" &
+  # geth_pid=$!
+  # pushd "$ROOT" &> /dev/null  # Go back to root
 
   echo ""
   echo "L1 playground is ready!"
@@ -61,7 +61,7 @@ main() {
   echo "Secondary EL RPC: $l1_secondary_rpc_url"
   echo "Beacon RPC: $l1_beacon_rpc_url"
   echo ""
-  echo "Both Reth (primary) and Geth (secondary) clients are running."
+  echo "Reth (primary) is running. Start Geth (secondary) locally with: ./scripts/builder-playground/start-geth-local.sh"
   echo "Press Ctrl+C to stop the playground."
 
   # Wait for the playground process to finish
@@ -79,10 +79,8 @@ maybe_cleanup_previous() {
 cleanup_on_exit() {
   echo "Cleaning up..."
   if [[ -n "$geth_pid" ]]; then
-    echo "Stopping Geth container..."
-    docker stop chain-geth-secondary 2>/dev/null || true
-    docker rm chain-geth-secondary 2>/dev/null || true
-    docker volume rm chain-geth-data 2>/dev/null || true
+    echo "Stopping local Geth process (pid: $geth_pid)..."
+    kill -s SIGTERM "$geth_pid" 2>/dev/null || true
   fi
 
   if [[ -n "$playground_pid" ]]; then

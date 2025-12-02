@@ -220,3 +220,6 @@ add_reth_peer
 
 # Wait for Geth process
 wait $GETH_PID
+
+
+--sync-target
