@@ -420,8 +420,9 @@ export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<
     block = "0x" + tag.toString(16)
   }
 
-  // FIXME: Retrieve address from provider or HardHat config?
-  const result = await fetch("http://localhost:8545", {
+  // Get RPC URL from hardhat config
+  const rpcUrl = (hre.network.config as any).url || "http://localhost:8545"
+  const result = await fetch(rpcUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
