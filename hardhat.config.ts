@@ -35,7 +35,7 @@ const config: HardhatUserConfig = {
     "polygon-dev": firehoseNetwork([]),
     "optimism-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
     "besu-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
-    "monad-dev": firehoseNetwork([]),
+    "monad-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:8080" },
   },
 
   mocha: {
