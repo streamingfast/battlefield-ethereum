@@ -92,7 +92,7 @@ before(async () => {
     .catch(abortTagged("Initializing chain static info"))
 
   const executeTransactionsStart = Date.now()
-  if (!isNetwork("amoy")) {
+  if (!isNetwork("amoy") && !isNetwork("monad-dev")) {
     executeTransactions(
       sendImmediateEth(owner, knownExistingAddress, oneWei),
       sendImmediateEth(owner, precompileWithBalanceAddress, oneWei)
@@ -100,7 +100,7 @@ before(async () => {
       .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
       .catch(abortTagged("Executing initialization transactions"))
   } else {
-    debug("Skipping initial funding transactions on Amoy testnet")
+    debug("Skipping initial funding transactions on %s", hre.network.name)
   }
 
   // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall
