@@ -16,10 +16,11 @@ import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../
 import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
 import { TransactionReceiptResult, waitForTransaction } from "./ethers"
 import { eth } from "./money"
+import { isNetwork } from "./network"
 
 const debug = debugFactory("battlefield:eth")
 
-export const defaultGasPrice = 45_000_000_000
+export const defaultGasPrice = isNetwork("monad-dev") ? 110_000_000_000 : 45_000_000_000
 
 /**
  * Our own internal allowed transaction request, it will only allow the value and gasLimit
