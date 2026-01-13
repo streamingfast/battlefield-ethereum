@@ -105,7 +105,11 @@ before(async () => {
 
   // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall
   // setup faster and more reliable
-  fetchFirehoseBlock(1).then(validateFirehoseBlockVersion).catch(abortTagged("Validating Firehose block version"))
+  if (!isNetwork("monad-dev")) {
+    fetchFirehoseBlock(1).then(validateFirehoseBlockVersion).catch(abortTagged("Validating Firehose block version"))
+  } else {
+    debug("Skipping Firehose block version validation on %s (no historical blocks available)", hre.network.name)
+  }
 
   debug("Global setup completed in %d ms", Date.now() - start)
 })
