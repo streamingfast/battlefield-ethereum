@@ -21,6 +21,9 @@ const config: HardhatUserConfig = {
           optimizer: {
             enabled: true,
             runs: 200,
+            details: {
+              yul: false, // Disable Yul optimizer to allow msize instruction
+            },
           },
         },
       },
