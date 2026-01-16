@@ -15,14 +15,11 @@ main() {
         exit 1
     fi
 
-    # Monad localnet/devnet configuration
-    # This script connects to an existing Monad localnet instance
-    chain_id="${MONAD_CHAIN_ID:-20143}"  # Monad localnet chain ID
+    chain_id="${MONAD_CHAIN_ID:-20143}"
     network_name="${MONAD_NETWORK_NAME:-monad-localnet}"
     event_ring_path="${MONAD_EVENT_RING_PATH:-/dev/hugepages/monad-localnet/monad-events}"
-    rpc_endpoint="${MONAD_RPC_ENDPOINT:-http://127.0.0.1:18080}"  # Monad localnet RPC
+    rpc_endpoint="${MONAD_RPC_ENDPOINT:-http://127.0.0.1:18080}"
 
-    # Optional: Address to fund for testing (battlefield default test account)
     address_to_fund="${ADDRESS_TO_FUND:-0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab}"
 
     echo "=========================================="

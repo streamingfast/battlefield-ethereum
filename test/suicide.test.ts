@@ -24,7 +24,7 @@ import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
 import { isNetwork } from "./lib/network"
 
-const callsGasLimit = 3_500_000
+const callsGasLimit = isNetwork("monad-dev") ? 10_000_000 : 3_500_000
 
 // Arbitrum Geth Dev Suicide Note (comment ref id 5564fd945748)
 //

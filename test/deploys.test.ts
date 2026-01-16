@@ -16,8 +16,9 @@ import {
 import { Calls, Calls__factory } from "../typechain-types"
 import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./global"
 import { eth, oneWei } from "./lib/money"
+import { isNetwork } from "./lib/network"
 
-const callsGasLimit = 3_500_000
+const callsGasLimit = isNetwork("monad-dev") ? 10_000_000 : 3_500_000
 
 describe("Deploys", function () {
   let Calls: Contract<Calls>
