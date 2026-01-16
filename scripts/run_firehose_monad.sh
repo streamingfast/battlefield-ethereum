@@ -15,8 +15,8 @@ main() {
 
   tracer_version="3.0"
 
-  echo "Running Monad node with Firehose tracer activated via 'fireeth'"
-  FIREHOSE_VERSION="$tracer_version" run_fireeth 0 "bash" "$ROOT/wrapped_monad.sh"
+  echo "Running Monad localnet with Firehose tracer activated via 'fireeth'"
+  FIREHOSE_VERSION="$tracer_version" run_fireeth 0 "bash" "$ROOT/wrapped_monad_dev.sh"
 }
 
 check_monad_tracer() {
