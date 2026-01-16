@@ -10,8 +10,7 @@ const config: HardhatUserConfig = {
         version: "0.6.12",
         settings: {
           optimizer: {
-            enabled: true,
-            runs: 200,
+            enabled: false,
           },
         },
       },
@@ -19,11 +18,7 @@ const config: HardhatUserConfig = {
         version: "0.8.27",
         settings: {
           optimizer: {
-            enabled: true,
-            runs: 200,
-            details: {
-              yul: false, // Disable Yul optimizer to allow msize instruction
-            },
+            enabled: false,
           },
         },
       },
