@@ -18,7 +18,7 @@ import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./gl
 import { eth, oneWei } from "./lib/money"
 import { isNetwork } from "./lib/network"
 
-const callsGasLimit = isNetwork("monad-dev") ? 10_000_000 : 3_500_000
+const callsGasLimit = isNetwork("monad-dev") ? 30_000_000 : 3_500_000
 
 describe("Deploys", function () {
   let Calls: Contract<Calls>

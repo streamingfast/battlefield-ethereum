@@ -34,7 +34,7 @@ import { isNetwork } from "./lib/network"
 //
 // See https://github.com/streamingfast/go-ethereum/blob/3b1a1dc9b92d5fd13b36b0030f744b547cf4e6cc/eth/tracers/firehose.go#L658-L665
 
-const callsGasLimit = isNetwork("monad-dev") ? 10_000_000 : 3_500_000
+const callsGasLimit = isNetwork("monad-dev") ? 30_000_000 : 3_500_000
 
 describe("Calls", function () {
   let Calls: Contract<Calls>
