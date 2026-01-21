@@ -17,7 +17,6 @@ main() {
         exit 1
     fi
 
-    # Check if we should use an existing Firehose endpoint instead of launching tracer
     if [[ -n "$USE_EXISTING_FIREHOSE" ]]; then
         echo "=========================================="
         echo "Using existing Firehose endpoint"
@@ -36,20 +35,16 @@ main() {
         echo "  - Firehose endpoint: ${FIREHOSE_ENDPOINT:-localhost:8089} (for block validation)"
         echo ""
 
-        # Keep the process alive since fireeth expects a long-running process
-        # The tests will actually connect to the existing Firehose endpoint
         while true; do
             sleep 3600
         done
     fi
 
-    # Monad-specific configuration for local tracer launch
     chain_id="${MONAD_CHAIN_ID:-1337}"
     network_name="${MONAD_NETWORK_NAME:-monad-devnet}"
     event_ring_path="${MONAD_EVENT_RING_PATH:-/var/run/monad/exec-events}"
     rpc_endpoint="${MONAD_RPC_ENDPOINT:-http://127.0.0.1:8545}"
 
-    # Optional: fund address for testing (like geth dev)
     address_to_fund="${ADDRESS_TO_FUND:-0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab}"
 
     echo "Running Monad Firehose Tracer"
@@ -63,7 +58,6 @@ main() {
     echo "Firehose version: $firehose_version"
     echo ""
 
-    # Check if event ring exists
     if [[ ! -e "$event_ring_path" ]]; then
         echo "WARNING: Event ring not found at $event_ring_path"
         echo "Make sure Monad node is running with event ring enabled"
@@ -73,9 +67,6 @@ main() {
         sleep 2
     fi
 
-    # Run the tracer
-    # Note: The tracer will output Firehose protocol messages to stdout
-    # which will be consumed by fireeth
     exec "$monad_tracer" \
         --chain-id "$chain_id" \
         --network-name "$network_name" \

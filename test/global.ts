@@ -92,7 +92,8 @@ before(async () => {
     .catch(abortTagged("Initializing chain static info"))
 
   const executeTransactionsStart = Date.now()
-  if (!isNetwork("amoy") && !isNetwork("monad-dev")) {
+  // TODO: Test if monad-dev actually needs this skip - commenting out to verify
+  if (!isNetwork("amoy") /* && !isNetwork("monad-dev") */) {
     executeTransactions(
       sendImmediateEth(owner, knownExistingAddress, oneWei),
       sendImmediateEth(owner, precompileWithBalanceAddress, oneWei)
@@ -105,11 +106,12 @@ before(async () => {
 
   // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall
   // setup faster and more reliable
-  if (!isNetwork("monad-dev")) {
+  // TODO: Test if monad-dev actually needs this skip - commenting out to verify
+  // if (!isNetwork("monad-dev")) {
     fetchFirehoseBlock(1).then(validateFirehoseBlockVersion).catch(abortTagged("Validating Firehose block version"))
-  } else {
-    debug("Skipping Firehose block version validation on %s (no historical blocks available)", hre.network.name)
-  }
+  // } else {
+  //   debug("Skipping Firehose block version validation on %s (no historical blocks available)", hre.network.name)
+  // }
 
   debug("Global setup completed in %d ms", Date.now() - start)
 })
