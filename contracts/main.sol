@@ -78,33 +78,33 @@ contract Main {
     //
 
     function setLongString() public returns (uint256) {
-        stringToPointMap["a"].x = 10;
-        stringToPointMap["a"].y = 20;
+        // stringToPointMap["a"].x = 10;
+        // stringToPointMap["a"].y = 20;
 
-        myPoint.x = 30;
-        myPoint.y = 40;
+        // myPoint.x = 30;
+        // myPoint.y = 40;
 
-        uintList.push(55);
-        uintList[0] = 75;
+        // uintList.push(55);
+        // uintList[0] = 75;
 
-        stringToIntListMap["short string"].push(3);
-        stringToIntListMap["short string"][0] = 256;
+        // stringToIntListMap["short string"].push(3);
+        // stringToIntListMap["short string"][0] = 256;
 
-        intToStringMap[3] = "b";
-        stringMap[
-            "realy long string larger than 32 bytes to test out solidity splitting stuff"
-        ] = "a";
-        nestedStringMap[
-            "REALY LONG STRING LARGER THAN 32 BYTES TO TEST OUT SOLIDITY SPLITTING STUFF"
-        ]["realy long string larger than 32 bytes to test out solidity splitting stuff"] = "a";
+        // intToStringMap[3] = "b";
+        // stringMap[
+        //     "realy long string larger than 32 bytes to test out solidity splitting stuff"
+        // ] = "a";
+        // nestedStringMap[
+        //     "REALY LONG STRING LARGER THAN 32 BYTES TO TEST OUT SOLIDITY SPLITTING STUFF"
+        // ]["realy long string larger than 32 bytes to test out solidity splitting stuff"] = "a";
 
-        shortString = "1234567890123456789012345678901";
-        flushLongString = "12345678901234567890123456789012";
-        longString = "realy long string larger than 32 bytes to test out solidity splitting stuff";
-        uintList.push(55);
-        uintList.push(75);
+        // shortString = "1234567890123456789012345678901";
+        // flushLongString = "12345678901234567890123456789012";
+        // longString = "realy long string larger than 32 bytes to test out solidity splitting stuff";
+        // uintList.push(55);
+        // uintList.push(75);
 
-        uintList.pop();
+        // uintList.pop();
 
         return 120;
     }
