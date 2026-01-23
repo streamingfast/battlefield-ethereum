@@ -121,6 +121,14 @@ describe("Blocks", function () {
     expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
 
     const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
+
+    // EIP-2935 (ProcessParentBlockHash) only activates at Prague fork
+    // Skip test if system call doesn't exist (indicates pre-Prague network like Cancun)
+    if (!updateParentBlockHashCall) {
+      // Test do not apply to this network (pre-Prague)
+      return
+    }
+
     expect(updateParentBlockHashCall).to.not.be.undefined
 
     expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)

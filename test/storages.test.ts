@@ -11,7 +11,7 @@ describe("Storages", function () {
   })
 
   it("Set long string & array", async function () {
-    await expect(contractCall(owner, Storage.setLongString, [])).to.trxTraceEqualSnapshot(
+    await expect(contractCall(owner, Storage.setLongString, [], { gasLimit: 2_000_000 })).to.trxTraceEqualSnapshot(
       "storages/set_long_string.expected.json",
       {
         $storageContract: Storage.addressHex,
@@ -23,7 +23,7 @@ describe("Storages", function () {
       },
     )
 
-    await expect(contractCall(owner, Storage.setAfter, [])).to.trxTraceEqualSnapshot(
+    await expect(contractCall(owner, Storage.setAfter, [], { gasLimit: 2_000_000 })).to.trxTraceEqualSnapshot(
       "storages/set_long_again_and_array_update.expected.json",
       {
         $storageContract: Storage.addressHex,

@@ -58,7 +58,7 @@ describe("Calls", function () {
     )
 
     await expect(
-      contractCall(owner, Calls!.completeCallTree, [Child.address, GrandChild!.address])
+      contractCall(owner, Calls!.completeCallTree, [Child.address, GrandChild!.address], { gasLimit: 2_000_000 })
     ).to.trxTraceEqualSnapshot(
       "calls/complete_call_tree.expected.json",
       {
