@@ -21,6 +21,8 @@ import { isNetwork } from "./network"
 const debug = debugFactory("battlefield:eth")
 
 export const defaultGasPrice = isNetwork("monad-dev") ? 110_000_000_000 : 45_000_000_000
+export const defaultGasLimit = isNetwork("monad-dev") ? 5_000_000 : 900_000
+export const defaultDeployerBalance = isNetwork("monad-dev") ? eth(10) : eth(2)
 
 /**
  * Our own internal allowed transaction request, it will only allow the value and gasLimit
@@ -101,9 +103,9 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   const trxCall = await call.populateTransaction(...args)
   const trxRequest = {
     ...trxCall,
-    gasLimit: 900_000,
     gasPrice: defaultGasPrice,
     ...customTx,
+    gasLimit: customTx.gasLimit ?? defaultGasLimit,
   }
 
   debug("Contract call being performed %o", debuggableTrx(trxRequest))

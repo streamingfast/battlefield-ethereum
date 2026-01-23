@@ -125,7 +125,7 @@ describe("Suicide", function () {
     let Calls = await deployStableContractCreator(owner, CallsFactory, [], 2, 2, { gasLimit: callsGasLimit })
     let firstCreatedContract = getCreateAddressHex(Calls.address, 1)
 
-    await expect(contractCall(owner, Calls.contractSuicideThenCall, [], { gasLimit: 2_000_000 })).to.trxTraceEqualSnapshot(
+    await expect(contractCall(owner, Calls.contractSuicideThenCall, [])).to.trxTraceEqualSnapshot(
       "suicide/create_contract_kill_it_and_try_to_call_within_same_call.expected.json",
       {
         $callsContract: Calls.addressHex,
