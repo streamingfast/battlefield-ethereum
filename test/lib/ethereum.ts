@@ -99,10 +99,9 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   const trxCall = await call.populateTransaction(...args)
-  const defaultContractCallGasLimit = isNetwork("monad-dev") ? 30_000_000 : 900_000
   const trxRequest = {
     ...trxCall,
-    gasLimit: defaultContractCallGasLimit,
+    gasLimit: 900_000,
     gasPrice: defaultGasPrice,
     ...customTx,
   }
@@ -211,10 +210,8 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
   let receipt: TransactionReceiptResult
   while (true) {
     const trx = await factory.getDeployTransaction(...constructorArgs)
-    const defaultDeployGasLimit = isNetwork("monad-dev") ? 30_000_000 : undefined
     const trxRequest = {
       ...trx,
-      ...(defaultDeployGasLimit && !customTx.gasLimit ? { gasLimit: defaultDeployGasLimit } : {}),
       gasPrice: defaultGasPrice,
       ...customTx,
     }
