@@ -15,6 +15,7 @@ import {
   DelegateToEmptyContract__factory,
   SuicideContractAsBeneficiary__factory,
   SuicideContractAsBeneficiarySameTrx__factory,
+  CompleteCallTree__factory,
 } from "../typechain-types"
 import debugFactory from "debug"
 import { addFirehoseEthereumMatchers } from "./lib/assertions"
@@ -35,6 +36,7 @@ export let MainFactory: Main__factory
 export let ChildFactory: Child__factory
 export let GrandChildFactory: GrandChild__factory
 export let CallsFactory: Calls__factory
+export let CompleteCallTreeFactory: CompleteCallTree__factory
 export let ContractEmptyFactory: ContractEmpty__factory
 export let DelegateToEmptyContract: DelegateToEmptyContract__factory
 export let LogsFactory: Logs__factory
@@ -67,6 +69,7 @@ before(async () => {
   ChildFactory = await hre.ethers.getContractFactory("Child")
   GrandChildFactory = await hre.ethers.getContractFactory("GrandChild")
   CallsFactory = await hre.ethers.getContractFactory("Calls")
+  CompleteCallTreeFactory = await hre.ethers.getContractFactory("CompleteCallTree")
   DelegateToEmptyContract = await hre.ethers.getContractFactory("DelegateToEmptyContract")
   LogsFactory = await hre.ethers.getContractFactory("Logs")
   LogsNoTopicsFactory = await hre.ethers.getContractFactory("LogsNoTopics")

@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "887096",
+  "gasUsed": "887908",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -26,7 +26,7 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
       "gasLimit": "878568",
-      "gasConsumed": "865664",
+      "gasConsumed": "866476",
       "returnData": "",
       "input": "bf2ff239000000000000000000000000$childContract",
       "executedCode": true,
@@ -54,7 +54,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "17",
           "oldValue": "",
-          "newValue": "0210201920d000"
+          "newValue": "01eee477687800"
         },
         {
           "address": "$coinbase",
@@ -94,25 +94,25 @@
           "ordinal": "5"
         },
         {
-          "oldValue": "855615",
-          "newValue": "853115",
+          "oldValue": "803615",
+          "newValue": "801115",
           "reason": "REASON_STATE_COLD_ACCESS",
           "ordinal": "7"
         },
         {
-          "oldValue": "855715",
-          "newValue": "13329",
+          "oldValue": "803715",
+          "newValue": "12517",
           "reason": "REASON_CALL",
           "ordinal": "8"
         },
         {
-          "oldValue": "12904",
+          "oldValue": "12092",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "15"
         },
         {
-          "oldValue": "12904",
+          "oldValue": "12092",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
           "ordinal": "18"
@@ -133,8 +133,8 @@
       "callType": "CALL",
       "caller": "$callsContract",
       "address": "$childContract",
-      "gasLimit": "839786",
-      "gasConsumed": "839786",
+      "gasLimit": "788598",
+      "gasConsumed": "788598",
       "returnData": "",
       "input": "69961c23",
       "executedCode": true,
@@ -156,12 +156,12 @@
       "gasChanges": [
         {
           "oldValue": "0",
-          "newValue": "839786",
+          "newValue": "788598",
           "reason": "REASON_CALL_INITIAL_BALANCE",
           "ordinal": "10"
         },
         {
-          "oldValue": "817374",
+          "oldValue": "714186",
           "newValue": "0",
           "reason": "REASON_FAILED_EXECUTION",
           "ordinal": "12"

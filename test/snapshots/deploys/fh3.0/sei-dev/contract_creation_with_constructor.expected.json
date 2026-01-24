@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "102383",
+  "gasUsed": "154383",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -26,7 +26,7 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
       "gasLimit": "878936",
-      "gasConsumed": "81319",
+      "gasConsumed": "133319",
       "returnData": "",
       "input": "f3160e86",
       "executedCode": true,
@@ -39,7 +39,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "23",
           "oldValue": "",
-          "newValue": "7f844793d4e200"
+          "newValue": "77340fdf0ea200"
         },
         {
           "address": "$coinbase",
@@ -98,18 +98,18 @@
         },
         {
           "oldValue": "13227",
-          "newValue": "797656",
+          "newValue": "745656",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "20"
         },
         {
-          "oldValue": "797617",
+          "oldValue": "745617",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "21"
         },
         {
-          "oldValue": "797617",
+          "oldValue": "745617",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
           "ordinal": "24"
@@ -131,7 +131,7 @@
       "caller": "$callsContract",
       "address": "$createdContract",
       "gasLimit": "833341",
-      "gasConsumed": "48912",
+      "gasConsumed": "100912",
       "returnData": "",
       "input": "608060405234801561001057600080fd5b506040516100df3803806100df8339818101604052602081101561003357600080fd5b8101908080519060200190929190505050806000819055505060858061005a6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80638052474d14602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b6000548156fea26469706673582212209f945bbfef1755ffbb85cd8ae81e02f5b0fc863a6685a64d9613e301ca22ba0164736f6c634300060c003374657374696e6700000000000000000000000000000000000000000000000000",
       "executedCode": true,
@@ -186,19 +186,19 @@
           "ordinal": "13"
         },
         {
-          "oldValue": "811050",
-          "newValue": "811032",
+          "oldValue": "759050",
+          "newValue": "759032",
           "reason": "REASON_CODE_COPY",
           "ordinal": "15"
         },
         {
-          "oldValue": "811029",
-          "newValue": "784429",
+          "oldValue": "759029",
+          "newValue": "732429",
           "reason": "REASON_CODE_STORAGE",
           "ordinal": "16"
         },
         {
-          "oldValue": "784429",
+          "oldValue": "732429",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "18"

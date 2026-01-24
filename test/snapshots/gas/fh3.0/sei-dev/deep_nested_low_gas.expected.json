@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "110757",
+  "gasUsed": "266757",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -26,7 +26,7 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$gasContract",
       "gasLimit": "878200",
-      "gasConsumed": "88957",
+      "gasConsumed": "244957",
       "returnData": "",
       "input": "f1130f73000000000000000000000000$childContract000000000000000000000000$grandChildContract",
       "executedCode": true,
@@ -39,7 +39,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "32",
           "oldValue": "",
-          "newValue": "7e2d8e018a7600"
+          "newValue": "653ce6e337b600"
         },
         {
           "address": "$coinbase",
@@ -92,18 +92,18 @@
         },
         {
           "oldValue": "13664",
-          "newValue": "789332",
+          "newValue": "633332",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "29"
         },
         {
-          "oldValue": "789243",
+          "oldValue": "633243",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "30"
         },
         {
-          "oldValue": "789243",
+          "oldValue": "633243",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
           "ordinal": "33"
@@ -125,7 +125,7 @@
       "caller": "$gasContract",
       "address": "$childContract",
       "gasLimit": "860874",
-      "gasConsumed": "85206",
+      "gasConsumed": "241206",
       "returnData": "",
       "input": "cc905682000000000000000000000000$grandChildContract00000000000000000000000000000000000000000000000000000000002625a000000000000000000000000000000000000000000000000000000000000d6514",
       "executedCode": true,
@@ -149,7 +149,7 @@
         {
           "address": "$childContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000002",
-          "oldValue": "00000000000000000000000000000000000000000000000000000000000c7710",
+          "oldValue": "00000000000000000000000000000000000000000000000000000000000ae0d0",
           "newValue": "00000000000000000000000000000000000000000000000000000000000d0509",
           "ordinal": "12"
         }
@@ -162,7 +162,7 @@
           "topics": [
             "5d6e09c3a2a72b85c9c8b4d91cae443f86bdc7bb8e2480ba2a3e7aa63f25e507"
           ],
-          "data": "00000000000000000000000000000000000000000000000000000000000bdb3f000000000000000000000000$gasContract",
+          "data": "00000000000000000000000000000000000000000000000000000000000979df000000000000000000000000$gasContract",
           "index": 1,
           "blockIndex": 1,
           "ordinal": "26"
@@ -190,18 +190,18 @@
         },
         {
           "oldValue": "13203",
-          "newValue": "777100",
+          "newValue": "621100",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "24"
         },
         {
-          "oldValue": "776949",
-          "newValue": "775687",
+          "oldValue": "620949",
+          "newValue": "619687",
           "reason": "REASON_EVENT_LOG",
           "ordinal": "25"
         },
         {
-          "oldValue": "775668",
+          "oldValue": "619668",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "27"
@@ -223,7 +223,7 @@
       "caller": "$childContract",
       "address": "$grandChildContract",
       "gasLimit": "831823",
-      "gasConsumed": "67926",
+      "gasConsumed": "223926",
       "returnData": "",
       "input": "a64b9faf000000000000000000000000000000000000000000000000000000000016e36000000000000000000000000000000000000000000000000000000000000cf157",
       "executedCode": true,
@@ -248,7 +248,7 @@
           "address": "$grandChildContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000002",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
-          "newValue": "00000000000000000000000000000000000000000000000000000000000c03ab",
+          "newValue": "00000000000000000000000000000000000000000000000000000000000a6d6b",
           "ordinal": "19"
         }
       ],
@@ -260,7 +260,7 @@
           "topics": [
             "5d6e09c3a2a72b85c9c8b4d91cae443f86bdc7bb8e2480ba2a3e7aa63f25e507"
           ],
-          "data": "00000000000000000000000000000000000000000000000000000000000bad47000000000000000000000000$childContract",
+          "data": "0000000000000000000000000000000000000000000000000000000000094be7000000000000000000000000$childContract",
           "index": 0,
           "blockIndex": 0,
           "ordinal": "21"
@@ -275,13 +275,13 @@
           "ordinal": "16"
         },
         {
-          "oldValue": "765172",
-          "newValue": "763910",
+          "oldValue": "609172",
+          "newValue": "607910",
           "reason": "REASON_EVENT_LOG",
           "ordinal": "20"
         },
         {
-          "oldValue": "763897",
+          "oldValue": "607897",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "22"
@@ -308,7 +308,7 @@
         "topics": [
           "5d6e09c3a2a72b85c9c8b4d91cae443f86bdc7bb8e2480ba2a3e7aa63f25e507"
         ],
-        "data": "00000000000000000000000000000000000000000000000000000000000bad47000000000000000000000000$childContract",
+        "data": "0000000000000000000000000000000000000000000000000000000000094be7000000000000000000000000$childContract",
         "index": 0,
         "blockIndex": 0,
         "ordinal": "21"
@@ -318,7 +318,7 @@
         "topics": [
           "5d6e09c3a2a72b85c9c8b4d91cae443f86bdc7bb8e2480ba2a3e7aa63f25e507"
         ],
-        "data": "00000000000000000000000000000000000000000000000000000000000bdb3f000000000000000000000000$gasContract",
+        "data": "00000000000000000000000000000000000000000000000000000000000979df000000000000000000000000$gasContract",
         "index": 1,
         "blockIndex": 1,
         "ordinal": "26"

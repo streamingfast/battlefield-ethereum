@@ -8,10 +8,11 @@ import {
   getCreateAddressHex,
   koContractCall,
 } from "./lib/ethereum"
-import { Calls, Child, GrandChild } from "../typechain-types"
+import { Calls, Child, CompleteCallTree, GrandChild } from "../typechain-types"
 import {
   CallsFactory,
   ChildFactory,
+  CompleteCallTreeFactory,
   DelegateToEmptyContract,
   GrandChildFactory,
   owner,
@@ -47,18 +48,20 @@ describe("Calls", function () {
   })
 
   it("Complete call tree", async function () {
-    let Calls: Contract<Calls>
+    let Calls: Contract<CompleteCallTree>
     let GrandChild: Contract<GrandChild>
+
+    let CallsFactory = CompleteCallTreeFactory
 
     await deployAll(
       async () =>
-        (Calls = await deployStableContractCreator(owner, CallsFactory, [], 1, 1, { gasLimit: callsGasLimit })),
+        (Calls = await deployStableContractCreator(owner, CallsFactory, [], 1, 1, {
+          gasLimit: callsGasLimit,
+        })),
       async () => (GrandChild = await deployContract(owner, GrandChildFactory, [Child.address, false]))
     )
 
-    await expect(
-      contractCall(owner, Calls!.completeCallTree, [Child.address, GrandChild!.address])
-    ).to.trxTraceEqualSnapshot(
+    await expect(contractCall(owner, Calls!.execute, [Child.address, GrandChild!.address])).to.trxTraceEqualSnapshot(
       "calls/complete_call_tree.expected.json",
       {
         $callsContract: Calls!.addressHex,

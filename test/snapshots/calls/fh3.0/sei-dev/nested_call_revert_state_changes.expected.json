@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "69984",
+  "gasUsed": "173984",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -26,7 +26,7 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
       "gasLimit": "878568",
-      "gasConsumed": "48552",
+      "gasConsumed": "152552",
       "returnData": "",
       "input": "59d21640000000000000000000000000$childContract",
       "executedCode": true,
@@ -54,7 +54,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "19",
           "oldValue": "",
-          "newValue": "84b2482db48000"
+          "newValue": "7411d8c4280000"
         },
         {
           "address": "$coinbase",
@@ -94,37 +94,37 @@
           "ordinal": "5"
         },
         {
-          "oldValue": "855615",
-          "newValue": "853115",
+          "oldValue": "803615",
+          "newValue": "801115",
           "reason": "REASON_STATE_COLD_ACCESS",
           "ordinal": "7"
         },
         {
-          "oldValue": "855715",
-          "newValue": "13329",
+          "oldValue": "803715",
+          "newValue": "12517",
           "reason": "REASON_CALL",
           "ordinal": "8"
         },
         {
-          "oldValue": "13329",
-          "newValue": "830529",
+          "oldValue": "12517",
+          "newValue": "726529",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "14"
         },
         {
-          "oldValue": "830433",
-          "newValue": "830409",
+          "oldValue": "726433",
+          "newValue": "726409",
           "reason": "REASON_RETURN_DATA_COPY",
           "ordinal": "15"
         },
         {
-          "oldValue": "830016",
+          "oldValue": "726016",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "17"
         },
         {
-          "oldValue": "830016",
+          "oldValue": "726016",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
           "ordinal": "20"
@@ -145,8 +145,8 @@
       "callType": "CALL",
       "caller": "$callsContract",
       "address": "$childContract",
-      "gasLimit": "839786",
-      "gasConsumed": "22586",
+      "gasLimit": "788598",
+      "gasConsumed": "74586",
       "returnData": "08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000009726576657274696e670000000000000000000000000000000000000000000000",
       "input": "5cd7142d",
       "executedCode": true,
@@ -168,12 +168,12 @@
       "gasChanges": [
         {
           "oldValue": "0",
-          "newValue": "839786",
+          "newValue": "788598",
           "reason": "REASON_CALL_INITIAL_BALANCE",
           "ordinal": "10"
         },
         {
-          "oldValue": "817200",
+          "oldValue": "714012",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "12"
