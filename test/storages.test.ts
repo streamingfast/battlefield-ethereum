@@ -2,6 +2,7 @@ import { expect } from "chai"
 import { Contract, contractCall, deployAll, deployContract } from "./lib/ethereum"
 import { Main } from "../typechain-types"
 import { MainFactory, owner } from "./global"
+import { networkValue } from "./lib/network"
 
 describe("Storages", function () {
   let Storage: Contract<Main>
@@ -11,16 +12,19 @@ describe("Storages", function () {
   })
 
   it("Set long string & array", async function () {
-    await expect(contractCall(owner, Storage.setLongString, [])).to.trxTraceEqualSnapshot(
+    const customTx = networkValue({
+      "sei-dev": { gasLimit: 1_525_000 },
+      "*": undefined,
+    })
+
+    await expect(contractCall(owner, Storage.setLongString, [], customTx)).to.trxTraceEqualSnapshot(
       "storages/set_long_string.expected.json",
       {
         $storageContract: Storage.addressHex,
       },
       {
-        networkSnapshotOverrides: [
-          "optimism-geth-dev",
-        ],
-      },
+        networkSnapshotOverrides: ["optimism-geth-dev"], // less gas used on bnb here
+      }
     )
 
     await expect(contractCall(owner, Storage.setAfter, [])).to.trxTraceEqualSnapshot(

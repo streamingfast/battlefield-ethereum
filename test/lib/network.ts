@@ -13,3 +13,30 @@ export function networkName(): string {
 export function isNetwork(name: string): boolean {
   return networkName() === name
 }
+
+// Returns a value from a mapping based on the current network name. If no value
+// is found for the current network name, it will return the provided default value
+// or will try to find a default value in the mapping using the keys "*", "default" or "".
+export function networkValue<T>(mapping: { [name: string]: T }, defaultValue?: T): T {
+  const name = networkName()
+  if (mapping[name] !== undefined) {
+    return mapping[name]
+  }
+
+  if (defaultValue !== undefined) {
+    return defaultValue
+  }
+
+  // Find default ("*", or "default" or "") value and use it if
+  if (mapping["*"] !== undefined) {
+    return mapping["*"]
+  }
+  if (mapping["default"] !== undefined) {
+    return mapping["default"]
+  }
+  if (mapping[""] !== undefined) {
+    return mapping[""]
+  }
+
+  throw new Error(`No value found for network "${name}", and no default value provided`)
+}

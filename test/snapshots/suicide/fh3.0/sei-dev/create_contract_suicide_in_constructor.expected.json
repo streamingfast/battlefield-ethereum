@@ -1,12 +1,12 @@
 {
   "to": "$createdContract",
   "nonce": "$nonce",
-  "gasLimit": "82792",
+  "gasLimit": "134998",
   "input": "6080604052348015600f57600080fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055503373ffffffffffffffffffffffffffffffffffffffff16fffe",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "81884",
+  "gasUsed": "133884",
   "type": "TRX_TYPE_DYNAMIC_FEE",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CREATE",
       "caller": "$sender",
       "address": "$createdContract",
-      "gasLimit": "28124",
-      "gasConsumed": "27216",
+      "gasLimit": "80330",
+      "gasConsumed": "79216",
       "returnData": "",
       "input": "6080604052348015600f57600080fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055503373ffffffffffffffffffffffffffffffffffffffff16fffe",
       "executedCode": true,
@@ -47,7 +47,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "12",
           "oldValue": "",
-          "newValue": "252975c91800"
+          "newValue": "2d97ccd7b400"
         },
         {
           "address": "$coinbase",
@@ -85,36 +85,36 @@
       "gasChanges": [
         {
           "oldValue": "0",
-          "newValue": "82792",
+          "newValue": "134998",
           "reason": "REASON_TX_INITIAL_BALANCE",
           "ordinal": "1"
         },
         {
-          "oldValue": "82792",
-          "newValue": "28124",
+          "oldValue": "134998",
+          "newValue": "80330",
           "reason": "REASON_INTRINSIC_GAS",
           "ordinal": "2"
         },
         {
           "oldValue": "0",
-          "newValue": "28124",
+          "newValue": "80330",
           "reason": "REASON_CALL_INITIAL_BALANCE",
           "ordinal": "4"
         },
         {
-          "oldValue": "5908",
-          "newValue": "908",
+          "oldValue": "6114",
+          "newValue": "1114",
           "reason": "REASON_SELF_DESTRUCT",
           "ordinal": "8"
         },
         {
-          "oldValue": "908",
+          "oldValue": "1114",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "10"
         },
         {
-          "oldValue": "908",
+          "oldValue": "1114",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
           "ordinal": "13"

@@ -17,7 +17,7 @@ import {
 import { Calls, Calls__factory } from "../typechain-types"
 import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./global"
 import { eth, oneWei } from "./lib/money"
-import { isNetwork } from "./lib/network"
+import { networkValue, isNetwork } from "./lib/network"
 
 const callsGasLimit = isNetwork("monad-dev") ? 30_000_000 : 3_500_000
 
@@ -51,7 +51,7 @@ describe("Deploys", function () {
           // existed or not).
           "arbitrum-geth-dev",
         ],
-      },
+      }
     )
   })
 
@@ -63,20 +63,24 @@ describe("Deploys", function () {
       {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: getCreateAddressHex(deployer.address, 0),
-      },
+      }
     )
   })
 
   it("Contract fail not enough gas after code_copy", async function () {
     const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
 
-    await expect(koContractCreation(deployer, SuicidalFactory, [], { gasLimit: 99309 })).to.trxTraceEqualSnapshot(
-      "deploys/contract_fail_code_copy.expected.json",
-      {
-        $sender: deployer.address.toLowerCase().slice(2),
-        $createdContract: getCreateAddressHex(deployer.address, 0),
-      },
-    )
+    await expect(
+      koContractCreation(deployer, SuicidalFactory, [], {
+        gasLimit: networkValue({
+          "sei-dev": 149309,
+          "*": 99309,
+        }),
+      })
+    ).to.trxTraceEqualSnapshot("deploys/contract_fail_code_copy.expected.json", {
+      $sender: deployer.address.toLowerCase().slice(2),
+      $createdContract: getCreateAddressHex(deployer.address, 0),
+    })
   })
 
   it("Contract creation from call, without a constructor", async function () {
@@ -87,7 +91,7 @@ describe("Deploys", function () {
       {
         $callsContract: Calls.addressHex,
         $createdContract: getCreateAddressHex(Calls.address, 1),
-      },
+      }
     )
   })
 
@@ -99,7 +103,7 @@ describe("Deploys", function () {
       {
         $callsContract: Calls.addressHex,
         $createdContract: getCreateAddressHex(Calls.address, 1),
-      },
+      }
     )
   })
 
@@ -115,7 +119,7 @@ describe("Deploys", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev"],
-      },
+      }
     )
   })
 
@@ -133,7 +137,7 @@ describe("Deploys", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev"],
-      },
+      }
     )
   })
 
@@ -146,7 +150,7 @@ describe("Deploys", function () {
         "300000000000000000000000000000",
         `0x${create2Data.salt}`,
         false,
-      ]),
+      ])
     ).to.trxTraceEqualSnapshot(
       "deploys/contract_create2_insufficient_funds_succeed.expected.json",
       {
@@ -159,11 +163,8 @@ describe("Deploys", function () {
           // New gas cost for contract creation & calldata
           prague: ["eip7623"],
         },
-        networkSnapshotOverrides: [
-          "bnb-dev",
-          "optimism-geth-dev",
-        ], // less gas used on bnb here
-      },
+        networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
+      }
     )
   })
 
@@ -176,7 +177,7 @@ describe("Deploys", function () {
         "300000000000000000000000000000",
         `0x${create2Data.salt}`,
         true,
-      ]),
+      ])
     ).to.trxTraceEqualSnapshot(
       "deploys/contract_create2_insufficient_funds_revert.expected.json",
       {
@@ -190,7 +191,7 @@ describe("Deploys", function () {
         },
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"], // less gas used on bnb here
-      },
+      }
     )
   })
 
@@ -198,7 +199,7 @@ describe("Deploys", function () {
     const create2Data = getStableCreate2Data(Calls.address, Calls__factory)
 
     await expect(
-      contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false]),
+      contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false])
     ).to.trxTraceEqualSnapshot(
       "deploys/contract_create2_successful_creation.expected.json",
       {
@@ -207,11 +208,8 @@ describe("Deploys", function () {
         $salt: create2Data.salt,
       },
       {
-        networkSnapshotOverrides: [
-          "bnb-dev",
-          "optimism-geth-dev",
-        ], // less gas used on bnb here
-      },
+        networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
+      }
     )
   })
 
@@ -223,7 +221,7 @@ describe("Deploys", function () {
     await contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false])
 
     await expect(
-      contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false]),
+      contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false])
     ).to.trxTraceEqualSnapshot(
       "deploys/contract_create2_inner_call_fails_address_already_exists.expected.json",
       {
@@ -232,11 +230,8 @@ describe("Deploys", function () {
         $salt: create2Data.salt,
       },
       {
-        networkSnapshotOverrides: [
-          "bnb-dev",
-          "optimism-geth-dev",
-        ], // less gas used on bnb here
-      },
+        networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
+      }
     )
   })
 
@@ -248,7 +243,7 @@ describe("Deploys", function () {
     await contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false])
 
     await expect(
-      koContractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, true]),
+      koContractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, true])
     ).to.trxTraceEqualSnapshot(
       "deploys/contract_create2_inner_call_fails_address_already_exists_and_trx_fails.expected.json",
       {
@@ -259,7 +254,7 @@ describe("Deploys", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"], // less gas used on bnb here
-      },
+      }
     )
   })
 })

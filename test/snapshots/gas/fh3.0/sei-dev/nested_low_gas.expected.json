@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "91626",
+  "gasUsed": "247626",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -26,7 +26,7 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$gasContract",
       "gasLimit": "878568",
-      "gasConsumed": "70194",
+      "gasConsumed": "226194",
       "returnData": "",
       "input": "b470c8c2000000000000000000000000$childContract",
       "executedCode": true,
@@ -39,7 +39,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "18",
           "oldValue": "",
-          "newValue": "813c88be346c00"
+          "newValue": "684be19fe1ac00"
         },
         {
           "address": "$coinbase",
@@ -92,18 +92,18 @@
         },
         {
           "oldValue": "13673",
-          "newValue": "808461",
+          "newValue": "652461",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
           "ordinal": "15"
         },
         {
-          "oldValue": "808374",
+          "oldValue": "652374",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "16"
         },
         {
-          "oldValue": "808374",
+          "oldValue": "652374",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
           "ordinal": "19"
@@ -125,7 +125,7 @@
       "caller": "$gasContract",
       "address": "$childContract",
       "gasLimit": "861452",
-      "gasConsumed": "66664",
+      "gasConsumed": "222664",
       "returnData": "",
       "input": "a64b9faf00000000000000000000000000000000000000000000000000000000002625a000000000000000000000000000000000000000000000000000000000000d66ea",
       "executedCode": true,
@@ -150,7 +150,7 @@
           "address": "$childContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000002",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
-          "newValue": "00000000000000000000000000000000000000000000000000000000000c7710",
+          "newValue": "00000000000000000000000000000000000000000000000000000000000ae0d0",
           "ordinal": "12"
         }
       ],
@@ -166,7 +166,7 @@
           "ordinal": "9"
         },
         {
-          "oldValue": "794788",
+          "oldValue": "638788",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
           "ordinal": "13"
