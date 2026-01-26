@@ -12,10 +12,12 @@ describe("Storages", function () {
   })
 
   it("Set long string & array", async function () {
-    const customTx = networkValue({
-      "sei-dev": { gasLimit: 1_525_000 },
-      "*": undefined,
-    })
+    const customTx = networkValue(
+      {
+        "sei-dev": { gasLimit: 1_525_000 },
+      },
+      undefined
+    )
 
     await expect(contractCall(owner, Storage.setLongString, [], customTx)).to.trxTraceEqualSnapshot(
       "storages/set_long_string.expected.json",
