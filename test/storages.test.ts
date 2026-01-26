@@ -14,7 +14,6 @@ describe("Storages", function () {
   it("Set long string & array", async function () {
     const customTx = networkValue({
       "sei-dev": { gasLimit: 1_525_000 },
-      "monad-dev": undefined,
       "*": undefined,
     })
 
