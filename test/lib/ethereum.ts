@@ -22,7 +22,7 @@ const debug = debugFactory("battlefield:eth")
 
 export const defaultGasPrice = isNetwork("monad-dev") ? 110_000_000_000 : 45_000_000_000
 export const defaultGasLimit = isNetwork("monad-dev") ? 5_000_000 : 900_000
-export const defaultDeployerBalance = isNetwork("monad-dev") ? eth(20) : eth(2)
+export const defaultDeployerBalance = isNetwork("monad-dev") ? eth(100) : eth(2)
 
 /**
  * Our own internal allowed transaction request, it will only allow the value and gasLimit
