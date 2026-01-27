@@ -108,31 +108,29 @@ describe("Blocks", function () {
     })
   }
 
-  if (!isNetwork("monad-dev")) {
-    it("System call ProcessParentBlockHash recorded correctly", async function () {
-      const rpcBlock = await mustGetRpcBlock("latest")
-      if (!rpcBlock.requestsHash) {
-        return
-      }
+  it("System call ProcessParentBlockHash recorded correctly", async function () {
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (!rpcBlock.requestsHash) {
+      return
+    }
 
-      const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
-      const header = firehoseBlock.header!
+    const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
+    const header = firehoseBlock.header!
 
-      expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
+    expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
 
-      const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
-      expect(updateParentBlockHashCall).to.not.be.undefined
+    const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
+    expect(updateParentBlockHashCall).to.not.be.undefined
 
-      expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
-      expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
+    expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
+    expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
 
-      if (getGlobalSnapshotsTag().startsWith("fh3.0")) {
-        // Firehose 2.3 does not record some gas changes that are recorded in 3.0, hence why in 2.3
-        // there is 0 gas changes while there are 2 in 3.0.
-        expect(updateParentBlockHashCall!.gasChanges.length).to.be.equal(2)
-      }
-    })
-  }
+    if (getGlobalSnapshotsTag().startsWith("fh3.0")) {
+      // Firehose 2.3 does not record some gas changes that are recorded in 3.0, hence why in 2.3
+      // there is 0 gas changes while there are 2 in 3.0.
+      expect(updateParentBlockHashCall!.gasChanges.length).to.be.equal(2)
+    }
+  })
 })
 
 function isUpdateBeaconRootCall(beaconRoot: string): (call: Call) => boolean {
