@@ -114,7 +114,7 @@ describe("Blocks", function () {
       return
     }
 
-    const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
+    const firehoseBlock = await fetchFirehoseBlock({ hash: rpcBlock.hash, num: rpcBlock.number })
     const header = firehoseBlock.header!
 
     expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
