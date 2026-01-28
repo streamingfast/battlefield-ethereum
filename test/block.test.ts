@@ -119,8 +119,18 @@ describe("Blocks", function () {
 
     expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
 
+    const debugInfo = {
+      systemCallsLength: firehoseBlock.systemCalls?.length,
+      systemCalls: firehoseBlock.systemCalls?.map(c => ({
+        caller: hexlify(c.caller),
+        address: hexlify(c.address),
+        input: hexlify(c.input)
+      })),
+      lookingForParentHash: rpcBlock.parentHash
+    }
+
     const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
-    expect(updateParentBlockHashCall).to.not.be.undefined
+    expect(updateParentBlockHashCall, `System call not found. Debug: ${JSON.stringify(debugInfo, null, 2)}`).to.not.be.undefined
 
     expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
     expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
