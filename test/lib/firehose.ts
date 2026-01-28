@@ -41,7 +41,15 @@ const transport = createGrpcTransport({
 
 export const firehose = createClient(Fetch, transport)
 
-const messageRegistry = createRegistry(BlockSchema)
+const messageRegistry = createRegistry(
+  BlockSchema,
+  TransactionTraceSchema,
+  CallSchema,
+  BalanceChangeSchema,
+  NonceChangeSchema,
+  GasChangeSchema,
+  TransactionReceiptSchema,
+)
 
 export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Promise<TransactionTrace> {
   const { trace } = await fetchFirehoseTransactionAndBlock(receipt)
