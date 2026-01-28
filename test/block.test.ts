@@ -120,6 +120,13 @@ describe("Blocks", function () {
     expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
 
     const debugInfo = {
+      rpcBlockNumber: rpcBlock.number,
+      rpcBlockHash: rpcBlock.hash,
+      rpcParentHash: rpcBlock.parentHash,
+      firehoseBlockHash: hexlify(header.hash),
+      firehoseParentHash: hexlify(header.parentHash),
+      hashesMatch: rpcBlock.hash === hexlify(header.hash),
+      parentHashesMatch: rpcBlock.parentHash === hexlify(header.parentHash),
       systemCallsLength: firehoseBlock.systemCalls?.length,
       systemCalls: firehoseBlock.systemCalls?.map(c => ({
         caller: hexlify(c.caller),
