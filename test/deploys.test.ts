@@ -3,7 +3,7 @@ import {
   Contract,
   contractCall,
   contractCreation,
-  defaultDeployerBalance(),
+  defaultDeployerBalance,
   deployAll,
   deployContract,
   deployStableContractCreator,
