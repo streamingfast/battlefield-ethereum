@@ -103,9 +103,9 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   const trxCall = await call.populateTransaction(...args)
   const trxRequest = {
     ...trxCall,
+    gasLimit: defaultGasLimit,
     gasPrice: defaultGasPrice,
     ...customTx,
-    gasLimit: customTx.gasLimit ?? defaultGasLimit,
   }
 
   debug("Contract call being performed %o", debuggableTrx(trxRequest))
