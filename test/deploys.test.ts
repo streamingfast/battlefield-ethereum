@@ -56,7 +56,7 @@ describe("Deploys", function () {
   })
 
   it("Contract fail just enough gas for intrinsic gas", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance())
+    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
 
     await expect(koContractCreation(deployer, SuicidalFactory, [], { gasLimit: 63274 })).to.trxTraceEqualSnapshot(
       "deploys/contract_fail_intrinsic_gas.expected.json",
@@ -68,7 +68,7 @@ describe("Deploys", function () {
   })
 
   it("Contract fail not enough gas after code_copy", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance())
+    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
 
     await expect(
       koContractCreation(deployer, SuicidalFactory, [], {
