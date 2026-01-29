@@ -86,6 +86,7 @@ export async function sendEth(
     value,
     gasLimit: 21000,
     gasPrice: defaultGasPrice,
+    type: 0, // Force legacy transaction
     ...custom,
   }
   debug("Send eth call being performed %o", debuggableTrx(trxRequest))
@@ -105,6 +106,7 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
     ...trxCall,
     gasLimit: defaultGasLimit,
     gasPrice: defaultGasPrice,
+    type: 0, // Force legacy transaction
     ...customTx,
   }
 
@@ -215,6 +217,7 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
     const trxRequest = {
       ...trx,
       gasPrice: defaultGasPrice,
+      type: 0, // Force legacy transaction
       ...customTx,
     }
 
