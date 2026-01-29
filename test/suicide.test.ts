@@ -3,6 +3,7 @@ import {
   Contract,
   contractCall,
   contractCreation,
+  defaultGasLimit,
   deployAll,
   deployContract,
   deployStableContractCreator,
@@ -182,7 +183,7 @@ describe("Suicide", function () {
   it("Contract created in trx and suicides in constructor", async function () {
     const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
 
-    await expect(contractCreation(deployer, SuicideOnConstructorFactory, [])).to.trxTraceEqualSnapshot(
+    await expect(contractCreation(deployer, SuicideOnConstructorFactory, [], { gasLimit: defaultGasLimit })).to.trxTraceEqualSnapshot(
       "suicide/create_contract_suicide_in_constructor.json",
       {
         $sender: deployer.address.toLowerCase().slice(2),
@@ -199,7 +200,7 @@ describe("Suicide", function () {
 
   it("Contract and suicide beneficiary are the same", async function () {
     const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
-    const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [])
+    const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [], { gasLimit: defaultGasLimit })
 
     await sendEth(owner, Contract.address, oneWei, { gasLimit: 45000 })
 
