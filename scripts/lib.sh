@@ -187,9 +187,19 @@ check_besu() {
   if ! command -v "$besu" &> /dev/null; then
     echo "The '$besu' binary could not be found, you can build it from the StreamingFast Besu repository:"
     echo ""
+    echo "Prerequisites:"
+    echo "- Java 21 (required, Java 22+ is incompatible with Gradle 8.7)"
+    echo "- Git (for cloning the repository)"
+    echo ""
+    echo "Java installation:"
+    echo "- Ubuntu/Debian: sudo apt install openjdk-21-jdk"
+    echo "- macOS: brew install openjdk@21 && export PATH=\"/opt/homebrew/opt/openjdk@21/bin:\$PATH\""
+    echo "- Windows: Download from https://adoptium.net/ (Temurin JDK 21)"
+    echo ""
+    echo "Build from source:"
     echo "- git clone https://github.com/streamingfast/besu.git"
     echo "- cd besu && ./gradlew installDist -x test"
-    echo "- Binary: build/install/besu/bin/besu"
+    echo "- Binary is at build/install/besu/bin/besu"
     exit 1
   fi
 }
