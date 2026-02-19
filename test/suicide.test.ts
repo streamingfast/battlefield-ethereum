@@ -23,6 +23,7 @@ import {
 import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
 import { isNetwork } from "./lib/network"
+import { besu_exclude_fields } from "./lib/constants"
 
 const callsGasLimit = 3_500_000
 
@@ -75,6 +76,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
 
@@ -92,6 +94,7 @@ describe("Suicide", function () {
           "arbitrum-geth-dev",
           "bnb-dev", // on bnb, there is no executedCode, no suicide, no gas change for REASON_SELF_DESTRUCT
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
   })
@@ -117,6 +120,7 @@ describe("Suicide", function () {
           "arbitrum-geth-dev",
           "bnb-dev", // on bnb, the refund happens BEFORE the withdraw
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
   })
@@ -138,6 +142,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
   })
@@ -159,6 +164,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
 
@@ -175,6 +181,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
   })
@@ -193,6 +200,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
   })
@@ -215,6 +223,7 @@ describe("Suicide", function () {
           "arbitrum-geth-dev",
           "bnb-dev", // on bnb, the refund happens BEFORE the withdraw
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
   })
@@ -237,6 +246,7 @@ describe("Suicide", function () {
           "arbitrum-geth-dev",
           "bnb-dev", // bnb does not show the 'double withdraw' behavior, but the result is the same because the account gets drained.
         ],
+        excludeFields: besu_exclude_fields,
       },
     )
   })

@@ -13,6 +13,7 @@ import {
 import { getBalance, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { owner } from "./global"
+import { besu_exclude_fields } from "./lib/constants"
 
 describe("Pure transfers", function () {
   it("Existing address", async function () {

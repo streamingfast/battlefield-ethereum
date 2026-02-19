@@ -10,6 +10,7 @@ import { Contract, contractCall, deployAll, deployContract, koContractCall } fro
 import { oneWei } from "./lib/money"
 import { Child, Transfers } from "../typechain-types"
 import { ChildFactory, owner, TransfersFactory } from "./global"
+import { besu_exclude_fields } from "./lib/constants"
 
 describe("Contract transfers", function () {
   let Child: Contract<Child>
@@ -27,6 +28,8 @@ describe("Contract transfers", function () {
       contractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei }),
     ).to.trxTraceEqualSnapshot("contract_transfers/existing_address.expected.json", {
       $contract: Transfers.addressHex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 
@@ -35,6 +38,8 @@ describe("Contract transfers", function () {
       koContractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 22080 }),
     ).to.trxTraceEqualSnapshot("contract_transfers/existing_address_failure.expected.json", {
       $contract: Transfers.addressHex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 
@@ -44,6 +49,8 @@ describe("Contract transfers", function () {
     ).to.trxTraceEqualSnapshot("contract_transfers/inexistent_address.expected.json", {
       $contract: Transfers.addressHex,
       $randomAddress3: randomAddress3Hex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 
@@ -55,6 +62,8 @@ describe("Contract transfers", function () {
     ).to.trxTraceEqualSnapshot("contract_transfers/nested_existing_address.expected.json", {
       $contract: Transfers.addressHex,
       $childContract: Child.addressHex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 
@@ -67,6 +76,8 @@ describe("Contract transfers", function () {
       $contract: Transfers.addressHex,
       $childContract: Child.addressHex,
       $randomAddress4: randomAddress4Hex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 })

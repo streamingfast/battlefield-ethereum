@@ -3,6 +3,7 @@ import { Contract, contractCall, deployAll, deployContract, koContractCall } fro
 import { Child, Logs, LogsNoTopics } from "../typechain-types"
 import { ChildFactory, LogsFactory, LogsNoTopicsFactory, owner } from "./global"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
+import { besu_exclude_fields } from "./lib/constants"
 
 describe("Logs", function () {
   let Child: Contract<Child>
@@ -88,18 +89,24 @@ describe("Logs", function () {
   it("Empty", async function () {
     await expect(contractCall(owner, Logs.logEmpty, [])).to.trxTraceEqualSnapshot("logs/log_empty.expected.json", {
       $logsContract: Logs.addressHex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 
   it("Single", async function () {
     await expect(contractCall(owner, Logs.logSingle, [])).to.trxTraceEqualSnapshot("logs/log_single.expected.json", {
       $logsContract: Logs.addressHex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 
   it("All", async function () {
     await expect(contractCall(owner, Logs.logAll, [])).to.trxTraceEqualSnapshot("logs/log_all.expected.json", {
       $logsContract: Logs.addressHex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 
@@ -124,6 +131,8 @@ describe("Logs", function () {
   it("Multi", async function () {
     await expect(contractCall(owner, Logs.logMulti, [])).to.trxTraceEqualSnapshot("logs/log_multi.expected.json", {
       $logsContract: Logs.addressHex,
+    }, {
+      excludeFields: besu_exclude_fields
     })
   })
 
