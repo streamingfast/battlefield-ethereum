@@ -173,8 +173,6 @@ cleanup() {
     echo "Cleanup complete"
 }
 
-trap cleanup EXIT
-
 main() {
     setup_monad_infrastructure
     setup_firehose_infrastructure
