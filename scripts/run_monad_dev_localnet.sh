@@ -10,7 +10,6 @@ MONAD_DOCKER_DIR="$MONAD_BUILD_DIR/docker/single-node"
 MONAD_EXECUTION_IMAGE="${MONAD_EXECUTION_IMAGE:-ghcr.io/streamingfast/monad-execution:73ef8ec}"
 MONAD_NODE_IMAGE="${MONAD_NODE_IMAGE:-ghcr.io/streamingfast/monad-node:eede85a}"
 MONAD_RPC_IMAGE="${MONAD_RPC_IMAGE:-ghcr.io/streamingfast/monad-rpc:eede85a}"
-MONAD_KNOWN_GOOD_DIR="${MONAD_KNOWN_GOOD_DIR:-20260203_220833-c63c0d0687d7c53c}"
 MONAD_TIMESTAMP_DIR=""
 
 setup_monad_infrastructure() {
@@ -92,14 +91,14 @@ expand_to_group = false/' node/config/node.toml
     fi
     truncate -s 8GB node/triedb/test.db
 
-    KNOWN_GOOD_PATH="$MONAD_DOCKER_DIR/logs/$MONAD_KNOWN_GOOD_DIR"
-    if [[ -f "$KNOWN_GOOD_PATH/node/config/node.toml" ]] && [[ -f "$KNOWN_GOOD_PATH/compose.yaml" ]]; then
-        echo "Copying known-good config from $MONAD_KNOWN_GOOD_DIR..."
-        cp "$KNOWN_GOOD_PATH/node/config/node.toml" node/config/node.toml
-        cp "$KNOWN_GOOD_PATH/compose.yaml" compose.yaml
-    else
-        echo "WARNING: Known-good directory $MONAD_KNOWN_GOOD_DIR not found, using generated config"
-    fi
+    echo "Copying config from monad-devnet..."
+    cp "$BATTLEFIELD_DIR/monad-devnet/compose.yaml" compose.yaml
+    cp "$BATTLEFIELD_DIR/monad-devnet/node/node.toml" node/config/node.toml
+    cp "$BATTLEFIELD_DIR/monad-devnet/node/forkpoint.toml" node/config/forkpoint.toml
+    cp "$BATTLEFIELD_DIR/monad-devnet/node/validators.toml" node/config/validators.toml
+    cp "$BATTLEFIELD_DIR/monad-devnet/node/profile.json" node/config/profile.json
+    cp "$BATTLEFIELD_DIR/monad-devnet/node/id-bls" node/config/id-bls
+    cp "$BATTLEFIELD_DIR/monad-devnet/node/id-secp" node/config/id-secp
 
     export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
     export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
