@@ -86,6 +86,9 @@ expand_to_group = false/' node/config/node.toml
     export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
     export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
     export RPC_DIR="$MONAD_BUILD_DIR/docker/rpc"
+    export MONAD_EXECUTION_ROOT="$MONAD_BUILD_DIR/monad-cxx/monad-execution"
+    export HOST_GID=$(id -g)
+    export HOST_UID=$(id -u)
     docker-compose -f compose.yaml -f compose.prebuilt.yaml up -d
 
     echo "Waiting for Monad to initialize..."
