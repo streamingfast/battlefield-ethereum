@@ -120,7 +120,7 @@ expand_to_group = false/' node/config/node.toml
             break
         fi
         if [[ $i -eq 30 ]]; then
-            echo "ERROR: Monad RPC not responding after 60 seconds"
+            echo "ERROR: Monad RPC not responding after 30 seconds"
             exit 1
         fi
         sleep 1
