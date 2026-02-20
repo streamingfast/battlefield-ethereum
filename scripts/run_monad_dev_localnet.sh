@@ -92,14 +92,14 @@ expand_to_group = false/' node/config/node.toml
     truncate -s 8GB node/triedb/test.db
 
     echo "Copying config from monad-devnet..."
-    cp "$BATTLEFIELD_DIR/monad-devnet/compose.yaml" compose.yaml
-    cp "$BATTLEFIELD_DIR/monad-devnet/node/node.toml" node/config/node.toml
-    cp "$BATTLEFIELD_DIR/monad-devnet/node/forkpoint.toml" node/config/forkpoint.toml
-    cp "$BATTLEFIELD_DIR/monad-devnet/node/forkpoint.toml" node/config/forkpoint.genesis.toml
-    cp "$BATTLEFIELD_DIR/monad-devnet/node/validators.toml" node/config/validators.toml
-    cp "$BATTLEFIELD_DIR/monad-devnet/node/profile.json" node/config/profile.json
-    cp "$BATTLEFIELD_DIR/monad-devnet/node/id-bls" node/config/id-bls
-    cp "$BATTLEFIELD_DIR/monad-devnet/node/id-secp" node/config/id-secp
+    cp "$ROOT/monad-devnet/compose.yaml" compose.yaml
+    cp "$ROOT/monad-devnet/node/node.toml" node/config/node.toml
+    cp "$ROOT/monad-devnet/node/forkpoint.toml" node/config/forkpoint.toml
+    cp "$ROOT/monad-devnet/node/forkpoint.toml" node/config/forkpoint.genesis.toml
+    cp "$ROOT/monad-devnet/node/validators.toml" node/config/validators.toml
+    cp "$ROOT/monad-devnet/node/profile.json" node/config/profile.json
+    cp "$ROOT/monad-devnet/node/id-bls" node/config/id-bls
+    cp "$ROOT/monad-devnet/node/id-secp" node/config/id-secp
 
     export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
     export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
