@@ -324,7 +324,9 @@ function assertTrxOrdinals(
   blockNumber: number,
   options?: { skipOrdinalCheck?: boolean }
 ) {
+  console.log('skipOrdinalCheck:', options?.skipOrdinalCheck)
   if (options?.skipOrdinalCheck) {
+    console.log('Skipping skipOrdinalCheck=true')
     return
   }
   const ordinals = Object.entries(ordinalsMap)
