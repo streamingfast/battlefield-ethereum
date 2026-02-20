@@ -27,6 +27,14 @@ setup_monad_infrastructure() {
         exit 1
     fi
     echo "Using directory: $LATEST_DIR"
+
+    PREV_WORKING_DIR=$(ls -td 2* 2>/dev/null | sed -n '2p')
+    if [[ -n "$PREV_WORKING_DIR" ]] && [[ -f "$PREV_WORKING_DIR/compose.yaml" ]]; then
+        echo "Copying config from previous working directory: $PREV_WORKING_DIR"
+        cp "$PREV_WORKING_DIR/node/config/node.toml" "$LATEST_DIR/node/config/node.toml"
+        cp "$PREV_WORKING_DIR/compose.yaml" "$LATEST_DIR/compose.yaml"
+    fi
+
     cd "$LATEST_DIR"
     MONAD_TIMESTAMP_DIR="$PWD"
 
