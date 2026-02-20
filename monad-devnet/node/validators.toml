@@ -1,8 +1,5 @@
 [[validator_sets]]
 epoch = 1
-round = 0
-[[validator_sets]]
-epoch = 1
 
 [[validator_sets.validators]]
 node_id = "0x02093852f554d6196025b0bebe21ea646f73e34f1fd6f154e6ae77c890363ea5be"
