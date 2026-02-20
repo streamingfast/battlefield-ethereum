@@ -95,6 +95,7 @@ expand_to_group = false/' node/config/node.toml
     cp "$BATTLEFIELD_DIR/monad-devnet/compose.yaml" compose.yaml
     cp "$BATTLEFIELD_DIR/monad-devnet/node/node.toml" node/config/node.toml
     cp "$BATTLEFIELD_DIR/monad-devnet/node/forkpoint.toml" node/config/forkpoint.toml
+    cp "$BATTLEFIELD_DIR/monad-devnet/node/forkpoint.toml" node/config/forkpoint.genesis.toml
     cp "$BATTLEFIELD_DIR/monad-devnet/node/validators.toml" node/config/validators.toml
     cp "$BATTLEFIELD_DIR/monad-devnet/node/profile.json" node/config/profile.json
     cp "$BATTLEFIELD_DIR/monad-devnet/node/id-bls" node/config/id-bls
@@ -113,13 +114,14 @@ expand_to_group = false/' node/config/node.toml
     sleep 10
 
     echo "Waiting for Monad RPC to be ready..."
-    for i in {1..30}; do
+    for i in {1..60}; do
         if curl -s -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://127.0.0.1:18080 > /dev/null 2>&1; then
             echo "Monad RPC is ready!"
             break
         fi
-        if [[ $i -eq 30 ]]; then
-            echo "WARNING: Monad RPC not responding after 30 seconds"
+        if [[ $i -eq 60 ]]; then
+            echo "ERROR: Monad RPC not responding after 60 seconds"
+            exit 1
         fi
         sleep 1
     done
