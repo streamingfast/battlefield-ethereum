@@ -234,6 +234,16 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       // Check on original trace for correctness of ordinal handling
       const ordinals = trxTraceOrdinals(actualTrace)
       const skipOrdinalCheck = options && (options as any).skipOrdinalCheck
+
+      // TEMPORARY DEBUG: Force assertion to see if ordinal check is running
+      if (skipOrdinalCheck === true) {
+        throw new Error(`[DEBUG] skipOrdinalCheck is TRUE - ordinal validation will be skipped!`)
+      }
+      if (skipOrdinalCheck === undefined || skipOrdinalCheck === false) {
+        // This will show in test output that validation is running
+        new chai.Assertion(Object.keys(ordinals).length, `[DEBUG] Running ordinal validation with ${Object.keys(ordinals).length} ordinals`).to.be.greaterThan(0)
+      }
+
       assertTrxOrdinals(chai, ordinals, actualTrace, trxReceipt.blockNumber, { skipOrdinalCheck })
 
       const actualNormalized = normalizeTrace(clone(TransactionTraceSchema, actualTrace))
@@ -324,15 +334,14 @@ function assertTrxOrdinals(
   blockNumber: number,
   options?: { skipOrdinalCheck?: boolean }
 ) {
-  console.log('skipOrdinalCheck:', options?.skipOrdinalCheck)
-  if (options?.skipOrdinalCheck) {
-    console.log('Skipping skipOrdinalCheck=true')
-    return
+  if (options?.skipOrdinalCheck === true) {
+    throw new Error(`skipOrdinalCheck is TRUE`)
   }
+
   const ordinals = Object.entries(ordinalsMap)
   ordinals.sort(([a], [b]) => parseInt(a) - parseInt(b))
 
-  new chai.Assertion(ordinals.length).to.be.greaterThan(0)
+  new chai.Assertion(ordinals.length, `Validating ${ordinals.length} ordinals`).to.be.greaterThan(0)
 
   let previous: number | undefined = undefined
   ordinals.forEach(([ordinal, count]) => {
