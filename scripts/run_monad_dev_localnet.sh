@@ -10,11 +10,9 @@ MONAD_DOCKER_DIR="$MONAD_BUILD_DIR/docker/single-node"
 MONAD_EXECUTION_IMAGE="${MONAD_EXECUTION_IMAGE:-ghcr.io/streamingfast/monad-execution:73ef8ec}"
 MONAD_NODE_IMAGE="${MONAD_NODE_IMAGE:-ghcr.io/streamingfast/monad-node:eede85a}"
 MONAD_RPC_IMAGE="${MONAD_RPC_IMAGE:-ghcr.io/streamingfast/monad-rpc:eede85a}"
+MONAD_TIMESTAMP_DIR=""
 
 setup_monad_infrastructure() {
-    echo "=========================================="
-    echo "Setting up Monad infrastructure..."
-    echo "=========================================="
 
     cd "$MONAD_DOCKER_DIR"
 
@@ -30,6 +28,7 @@ setup_monad_infrastructure() {
     fi
     echo "Using directory: $LATEST_DIR"
     cd "$LATEST_DIR"
+    MONAD_TIMESTAMP_DIR="$PWD"
 
     echo "Creating compose.prebuilt.yaml..."
     cat > compose.prebuilt.yaml << EOF
@@ -84,6 +83,9 @@ expand_to_group = false/' node/config/node.toml
     docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null || true
 
     echo "Starting Monad services..."
+    export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
+    export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
+    export RPC_DIR="$MONAD_BUILD_DIR/docker/rpc"
     docker-compose -f compose.yaml -f compose.prebuilt.yaml up -d
 
     echo "Waiting for Monad to initialize..."
@@ -117,9 +119,11 @@ cleanup() {
     echo "Stopping Firehose containers..."
     docker-compose -f docker-compose.localnet-firehose.yml down 2>/dev/null || true
 
-    cd "$MONAD_DOCKER_DIR"
-    echo "Stopping Monad containers..."
-    docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null || true
+    if [[ -n "$MONAD_TIMESTAMP_DIR" ]] && [[ -d "$MONAD_TIMESTAMP_DIR" ]]; then
+        cd "$MONAD_TIMESTAMP_DIR"
+        echo "Stopping Monad containers..."
+        docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null || true
+    fi
 
     echo "Cleanup complete"
 }
