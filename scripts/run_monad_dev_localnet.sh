@@ -153,8 +153,8 @@ setup_firehose_infrastructure() {
     echo "Starting Firehose containers..."
     docker-compose -f docker-compose.localnet-firehose.yml up -d
 
-    echo "Waiting for Firehose to initialize..."
-    sleep 5
+    echo "Waiting for Firehose to process blocks..."
+    sleep 15
 
     echo "Firehose infrastructure ready!"
 }
