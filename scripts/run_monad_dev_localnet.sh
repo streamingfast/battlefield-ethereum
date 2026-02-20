@@ -154,24 +154,7 @@ setup_firehose_infrastructure() {
     docker-compose -f docker-compose.localnet-firehose.yml up -d
 
     echo "Waiting for Firehose to process blocks..."
-    sleep 15
-
-    echo "Verifying Firehose has blocks..."
-    cd "$BATTLEFIELD_DIR"
-    export FIREHOSE_ENDPOINT=localhost:20028
-    export FIREHOSE_GRPC_ENDPOINT=http://localhost:20028
-    export SNAPSHOTS_TAG=fh3.0/monad-dev
-
-    for i in {1..10}; do
-        if pnpm hardhat test --network monad-dev --grep "Header" > /dev/null 2>&1; then
-            echo "Firehose is ready with blocks!"
-            break
-        fi
-        if [[ $i -eq 10 ]]; then
-            echo "WARNING: Firehose not ready after verification attempts"
-        fi
-        sleep 2
-    done
+    sleep 20
 
     echo "Firehose infrastructure ready!"
 }
