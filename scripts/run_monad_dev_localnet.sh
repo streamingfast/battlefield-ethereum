@@ -29,16 +29,15 @@ setup_monad_infrastructure() {
     cd ..
 
     set +e
-    ./nets/run.sh
+    ./nets/run.sh > /dev/null 2>&1
     set -e
 
     cd logs
     LATEST_DIR=$(ls -td 2* 2>/dev/null | head -1)
     if [[ -z "$LATEST_DIR" ]]; then
-        echo "ERROR: No timestamped directory found"
         exit 1
     fi
-    echo "Using directory: $LATEST_DIR"
+
     cd "$LATEST_DIR"
     MONAD_TIMESTAMP_DIR="$PWD"
 
@@ -85,7 +84,7 @@ expand_to_group = false/' node/config/node.toml
         fi
     fi
 
-    echo "Setting up triedb (8GB)..."
+    echo "Setting up triedb..."
     if [[ -f "node/triedb/test.db" ]]; then
         rm -f node/triedb/test.db
     fi
