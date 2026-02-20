@@ -36,7 +36,7 @@ setup_monad_infrastructure() {
     cd ..
 
     set +e
-    ./nets/run.sh
+    ./nets/run.sh 2>/dev/null
     set -e
 
     cd logs
@@ -106,8 +106,6 @@ expand_to_group = false/' node/config/node.toml
         fi
         sleep 1
     done
-
-    echo "Monad infrastructure ready!"
 
     echo "Waiting for Monad event ring to be created..."
     for i in {1..30}; do
