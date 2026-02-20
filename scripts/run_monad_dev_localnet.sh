@@ -13,9 +13,23 @@ MONAD_NODE_IMAGE="${MONAD_NODE_IMAGE:-ghcr.io/streamingfast/monad-node:eede85a}"
 MONAD_RPC_IMAGE="${MONAD_RPC_IMAGE:-ghcr.io/streamingfast/monad-rpc:eede85a}"
 
 setup_monad_infrastructure() {
-    cd "$MONAD_DOCKER_DIR"
+    echo "=========================================="
+    echo "Setting up Monad infrastructure..."
+    echo "=========================================="
 
-    # Skip ./nets/run.sh - we're using prebuilt images, not building from source
+    cd "$MONAD_DOCKER_DIR/logs"
+
+    set +e
+    ./nets/run.sh
+    set -e
+
+    LATEST_DIR=$(ls -td 2* 2>/dev/null | head -1)
+    if [[ -z "$LATEST_DIR" ]]; then
+        echo "ERROR: No timestamped directory found after running ./nets/run.sh"
+        exit 1
+    fi
+    echo "Using directory: $LATEST_DIR"
+    cd "$LATEST_DIR"
 
     # Create compose.prebuilt.yaml
     echo "Creating compose.prebuilt.yaml..."
