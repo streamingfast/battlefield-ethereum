@@ -5,7 +5,6 @@ set -e
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BATTLEFIELD_DIR="$(cd "$ROOT/.." && pwd)"
 
-# Configuration
 MONAD_BUILD_DIR="${MONAD_BUILD_DIR:-/data/monad-extended/build/monad-bft}"
 MONAD_DOCKER_DIR="$MONAD_BUILD_DIR/docker/single-node"
 MONAD_EXECUTION_IMAGE="${MONAD_EXECUTION_IMAGE:-ghcr.io/streamingfast/monad-execution:73ef8ec}"
@@ -17,21 +16,21 @@ setup_monad_infrastructure() {
     echo "Setting up Monad infrastructure..."
     echo "=========================================="
 
-    cd "$MONAD_DOCKER_DIR/logs"
+    cd "$MONAD_DOCKER_DIR"
 
     set +e
     ./nets/run.sh
     set -e
 
+    cd logs
     LATEST_DIR=$(ls -td 2* 2>/dev/null | head -1)
     if [[ -z "$LATEST_DIR" ]]; then
-        echo "ERROR: No timestamped directory found after running ./nets/run.sh"
+        echo "ERROR: No timestamped directory found"
         exit 1
     fi
     echo "Using directory: $LATEST_DIR"
     cd "$LATEST_DIR"
 
-    # Create compose.prebuilt.yaml
     echo "Creating compose.prebuilt.yaml..."
     cat > compose.prebuilt.yaml << EOF
 services:
@@ -47,7 +46,6 @@ services:
     image: $MONAD_RPC_IMAGE
 EOF
 
-    # Fix compose.yaml
     echo "Applying compose.yaml fixes..."
     sed -i.bak 's/monad_mpt/monad-mpt/g' compose.yaml 2>/dev/null || sed -i '' 's/monad_mpt/monad-mpt/g' compose.yaml
     sed -i.bak 's/"8080:8080"/"18080:8080"/g' compose.yaml 2>/dev/null || sed -i '' 's/"8080:8080"/"18080:8080"/g' compose.yaml
@@ -131,7 +129,6 @@ trap cleanup EXIT
 main() {
     setup_monad_infrastructure
     setup_firehose_infrastructure
-
 
     cd "$BATTLEFIELD_DIR"
 
