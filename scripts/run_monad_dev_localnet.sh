@@ -10,13 +10,13 @@ MONAD_DOCKER_DIR="$MONAD_BUILD_DIR/docker/single-node"
 MONAD_EXECUTION_IMAGE="${MONAD_EXECUTION_IMAGE:-ghcr.io/streamingfast/monad-execution:73ef8ec}"
 MONAD_NODE_IMAGE="${MONAD_NODE_IMAGE:-ghcr.io/streamingfast/monad-node:eede85a}"
 MONAD_RPC_IMAGE="${MONAD_RPC_IMAGE:-ghcr.io/streamingfast/monad-rpc:eede85a}"
+MONAD_KNOWN_GOOD_DIR="${MONAD_KNOWN_GOOD_DIR:-20260203_220833-c63c0d0687d7c53c}"
 MONAD_TIMESTAMP_DIR=""
 
 setup_monad_infrastructure() {
 
     cd "$MONAD_DOCKER_DIR"
 
-    echo "Stopping any existing Monad containers from previous runs"
     cd logs
     for dir in 2*/; do
         if [[ -f "$dir/compose.yaml" ]]; then
@@ -36,14 +36,6 @@ setup_monad_infrastructure() {
         exit 1
     fi
     echo "Using directory: $LATEST_DIR"
-
-    PREV_WORKING_DIR=$(ls -td 2* 2>/dev/null | sed -n '2p')
-    if [[ -n "$PREV_WORKING_DIR" ]] && [[ -f "$PREV_WORKING_DIR/compose.yaml" ]]; then
-        echo "Copying config from previous working directory: $PREV_WORKING_DIR"
-        cp "$PREV_WORKING_DIR/node/config/node.toml" "$LATEST_DIR/node/config/node.toml"
-        cp "$PREV_WORKING_DIR/compose.yaml" "$LATEST_DIR/compose.yaml"
-    fi
-
     cd "$LATEST_DIR"
     MONAD_TIMESTAMP_DIR="$PWD"
 
@@ -99,6 +91,15 @@ expand_to_group = false/' node/config/node.toml
     echo "Stopping existing Monad containers..."
     docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null || true
 
+    KNOWN_GOOD_PATH="$MONAD_DOCKER_DIR/logs/$MONAD_KNOWN_GOOD_DIR"
+    if [[ -f "$KNOWN_GOOD_PATH/node/config/node.toml" ]] && [[ -f "$KNOWN_GOOD_PATH/compose.yaml" ]]; then
+        echo "Copying known-good config from $MONAD_KNOWN_GOOD_DIR..."
+        cp "$KNOWN_GOOD_PATH/node/config/node.toml" node/config/node.toml
+        cp "$KNOWN_GOOD_PATH/compose.yaml" compose.yaml
+    else
+        echo "WARNING: Known-good directory $MONAD_KNOWN_GOOD_DIR not found, using generated config"
+    fi
+
     echo "Starting Monad services..."
     export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
     export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
@@ -110,6 +111,18 @@ expand_to_group = false/' node/config/node.toml
 
     echo "Waiting for Monad to initialize..."
     sleep 10
+
+    echo "Waiting for Monad RPC to be ready..."
+    for i in {1..30}; do
+        if curl -s -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://127.0.0.1:18080 > /dev/null 2>&1; then
+            echo "Monad RPC is ready!"
+            break
+        fi
+        if [[ $i -eq 30 ]]; then
+            echo "WARNING: Monad RPC not responding after 30 seconds"
+        fi
+        sleep 1
+    done
 
     echo "Monad infrastructure ready!"
 }
