@@ -130,11 +130,12 @@ expand_to_group = false/' node/config/node.toml
 setup_firehose_infrastructure() {
     cd "$BATTLEFIELD_DIR"
 
-    echo "Cleaning Firehose data..."
-    sudo rm -rf localnet-firehose-data/* 2>/dev/null || true
-
     echo "Stopping existing Firehose containers..."
     docker-compose -f docker-compose.localnet-firehose.yml down 2>/dev/null || true
+
+    echo "Cleaning Firehose data..."
+    sudo rm -rf localnet-firehose-data/* 2>/dev/null || true
+    sudo rm -rf localnet-substreams-data/* 2>/dev/null || true
 
     echo "Starting Firehose containers..."
     docker-compose -f docker-compose.localnet-firehose.yml up -d
