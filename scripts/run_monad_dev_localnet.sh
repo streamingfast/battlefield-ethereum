@@ -29,7 +29,7 @@ setup_monad_infrastructure() {
     cd ..
 
     set +e
-    ./nets/run.sh > /dev/null 2>&1
+    ./nets/run.sh
     set -e
 
     cd logs
