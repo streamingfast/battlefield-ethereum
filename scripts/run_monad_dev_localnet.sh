@@ -90,9 +90,7 @@ expand_to_group = false/' node/config/node.toml
     fi
     truncate -s 8GB node/triedb/test.db
 
-    echo "Copying config from monad-devnet..."
-    cp "$ROOT/monad-devnet/compose.yaml" compose.yaml
-    cp "$ROOT/monad-devnet/node/node.toml" node/config/node.toml
+    echo "Copying additional config from monad-devnet..."
     cp "$ROOT/monad-devnet/node/forkpoint.toml" node/config/forkpoint.toml
     cp "$ROOT/monad-devnet/node/forkpoint.toml" node/config/forkpoint.genesis.toml
     cp "$ROOT/monad-devnet/node/validators.toml" node/config/validators.toml
