@@ -16,6 +16,15 @@ setup_monad_infrastructure() {
 
     cd "$MONAD_DOCKER_DIR"
 
+    echo "Stopping any existing Monad containers from previous runs"
+    cd logs
+    for dir in 2*/; do
+        if [[ -f "$dir/compose.yaml" ]]; then
+            (cd "$dir" && docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null) || true
+        fi
+    done
+    cd ..
+
     set +e
     ./nets/run.sh
     set -e
