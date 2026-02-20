@@ -77,7 +77,8 @@ describe("Blocks", function () {
   })
 
   // bnb-dev in dev mode does not seem to update any parentBeaconRoot. being set to 00000000000 makes it skip that, so I skipped the test
-  if (!isNetwork("bnb-dev")) {
+  // monad-dev does not run deploy_beacon_root_contract as it writes extra state not present on the network, causing state_root mismatch
+  if (!isNetwork("bnb-dev") && !isNetwork("monad-dev")) {
     it("System call ProcessBeaconRoot recorded correctly", async function () {
       const rpcBlock = await mustGetRpcBlock("latest")
       if (!rpcBlock.parentBeaconBlockRoot) {
