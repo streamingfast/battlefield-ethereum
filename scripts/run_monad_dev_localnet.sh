@@ -14,13 +14,12 @@ MONAD_TIMESTAMP_DIR=""
 
 setup_monad_infrastructure() {
 
-    cd "$MONAD_DOCKER_DIR"
+    cd "$MONAD_DOCKER_DIR/logs"
 
     set +e
     ./nets/run.sh
     set -e
 
-    cd logs
     LATEST_DIR=$(ls -td 2* 2>/dev/null | head -1)
     if [[ -z "$LATEST_DIR" ]]; then
         echo "ERROR: No timestamped directory found"
