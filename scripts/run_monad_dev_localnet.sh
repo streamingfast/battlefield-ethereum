@@ -13,13 +13,9 @@ MONAD_NODE_IMAGE="${MONAD_NODE_IMAGE:-ghcr.io/streamingfast/monad-node:eede85a}"
 MONAD_RPC_IMAGE="${MONAD_RPC_IMAGE:-ghcr.io/streamingfast/monad-rpc:eede85a}"
 
 setup_monad_infrastructure() {
-
     cd "$MONAD_DOCKER_DIR"
 
-    if [[ -f "./nets/run.sh" ]]; then
-        echo "Running ./nets/run.sh..."
-        ./nets/run.sh
-    fi
+    # Skip ./nets/run.sh - we're using prebuilt images, not building from source
 
     # Create compose.prebuilt.yaml
     echo "Creating compose.prebuilt.yaml..."
