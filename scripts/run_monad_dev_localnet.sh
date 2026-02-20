@@ -15,6 +15,10 @@ MONAD_TIMESTAMP_DIR=""
 
 setup_monad_infrastructure() {
 
+    cd "$BATTLEFIELD_DIR"
+    echo "Stopping existing Firehose containers..."
+    docker-compose -f docker-compose.localnet-firehose.yml down 2>/dev/null || true
+
     cd "$MONAD_DOCKER_DIR"
 
     cd logs
@@ -88,6 +92,15 @@ expand_to_group = false/' node/config/node.toml
     fi
     truncate -s 8GB node/triedb/test.db
 
+    KNOWN_GOOD_PATH="$MONAD_DOCKER_DIR/logs/$MONAD_KNOWN_GOOD_DIR"
+    if [[ -f "$KNOWN_GOOD_PATH/node/config/node.toml" ]] && [[ -f "$KNOWN_GOOD_PATH/compose.yaml" ]]; then
+        echo "Copying known-good config from $MONAD_KNOWN_GOOD_DIR..."
+        cp "$KNOWN_GOOD_PATH/node/config/node.toml" node/config/node.toml
+        cp "$KNOWN_GOOD_PATH/compose.yaml" compose.yaml
+    else
+        echo "WARNING: Known-good directory $MONAD_KNOWN_GOOD_DIR not found, using generated config"
+    fi
+
     export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
     export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
     export RPC_DIR="$MONAD_BUILD_DIR/docker/rpc"
@@ -96,19 +109,6 @@ expand_to_group = false/' node/config/node.toml
     export HOST_UID=$(id -u)
 
     docker-compose -f compose.yaml -f compose.prebuilt.yaml up -d
-
-    KNOWN_GOOD_PATH="$MONAD_DOCKER_DIR/logs/$MONAD_KNOWN_GOOD_DIR"
-    if [[ -f "$KNOWN_GOOD_PATH/node/config/node.toml" ]] && [[ -f "$KNOWN_GOOD_PATH/compose.yaml" ]]; then
-        echo "Copying known-good config from $MONAD_KNOWN_GOOD_DIR..."
-        cp "$KNOWN_GOOD_PATH/node/config/node.toml" node/config/node.toml
-        cp "$KNOWN_GOOD_PATH/compose.yaml" compose.yaml
-
-        echo "Restarting with known-good config..."
-        docker-compose -f compose.yaml -f compose.prebuilt.yaml down
-        docker-compose -f compose.yaml -f compose.prebuilt.yaml up -d
-    else
-        echo "WARNING: Known-good directory $MONAD_KNOWN_GOOD_DIR not found, using generated config"
-    fi
 
     echo "Waiting for Monad to initialize..."
     sleep 10
