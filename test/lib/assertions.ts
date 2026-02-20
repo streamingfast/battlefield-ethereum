@@ -25,88 +25,12 @@ import { getReceiptForTransactionTrace, TransactionReceiptResult } from "./ether
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
-import { isNetwork } from "./network"
+import { isNetwork, networkName } from "./network"
+import { excludeFieldsFromObject } from "./field-exclusion"
 
 const debug = debugFactory("battlefield:assertions")
 
 type Chai = typeof chai
-
-/**
- * Excludes specified fields from an object based on field paths.
- * Supports dot notation and array notation (e.g., "calls[].gasConsumed").
- *
- * @param obj The object to filter
- * @param excludeFields Array of field paths to exclude
- * @returns A new object with specified fields excluded
- */
-function excludeFieldsFromObject(obj: any, excludeFields: string[]): any {
-  if (!obj || typeof obj !== 'object' || !excludeFields.length) {
-    return obj
-  }
-
-  const result = { ...obj }
-
-  for (const fieldPath of excludeFields) {
-    const pathParts = fieldPath.split('.')
-    excludeFieldRecursive(result, pathParts, 0)
-  }
-
-  return result
-}
-
-/**
- * Recursively excludes a field from an object based on path parts.
- */
-function excludeFieldRecursive(obj: any, pathParts: string[], currentIndex: number): void {
-  if (currentIndex >= pathParts.length || !obj || typeof obj !== 'object') {
-    return
-  }
-
-  const currentPart = pathParts[currentIndex]
-  const isLastPart = currentIndex === pathParts.length - 1
-
-  // Handle array notation like "calls[]"
-  const arrayMatch = currentPart.match(/^(.+)\[\]$/)
-  if (arrayMatch) {
-    const arrayFieldName = arrayMatch[1]
-    if (Array.isArray(obj[arrayFieldName])) {
-      if (isLastPart) {
-        // Remove the entire array field
-        delete obj[arrayFieldName]
-      } else {
-        // Process each array element
-        obj[arrayFieldName].forEach((item: any) => {
-          if (item && typeof item === 'object') {
-            excludeFieldRecursive(item, pathParts, currentIndex + 1)
-          }
-        })
-      }
-    }
-    return
-  }
-
-  // Handle indexed array access like "calls[0]"
-  const indexedMatch = currentPart.match(/^(.+)\[(\d+)\]$/)
-  if (indexedMatch) {
-    const arrayFieldName = indexedMatch[1]
-    const index = parseInt(indexedMatch[2], 10)
-    if (Array.isArray(obj[arrayFieldName]) && obj[arrayFieldName][index]) {
-      if (isLastPart) {
-        delete obj[arrayFieldName][index]
-      } else {
-        excludeFieldRecursive(obj[arrayFieldName][index], pathParts, currentIndex + 1)
-      }
-    }
-    return
-  }
-
-  // Handle regular field access
-  if (isLastPart) {
-    delete obj[currentPart]
-  } else {
-    excludeFieldRecursive(obj[currentPart], pathParts, currentIndex + 1)
-  }
-}
 
 type TrxTracerEqualSnapshotOptions = {
   /**
@@ -165,17 +89,25 @@ type TrxTracerEqualSnapshotOptions = {
   networkSnapshotOverrides?: string[]
 
   /**
-   * This option allows excluding specific fields from snapshot validation. Fields are specified
-   * as dot-notation paths into the transaction trace structure. For array fields, use array notation
-   * like `calls[].gasConsumed` to exclude the gasConsumed field from all calls.
+   * This option allows excluding specific fields from snapshot validation on a per-network basis.
+   * Fields are specified as dot-notation paths into the transaction trace structure. For array fields,
+   * use array notation like `calls[].gasConsumed` to exclude the gasConsumed field from all calls.
+   *
+   * The key is the network name as defined in `./hardhat.config.ts`. If the current network matches
+   * a key in this record, the corresponding fields will be excluded from both the actual and expected
+   * snapshots before comparison.
    *
    * Examples:
+   * - { "besu-dev": ["calls[].gasChanges"] } - exclude gasChanges from all calls only on besu-dev network
+   * - { "sei-dev": ["receipt.cumulativeGasUsed"], "polygon-dev": ["calls[].balanceChanges"] }
+   *
+   * Field path examples:
    * - "gasUsed" - exclude the gasUsed field from the transaction receipt
    * - "calls[].gasConsumed" - exclude gasConsumed from all calls
    * - "receipt.logsBloom" - exclude logsBloom from the receipt
    * - "calls[0].balanceChanges[1].oldValue" - exclude specific nested fields
    */
-  excludeFields?: string[]
+  excludeFields?: Record<string, string[]>
 }
 
 declare global {
@@ -240,7 +172,7 @@ declare global {
       trxTraceEqualSnapshot(
         snapshotFileID: string | Record<string, string>,
         templateVars?: Record<string, string>,
-        options?: TrxTracerEqualSnapshotOptions
+        options?: TrxTracerEqualSnapshotOptions,
       ): Promise<void>
     }
   }
@@ -260,7 +192,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       | TransactionReceiptResult
       | Promise<TransactionReceiptResult>
       | [TransactionReceiptResult, TransactionTrace, Block]
-      | [TransactionTrace, Block]
+      | [TransactionTrace, Block],
   ): Promise<[TransactionReceiptResult, TransactionTrace, Block]> {
     if (Array.isArray(input)) {
       if (input.length === 2) {
@@ -299,7 +231,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
     async function (
       snapshotIdentifier: string,
       templateVars?: Record<string, string>,
-      options?: TrxTracerEqualSnapshotOptions
+      options?: TrxTracerEqualSnapshotOptions,
     ) {
       const [trxReceipt, actualTrace, actualBlock] = await resolveTrxTrace(this._obj)
       if (isNetwork("polygon-dev")) {
@@ -379,18 +311,21 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
         return value
       })
 
-      // Apply field exclusions if specified
+      // Apply field exclusions if specified for the current network
       let filteredActual = actual
       let filteredExpected = expected
-      if (options?.excludeFields && options.excludeFields.length > 0) {
-        filteredActual = excludeFieldsFromObject(actual, options.excludeFields)
-        filteredExpected = excludeFieldsFromObject(expected, options.excludeFields)
+      if (options?.excludeFields) {
+        const fieldsToExclude = options.excludeFields[networkName()]
+        if (fieldsToExclude && fieldsToExclude.length > 0) {
+          filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)
+          filteredExpected = excludeFieldsFromObject(expected, fieldsToExclude)
+        }
       }
 
       snapshot.writeSnapshotDebugFiles(
         toProtoJsonString(actualTrace),
         JSON.stringify(filteredActual, null, 2),
-        JSON.stringify(filteredExpected, null, 2)
+        JSON.stringify(filteredExpected, null, 2),
       )
 
       // Using directly to.deep.equal leads to losing the actual diff, but using to.equal
@@ -407,11 +342,11 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
             `See the diff locally by running: ` +
             `'${process.env.DIFF_EDITOR || "diff -u"} ${snapshot.toSnapshotPath(
               SnapshotKind.ActualNormalized,
-              true
-            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`
+              true,
+            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`,
         )
       }
-    }
+    },
   )
 }
 
@@ -420,7 +355,7 @@ function assertTrxOrdinals(
   ordinalsMap: Record<number, number>,
   trace: TransactionTrace,
   blockNumber: number,
-  options?: { skipOrdinalCheck?: boolean }
+  options?: { skipOrdinalCheck?: boolean },
 ) {
   if (options?.skipOrdinalCheck) {
     return
@@ -434,7 +369,7 @@ function assertTrxOrdinals(
   ordinals.forEach(([ordinal, count]) => {
     new chai.Assertion(
       count,
-      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`
+      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`,
     ).to.equal(1)
 
     if (previous) {
@@ -506,7 +441,7 @@ function deltaizeNonceValue(change: NonceChange) {
 
 function templatizeJsonTransactionTrace(
   parsed: Record<string, any>,
-  vars: Record<string, string>
+  vars: Record<string, string>,
 ): Record<string, any> {
   const valuesToName: Record<string, string> = {}
   for (const [key, value] of Object.entries(vars)) {

@@ -43,6 +43,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Sei                      | `./scripts/run_firehose_sei.sh parallel`                                                      | `pnpm test:fh3.0:sei-dev`                                  | The `parallel` tag refers to transaction execution algorithm, test both        |
 | BNB                      | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                     | `pnpm test:fh3.0:bnb-dev`                                  | None                                                                           |
 | Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, bats...)                       |
+| Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_optimism_devnet.sh`. | `pnpm test:fh3.0:optimism-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
 
 After each test, you should also run:
