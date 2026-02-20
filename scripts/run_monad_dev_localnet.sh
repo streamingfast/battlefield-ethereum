@@ -18,6 +18,13 @@ setup_monad_infrastructure() {
     echo "Stopping existing Firehose containers..."
     docker-compose -f docker-compose.localnet-firehose.yml down 2>/dev/null || true
 
+    export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
+    export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
+    export RPC_DIR="$MONAD_BUILD_DIR/docker/rpc"
+    export MONAD_EXECUTION_ROOT="$MONAD_BUILD_DIR/monad-cxx/monad-execution"
+    export HOST_GID=$(id -g)
+    export HOST_UID=$(id -u)
+
     cd "$MONAD_DOCKER_DIR"
 
     cd logs
@@ -59,51 +66,28 @@ EOF
     echo "Applying compose.yaml fixes..."
     sed -i.bak 's/monad_mpt/monad-mpt/g' compose.yaml 2>/dev/null || sed -i '' 's/monad_mpt/monad-mpt/g' compose.yaml
     sed -i.bak 's/"8080:8080"/"18080:8080"/g' compose.yaml 2>/dev/null || sed -i '' 's/"8080:8080"/"18080:8080"/g' compose.yaml
-
-    if ! grep -q "persisted-peers-path" compose.yaml 2>/dev/null; then
-        sed -i.bak '/--triedb-path \/monad\/triedb/a\      --persisted-peers-path /monad/peers' compose.yaml 2>/dev/null || \
-        sed -i '' '/--triedb-path \/monad\/triedb/a\
+    sed -i.bak '/--triedb-path \/monad\/triedb/a\      --persisted-peers-path /monad/peers' compose.yaml 2>/dev/null || \
+    sed -i '' '/--triedb-path \/monad\/triedb/a\
       --persisted-peers-path /monad/peers
 ' compose.yaml
-    fi
 
-    if [[ -f "node/config/node.toml" ]]; then
-        echo "Configuring node.toml..."
-
-        if ! grep -q "ping_rate_limit_per_second = 10" node/config/node.toml 2>/dev/null; then
-            sed -i.bak '/\[peer_discovery\]/a\ping_rate_limit_per_second = 10' node/config/node.toml 2>/dev/null || \
-            sed -i '' '/\[peer_discovery\]/a\
+    echo "Configuring node.toml..."
+    sed -i.bak '/\[peer_discovery\]/a\ping_rate_limit_per_second = 10' node/config/node.toml 2>/dev/null || \
+    sed -i '' '/\[peer_discovery\]/a\
 ping_rate_limit_per_second = 10
 ' node/config/node.toml
-        fi
 
-        if ! grep -q "init_peers = \[\]" node/config/node.toml 2>/dev/null; then
-            sed -i.bak '/\[statesync\]/,/^$/ s/^peers = \[\]/init_peers = []\nexpand_to_group = false/' node/config/node.toml 2>/dev/null || \
-            sed -i '' '/\[statesync\]/,/^$/ s/^peers = \[\]/init_peers = []\
+    sed -i.bak '/\[statesync\]/,/^$/ s/^peers = \[\]/init_peers = []\nexpand_to_group = false/' node/config/node.toml 2>/dev/null || \
+    sed -i '' '/\[statesync\]/,/^$/ s/^peers = \[\]/init_peers = []\
 expand_to_group = false/' node/config/node.toml
-        fi
-    fi
 
     echo "Setting up triedb..."
-    if [[ -f "node/triedb/test.db" ]]; then
-        rm -f node/triedb/test.db
-    fi
+    rm -f node/triedb/test.db
     truncate -s 8GB node/triedb/test.db
 
-    echo "Copying additional config from monad-devnet..."
-    cp "$ROOT/monad-devnet/node/forkpoint.toml" node/config/forkpoint.toml
-    cp "$ROOT/monad-devnet/node/forkpoint.toml" node/config/forkpoint.genesis.toml
-    cp "$ROOT/monad-devnet/node/validators.toml" node/config/validators.toml
-    cp "$ROOT/monad-devnet/node/profile.json" node/config/profile.json
-    cp "$ROOT/monad-devnet/node/id-bls" node/config/id-bls
-    cp "$ROOT/monad-devnet/node/id-secp" node/config/id-secp
-
-    export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
-    export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
-    export RPC_DIR="$MONAD_BUILD_DIR/docker/rpc"
-    export MONAD_EXECUTION_ROOT="$MONAD_BUILD_DIR/monad-cxx/monad-execution"
-    export HOST_GID=$(id -g)
-    export HOST_UID=$(id -u)
+    echo "Copying known-good configs from monad-devnet..."
+    cp "$ROOT/monad-devnet/node/node.toml" node/config/node.toml
+    cp "$ROOT/monad-devnet/compose.yaml" compose.yaml
 
     docker-compose -f compose.yaml -f compose.prebuilt.yaml up -d
 
