@@ -17,7 +17,7 @@ setup_monad_infrastructure() {
     cd "$MONAD_DOCKER_DIR/logs"
 
     set +e
-    ./nets/run.sh
+    ../nets/run.sh
     set -e
 
     LATEST_DIR=$(ls -td 2* 2>/dev/null | head -1)
