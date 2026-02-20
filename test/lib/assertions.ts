@@ -234,15 +234,6 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       // Check on original trace for correctness of ordinal handling
       const ordinals = trxTraceOrdinals(actualTrace)
       const skipOrdinalCheck = options && (options as any).skipOrdinalCheck
-
-      // TEMPORARY DEBUG: Force visible output
-      process.stdout.write(`\n[DEBUG] skipOrdinalCheck=${skipOrdinalCheck}, ordinals count=${Object.keys(ordinals).length}\n`)
-
-      if (skipOrdinalCheck === true) {
-        process.stdout.write(`[DEBUG] SKIPPING ordinal validation!\n`)
-        throw new Error(`skipOrdinalCheck is TRUE - this should never happen!`)
-      }
-
       assertTrxOrdinals(chai, ordinals, actualTrace, trxReceipt.blockNumber, { skipOrdinalCheck })
 
       const actualNormalized = normalizeTrace(clone(TransactionTraceSchema, actualTrace))
@@ -333,17 +324,11 @@ function assertTrxOrdinals(
   blockNumber: number,
   options?: { skipOrdinalCheck?: boolean }
 ) {
-  process.stdout.write(`[DEBUG assertTrxOrdinals] Called with skipOrdinalCheck=${options?.skipOrdinalCheck}\n`)
-
-  if (options?.skipOrdinalCheck === true) {
-    process.stdout.write(`[DEBUG assertTrxOrdinals] RETURNING EARLY - validation skipped!\n`)
-    throw new Error(`skipOrdinalCheck is TRUE`)
+  if (options?.skipOrdinalCheck) {
+    return
   }
-
   const ordinals = Object.entries(ordinalsMap)
   ordinals.sort(([a], [b]) => parseInt(a) - parseInt(b))
-
-  process.stdout.write(`[DEBUG assertTrxOrdinals] Validating ${ordinals.length} ordinals\n`)
 
   new chai.Assertion(ordinals.length).to.be.greaterThan(0)
 
@@ -356,11 +341,11 @@ function assertTrxOrdinals(
 
     if (previous) {
       // FIXME: It seems Firehose 3.0 in backward compatibility mode is skipping one ordinal, need to investigate, allow it for now
-      // new chai.Assertion(
-      //   previous + 1,
-      //   `Ordinal ${ordinal} should have strictly follow ${previous}, so that ${previous} + 1 == ${ordinal} which was not the case here\n\n` +
-      //     toProtoJsonString(trace)
-      // ).to.be.equal(parseInt(ordinal))
+      new chai.Assertion(
+        previous + 1,
+        `Ordinal ${ordinal} should have strictly follow ${previous}, so that ${previous} + 1 == ${ordinal} which was not the case here\n\n` +
+          toProtoJsonString(trace)
+      ).to.be.equal(parseInt(ordinal))
     }
 
     previous = parseInt(ordinal)
