@@ -100,7 +100,6 @@ expand_to_group = false/' node/config/node.toml
         echo "WARNING: Known-good directory $MONAD_KNOWN_GOOD_DIR not found, using generated config"
     fi
 
-    echo "Starting Monad services..."
     export MONAD_BFT_ROOT="$MONAD_BUILD_DIR"
     export DEVNET_DIR="$MONAD_BUILD_DIR/docker/devnet"
     export RPC_DIR="$MONAD_BUILD_DIR/docker/rpc"
@@ -125,6 +124,18 @@ expand_to_group = false/' node/config/node.toml
     done
 
     echo "Monad infrastructure ready!"
+
+    echo "Waiting for Monad event ring to be created..."
+    for i in {1..30}; do
+        if [[ -f /dev/hugepages/monad-localnet/monad-events ]]; then
+            echo "Event ring detected!"
+            break
+        fi
+        if [[ $i -eq 30 ]]; then
+            echo "WARNING: Event ring not created after 30 seconds"
+        fi
+        sleep 1
+    done
 }
 
 setup_firehose_infrastructure() {
