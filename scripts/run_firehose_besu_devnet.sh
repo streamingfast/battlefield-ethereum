@@ -10,7 +10,7 @@ main() {
   check_besu
 
   echo "Running Besu local devnet node with Firehose tracer activated via 'fireeth'"
-  run_fireeth 0 "bash" "$ROOT/ethereum_devnet/wrapped_geth.sh"
+  run_fireeth 0 "bash" "$ROOT/ethereum_devnet/wrapped_besu.sh"
 }
 
 usage() {
