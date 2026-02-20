@@ -34,6 +34,7 @@ describe("Inputs", function () {
               // New gas cost for contract creation & calldata
               prague: ["eip7623"],
             },
+            excludeFields: { "besu-devnet": besu_exclude_fields },
           },
         )
       }),

@@ -3,6 +3,7 @@ import { Contract, contractCall, deployAll, deployContract } from "./lib/ethereu
 import { Main } from "../typechain-types"
 import { MainFactory, owner } from "./global"
 import { networkValue } from "./lib/network"
+import { besu_exclude_fields } from "./lib/constants"
 
 describe("Storages", function () {
   let Storage: Contract<Main>
@@ -14,7 +15,7 @@ describe("Storages", function () {
   it("Set long string & array", async function () {
     const customTx = networkValue({
       "sei-dev": { gasLimit: 1_525_000 },
-      "*": undefined,
+      "*": {},
     })
 
     await expect(contractCall(owner, Storage.setLongString, [], customTx)).to.trxTraceEqualSnapshot(
@@ -24,6 +25,7 @@ describe("Storages", function () {
       },
       {
         networkSnapshotOverrides: ["optimism-geth-dev"], // less gas used on bnb here
+        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
 
@@ -31,6 +33,9 @@ describe("Storages", function () {
       "storages/set_long_again_and_array_update.expected.json",
       {
         $storageContract: Storage.addressHex,
+      },
+      {
+        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })

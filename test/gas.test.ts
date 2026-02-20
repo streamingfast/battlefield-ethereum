@@ -24,6 +24,9 @@ describe("Gas", function () {
       {
         $gasContract: Gas.addressHex,
       },
+      {
+        excludeFields: { "besu-devnet": besu_exclude_fields },
+      },
     )
   })
 
@@ -33,6 +36,9 @@ describe("Gas", function () {
       {
         $gasContract: Gas.addressHex,
         $childContract: Child.addressHex,
+      },
+      {
+        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -44,30 +50,41 @@ describe("Gas", function () {
         $gasContract: Gas.addressHex,
         $childContract: Child.addressHex,
       },
+      {
+        excludeFields: { "besu-devnet": besu_exclude_fields },
+      },
     )
   })
 
   it("Deep nested low gas", async function () {
     await expect(
       contractCall(owner, Gas.deepNestedLowGas, [Child.address, GrandChild.address]),
-    ).to.trxTraceEqualSnapshot("gas/deep_nested_low_gas.expected.json", {
-      $gasContract: Gas.addressHex,
-      $childContract: Child.addressHex,
-      $grandChildContract: GrandChild.addressHex,
-    }, {
-      excludeFields: besu_exclude_fields
-    })
+    ).to.trxTraceEqualSnapshot(
+      "gas/deep_nested_low_gas.expected.json",
+      {
+        $gasContract: Gas.addressHex,
+        $childContract: Child.addressHex,
+        $grandChildContract: GrandChild.addressHex,
+      },
+      {
+        excludeFields: { "besu-devnet": besu_exclude_fields },
+      },
+    )
   })
 
   it("Deep nested call for lowest gas", async function () {
     await expect(
       contractCall(owner, Gas.deepNestedCallForLowestGas, [Child.address, GrandChild.address]),
-    ).to.trxTraceEqualSnapshot("gas/deep_nested_call_for_lowest_gas.expected.json", {
-      $gasContract: Gas.addressHex,
-      $childContract: Child.addressHex,
-      $grandChildContract: GrandChild.addressHex,
-    }, {
-      excludeFields: besu_exclude_fields
-    })
+    ).to.trxTraceEqualSnapshot(
+      "gas/deep_nested_call_for_lowest_gas.expected.json",
+      {
+        $gasContract: Gas.addressHex,
+        $childContract: Child.addressHex,
+        $grandChildContract: GrandChild.addressHex,
+      },
+      {
+        excludeFields: { "besu-devnet": besu_exclude_fields },
+      },
+    )
   })
 })

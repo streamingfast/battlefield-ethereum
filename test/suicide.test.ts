@@ -142,7 +142,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-        excludeFields: besu_exclude_fields,
+        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
