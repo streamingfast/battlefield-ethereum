@@ -235,13 +235,12 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       const ordinals = trxTraceOrdinals(actualTrace)
       const skipOrdinalCheck = options && (options as any).skipOrdinalCheck
 
-      // TEMPORARY DEBUG: Force assertion to see if ordinal check is running
+      // TEMPORARY DEBUG: Force visible output
+      process.stdout.write(`\n[DEBUG] skipOrdinalCheck=${skipOrdinalCheck}, ordinals count=${Object.keys(ordinals).length}\n`)
+
       if (skipOrdinalCheck === true) {
-        throw new Error(`[DEBUG] skipOrdinalCheck is TRUE - ordinal validation will be skipped!`)
-      }
-      if (skipOrdinalCheck === undefined || skipOrdinalCheck === false) {
-        // This will show in test output that validation is running
-        new chai.Assertion(Object.keys(ordinals).length, `[DEBUG] Running ordinal validation with ${Object.keys(ordinals).length} ordinals`).to.be.greaterThan(0)
+        process.stdout.write(`[DEBUG] SKIPPING ordinal validation!\n`)
+        throw new Error(`skipOrdinalCheck is TRUE - this should never happen!`)
       }
 
       assertTrxOrdinals(chai, ordinals, actualTrace, trxReceipt.blockNumber, { skipOrdinalCheck })
@@ -334,14 +333,19 @@ function assertTrxOrdinals(
   blockNumber: number,
   options?: { skipOrdinalCheck?: boolean }
 ) {
+  process.stdout.write(`[DEBUG assertTrxOrdinals] Called with skipOrdinalCheck=${options?.skipOrdinalCheck}\n`)
+
   if (options?.skipOrdinalCheck === true) {
+    process.stdout.write(`[DEBUG assertTrxOrdinals] RETURNING EARLY - validation skipped!\n`)
     throw new Error(`skipOrdinalCheck is TRUE`)
   }
 
   const ordinals = Object.entries(ordinalsMap)
   ordinals.sort(([a], [b]) => parseInt(a) - parseInt(b))
 
-  new chai.Assertion(ordinals.length, `Validating ${ordinals.length} ordinals`).to.be.greaterThan(0)
+  process.stdout.write(`[DEBUG assertTrxOrdinals] Validating ${ordinals.length} ordinals\n`)
+
+  new chai.Assertion(ordinals.length).to.be.greaterThan(0)
 
   let previous: number | undefined = undefined
   ordinals.forEach(([ordinal, count]) => {
