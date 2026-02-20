@@ -5,6 +5,13 @@ export const besu_exclude_fields = [
   "calls[].nonceChanges[]",
   "calls[].storageChanges[]",
   "calls[].codeChanges[]",
-  // Others (to fix)
+  // Ordinals
+  "calls[].beginOrdinal",
+  "calls[].endOrdinal",
+  "calls[].logs[].ordinal",
+  "endOrdinal",
+  "receipt.logs[].ordinal",
+  // Others
+  "calls[].failureReason",
   "calls[].keccakPreimages",
 ]
