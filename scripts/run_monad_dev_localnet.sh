@@ -163,7 +163,7 @@ main() {
 
     export FIREHOSE_ENDPOINT=localhost:20028
     export FIREHOSE_GRPC_ENDPOINT=http://localhost:20028
-    export SNAPSHOTS_TAG=fh3.0/monad-dev
+    export SNAPSHOTS_TAG=fh3.0
 
     pnpm hardhat test --network monad-dev "$@"
 }
