@@ -57,6 +57,10 @@ setup_monad_infrastructure() {
         fi
     done
 
+    export MONAD_BFT_ROOT="$ROOT/monad-devnet"
+    export DEVNET_DIR="$ROOT/monad-devnet"
+    export RPC_DIR="$ROOT/monad-devnet"
+
     echo "Stopping existing Monad containers..."
     docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null || true
 
