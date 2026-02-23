@@ -41,12 +41,12 @@ setup_monad_infrastructure() {
     local required_files=(
         "compose.yaml"
         "compose.prebuilt.yaml"
-        "node/node.toml"
-        "node/forkpoint.toml"
-        "node/validators.toml"
-        "node/id-bls"
-        "node/id-secp"
-        "node/profile.json"
+        "node/config/node.toml"
+        "node/config/forkpoint.toml"
+        "node/config/validators.toml"
+        "node/config/id-bls"
+        "node/config/id-secp"
+        "node/config/profile.json"
     )
 
     for file in "${required_files[@]}"; do
@@ -60,6 +60,15 @@ setup_monad_infrastructure() {
     export MONAD_BFT_ROOT="$ROOT/monad-devnet"
     export DEVNET_DIR="$ROOT/monad-devnet"
     export RPC_DIR="$ROOT/monad-devnet"
+
+    echo "Preparing node directories..."
+    mkdir -p node/ledger
+    mkdir -p node/triedb
+    touch node/ledger/wal
+
+    if [[ ! -f node/triedb/test.db ]]; then
+        truncate -s 8G node/triedb/test.db
+    fi
 
     echo "Stopping existing Monad containers..."
     docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null || true
