@@ -1,0 +1,13 @@
+ledger/
+triedb/
+event-ring/
+
+config/*.rlp
+config/*.rlp.*
+config/forkpoint.toml.*
+config/validators.toml.*
+
+*.sock
+peers
+peers.json
+wal_*
