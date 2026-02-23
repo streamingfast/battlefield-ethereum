@@ -105,6 +105,25 @@ Here, if the Hardhat network we run the tests against is named `arbitrum-geth-de
 To add new overrides to a new network, modify [./hardhat.config.ts](./hardhat.config.ts) `networks` config element to add a new unique network name. Then simply modify
 the test case if the same way as presented above.
 
+#### Global Field Exclusions
+
+Some networks have fields that are not implemented or have different values compared to the canonical Ethereum Firehose tracer. Instead of creating separate snapshots for these cases, you can register globally excluded fields that will be stripped from both the actual and expected traces before comparison.
+
+Register excluded fields in [./test/global.ts](./test/global.ts):
+
+```typescript
+import { registerGlobalExcludedFields } from "./lib/field-exclusion"
+import { besu_exclude_fields } from "./lib/constants"
+
+// Register global excluded fields for specific networks
+registerGlobalExcludedFields("besu-devnet", besu_exclude_fields)
+```
+
+Field paths support:
+- Dot notation: `calls.gasConsumed`
+- Array notation: `calls[].gasConsumed` (applies to all array elements)
+- Indexed access: `calls[0].gasConsumed` (applies to specific element)
+
 ## Development
 
 A bunch of unit tests uses "snapshot" testing to avoid writing lengthy assertions. The test suite manages, uses and updates snapshots using a few environment variables. If you are adding new tests and the snapshot doesn't exist, the first test run will update the snapshot on disk. You should review the taken snapshot to ensure it fits the desired model state.
