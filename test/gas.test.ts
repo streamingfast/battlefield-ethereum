@@ -2,7 +2,6 @@ import { expect } from "chai"
 import { Contract, contractCall, deployAll, deployContract } from "./lib/ethereum"
 import { Child, GrandChild, Main } from "../typechain-types"
 import { ChildFactory, GrandChildFactory, MainFactory, owner } from "./global"
-import { besu_exclude_fields } from "./lib/constants"
 
 describe("Gas", function () {
   let Gas: Contract<Main>
@@ -24,9 +23,6 @@ describe("Gas", function () {
       {
         $gasContract: Gas.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -37,9 +33,6 @@ describe("Gas", function () {
         $gasContract: Gas.addressHex,
         $childContract: Child.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -49,9 +42,6 @@ describe("Gas", function () {
       {
         $gasContract: Gas.addressHex,
         $childContract: Child.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -66,9 +56,6 @@ describe("Gas", function () {
         $childContract: Child.addressHex,
         $grandChildContract: GrandChild.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -81,9 +68,6 @@ describe("Gas", function () {
         $gasContract: Gas.addressHex,
         $childContract: Child.addressHex,
         $grandChildContract: GrandChild.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })

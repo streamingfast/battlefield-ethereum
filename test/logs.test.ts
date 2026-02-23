@@ -3,7 +3,6 @@ import { Contract, contractCall, deployAll, deployContract, koContractCall } fro
 import { Child, Logs, LogsNoTopics } from "../typechain-types"
 import { ChildFactory, LogsFactory, LogsNoTopicsFactory, owner } from "./global"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
-import { besu_exclude_fields } from "./lib/constants"
 
 describe("Logs", function () {
   let Child: Contract<Child>
@@ -24,9 +23,6 @@ describe("Logs", function () {
       {
         $logsContract: Logs.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -35,9 +31,6 @@ describe("Logs", function () {
       "logs/log_no_topics_with_data.expected.json",
       {
         $logsContract: LogsNoTopics.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -65,7 +58,6 @@ describe("Logs", function () {
           // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
           "optimism-geth-dev",
         ],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -89,7 +81,6 @@ describe("Logs", function () {
           // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
           "optimism-geth-dev",
         ],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -100,9 +91,6 @@ describe("Logs", function () {
       {
         $logsContract: Logs.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -111,9 +99,6 @@ describe("Logs", function () {
       "logs/log_single.expected.json",
       {
         $logsContract: Logs.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -124,9 +109,6 @@ describe("Logs", function () {
       {
         $logsContract: Logs.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -135,9 +117,6 @@ describe("Logs", function () {
       "logs/log_all_indexed.expected.json",
       {
         $logsContract: Logs.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -148,9 +127,6 @@ describe("Logs", function () {
       {
         $logsContract: Logs.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -160,9 +136,6 @@ describe("Logs", function () {
       {
         $logsContract: Logs.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -171,9 +144,6 @@ describe("Logs", function () {
       "logs/log_top_level_fail.expected.json",
       {
         $logsContract: Logs.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -187,7 +157,6 @@ describe("Logs", function () {
       },
       {
         networkSnapshotOverrides: ["arbitrum-geth-dev"],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -201,7 +170,6 @@ describe("Logs", function () {
       },
       {
         networkSnapshotOverrides: ["arbitrum-geth-dev"],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })

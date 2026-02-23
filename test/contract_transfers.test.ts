@@ -10,7 +10,6 @@ import { Contract, contractCall, deployAll, deployContract, koContractCall } fro
 import { oneWei } from "./lib/money"
 import { Child, Transfers } from "../typechain-types"
 import { ChildFactory, owner, TransfersFactory } from "./global"
-import { besu_exclude_fields } from "./lib/constants"
 
 describe("Contract transfers", function () {
   let Child: Contract<Child>
@@ -31,9 +30,6 @@ describe("Contract transfers", function () {
       {
         $contract: Transfers.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -44,9 +40,6 @@ describe("Contract transfers", function () {
       "contract_transfers/existing_address_failure.expected.json",
       {
         $contract: Transfers.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -59,9 +52,6 @@ describe("Contract transfers", function () {
       {
         $contract: Transfers.addressHex,
         $randomAddress3: randomAddress3Hex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -77,9 +67,6 @@ describe("Contract transfers", function () {
         $contract: Transfers.addressHex,
         $childContract: Child.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -94,9 +81,6 @@ describe("Contract transfers", function () {
         $contract: Transfers.addressHex,
         $childContract: Child.addressHex,
         $randomAddress4: randomAddress4Hex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })

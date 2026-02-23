@@ -20,7 +20,6 @@ import {
 } from "./global"
 import { wei } from "./lib/money"
 import { randomAddress5, randomAddress5Hex } from "./lib/addresses"
-import { besu_exclude_fields } from "./lib/constants"
 
 // Optimism Geth Dev Failed vs Revert Note (comment ref id 1be64cf0820f)
 //
@@ -73,7 +72,6 @@ describe("Calls", function () {
       {
         // Seems BNB has different error message `bn256: malformed point` vs `point is not on curve`
         networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -81,16 +79,10 @@ describe("Calls", function () {
   it("Delegate with value", async function () {
     await expect(
       contractCall(owner, Calls.delegateWithValue, [Child.address], { value: wei(3) }),
-    ).to.trxTraceEqualSnapshot(
-      "calls/delegate_with_value.expected.json",
-      {
-        $callsContract: Calls.addressHex,
-        $childContract: Child.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
-    )
+    ).to.trxTraceEqualSnapshot("calls/delegate_with_value.expected.json", {
+      $callsContract: Calls.addressHex,
+      $childContract: Child.addressHex,
+    })
   })
 
   it("Delegate to empty contract", async function () {
@@ -109,7 +101,6 @@ describe("Calls", function () {
           "bnb-dev", // less gas used on bnb here, also an extra 'REASON_STATE_COLD_ACCESS' gas change
           "optimism-geth-dev", // less gas used on bnb here, also an extra 'REASON_STATE_COLD_ACCESS' gas change
         ],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -121,17 +112,11 @@ describe("Calls", function () {
       contractCall(owner, Transfers.nestedFailedNativeTransfer, [Child.address, randomAddress5], {
         value: wei(3),
       }),
-    ).to.trxTraceEqualSnapshot(
-      "calls/nested_fail_with_native_transfer.expected.json",
-      {
-        $transfers: Transfers.addressHex,
-        $childContract: Child.addressHex,
-        $randomAddress5: randomAddress5Hex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
-    )
+    ).to.trxTraceEqualSnapshot("calls/nested_fail_with_native_transfer.expected.json", {
+      $transfers: Transfers.addressHex,
+      $childContract: Child.addressHex,
+      $randomAddress5: randomAddress5Hex,
+    })
   })
 
   it("Nested call revert state changes", async function () {
@@ -140,9 +125,6 @@ describe("Calls", function () {
       {
         $callsContract: Calls.addressHex,
         $childContract: Child.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -153,9 +135,6 @@ describe("Calls", function () {
       {
         $callsContract: Calls.addressHex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -164,9 +143,6 @@ describe("Calls", function () {
       "calls/assert_failure_root_call.expected.json",
       {
         $callsContract: Calls.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -180,7 +156,6 @@ describe("Calls", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev"],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -191,9 +166,6 @@ describe("Calls", function () {
       {
         $callsContract: Calls.addressHex,
         $childContract: Child.addressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })

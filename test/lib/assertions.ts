@@ -26,7 +26,7 @@ import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
 import { isNetwork, networkName } from "./network"
-import { excludeFieldsFromObject } from "./field-exclusion"
+import { excludeFieldsFromObject, getGlobalExcludedFields } from "./field-exclusion"
 
 const debug = debugFactory("battlefield:assertions")
 
@@ -87,27 +87,6 @@ type TrxTracerEqualSnapshotOptions = {
    * `<groupOf(snapshotFileID)>/<eip-key>/<network-name>/<nameOf(snapshotFileID)>`.
    */
   networkSnapshotOverrides?: string[]
-
-  /**
-   * This option allows excluding specific fields from snapshot validation on a per-network basis.
-   * Fields are specified as dot-notation paths into the transaction trace structure. For array fields,
-   * use array notation like `calls[].gasConsumed` to exclude the gasConsumed field from all calls.
-   *
-   * The key is the network name as defined in `./hardhat.config.ts`. If the current network matches
-   * a key in this record, the corresponding fields will be excluded from both the actual and expected
-   * snapshots before comparison.
-   *
-   * Examples:
-   * - { "besu-dev": ["calls[].gasChanges"] } - exclude gasChanges from all calls only on besu-dev network
-   * - { "sei-dev": ["receipt.cumulativeGasUsed"], "polygon-dev": ["calls[].balanceChanges"] }
-   *
-   * Field path examples:
-   * - "gasUsed" - exclude the gasUsed field from the transaction receipt
-   * - "calls[].gasConsumed" - exclude gasConsumed from all calls
-   * - "receipt.logsBloom" - exclude logsBloom from the receipt
-   * - "calls[0].balanceChanges[1].oldValue" - exclude specific nested fields
-   */
-  excludeFields?: Record<string, string[]>
 }
 
 declare global {
@@ -312,14 +291,14 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       })
 
       // Apply field exclusions if specified for the current network
+      // Merge global excluded fields with test-specific excluded fields
       let filteredActual = actual
       let filteredExpected = expected
-      if (options?.excludeFields) {
-        const fieldsToExclude = options.excludeFields[networkName()]
-        if (fieldsToExclude && fieldsToExclude.length > 0) {
-          filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)
-          filteredExpected = excludeFieldsFromObject(expected, fieldsToExclude)
-        }
+      const fieldsToExclude = getGlobalExcludedFields(networkName())
+
+      if (fieldsToExclude.length > 0) {
+        filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)
+        filteredExpected = excludeFieldsFromObject(expected, fieldsToExclude)
       }
 
       snapshot.writeSnapshotDebugFiles(

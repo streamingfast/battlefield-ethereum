@@ -13,16 +13,12 @@ import {
 import { getBalance, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { owner } from "./global"
-import { besu_exclude_fields } from "./lib/constants"
 
 describe("Pure transfers", function () {
   it("Existing address", async function () {
     await expect(sendEth(owner, knownExistingAddress, oneWei)).to.trxTraceEqualSnapshot(
       "pure_transfers/existing_address.expected.json",
-      undefined,
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
+      undefined
     )
   })
 
@@ -31,9 +27,7 @@ describe("Pure transfers", function () {
       sendEth(owner, knownExistingAddress, oneWei, {
         gasLimit: 75000,
       }),
-    ).to.trxTraceEqualSnapshot("pure_transfers/existing_address_custom_gas_limit.expected.json", undefined, {
-      excludeFields: { "besu-devnet": besu_exclude_fields },
-    })
+    ).to.trxTraceEqualSnapshot("pure_transfers/existing_address_custom_gas_limit.expected.json", undefined)
   })
 
   it("Inexistent address", async function () {
@@ -44,9 +38,6 @@ describe("Pure transfers", function () {
       "pure_transfers/inexistent_address.expected.json",
       {
         $randomAddress1: randomAddress1Hex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -60,9 +51,6 @@ describe("Pure transfers", function () {
       {
         $randomAddress2: randomAddress2Hex,
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -71,9 +59,6 @@ describe("Pure transfers", function () {
       "pure_transfers/precompiled_address_with_balance.json",
       {
         $precompileAddress: precompileWithBalanceAddressHex,
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -110,7 +95,6 @@ describe("Pure transfers", function () {
           // while bogus Arbitrum Geth model generates `accountCreations: []`.
           "arbitrum-geth-dev",
         ],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })

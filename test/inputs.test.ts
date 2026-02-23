@@ -2,7 +2,6 @@ import { expect } from "chai"
 import { Contract, contractCall, deployAll, deployContract } from "./lib/ethereum"
 import { Main } from "../typechain-types"
 import { MainFactory, owner } from "./global"
-import { besu_exclude_fields } from "./lib/constants"
 
 describe("Inputs", function () {
   let Input: Contract<Main>
@@ -34,7 +33,6 @@ describe("Inputs", function () {
               // New gas cost for contract creation & calldata
               prague: ["eip7623"],
             },
-            excludeFields: { "besu-devnet": besu_exclude_fields },
           },
         )
       }),

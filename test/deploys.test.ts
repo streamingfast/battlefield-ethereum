@@ -17,7 +17,6 @@ import { Calls, Calls__factory } from "../typechain-types"
 import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./global"
 import { eth, oneWei } from "./lib/money"
 import { networkValue } from "./lib/network"
-import { besu_exclude_fields } from "./lib/constants"
 
 const callsGasLimit = 3_500_000
 
@@ -51,7 +50,6 @@ describe("Deploys", function () {
           // existed or not).
           "arbitrum-geth-dev",
         ],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -64,9 +62,6 @@ describe("Deploys", function () {
       {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: getCreateAddressHex(deployer.address, 0),
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -87,9 +82,6 @@ describe("Deploys", function () {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: getCreateAddressHex(deployer.address, 0),
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -102,9 +94,6 @@ describe("Deploys", function () {
         $callsContract: Calls.addressHex,
         $createdContract: getCreateAddressHex(Calls.address, 1),
       },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
-      },
     )
   })
 
@@ -116,9 +105,6 @@ describe("Deploys", function () {
       {
         $callsContract: Calls.addressHex,
         $createdContract: getCreateAddressHex(Calls.address, 1),
-      },
-      {
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -135,7 +121,6 @@ describe("Deploys", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev"],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -154,7 +139,6 @@ describe("Deploys", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev"],
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -182,7 +166,6 @@ describe("Deploys", function () {
           prague: ["eip7623"],
         },
         networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -210,7 +193,6 @@ describe("Deploys", function () {
         },
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"], // less gas used on bnb here
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -229,7 +211,6 @@ describe("Deploys", function () {
       },
       {
         networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -252,7 +233,6 @@ describe("Deploys", function () {
       },
       {
         networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })
@@ -276,7 +256,6 @@ describe("Deploys", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"], // less gas used on bnb here
-        excludeFields: { "besu-devnet": besu_exclude_fields },
       },
     )
   })

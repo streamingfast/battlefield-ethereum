@@ -1,4 +1,31 @@
 /**
+ * Global registry of network-specific excluded fields.
+ * This allows defining excluded fields once that apply to all tests.
+ */
+const globalExcludedFields: Map<string, string[]> = new Map()
+
+/**
+ * Register excluded fields for a specific network.
+ * These fields will be automatically excluded in all tests running on that network.
+ *
+ * @param network The network name (e.g., "besu-devnet")
+ * @param fields Array of field paths to exclude
+ */
+export function registerGlobalExcludedFields(network: string, fields: string[]): void {
+  globalExcludedFields.set(network, fields)
+}
+
+/**
+ * Get the globally registered excluded fields for a specific network.
+ *
+ * @param network The network name
+ * @returns Array of field paths to exclude, or empty array if none registered
+ */
+export function getGlobalExcludedFields(network: string): string[] {
+  return globalExcludedFields.get(network) || []
+}
+
+/**
  * Excludes specified fields from an object based on field paths.
  * Supports dot notation and array notation (e.g., "calls[].gasConsumed").
  *
@@ -7,14 +34,14 @@
  * @returns A new object with specified fields excluded
  */
 export function excludeFieldsFromObject(obj: any, excludeFields: string[]): any {
-  if (!obj || typeof obj !== 'object' || !excludeFields.length) {
+  if (!obj || typeof obj !== "object" || !excludeFields.length) {
     return obj
   }
 
   const result = { ...obj }
 
   for (const fieldPath of excludeFields) {
-    const pathParts = fieldPath.split('.')
+    const pathParts = fieldPath.split(".")
     excludeFieldRecursive(result, pathParts, 0)
   }
 
@@ -25,7 +52,7 @@ export function excludeFieldsFromObject(obj: any, excludeFields: string[]): any 
  * Recursively excludes a field from an object based on path parts.
  */
 function excludeFieldRecursive(obj: any, pathParts: string[], currentIndex: number): void {
-  if (currentIndex >= pathParts.length || !obj || typeof obj !== 'object') {
+  if (currentIndex >= pathParts.length || !obj || typeof obj !== "object") {
     return
   }
 
@@ -43,7 +70,7 @@ function excludeFieldRecursive(obj: any, pathParts: string[], currentIndex: numb
       } else {
         // Process each array element
         obj[arrayFieldName].forEach((item: any) => {
-          if (item && typeof item === 'object') {
+          if (item && typeof item === "object") {
             excludeFieldRecursive(item, pathParts, currentIndex + 1)
           }
         })
