@@ -28,7 +28,7 @@ let globalSnapshotsTag = ""
 export function getGlobalSnapshotsTag(): string {
   if (!globalSnapshotsTag) {
     throw new Error(
-      "The 'globalSnapshotsTag' variable is not set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite."
+      "The 'globalSnapshotsTag' variable is not set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite.",
     )
   }
 
@@ -55,7 +55,10 @@ export class Snapshot {
   public eipOverride: string | undefined
   public networkOverride: string | undefined
 
-  constructor(public id: string, options: ResolveSnapshotOptions = {}) {
+  constructor(
+    public id: string,
+    options: ResolveSnapshotOptions = {},
+  ) {
     let local = id.replace("./", "")
     local = local.replace(snapshotsPrefixRegex, "")
     local = local.replace(snapshotsSuffixRegex, "")
@@ -68,7 +71,7 @@ export class Snapshot {
     debug(
       `Looking for EIP overrides again current network ${networkName()} (EIPS %o): %o`,
       chainStaticInfo.eips,
-      eipOverrides
+      eipOverrides,
     )
 
     if (Object.keys(eipOverrides).length > 0) {
@@ -76,17 +79,17 @@ export class Snapshot {
         Object.entries(eipOverrides).map(([network, eips]) => [
           network,
           eips.filter((eip) => isEIPActive(chainStaticInfo.eips, eip)).length,
-        ])
+        ]),
       )
       const maxMatchingEips = Math.max(...Object.values(matchingEipsPerOverride))
       if (maxMatchingEips !== 0) {
         const eipOverridesMatchingMax = Object.keys(matchingEipsPerOverride).filter(
-          (network) => matchingEipsPerOverride[network] === maxMatchingEips
+          (network) => matchingEipsPerOverride[network] === maxMatchingEips,
         )
 
         if (eipOverridesMatchingMax.length > 1) {
           throw new Error(
-            `Multiple network overrides with the same number of matching EIPs: ${eipOverridesMatchingMax}`
+            `Multiple network overrides with the same number of matching EIPs: ${eipOverridesMatchingMax}`,
           )
         }
 
@@ -154,7 +157,7 @@ export class Snapshot {
     if (globalNetworkOverride) {
       if (this.networkOverride) {
         throw new Error(
-          `Snapshot ${this.id} has both a global network override and a local network override that matched, this is not allowed`
+          `Snapshot ${this.id} has both a global network override and a local network override that matched, this is not allowed`,
         )
       }
 

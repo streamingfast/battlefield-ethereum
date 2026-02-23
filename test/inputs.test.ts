@@ -33,9 +33,9 @@ describe("Inputs", function () {
               // New gas cost for contract creation & calldata
               prague: ["eip7623"],
             },
-          }
+          },
         )
-      })
+      }),
     )
   })
 })
