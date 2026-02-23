@@ -18,13 +18,13 @@ describe("Contract transfers", function () {
   before(async () => {
     await deployAll(
       async () => (Child = await deployContract(owner, ChildFactory, [])),
-      async () => (Transfers = await deployContract(owner, TransfersFactory, []))
+      async () => (Transfers = await deployContract(owner, TransfersFactory, [])),
     )
   })
 
   it("Existing address", async function () {
     await expect(
-      contractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei })
+      contractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei }),
     ).to.trxTraceEqualSnapshot("contract_transfers/existing_address.expected.json", {
       $contract: Transfers.addressHex,
     })
@@ -32,7 +32,7 @@ describe("Contract transfers", function () {
 
   it("Existing address failing transaction", async function () {
     await expect(
-      koContractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 22080 })
+      koContractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 22080 }),
     ).to.trxTraceEqualSnapshot("contract_transfers/existing_address_failure.expected.json", {
       $contract: Transfers.addressHex,
     })
@@ -40,7 +40,7 @@ describe("Contract transfers", function () {
 
   it("Inexistent address", async function () {
     await expect(
-      contractCall(owner, Transfers.nativeTransfer, [randomAddress3], { value: oneWei })
+      contractCall(owner, Transfers.nativeTransfer, [randomAddress3], { value: oneWei }),
     ).to.trxTraceEqualSnapshot("contract_transfers/inexistent_address.expected.json", {
       $contract: Transfers.addressHex,
       $randomAddress3: randomAddress3Hex,
@@ -51,7 +51,7 @@ describe("Contract transfers", function () {
     await expect(
       contractCall(owner, Transfers.nestedNativeTransfer, [Child.address, knownExistingAddress], {
         value: oneWei,
-      })
+      }),
     ).to.trxTraceEqualSnapshot("contract_transfers/nested_existing_address.expected.json", {
       $contract: Transfers.addressHex,
       $childContract: Child.addressHex,
@@ -62,7 +62,7 @@ describe("Contract transfers", function () {
     await expect(
       contractCall(owner, Transfers.nestedNativeTransfer, [Child.address, randomAddress4], {
         value: oneWei,
-      })
+      }),
     ).to.trxTraceEqualSnapshot("contract_transfers/nested_inexistent_address.expected.json", {
       $contract: Transfers.addressHex,
       $childContract: Child.addressHex,

@@ -26,3 +26,15 @@ package-lock.json
 ## Yarn
 package.json
 yarn.lock
+
+## Documentation
+*.md
+
+## Scripts
+scripts/**/*.json*
+
+## Tests
+test/snapshots/**
+
+## Protobuf
+pb/**

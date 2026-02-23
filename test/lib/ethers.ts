@@ -18,7 +18,7 @@ export class TransactionReceiptResult extends TransactionReceipt {
 
 export async function waitForTransaction(
   response: TransactionResponse,
-  shouldRevert: boolean
+  shouldRevert: boolean,
 ): Promise<TransactionReceiptResult> {
   const receipt = await response.wait(1, 30_000).catch(async (e) => {
     // It seems `.wait(...)` enforces successful transactions, so we need to check
@@ -43,8 +43,8 @@ export async function waitForTransaction(
       `Transaction ${response.hash} (Block #${receipt.blockNumber}) did not revert as expected\n${JSON.stringify(
         receipt,
         null,
-        2
-      )}`
+        2,
+      )}`,
     )
   }
 
@@ -57,7 +57,7 @@ export async function waitForTransaction(
 
 export async function getReceiptForTransactionTrace(
   trxTrace: TransactionTrace,
-  block: Block
+  block: Block,
 ): Promise<TransactionReceiptResult> {
   let effectiveGasPriceCalc: bigint
   if (trxTrace.type === 2) {
@@ -118,7 +118,7 @@ export async function getReceiptForTransactionTrace(
       type: trxTrace.type,
       status: trxTrace.status === 1 ? 1 : trxTrace.status === 2 ? 0 : null, // SUCCEEDED: 1, FAILED: 0, REVERTED (also 0 in practice for status), UNKNOWN: null
     },
-    hre.ethers.provider
+    hre.ethers.provider,
   )
 
   const out = new TransactionReceiptResult(receipt, receipt.provider)
@@ -156,12 +156,12 @@ export async function getReceiptForTransactionTrace(
         trxTrace.accessList.map((item) => ({
           address: hexlify(item.address),
           storageKeys: item.storageKeys.map((k) => hexlify(k)),
-        }))
+        })),
       ),
       maxFeePerBlobGas: toBigInt(trxTrace.blobGas),
       blobVersionedHashes: trxTrace.blobHashes.map((h) => hexlify(h)),
     },
-    hre.ethers.provider
+    hre.ethers.provider,
   )
   return out
 }

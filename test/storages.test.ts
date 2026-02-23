@@ -24,14 +24,14 @@ describe("Storages", function () {
       },
       {
         networkSnapshotOverrides: ["optimism-geth-dev"], // less gas used on bnb here
-      }
+      },
     )
 
     await expect(contractCall(owner, Storage.setAfter, [])).to.trxTraceEqualSnapshot(
       "storages/set_long_again_and_array_update.expected.json",
       {
         $storageContract: Storage.addressHex,
-      }
+      },
     )
   })
 })

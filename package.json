@@ -4,6 +4,9 @@
   "description": "Firehose Tracers test suites for Ethereum chain(s)",
   "scripts": {
     "compile": "hardhat compile",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky",
     "generate": "buf generate buf.build/streamingfast/firehose-ethereum",
     "generate:local": "buf generate ../firehose-ethereum/proto",
     "test:fh2.3:geth-dev": "cross-env SNAPSHOTS_TAG=fh2.3 hardhat test --network geth-dev",
@@ -23,6 +26,9 @@
   "license": "Private",
   "devDependencies": {
     "@bufbuild/buf": "^1.47.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.5.1",
     "@bufbuild/protobuf": "^2.2.2",
     "@bufbuild/protoc-gen-es": "^2.2.2",
     "@connectrpc/connect": "^2.0.0",
@@ -54,5 +60,8 @@
   },
   "dependencies": {
     "@types/debug": "^4.1.12"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
