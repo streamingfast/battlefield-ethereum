@@ -1,0 +1,106 @@
+version: "3.9"
+
+services:
+  localnet-firehose:
+    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:a150115
+    container_name: monad-localnet-extended-firehose
+    entrypoint: ["/app/fireeth"]
+    command:
+      - start
+      - reader-node
+      - --config-file=
+      - --log-to-file=false
+      - --data-dir=/data/firehose
+      - --common-first-streamable-block=76
+      - --common-one-block-store-url=file:///data/firehose/storage/one-blocks
+      - --reader-node-path=/app/monad-firehose-tracer
+      - --reader-node-data-dir=/data/firehose/reader
+      - --reader-node-working-dir=/data/firehose/work
+      - --reader-node-grpc-listen-addr=:9000
+      - --reader-node-manager-api-addr=:8081
+      - --reader-node-blocks-chan-capacity=1000
+      - --reader-node-arguments=--debug --chain-id=20143 --network-name=monad-localnet --monad-event-ring-path=/dev/hugepages/monad-localnet/monad-events --buffer-size=524288
+      - --metrics-listen-addr=:9102
+    volumes:
+      - ../../localnet-firehose-data:/data/firehose
+      - /dev/hugepages/monad-localnet:/dev/hugepages/monad-localnet:ro
+    ports:
+      - "10000:9000"
+      - "10102:9102"
+    restart: unless-stopped
+
+  localnet-firehose-api:
+    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:a150115
+    container_name: monad-localnet-extended-firehose-api
+    entrypoint: ["/app/fireeth"]
+    command:
+      - start
+      - firehose
+      - --config-file=
+      - --log-to-file=false
+      - --data-dir=/data/firehose
+      - --common-first-streamable-block=76
+      - --advertise-chain-name=monad-localnet
+      - --ignore-advertise-validation
+      - --common-one-block-store-url=file:///data/firehose/storage/one-blocks
+      - --common-live-blocks-addr=localnet-firehose:9000
+      - --firehose-grpc-listen-addr=:20028
+      - --metrics-listen-addr=:9103
+    volumes:
+      - ../../localnet-firehose-data:/data/firehose
+    ports:
+      - "20028:20028"
+      - "10103:9103"
+    depends_on:
+      - localnet-firehose
+    restart: unless-stopped
+
+  localnet-substreams-tier2:
+    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:a150115
+    container_name: monad-localnet-substreams-tier2
+    entrypoint: ["/app/fireeth"]
+    command:
+      - start
+      - substreams-tier2
+      - --config-file=
+      - --log-to-file=false
+      - --data-dir=/data/substreams
+      - --common-first-streamable-block=76
+      - --common-one-block-store-url=file:///data/firehose/storage/one-blocks
+      - --common-merged-blocks-store-url=file:///data/firehose/storage/merged-blocks
+      - --common-live-blocks-addr=
+      - --substreams-tier2-grpc-listen-addr=:10017
+    volumes:
+      - ../../localnet-firehose-data:/data/firehose
+      - ../../localnet-substreams-data:/data/substreams
+    ports:
+      - "10017:10017"
+    restart: unless-stopped
+
+  localnet-substreams-tier1:
+    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:a150115
+    container_name: monad-localnet-substreams-tier1
+    entrypoint: ["/app/fireeth"]
+    command:
+      - start
+      - substreams-tier1
+      - --config-file=
+      - --log-to-file=false
+      - --data-dir=/data/substreams
+      - --common-first-streamable-block=76
+      - --common-one-block-store-url=file:///data/firehose/storage/one-blocks
+      - --common-merged-blocks-store-url=file:///data/firehose/storage/merged-blocks
+      - --common-live-blocks-addr=
+      - --ignore-advertise-validation
+      - --substreams-tier1-grpc-listen-addr=:10016
+      - --substreams-tier1-subrequests-endpoint=localnet-substreams-tier2:10017
+      - --substreams-tier1-subrequests-plaintext
+      - --substreams-tier1-block-type=sf.ethereum.type.v2.Block
+    volumes:
+      - ../../localnet-firehose-data:/data/firehose
+      - ../../localnet-substreams-data:/data/substreams
+    ports:
+      - "10016:10016"
+    depends_on:
+      - localnet-substreams-tier2
+    restart: unless-stopped
