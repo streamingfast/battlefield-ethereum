@@ -57,7 +57,8 @@ main() {
   wait $playground_pid
 }
 
-# Don't think we need this anymore, builder-playground should handle cleanup
+# builder-playground stop all should handle cleanup, this is just a fallback.
+# We ran into some cases where files weren't cleaned up properly, so we keep this as a fallback.
 maybe_cleanup_previous() {
   if [[ -d "$playground_path" && -f "$playground_path/docker-compose.yaml" ]]; then
     echo "Tearing down existing playground at $playground_path"

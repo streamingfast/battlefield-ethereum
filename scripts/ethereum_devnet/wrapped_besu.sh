@@ -101,7 +101,7 @@ echo "Reth enode: $RETH_ENODE"
 
 # Build besu command - similar to the firehose besu script but as secondary client
 besu_extra_args=(
-    "--host-allowlist=localhost,127.0.0.1,host.docker.internal"
+    "--host-allowlist=*"
     "--data-path=$data_dir"
     "--genesis-file=$playground_path/genesis.json"
     "--network-id=1337"
@@ -113,7 +113,7 @@ besu_extra_args=(
     "--rpc-http-max-active-connections=300"
     "--rpc-ws-max-active-connections=300"
     "--engine-rpc-enabled"
-    "--engine-host-allowlist=localhost,127.0.0.1,host.docker.internal"
+    "--engine-host-allowlist=*"
     "--engine-rpc-port=8552"  # Engine API port (matching geth's authrpc port)
     "--engine-jwt-secret=$jwt_secret_file"
     "--logging=ERROR"
