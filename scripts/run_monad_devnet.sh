@@ -32,6 +32,10 @@ usage() {
 }
 
 setup_monad_infrastructure() {
+    cd "$BATTLEFIELD_DIR"
+    echo "Stopping existing Firehose containers..."
+    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down 2>/dev/null || true
+
     cd "$ROOT/monad-devnet" || {
         echo "ERROR: Failed to change to monad-devnet directory"
         exit 1
