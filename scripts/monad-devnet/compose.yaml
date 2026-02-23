@@ -6,7 +6,7 @@ services:
       - /dev/hugepages/monad-localnet:/monad/event-ring
       - ./node:/monad
     security_opt:
-      - "seccomp:./node/profile.json"
+      - "seccomp:./node/config/profile.json"
 
   build_genesis:
     image: monad-execution-builder:latest
@@ -17,7 +17,7 @@ services:
       - /dev/hugepages/monad-localnet:/monad/event-ring
       - ./node:/monad
     security_opt:
-      - "seccomp:./node/profile.json"
+      - "seccomp:./node/config/profile.json"
     command:
       monad
       --chain monad_devnet
@@ -41,7 +41,7 @@ services:
       - /dev/hugepages/monad-localnet:/monad/event-ring
       - ./node:/monad
     security_opt:
-      - "seccomp:./node/profile.json"
+      - "seccomp:./node/config/profile.json"
     command: |
       monad
       --chain monad_devnet
@@ -66,7 +66,7 @@ services:
       - /dev/hugepages/monad-localnet:/monad/event-ring
       - ./node:/monad
     security_opt:
-      - "seccomp:./node/profile.json"
+      - "seccomp:./node/config/profile.json"
     command: |
       monad-node
       --secp-identity /monad/config/id-secp
@@ -95,7 +95,7 @@ services:
       - /dev/hugepages/monad-localnet:/monad/event-ring
       - ./node:/monad
     security_opt:
-      - "seccomp:./node/profile.json"
+      - "seccomp:./node/config/profile.json"
     ports:
       - "18080:8080"
     command: |
