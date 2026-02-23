@@ -9,6 +9,7 @@ source "$ROOT/lib.sh"
 
 main() {
     check_docker
+    check_monad
 
     setup_monad_infrastructure
     setup_firehose_infrastructure
