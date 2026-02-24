@@ -58,7 +58,7 @@ peers = []
 # secp256k1_pubkey = "..."
 
 [statesync]
-expand_to_group = false
+expand_to_group = true
 init_peers = []
 # [[statesync.init_peers]]
 # secp256k1_pubkey = "..."
