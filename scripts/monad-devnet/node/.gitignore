@@ -5,6 +5,7 @@ event-ring/
 config/*.rlp
 config/*.rlp.*
 config/forkpoint.toml.*
+config/forkpoint.genesis.toml
 config/forkpoint.genesis.toml.*
 config/validators.toml.*
 
