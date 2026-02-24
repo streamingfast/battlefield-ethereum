@@ -73,7 +73,7 @@ setup_monad_infrastructure() {
     mkdir -p node/ledger
     mkdir -p node/triedb
     touch node/ledger/wal
-    rm -f node/triedb/test.db
+    # rm -f node/triedb/test.db
     truncate -s 8G node/triedb/test.db
 
     echo "Starting Monad containers..."
