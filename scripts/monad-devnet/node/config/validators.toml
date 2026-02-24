@@ -1,1 +1,3 @@
 # Empty validators for single-node devnet
+[[validator_sets]]
+epoch = 1
