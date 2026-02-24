@@ -35,7 +35,7 @@ usage() {
 setup_monad_infrastructure() {
     cd "$BATTLEFIELD_DIR"
     echo "Stopping existing Firehose containers..."
-    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down 2>/dev/null || true
+    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down --remove-orphans 2>/dev/null || true
 
     cd "$ROOT/monad-devnet" || {
         echo "ERROR: Failed to change to monad-devnet directory"
@@ -67,7 +67,7 @@ setup_monad_infrastructure() {
     export RPC_DIR="$ROOT/monad-devnet"
 
     echo "Stopping existing Monad containers..."
-    docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null || true
+    docker-compose -f compose.yaml -f compose.prebuilt.yaml down --remove-orphans 2>/dev/null || true
 
     echo "Preparing node directories..."
     mkdir -p node/ledger
@@ -110,7 +110,7 @@ setup_firehose_infrastructure() {
     fi
 
     echo "Stopping existing Firehose containers..."
-    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down 2>/dev/null || true
+    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down --remove-orphans 2>/dev/null || true
 
     echo "Cleaning Firehose data..."
     sudo rm -rf localnet-firehose-data/* 2>/dev/null || true
@@ -159,11 +159,11 @@ cleanup() {
 
     cd "$BATTLEFIELD_DIR"
     echo "Stopping Firehose containers..."
-    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down 2>/dev/null || true
+    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down --remove-orphans 2>/dev/null || true
 
     cd "$ROOT/monad-devnet"
     echo "Stopping Monad containers..."
-    docker-compose -f compose.yaml -f compose.prebuilt.yaml down 2>/dev/null || true
+    docker-compose -f compose.yaml -f compose.prebuilt.yaml down --remove-orphans 2>/dev/null || true
 
     echo "Cleanup complete"
 }
