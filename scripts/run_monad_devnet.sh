@@ -76,6 +76,9 @@ setup_monad_infrastructure() {
     rm -f node/triedb/test.db
     truncate -s 8G node/triedb/test.db
 
+    echo "Resetting forkpoint.genesis.toml to genesis state..."
+    cp node/config/forkpoint.toml node/config/forkpoint.genesis.toml
+
     echo "Starting Monad containers..."
     docker-compose -f compose.yaml -f compose.prebuilt.yaml up -d || {
         echo "ERROR: Failed to start Monad containers"
