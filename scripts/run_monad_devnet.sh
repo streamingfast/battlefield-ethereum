@@ -111,7 +111,7 @@ setup_firehose_infrastructure() {
     fi
 
     echo "Stopping existing Firehose containers..."
-    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down --remove-orphans 2>/dev/null || true
+    docker-compose -f scripts/monad-devnet/docker-compose.localnet-firehose.yml down 2>/dev/null || true
 
     echo "Cleaning Firehose data..."
     sudo rm -rf localnet-firehose-data/* 2>/dev/null || true
