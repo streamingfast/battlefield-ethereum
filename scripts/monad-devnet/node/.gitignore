@@ -10,6 +10,5 @@ config/forkpoint.genesis.toml.*
 config/validators.toml.*
 
 *.sock
-peers
-peers.json
+
 wal_*
