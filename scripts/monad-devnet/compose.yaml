@@ -80,7 +80,7 @@ services:
       --control-panel-ipc-path /monad/controlpanel.sock
       --ledger-path /monad/ledger
       --triedb-path /monad/triedb
-      --persisted-peers-path /monad/peers.json
+      --persisted-peers-path /monad/peers
     ulimits:
       memlock:
         soft: "16770785280"
