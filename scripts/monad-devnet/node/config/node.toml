@@ -45,7 +45,7 @@ unresponsive_prune_threshold = 5
 last_participation_prune_threshold = 5000
 min_num_peers = 0
 max_num_peers = 200
-ping_rate_limit_per_second = 100
+ping_rate_limit_per_second = 10
 
 [fullnode_dedicated]
 identities = []
@@ -58,7 +58,7 @@ peers = []
 # secp256k1_pubkey = "..."
 
 [statesync]
-expand_to_group = true
+expand_to_group = false
 init_peers = []
 # [[statesync.init_peers]]
 # secp256k1_pubkey = "..."
