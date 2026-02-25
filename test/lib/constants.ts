@@ -23,5 +23,9 @@ export const monad_exclude_fields = [
   "calls[].beginOrdinal",
   "calls[].endOrdinal",
   "calls[].logs[].ordinal",
+  "calls[].balanceChanges[].ordinal",
+  "calls[].nonceChanges[].ordinal",
+  "calls[].storageChanges[].ordinal",
+  "calls[].codeChanges[].ordinal",
   "receipt.logs[].ordinal",
 ]
