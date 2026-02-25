@@ -38,7 +38,8 @@ export function excludeFieldsFromObject(obj: any, excludeFields: string[]): any 
     return obj
   }
 
-  const result = { ...obj }
+  // TODO
+  const result = JSON.parse(JSON.stringify(obj))
 
   for (const fieldPath of excludeFields) {
     const pathParts = fieldPath.split(".")
