@@ -15,3 +15,12 @@ export const besu_exclude_fields = [
   "calls[].failureReason",
   "calls[].keccakPreimages",
 ]
+
+export const monad_exclude_fields = [
+  "calls[].gasChanges",
+  "calls[].beginOrdinal",
+  "calls[].endOrdinal",
+  "calls[].logs[].ordinal",
+  "endOrdinal",
+  "receipt.logs[].ordinal",
+]

@@ -28,7 +28,7 @@ import { fetchFirehoseBlock } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isNetwork, networkName } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
-import { besu_exclude_fields } from "./lib/constants"
+import { besu_exclude_fields, monad_exclude_fields } from "./lib/constants"
 
 export let owner: NonceManager
 export let ownerAddress: string
@@ -67,6 +67,7 @@ before(async () => {
 
   // Register global excluded fields for specific networks
   registerGlobalExcludedFields("besu-devnet", besu_exclude_fields)
+  registerGlobalExcludedFields("monad-devnet", monad_exclude_fields)
 
   debug("Initializing contract factories sequentially")
   ContractEmptyFactory = await hre.ethers.getContractFactory("ContractEmpty")
