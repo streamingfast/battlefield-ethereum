@@ -21,10 +21,7 @@ main() {
     export SNAPSHOTS_TAG=fh3.0
 
     echo "Funding test account 0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab..."
-    cast send --rpc-url http://127.0.0.1:18080 \
-        --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
-        --value 1000ether \
-        0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab || {
+    node "$ROOT/fund-account.js" http://127.0.0.1:18080 0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab 1000 || {
         echo "ERROR: Failed to fund test account"
         exit 1
     }
