@@ -81,6 +81,7 @@ services:
       --ledger-path /monad/ledger
       --triedb-path /monad/triedb
       --persisted-peers-path /monad/peers
+      --trace-calls
     ulimits:
       memlock:
         soft: "16770785280"
