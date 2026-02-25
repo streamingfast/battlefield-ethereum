@@ -25,7 +25,8 @@ import { getReceiptForTransactionTrace, TransactionReceiptResult } from "./ether
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
-import { isNetwork } from "./network"
+import { isNetwork, networkName } from "./network"
+import { excludeFieldsFromObject, getGlobalExcludedFields } from "./field-exclusion"
 
 const debug = debugFactory("battlefield:assertions")
 
@@ -289,19 +290,30 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
         return value
       })
 
+      // Apply field exclusions if specified for the current network
+      // Merge global excluded fields with test-specific excluded fields
+      let filteredActual = actual
+      let filteredExpected = expected
+      const fieldsToExclude = getGlobalExcludedFields(networkName())
+
+      if (fieldsToExclude.length > 0) {
+        filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)
+        filteredExpected = excludeFieldsFromObject(expected, fieldsToExclude)
+      }
+
       snapshot.writeSnapshotDebugFiles(
         toProtoJsonString(actualTrace),
-        JSON.stringify(actual, null, 2),
-        JSON.stringify(expected, null, 2),
+        JSON.stringify(filteredActual, null, 2),
+        JSON.stringify(filteredExpected, null, 2),
       )
 
       // Using directly to.deep.equal leads to losing the actual diff, but using to.equal
       // directly leads to equality failing since it's not deep. So we use deep-eql
       // (which Chai uses under the hood) to check differences, and if there are differences
       // we use to.equal so the diff is clear.
-      if (!deepEqual(actual, expected)) {
-        new chai.Assertion(actual).to.equal(
-          expected,
+      if (!deepEqual(filteredActual, filteredExpected)) {
+        new chai.Assertion(filteredActual).to.equal(
+          filteredExpected,
           `Transaction ${trxReceipt.hash} (Block #${trxReceipt.blockNumber}) trace mismatch against stored snapshot ${snapshot.id}` +
             "\n" +
             `Use SNAPSHOTS_UPDATE=true to update all snapshots or SNAPSHOTS_UPDATE="^${snapshot.id}$" this specific snapshot` +

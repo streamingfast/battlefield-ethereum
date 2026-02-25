@@ -18,6 +18,7 @@ describe("Pure transfers", function () {
   it("Existing address", async function () {
     await expect(sendEth(owner, knownExistingAddress, oneWei)).to.trxTraceEqualSnapshot(
       "pure_transfers/existing_address.expected.json",
+      undefined
     )
   })
 
@@ -26,7 +27,7 @@ describe("Pure transfers", function () {
       sendEth(owner, knownExistingAddress, oneWei, {
         gasLimit: 75000,
       }),
-    ).to.trxTraceEqualSnapshot("pure_transfers/existing_address_custom_gas_limit.expected.json")
+    ).to.trxTraceEqualSnapshot("pure_transfers/existing_address_custom_gas_limit.expected.json", undefined)
   })
 
   it("Inexistent address", async function () {

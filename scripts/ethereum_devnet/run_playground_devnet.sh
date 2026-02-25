@@ -6,10 +6,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 source "$SCRIPT_DIR/lib.sh"
 
 playground_pid=""
-geth_pid=""
 
 playground_path="$ROOT/.playground/chain"
-docker_node_name="`basename "$playground_path"`-reth-1"
 
 # This is el `http` port (container named `playground-reth-1`)
 l1_rpc_url="http://localhost:8545"
@@ -35,11 +33,11 @@ main() {
 
   trap "cleanup_on_exit" EXIT
 
-  builder-playground cook l1 \
+  builder-playground start l1 \
     --output="$playground_path" \
     --block-time=1s \
     --secondary-el http://host.docker.internal:8552 \
-    --prefunded-account="$private_key_to_fund" \
+    --prefunded-accounts="$private_key_to_fund" \
     --log-level debug &
   playground_pid=$!
   echo ""
@@ -59,6 +57,8 @@ main() {
   wait $playground_pid
 }
 
+# builder-playground stop all should handle cleanup, this is just a fallback.
+# We ran into some cases where files weren't cleaned up properly, so we keep this as a fallback.
 maybe_cleanup_previous() {
   if [[ -d "$playground_path" && -f "$playground_path/docker-compose.yaml" ]]; then
     echo "Tearing down existing playground at $playground_path"
@@ -68,15 +68,7 @@ maybe_cleanup_previous() {
 
 cleanup_on_exit() {
   echo "Cleaning up..."
-  if [[ -n "$geth_pid" ]]; then
-    echo "Stopping local Geth process (pid: $geth_pid)..."
-    kill -s SIGTERM "$geth_pid" 2>/dev/null || true
-  fi
-
-  if [[ -n "$playground_pid" ]]; then
-    echo "Killing builder-playground (pid: $playground_pid)"
-    kill -s SIGTERM "$playground_pid"
-  fi
+  builder-playground stop all
 
   maybe_cleanup_previous
 

@@ -43,8 +43,8 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Sei                      | `./scripts/run_firehose_sei.sh parallel`                                                      | `pnpm test:fh3.0:sei-dev`                                  | The `parallel` tag refers to transaction execution algorithm, test both        |
 | BNB                      | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                     | `pnpm test:fh3.0:bnb-dev`                                  | None                                                                           |
 | Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, bats...)                       |
+| Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_optimism_devnet.sh`. | `pnpm test:fh3.0:optimism-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
-
 
 After each test, you should also run:
 
@@ -96,7 +96,7 @@ await expect(contractCall(owner, Logs.logInSubFailedCallButTrxSucceed, [Contract
   },
   {
     networkSnapshotOverrides: ["arbitrum-geth-dev"],
-  }
+  },
 )
 ```
 
@@ -104,6 +104,25 @@ Here, if the Hardhat network we run the tests against is named `arbitrum-geth-de
 
 To add new overrides to a new network, modify [./hardhat.config.ts](./hardhat.config.ts) `networks` config element to add a new unique network name. Then simply modify
 the test case if the same way as presented above.
+
+#### Global Field Exclusions
+
+Some networks have fields that are not implemented or have different values compared to the canonical Ethereum Firehose tracer. Instead of creating separate snapshots for these cases, you can register globally excluded fields that will be stripped from both the actual and expected traces before comparison.
+
+Register excluded fields in [./test/global.ts](./test/global.ts):
+
+```typescript
+import { registerGlobalExcludedFields } from "./lib/field-exclusion"
+import { besu_exclude_fields } from "./lib/constants"
+
+// Register global excluded fields for specific networks
+registerGlobalExcludedFields("besu-devnet", besu_exclude_fields)
+```
+
+Field paths support:
+- Dot notation: `calls.gasConsumed`
+- Array notation: `calls[].gasConsumed` (applies to all array elements)
+- Indexed access: `calls[0].gasConsumed` (applies to specific element)
 
 ## Development
 
@@ -135,7 +154,6 @@ The snapshots comparison process could be defined as:
   - Balance and nonce changes are deltaize, a process in which we change absolute values to become relative by computing the `new - old` delta, if positive, we update the change to become `old: 0, new: <delta>` otherwise if negative we do `old: <delta>, new: 0`.
   - Balance changes with `REWARD_TRANSACTION_FEE` are normalized to `old: 0, new: 1`, this is because most chains uses EIP-1159 which introduce dynamic fees making the fee changes without being controllable.
 - [Optional] If `SNAPSHOTS_UPDATE` is set and the regex matches current snapshot `<id>`, then the `<id>.original.normalized.json` is taken and templatized:
-
   - First by explicitly changing some fixes "path" to variables (`$hash`, `$index`, `$nonce`, `$cumulativeGasUsed`, `$logsBloom`)
   - Second by taking the `name => values` variables map a specific test is providing and replacing all `values` within the JSON by the `$<name>` of the associated variable (this has the consequences that values and names must unique within a test case).
 
@@ -192,24 +210,20 @@ As an alternative to Geth, you can use Besu directly. This provides a Java-based
 
 #### Setup Besu for Battlefield
 
-1. **Setup Java 21** (if needed, see [Besu Dev README](./scripts/besu_dev/README.md))
-2. **Build Besu from source**:
+1. **Prerequisites**:
+   - [besu](https://besu.hyperledger.org/) binary
+   - [builder-playground](https://github.com/flashbots/builder-playground)
 
-  ```bash
-  ./scripts/besu_dev/build_besu.sh
-  ```
+2. **Start the playground devnet**:
 
-3. **Run Besu dev node**:
+```bash
+./scripts/ethereum_devnet/run_playground_devnet.sh
+```
 
-  ```bash
-  # Default (Cancun fork)
-  ./scripts/run_besu_dev.sh
+3. **Run Besu with Firehose**:
 
-  # Explicit Cancun fork
-  ./scripts/run_besu_dev.sh --fork cancun
+```bash
+./scripts/run_firehose_besu_devnet.sh
+```
 
-  # Prague fork
-  ./scripts/run_besu_dev.sh --fork prague
-  ```
-
-The Besu setup uses PoW dev mode with ethash consensus, providing continuous block production similar to `geth --dev`.
+The Besu setup runs as a secondary client alongside the playground's Reth node, connecting via the Engine API.
