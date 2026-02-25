@@ -99,11 +99,6 @@ setup_monad_infrastructure() {
         exit 1
     }
 
-    echo "Funding Geth test account..."
-    node "$ROOT/monad-devnet/fund_account.js" || {
-        echo "WARNING: Failed to fund Geth test account, tests may fail"
-    }
-
     MONAD_TIMESTAMP_DIR="$ROOT/monad-devnet"
 }
 

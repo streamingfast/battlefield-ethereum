@@ -49,6 +49,7 @@ services:
       --block_db /monad/ledger
       --statesync /monad/statesync.sock
       --exec-event-ring /monad/event-ring/monad-events
+      --trace-calls
       --log_level ERROR
     ulimits:
       memlock:
