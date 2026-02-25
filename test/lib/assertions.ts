@@ -25,7 +25,8 @@ import { getReceiptForTransactionTrace, TransactionReceiptResult } from "./ether
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
-import { isNetwork } from "./network"
+import { isNetwork, networkName } from "./network"
+import { excludeFieldsFromObject, getGlobalExcludedFields } from "./field-exclusion"
 
 const debug = debugFactory("battlefield:assertions")
 
@@ -150,7 +151,7 @@ declare global {
       trxTraceEqualSnapshot(
         snapshotFileID: string | Record<string, string>,
         templateVars?: Record<string, string>,
-        options?: TrxTracerEqualSnapshotOptions
+        options?: TrxTracerEqualSnapshotOptions,
       ): Promise<void>
     }
   }
@@ -170,7 +171,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       | TransactionReceiptResult
       | Promise<TransactionReceiptResult>
       | [TransactionReceiptResult, TransactionTrace, Block]
-      | [TransactionTrace, Block]
+      | [TransactionTrace, Block],
   ): Promise<[TransactionReceiptResult, TransactionTrace, Block]> {
     if (Array.isArray(input)) {
       if (input.length === 2) {
@@ -209,7 +210,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
     async function (
       snapshotIdentifier: string,
       templateVars?: Record<string, string>,
-      options?: TrxTracerEqualSnapshotOptions
+      options?: TrxTracerEqualSnapshotOptions,
     ) {
       const [trxReceipt, actualTrace, actualBlock] = await resolveTrxTrace(this._obj)
       if (isNetwork("polygon-dev")) {
@@ -289,19 +290,30 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
         return value
       })
 
+      // Apply field exclusions if specified for the current network
+      // Merge global excluded fields with test-specific excluded fields
+      let filteredActual = actual
+      let filteredExpected = expected
+      const fieldsToExclude = getGlobalExcludedFields(networkName())
+
+      if (fieldsToExclude.length > 0) {
+        filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)
+        filteredExpected = excludeFieldsFromObject(expected, fieldsToExclude)
+      }
+
       snapshot.writeSnapshotDebugFiles(
         toProtoJsonString(actualTrace),
-        JSON.stringify(actual, null, 2),
-        JSON.stringify(expected, null, 2)
+        JSON.stringify(filteredActual, null, 2),
+        JSON.stringify(filteredExpected, null, 2),
       )
 
       // Using directly to.deep.equal leads to losing the actual diff, but using to.equal
       // directly leads to equality failing since it's not deep. So we use deep-eql
       // (which Chai uses under the hood) to check differences, and if there are differences
       // we use to.equal so the diff is clear.
-      if (!deepEqual(actual, expected)) {
-        new chai.Assertion(actual).to.equal(
-          expected,
+      if (!deepEqual(filteredActual, filteredExpected)) {
+        new chai.Assertion(filteredActual).to.equal(
+          filteredExpected,
           `Transaction ${trxReceipt.hash} (Block #${trxReceipt.blockNumber}) trace mismatch against stored snapshot ${snapshot.id}` +
             "\n" +
             `Use SNAPSHOTS_UPDATE=true to update all snapshots or SNAPSHOTS_UPDATE="^${snapshot.id}$" this specific snapshot` +
@@ -309,11 +321,11 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
             `See the diff locally by running: ` +
             `'${process.env.DIFF_EDITOR || "diff -u"} ${snapshot.toSnapshotPath(
               SnapshotKind.ActualNormalized,
-              true
-            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`
+              true,
+            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`,
         )
       }
-    }
+    },
   )
 }
 
@@ -322,7 +334,7 @@ function assertTrxOrdinals(
   ordinalsMap: Record<number, number>,
   trace: TransactionTrace,
   blockNumber: number,
-  options?: { skipOrdinalCheck?: boolean }
+  options?: { skipOrdinalCheck?: boolean },
 ) {
   if (options?.skipOrdinalCheck) {
     return
@@ -336,7 +348,7 @@ function assertTrxOrdinals(
   ordinals.forEach(([ordinal, count]) => {
     new chai.Assertion(
       count,
-      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`
+      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`,
     ).to.equal(1)
 
     if (previous) {
@@ -408,7 +420,7 @@ function deltaizeNonceValue(change: NonceChange) {
 
 function templatizeJsonTransactionTrace(
   parsed: Record<string, any>,
-  vars: Record<string, string>
+  vars: Record<string, string>,
 ): Record<string, any> {
   const valuesToName: Record<string, string> = {}
   for (const [key, value] of Object.entries(vars)) {

@@ -26,7 +26,9 @@ import { oneWei } from "./lib/money"
 import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
 import { fetchFirehoseBlock } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
-import { isNetwork } from "./lib/network"
+import { isNetwork, networkName } from "./lib/network"
+import { registerGlobalExcludedFields } from "./lib/field-exclusion"
+import { besu_exclude_fields } from "./lib/constants"
 
 export let owner: NonceManager
 export let ownerAddress: string
@@ -57,11 +59,14 @@ before(async () => {
 
   if (!process.env.SNAPSHOTS_TAG) {
     throw new Error(
-      "SNAPSHOTS_TAG environment variable must be set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite."
+      "SNAPSHOTS_TAG environment variable must be set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite.",
     )
   }
 
   setGlobalSnapshotsTag(process.env.SNAPSHOTS_TAG)
+
+  // Register global excluded fields for specific networks
+  registerGlobalExcludedFields("besu-devnet", besu_exclude_fields)
 
   debug("Initializing contract factories sequentially")
   ContractEmptyFactory = await hre.ethers.getContractFactory("ContractEmpty")
@@ -98,7 +103,7 @@ before(async () => {
   if (!isNetwork("amoy")) {
     executeTransactions(
       sendImmediateEth(owner, knownExistingAddress, oneWei),
-      sendImmediateEth(owner, precompileWithBalanceAddress, oneWei)
+      sendImmediateEth(owner, precompileWithBalanceAddress, oneWei),
     )
       .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
       .catch(abortTagged("Executing initialization transactions"))
@@ -121,7 +126,7 @@ function validateFirehoseBlockVersion(block: Block) {
     case "fh2.3":
       if (block.ver !== 3) {
         throw new Error(
-          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh2.3 expect version 3, it seems your geth instance is not running with the correct geth/Firehose version`
+          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh2.3 expect version 3, it seems your geth instance is not running with the correct geth/Firehose version`,
         )
       }
       break
@@ -129,7 +134,7 @@ function validateFirehoseBlockVersion(block: Block) {
     case "fh3.0":
       if (block.ver !== 4) {
         throw new Error(
-          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh3.0 expect version 4, it seems your geth instance is not running with the correct geth/Firehose version`
+          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh3.0 expect version 4, it seems your geth instance is not running with the correct geth/Firehose version`,
         )
       }
       break

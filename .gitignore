@@ -2,6 +2,9 @@ node_modules
 .env
 .envrc
 
+# macOS files
+.DS_Store
+
 # Hardhat files
 /cache
 /artifacts
@@ -24,3 +27,6 @@ scripts/optimism/op-node-db
 
 # E2E test repository (cloned by polygon-bridge script)
 polygon-e2e-tests/
+
+# Misc
+.DS_Store

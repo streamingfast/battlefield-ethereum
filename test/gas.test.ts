@@ -11,7 +11,7 @@ describe("Gas", function () {
   before(async () => {
     await deployAll(
       async () => (Gas = await deployContract(owner, MainFactory, [])),
-      async () => (Child = await deployContract(owner, ChildFactory, []))
+      async () => (Child = await deployContract(owner, ChildFactory, [])),
     )
 
     await deployAll(async () => (GrandChild = await deployContract(owner, GrandChildFactory, [Child.address, false])))
@@ -22,7 +22,7 @@ describe("Gas", function () {
       "gas/empty_call_for_lowest_gas.expected.json",
       {
         $gasContract: Gas.addressHex,
-      }
+      },
     )
   })
 
@@ -32,7 +32,7 @@ describe("Gas", function () {
       {
         $gasContract: Gas.addressHex,
         $childContract: Child.addressHex,
-      }
+      },
     )
   })
 
@@ -42,27 +42,33 @@ describe("Gas", function () {
       {
         $gasContract: Gas.addressHex,
         $childContract: Child.addressHex,
-      }
+      },
     )
   })
 
   it("Deep nested low gas", async function () {
     await expect(
-      contractCall(owner, Gas.deepNestedLowGas, [Child.address, GrandChild.address])
-    ).to.trxTraceEqualSnapshot("gas/deep_nested_low_gas.expected.json", {
-      $gasContract: Gas.addressHex,
-      $childContract: Child.addressHex,
-      $grandChildContract: GrandChild.addressHex,
-    })
+      contractCall(owner, Gas.deepNestedLowGas, [Child.address, GrandChild.address]),
+    ).to.trxTraceEqualSnapshot(
+      "gas/deep_nested_low_gas.expected.json",
+      {
+        $gasContract: Gas.addressHex,
+        $childContract: Child.addressHex,
+        $grandChildContract: GrandChild.addressHex,
+      },
+    )
   })
 
   it("Deep nested call for lowest gas", async function () {
     await expect(
-      contractCall(owner, Gas.deepNestedCallForLowestGas, [Child.address, GrandChild.address])
-    ).to.trxTraceEqualSnapshot("gas/deep_nested_call_for_lowest_gas.expected.json", {
-      $gasContract: Gas.addressHex,
-      $childContract: Child.addressHex,
-      $grandChildContract: GrandChild.addressHex,
-    })
+      contractCall(owner, Gas.deepNestedCallForLowestGas, [Child.address, GrandChild.address]),
+    ).to.trxTraceEqualSnapshot(
+      "gas/deep_nested_call_for_lowest_gas.expected.json",
+      {
+        $gasContract: Gas.addressHex,
+        $childContract: Child.addressHex,
+        $grandChildContract: GrandChild.addressHex,
+      },
+    )
   })
 })

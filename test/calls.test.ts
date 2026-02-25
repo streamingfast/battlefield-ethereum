@@ -44,7 +44,7 @@ describe("Calls", function () {
   before(async () => {
     await deployAll(
       async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })),
-      async () => (Child = await deployContract(owner, ChildFactory, []))
+      async () => (Child = await deployContract(owner, ChildFactory, [])),
     )
   })
 
@@ -59,7 +59,7 @@ describe("Calls", function () {
         (Calls = await deployStableContractCreator(owner, CallsFactory, [], 1, 1, {
           gasLimit: callsGasLimit,
         })),
-      async () => (GrandChild = await deployContract(owner, GrandChildFactory, [Child.address, false]))
+      async () => (GrandChild = await deployContract(owner, GrandChildFactory, [Child.address, false])),
     )
 
     await expect(contractCall(owner, Calls!.execute, [Child.address, GrandChild!.address])).to.trxTraceEqualSnapshot(
@@ -73,13 +73,13 @@ describe("Calls", function () {
       {
         // Seems BNB has different error message `bn256: malformed point` vs `point is not on curve`
         networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"],
-      }
+      },
     )
   })
 
   it("Delegate with value", async function () {
     await expect(
-      contractCall(owner, Calls.delegateWithValue, [Child.address], { value: wei(3) })
+      contractCall(owner, Calls.delegateWithValue, [Child.address], { value: wei(3) }),
     ).to.trxTraceEqualSnapshot("calls/delegate_with_value.expected.json", {
       $callsContract: Calls.addressHex,
       $childContract: Child.addressHex,
@@ -102,7 +102,7 @@ describe("Calls", function () {
           "bnb-dev", // less gas used on bnb here, also an extra 'REASON_STATE_COLD_ACCESS' gas change
           "optimism-geth-dev", // less gas used on bnb here, also an extra 'REASON_STATE_COLD_ACCESS' gas change
         ],
-      }
+      },
     )
   })
 
@@ -112,7 +112,7 @@ describe("Calls", function () {
     await expect(
       contractCall(owner, Transfers.nestedFailedNativeTransfer, [Child.address, randomAddress5], {
         value: wei(3),
-      })
+      }),
     ).to.trxTraceEqualSnapshot("calls/nested_fail_with_native_transfer.expected.json", {
       $transfers: Transfers.addressHex,
       $childContract: Child.addressHex,
@@ -126,7 +126,7 @@ describe("Calls", function () {
       {
         $callsContract: Calls.addressHex,
         $childContract: Child.addressHex,
-      }
+      },
     )
   })
 
@@ -135,7 +135,7 @@ describe("Calls", function () {
       "calls/all_precompiled.expected.json",
       {
         $callsContract: Calls.addressHex,
-      }
+      },
     )
   })
 
@@ -144,7 +144,7 @@ describe("Calls", function () {
       "calls/assert_failure_root_call.expected.json",
       {
         $callsContract: Calls.addressHex,
-      }
+      },
     )
   })
 
@@ -157,7 +157,7 @@ describe("Calls", function () {
       {
         // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
         networkSnapshotOverrides: ["optimism-geth-dev"],
-      }
+      },
     )
   })
 
@@ -167,7 +167,7 @@ describe("Calls", function () {
       {
         $callsContract: Calls.addressHex,
         $childContract: Child.addressHex,
-      }
+      },
     )
   })
 })

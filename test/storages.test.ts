@@ -14,7 +14,7 @@ describe("Storages", function () {
   it("Set long string & array", async function () {
     const customTx = networkValue({
       "sei-dev": { gasLimit: 1_525_000 },
-      "*": undefined,
+      "*": {},
     })
 
     await expect(contractCall(owner, Storage.setLongString, [], customTx)).to.trxTraceEqualSnapshot(
@@ -24,14 +24,14 @@ describe("Storages", function () {
       },
       {
         networkSnapshotOverrides: ["optimism-geth-dev"], // less gas used on bnb here
-      }
+      },
     )
 
     await expect(contractCall(owner, Storage.setAfter, [])).to.trxTraceEqualSnapshot(
       "storages/set_long_again_and_array_update.expected.json",
       {
         $storageContract: Storage.addressHex,
-      }
+      },
     )
   })
 })

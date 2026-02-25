@@ -13,7 +13,7 @@ describe("Logs", function () {
     await deployAll(
       async () => (Child = await deployContract(owner, ChildFactory, [])),
       async () => (Logs = await deployContract(owner, LogsFactory, [])),
-      async () => (LogsNoTopics = await deployContract(owner, LogsNoTopicsFactory, []))
+      async () => (LogsNoTopics = await deployContract(owner, LogsNoTopicsFactory, [])),
     )
   })
 
@@ -22,7 +22,7 @@ describe("Logs", function () {
       "logs/log_no_topics.expected.json",
       {
         $logsContract: Logs.addressHex,
-      }
+      },
     )
   })
 
@@ -31,7 +31,7 @@ describe("Logs", function () {
       "logs/log_no_topics_with_data.expected.json",
       {
         $logsContract: LogsNoTopics.addressHex,
-      }
+      },
     )
   })
 
@@ -58,7 +58,7 @@ describe("Logs", function () {
           // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
           "optimism-geth-dev",
         ],
-      }
+      },
     )
   })
 
@@ -81,26 +81,35 @@ describe("Logs", function () {
           // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
           "optimism-geth-dev",
         ],
-      }
+      },
     )
   })
 
   it("Empty", async function () {
-    await expect(contractCall(owner, Logs.logEmpty, [])).to.trxTraceEqualSnapshot("logs/log_empty.expected.json", {
-      $logsContract: Logs.addressHex,
-    })
+    await expect(contractCall(owner, Logs.logEmpty, [])).to.trxTraceEqualSnapshot(
+      "logs/log_empty.expected.json",
+      {
+        $logsContract: Logs.addressHex,
+      },
+    )
   })
 
   it("Single", async function () {
-    await expect(contractCall(owner, Logs.logSingle, [])).to.trxTraceEqualSnapshot("logs/log_single.expected.json", {
-      $logsContract: Logs.addressHex,
-    })
+    await expect(contractCall(owner, Logs.logSingle, [])).to.trxTraceEqualSnapshot(
+      "logs/log_single.expected.json",
+      {
+        $logsContract: Logs.addressHex,
+      },
+    )
   })
 
   it("All", async function () {
-    await expect(contractCall(owner, Logs.logAll, [])).to.trxTraceEqualSnapshot("logs/log_all.expected.json", {
-      $logsContract: Logs.addressHex,
-    })
+    await expect(contractCall(owner, Logs.logAll, [])).to.trxTraceEqualSnapshot(
+      "logs/log_all.expected.json",
+      {
+        $logsContract: Logs.addressHex,
+      },
+    )
   })
 
   it("All indexed", async function () {
@@ -108,7 +117,7 @@ describe("Logs", function () {
       "logs/log_all_indexed.expected.json",
       {
         $logsContract: Logs.addressHex,
-      }
+      },
     )
   })
 
@@ -117,14 +126,17 @@ describe("Logs", function () {
       "logs/log_all_mixed.expected.json",
       {
         $logsContract: Logs.addressHex,
-      }
+      },
     )
   })
 
   it("Multi", async function () {
-    await expect(contractCall(owner, Logs.logMulti, [])).to.trxTraceEqualSnapshot("logs/log_multi.expected.json", {
-      $logsContract: Logs.addressHex,
-    })
+    await expect(contractCall(owner, Logs.logMulti, [])).to.trxTraceEqualSnapshot(
+      "logs/log_multi.expected.json",
+      {
+        $logsContract: Logs.addressHex,
+      },
+    )
   })
 
   it("Log in top-level trx and then top-level trx fails", async function () {
@@ -132,7 +144,7 @@ describe("Logs", function () {
       "logs/log_top_level_fail.expected.json",
       {
         $logsContract: Logs.addressHex,
-      }
+      },
     )
   })
 
@@ -145,7 +157,7 @@ describe("Logs", function () {
       },
       {
         networkSnapshotOverrides: ["arbitrum-geth-dev"],
-      }
+      },
     )
   })
 
@@ -158,7 +170,7 @@ describe("Logs", function () {
       },
       {
         networkSnapshotOverrides: ["arbitrum-geth-dev"],
-      }
+      },
     )
   })
 })
