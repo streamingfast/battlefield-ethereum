@@ -99,6 +99,12 @@ setup_monad_infrastructure() {
         exit 1
     }
 
+    echo "Funding Geth test account from Foundry account..."
+    fund_geth_account || {
+        echo "ERROR: Failed to fund Geth test account"
+        exit 1
+    }
+
     MONAD_TIMESTAMP_DIR="$ROOT/monad-devnet"
 }
 
@@ -157,6 +163,24 @@ wait_event_ring() {
         fi
         sleep 1
     done
+}
+
+fund_geth_account() {
+    local foundry_key="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+    local geth_account="0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
+    local funding_amount="10000ether"
+
+    cast send --rpc-url http://127.0.0.1:18080 \
+        --private-key "$foundry_key" \
+        --value "$funding_amount" \
+        "$geth_account" \
+        2>&1 || return 1
+
+    echo "Verifying account balance..."
+    local balance=$(cast balance --rpc-url http://127.0.0.1:18080 "$geth_account" 2>&1)
+    echo "Geth test account balance: $balance wei"
+
+    return 0
 }
 
 cleanup() {
