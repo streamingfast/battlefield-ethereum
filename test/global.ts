@@ -67,7 +67,7 @@ before(async () => {
 
   // Register global excluded fields for specific networks
   registerGlobalExcludedFields("besu-devnet", besu_exclude_fields)
-  registerGlobalExcludedFields("monad-devnet", monad_exclude_fields)
+  registerGlobalExcludedFields("monad-dev", monad_exclude_fields)
 
   debug("Initializing contract factories sequentially")
   ContractEmptyFactory = await hre.ethers.getContractFactory("ContractEmpty")
