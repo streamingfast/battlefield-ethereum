@@ -296,6 +296,8 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       let filteredExpected = expected
       const fieldsToExclude = getGlobalExcludedFields(networkName())
 
+      new chai.Assertion(networkName()).to.equal(networkName(), `Network: ${networkName()}, Excluded fields: ${JSON.stringify(fieldsToExclude)}`)
+
       if (fieldsToExclude.length > 0) {
         filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)
         filteredExpected = excludeFieldsFromObject(expected, fieldsToExclude)
