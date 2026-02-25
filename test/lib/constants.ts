@@ -17,10 +17,10 @@ export const besu_exclude_fields = [
 ]
 
 export const monad_exclude_fields = [
-//   "calls[].gasChanges",
-//   "calls[].beginOrdinal",
-//   "calls[].endOrdinal",
-//   "calls[].logs[].ordinal",
-//   "endOrdinal",
-//   "receipt.logs[].ordinal",
+  "calls[].gasChanges",
+  "calls[].beginOrdinal",
+  "calls[].endOrdinal",
+  "calls[].logs[].ordinal",
+  "endOrdinal",
+  "receipt.logs[].ordinal",
 ]
