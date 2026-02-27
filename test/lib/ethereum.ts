@@ -20,8 +20,8 @@ import { isNetwork } from "./network"
 
 const debug = debugFactory("battlefield:eth")
 
-export const defaultGasPrice = 45_000_000_000
-export const defaultGasLimit = 900_000
+export const defaultGasPrice = isNetwork("monad-dev") ? 110_000_000_000 : 45_000_000_000
+export const defaultGasLimit = isNetwork("monad-dev") ? 5_000_000 : 900_000
 export const defaultDeployerBalance = isNetwork("monad-dev") ? eth(100) : eth(0.01)
 
 /**
