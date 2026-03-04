@@ -2,8 +2,10 @@ version: "3.9"
 
 services:
   localnet-firehose:
-    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:e6dc9a9
+    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:e3f3e1a
     container_name: monad-localnet-extended-firehose
+    environment:
+      - MONAD_TRACER_LOG=1
     entrypoint: ["/app/fireeth"]
     command:
       - start
@@ -30,7 +32,7 @@ services:
     restart: unless-stopped
 
   localnet-firehose-api:
-    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:e6dc9a9
+    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:e3f3e1a
     container_name: monad-localnet-extended-firehose-api
     entrypoint: ["/app/fireeth"]
     command:
@@ -56,7 +58,7 @@ services:
     restart: unless-stopped
 
   localnet-substreams-tier2:
-    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:e6dc9a9
+    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:e3f3e1a
     container_name: monad-localnet-substreams-tier2
     entrypoint: ["/app/fireeth"]
     command:
@@ -78,7 +80,7 @@ services:
     restart: unless-stopped
 
   localnet-substreams-tier1:
-    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:e6dc9a9
+    image: ghcr.io/streamingfast/evm-firehose-tracer-rs/monad:e3f3e1a
     container_name: monad-localnet-substreams-tier1
     entrypoint: ["/app/fireeth"]
     command:
