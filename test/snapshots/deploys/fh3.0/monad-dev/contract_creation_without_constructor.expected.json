@@ -1,12 +1,12 @@
 {
   "to": "$callsContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5000000",
   "input": "1e1fc855",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "66052",
+  "gasUsed": "5000000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
-      "gasLimit": "878936",
-      "gasConsumed": "44988",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
       "returnData": "",
       "input": "1e1fc855",
       "executedCode": true,
@@ -37,21 +37,12 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "8fe28911674000",
+          "oldValue": "07a1fe1602770000",
           "newValue": ""
-        },
-        {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "22",
-          "oldValue": "",
-          "newValue": "8553353b8d3800"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "24",
           "oldValue": "",
           "newValue": "01"
         }
@@ -137,8 +128,8 @@
       "callType": "CREATE",
       "caller": "$callsContract",
       "address": "$createdContract",
-      "gasLimit": "833425",
-      "gasConsumed": "12666",
+      "gasLimit": "4869380",
+      "gasConsumed": "3172",
       "returnData": "",
       "input": "6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212209cd6a6851cb6439ef3009ed902d5ec5ff9bdb7a3428995f1f0ec1542b5ec423964736f6c634300060c0033",
       "executedCode": true,
@@ -207,7 +198,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",

@@ -36,15 +36,15 @@
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
-          "newValue": "01"
+          "newValue": "b1a2bc2ec50000"
         }
       ],
       "nonceChanges": [
@@ -127,7 +127,7 @@
       "depth": 1,
       "callType": "CREATE",
       "caller": "$callsContract",
-      "address": "$createdContract",
+      "address": "0000000000000000000000000000000000000000",
       "gasLimit": "4669466",
       "gasConsumed": "0",
       "returnData": "",
