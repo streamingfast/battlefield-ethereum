@@ -45,6 +45,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, bats...)                       |
 | Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_optimism_devnet.sh`. | `pnpm test:fh3.0:optimism-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
+| Monad (fh 3.0)           | `./scripts/run_monad_devnet.sh`                                                               | `pnpm test:fh3.0:monad-dev`                                | Requires Monad node with event ring enabled                                  |
 
 After each test, you should also run:
 

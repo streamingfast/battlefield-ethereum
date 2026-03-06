@@ -3,6 +3,8 @@ import {
   Contract,
   contractCall,
   contractCreation,
+  defaultDeployerBalance,
+  defaultGasLimit,
   deployAll,
   deployContract,
   deployStableContractCreator,
@@ -24,7 +26,7 @@ import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
 import { isNetwork } from "./lib/network"
 
-const callsGasLimit = 3_500_000
+const callsGasLimit = isNetwork("monad-dev") ? 30_000_000 : 3_500_000
 
 // Arbitrum Geth Dev Suicide Note (comment ref id 5564fd945748)
 //
@@ -180,9 +182,9 @@ describe("Suicide", function () {
   })
 
   it("Contract created in trx and suicides in constructor", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
+    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
 
-    await expect(contractCreation(deployer, SuicideOnConstructorFactory, [])).to.trxTraceEqualSnapshot(
+    await expect(contractCreation(deployer, SuicideOnConstructorFactory, [], { gasLimit: defaultGasLimit })).to.trxTraceEqualSnapshot(
       "suicide/create_contract_suicide_in_constructor.json",
       {
         $sender: deployer.address.toLowerCase().slice(2),
@@ -198,8 +200,8 @@ describe("Suicide", function () {
   })
 
   it("Contract and suicide beneficiary are the same", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
-    const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [])
+    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
+    const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [], { gasLimit: defaultGasLimit })
 
     await sendEth(owner, Contract.address, oneWei, { gasLimit: 45000 })
 
