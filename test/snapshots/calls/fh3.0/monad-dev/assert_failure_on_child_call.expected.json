@@ -1,12 +1,12 @@
 {
   "to": "$callsContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5000000",
   "input": "bf2ff239000000000000000000000000$childContract",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "887096",
+  "gasUsed": "5000000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
-      "gasLimit": "878568",
-      "gasConsumed": "865664",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
       "returnData": "",
       "input": "bf2ff239000000000000000000000000$childContract",
       "executedCode": true,
@@ -44,24 +44,15 @@
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "8fe28911674000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "17",
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
-          "newValue": "0210201920d000"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "19",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "b1a2bc2ec50000"
         }
       ],
       "nonceChanges": [
@@ -133,22 +124,14 @@
       "callType": "CALL",
       "caller": "$callsContract",
       "address": "$childContract",
-      "gasLimit": "839786",
-      "gasConsumed": "839786",
+      "gasLimit": "4862452",
+      "gasConsumed": "4862452",
       "returnData": "",
       "input": "69961c23",
       "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
-      "storageChanges": [
-        {
-          "address": "$childContract",
-          "key": "0000000000000000000000000000000000000000000000000000000000000003",
-          "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
-          "newValue": "0000000000000000000000000000000000000000000000000000000000000001",
-          "ordinal": "12"
-        }
-      ],
+      "storageChanges": [],
       "balanceChanges": [],
       "nonceChanges": [],
       "logs": [],
@@ -169,7 +152,7 @@
       ],
       "statusFailed": true,
       "statusReverted": false,
-      "failureReason": "invalid opcode: INVALID",
+      "failureReason": "execution failed",
       "stateReverted": true,
       "beginOrdinal": "10",
       "endOrdinal": "14",
@@ -177,7 +160,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",
