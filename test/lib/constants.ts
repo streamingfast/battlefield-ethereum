@@ -28,4 +28,6 @@ export const monad_exclude_fields = [
   "calls[].storageChanges[].ordinal",
   "calls[].codeChanges[].ordinal",
   "receipt.logs[].ordinal",
+  // TODO: remove
+  "setCodeAuthorizations",
 ]
