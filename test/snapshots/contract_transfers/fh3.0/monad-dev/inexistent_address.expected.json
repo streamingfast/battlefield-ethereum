@@ -36,19 +36,19 @@
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_UNKNOWN",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "07a1fe1602770001",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
-          "reason": "REASON_UNKNOWN",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         },
         {
           "address": "$randomAddress3",
-          "reason": "REASON_UNKNOWN",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
           "newValue": "01"
         }
