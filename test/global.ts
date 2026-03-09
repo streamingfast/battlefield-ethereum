@@ -59,7 +59,7 @@ before(async () => {
 
   if (!process.env.SNAPSHOTS_TAG) {
     throw new Error(
-      "SNAPSHOTS_TAG environment variable must be set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite."
+      "SNAPSHOTS_TAG environment variable must be set, it is mandatory, you are probably not running the test suite as intended. Use pnpm test:<tag> to run the test suite.",
     )
   }
 
@@ -103,7 +103,7 @@ before(async () => {
   if (!isNetwork("amoy")) {
     executeTransactions(
       sendImmediateEth(owner, knownExistingAddress, oneWei),
-      sendImmediateEth(owner, precompileWithBalanceAddress, oneWei)
+      sendImmediateEth(owner, precompileWithBalanceAddress, oneWei),
     )
       .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
       .catch(abortTagged("Executing initialization transactions"))
@@ -126,7 +126,7 @@ function validateFirehoseBlockVersion(block: Block) {
     case "fh3.0":
       if (block.ver !== 4) {
         throw new Error(
-          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh3.0 expect version 4, it seems your geth instance is not running with the correct geth/Firehose version`
+          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh3.0 expect version 4, it seems your geth instance is not running with the correct geth/Firehose version`,
         )
       }
       break

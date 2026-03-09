@@ -86,30 +86,21 @@ describe("Logs", function () {
   })
 
   it("Empty", async function () {
-    await expect(contractCall(owner, Logs.logEmpty, [])).to.trxTraceEqualSnapshot(
-      "logs/log_empty.expected.json",
-      {
-        $logsContract: Logs.addressHex,
-      },
-    )
+    await expect(contractCall(owner, Logs.logEmpty, [])).to.trxTraceEqualSnapshot("logs/log_empty.expected.json", {
+      $logsContract: Logs.addressHex,
+    })
   })
 
   it("Single", async function () {
-    await expect(contractCall(owner, Logs.logSingle, [])).to.trxTraceEqualSnapshot(
-      "logs/log_single.expected.json",
-      {
-        $logsContract: Logs.addressHex,
-      },
-    )
+    await expect(contractCall(owner, Logs.logSingle, [])).to.trxTraceEqualSnapshot("logs/log_single.expected.json", {
+      $logsContract: Logs.addressHex,
+    })
   })
 
   it("All", async function () {
-    await expect(contractCall(owner, Logs.logAll, [])).to.trxTraceEqualSnapshot(
-      "logs/log_all.expected.json",
-      {
-        $logsContract: Logs.addressHex,
-      },
-    )
+    await expect(contractCall(owner, Logs.logAll, [])).to.trxTraceEqualSnapshot("logs/log_all.expected.json", {
+      $logsContract: Logs.addressHex,
+    })
   })
 
   it("All indexed", async function () {
@@ -131,12 +122,9 @@ describe("Logs", function () {
   })
 
   it("Multi", async function () {
-    await expect(contractCall(owner, Logs.logMulti, [])).to.trxTraceEqualSnapshot(
-      "logs/log_multi.expected.json",
-      {
-        $logsContract: Logs.addressHex,
-      },
-    )
+    await expect(contractCall(owner, Logs.logMulti, [])).to.trxTraceEqualSnapshot("logs/log_multi.expected.json", {
+      $logsContract: Logs.addressHex,
+    })
   })
 
   it("Log in top-level trx and then top-level trx fails", async function () {
