@@ -76,7 +76,7 @@ export async function sendEth(
   from: Signer,
   to: string,
   value: BigNumberish,
-  custom: TxRequest = {},
+  custom: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   const trxRequest = {
     to,
@@ -95,7 +95,7 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   from: Signer,
   call: TypedContractMethod<A, R, S>,
   args: ContractMethodArgs<A, S>,
-  customTx: TxRequest = {},
+  customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   const trxCall = await call.populateTransaction(...args)
   const trxRequest = {
@@ -120,7 +120,7 @@ export async function koContractCall<A extends Array<any> = Array<any>, R = any,
   from: Signer,
   call: TypedContractMethod<A, R, S>,
   args: ContractMethodArgs<A, S>,
-  customTx: TxRequest = {},
+  customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   return contractCall(from, call, args, { shouldRevert: true, ...customTx })
 }
@@ -154,7 +154,7 @@ export async function koContractCreation<F extends ContractFactory>(
   owner: Signer,
   factory: ContractFactory,
   constructorArgs: SolidityConstructorArgs<F>,
-  customTx: TxRequest = {},
+  customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   return contractCreation(owner, factory, constructorArgs, { shouldRevert: true, ...customTx })
 }
@@ -167,7 +167,7 @@ export async function contractCreation<F extends ContractFactory, C extends Base
   owner: Signer,
   factory: ContractFactory,
   constructorArgs: SolidityConstructorArgs<F>,
-  customTx: TxRequest = {},
+  customTx: TxRequest = {}
 ): Promise<TransactionReceiptResult> {
   const [receipt, _] = await _deployContract(owner, factory, constructorArgs, customTx)
   return receipt
@@ -194,7 +194,7 @@ export async function deployContract<F extends ContractFactory, C extends BaseCo
   owner: Signer,
   factory: F,
   constructorArgs: SolidityConstructorArgs<F>,
-  customTx: TxRequest = {},
+  customTx: TxRequest = {}
 ): Promise<Contract<C>> {
   const [_, contract] = await _deployContract(owner, factory, constructorArgs, customTx)
   return contract as Contract<C>
@@ -204,7 +204,7 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
   owner: Signer,
   factory: ContractFactory,
   constructorArgs: SolidityConstructorArgs<F>,
-  customTx: TxRequest = {},
+  customTx: TxRequest = {}
 ): Promise<[TransactionReceiptResult, Contract<C>]> {
   let receipt: TransactionReceiptResult
   while (true) {
@@ -285,7 +285,7 @@ export function getStableCreate2Data<F extends Bytecodeable>(from: string, contr
 
     if (addressHasZeroBytes(address)) {
       debug(
-        "Contract address (for create2) had zero bytes, this could lead to differences in gas computing, re-generating again",
+        "Contract address (for create2) had zero bytes, this could lead to differences in gas computing, re-generating again"
       )
       continue
     }
@@ -317,7 +317,7 @@ export async function stableDeployer(from: Signer, creationCount: number): Promi
 
     if (getCreateAddressesHex(deployer.address, creationCount).some(addressHasZeroBytes)) {
       debug(
-        `Deployer address would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`,
+        `Deployer address would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`
       )
       continue
     }
@@ -339,7 +339,7 @@ export async function stableDeployer(from: Signer, creationCount: number): Promi
 export async function stableDeployerFunded(
   from: Signer,
   creationCount: number,
-  fundWei?: string | BigNumberish,
+  fundWei?: string | BigNumberish
 ): Promise<HDNodeWallet> {
   while (true) {
     const deployer = await stableDeployer(from, creationCount)
@@ -358,14 +358,14 @@ export async function stableDeployerFunded(
  */
 export async function deployStableContractCreator<
   F extends ContractFactory,
-  C extends BaseContract = SolidityContract<F>,
+  C extends BaseContract = SolidityContract<F>
 >(
   owner: Signer,
   factory: F,
   constructorArgs: SolidityConstructorArgs<F>,
   creationCount: number = 1,
   depth: number = 1,
-  customTx: TxRequest = {},
+  customTx: TxRequest = {}
 ): Promise<Contract<C>> {
   while (true) {
     const contract = await deployContract(owner, factory, constructorArgs, customTx)
@@ -374,7 +374,7 @@ export async function deployStableContractCreator<
     // Ensure that for the first <creationCount> contracts, the generated address will contains no zero bytes
     if (addresses.some(addressHasZeroBytes)) {
       debug(
-        `Deployed contract would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`,
+        `Deployed contract would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`
       )
       continue
     }
@@ -386,7 +386,7 @@ export async function deployStableContractCreator<
     if (depth == 2) {
       if (addresses.some(wouldCreateSomeZeroBytesAddress(creationCount))) {
         debug(
-          `Deployed second depth contract would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`,
+          `Deployed second depth contract would create a contract address with zero bytes, this could lead to differences in gas computing, deploying again`
         )
         continue
       }
@@ -419,8 +419,15 @@ export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<
     block = "0x" + tag.toString(16)
   }
 
-  // FIXME: Retrieve address from provider or HardHat config?
-  const result = await fetch("http://localhost:8545", {
+  let rpcUrl = "http://localhost:8545"
+
+  // The url check is needed so Typescript can precise the type casting to a HttpNetworkConfig automatically,
+  // the url being non-existent for the Hardhat in-process network (hence why they have 2 types for it).
+  if ("url" in hre.network.config && hre.network.config.url) {
+    rpcUrl = hre.network.config.url
+  }
+
+  const result = await fetch(rpcUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -436,7 +443,7 @@ export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<
   const response = await result.json()
 
   if (response["result"] != null) {
-    debug("Fetched RPC block %O", response["result"])
+    debug("Fetched RPC block (from %s) %O", rpcUrl, response["result"])
     return response.result
   }
 

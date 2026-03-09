@@ -22,9 +22,7 @@ import {
 } from "./global"
 import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
-import { isNetwork } from "./lib/network"
-
-const callsGasLimit = 3_500_000
+import { isNetwork, networkValue } from "./lib/network"
 
 // Arbitrum Geth Dev Suicide Note (comment ref id 5564fd945748)
 //
@@ -45,11 +43,15 @@ describe("Suicide", function () {
   let Suicidal2: Contract<Suicidal>
   let Calls: Contract<Calls>
 
+  const callsGasLimit = networkValue({
+    "*": 3_500_000,
+  })
+
   before(async () => {
     await deployAll(
       async () => (Suicidal1 = await deployContract(owner, SuicidalFactory, [])),
       async () => (Suicidal2 = await deployContract(owner, SuicidalFactory, [])),
-      async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })),
+      async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit }))
     )
   })
 
@@ -75,7 +77,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      },
+      }
     )
 
     await expect(contractCall(owner, Suicidal1.kill, [])).to.trxTraceEqualSnapshot(
@@ -92,7 +94,7 @@ describe("Suicide", function () {
           "arbitrum-geth-dev",
           "bnb-dev", // on bnb, there is no executedCode, no suicide, no gas change for REASON_SELF_DESTRUCT
         ],
-      },
+      }
     )
   })
 
@@ -117,7 +119,7 @@ describe("Suicide", function () {
           "arbitrum-geth-dev",
           "bnb-dev", // on bnb, the refund happens BEFORE the withdraw
         ],
-      },
+      }
     )
   })
 
@@ -125,7 +127,9 @@ describe("Suicide", function () {
     let Calls = await deployStableContractCreator(owner, CallsFactory, [], 2, 2, { gasLimit: callsGasLimit })
     let firstCreatedContract = getCreateAddressHex(Calls.address, 1)
 
-    await expect(contractCall(owner, Calls.contractSuicideThenCall, [])).to.trxTraceEqualSnapshot(
+    await expect(
+      contractCall(owner, Calls.contractSuicideThenCall, [], { gasLimit: callsGasLimit })
+    ).to.trxTraceEqualSnapshot(
       "suicide/create_contract_kill_it_and_try_to_call_within_same_call.expected.json",
       {
         $callsContract: Calls.addressHex,
@@ -138,7 +142,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      },
+      }
     )
   })
 
@@ -147,7 +151,7 @@ describe("Suicide", function () {
     let createdContract = getCreate2AddressHex(Calls.addressHex, salt, ContractSuicideNoConstructor__factory)
 
     await expect(
-      contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, []),
+      contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, [])
     ).to.trxTraceEqualSnapshot(
       "suicide/create_contract_to_fixed_address_kill_it.expected.json",
       {
@@ -159,11 +163,11 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      },
+      }
     )
 
     await expect(
-      contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, []),
+      contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, [])
     ).to.trxTraceEqualSnapshot(
       "suicide/create_contract_to_fixed_address_kill_it_while_already_killed.expected.json",
       {
@@ -175,7 +179,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      },
+      }
     )
   })
 
@@ -193,7 +197,7 @@ describe("Suicide", function () {
           // See comment with ref id 5564fd945748 in this file
           "arbitrum-geth-dev",
         ],
-      },
+      }
     )
   })
 
@@ -215,7 +219,7 @@ describe("Suicide", function () {
           "arbitrum-geth-dev",
           "bnb-dev", // on bnb, the refund happens BEFORE the withdraw
         ],
-      },
+      }
     )
   })
 
@@ -237,7 +241,7 @@ describe("Suicide", function () {
           "arbitrum-geth-dev",
           "bnb-dev", // bnb does not show the 'double withdraw' behavior, but the result is the same because the account gets drained.
         ],
-      },
+      }
     )
   })
 })

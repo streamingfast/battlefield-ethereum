@@ -46,8 +46,8 @@
           "address": "$sender",
           "reason": "REASON_GAS_BUY",
           "ordinal": "2",
-          "oldValue": "0d3c7334a0a30b",
-          "newValue": ""
+          "oldValue": "",
+          "newValue": "01"
         },
         {
           "address": "$sender",

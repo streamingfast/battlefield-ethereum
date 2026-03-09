@@ -1,4 +1,4 @@
-import { clone, create, DescMessage, equals, isMessage } from "@bufbuild/protobuf"
+import { clone, create, DescMessage, equals } from "@bufbuild/protobuf"
 import chai from "chai"
 import {
   BalanceChange,
@@ -8,7 +8,7 @@ import {
   TransactionTrace,
   TransactionTraceSchema,
 } from "../../pb/sf/ethereum/type/v2/type_pb"
-import { hexlify, toBigInt } from "ethers"
+import { hexlify, toBigInt, getBytes } from "ethers"
 import {
   emptyBytes,
   fetchFirehoseTransactionAndBlock,
@@ -151,7 +151,7 @@ declare global {
       trxTraceEqualSnapshot(
         snapshotFileID: string | Record<string, string>,
         templateVars?: Record<string, string>,
-        options?: TrxTracerEqualSnapshotOptions,
+        options?: TrxTracerEqualSnapshotOptions
       ): Promise<void>
     }
   }
@@ -171,7 +171,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       | TransactionReceiptResult
       | Promise<TransactionReceiptResult>
       | [TransactionReceiptResult, TransactionTrace, Block]
-      | [TransactionTrace, Block],
+      | [TransactionTrace, Block]
   ): Promise<[TransactionReceiptResult, TransactionTrace, Block]> {
     if (Array.isArray(input)) {
       if (input.length === 2) {
@@ -210,7 +210,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
     async function (
       snapshotIdentifier: string,
       templateVars?: Record<string, string>,
-      options?: TrxTracerEqualSnapshotOptions,
+      options?: TrxTracerEqualSnapshotOptions
     ) {
       const [trxReceipt, actualTrace, actualBlock] = await resolveTrxTrace(this._obj)
       if (isNetwork("polygon-dev")) {
@@ -273,6 +273,15 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
               return trxReceipt.cumulativeGasUsed.toString()
             case "$coinbase":
+              if (isNetwork("optimism-devnet")) {
+                // Optimism have more than one receive for the transaction fee making it hard for use to
+                // map the correct one to the correct address. The code below essentially remove validation
+                // of $coinbase value in the template.
+                //
+                // Search 05aae6b910fa0b95 across this codebase to find linked comments to this one ($coinbase)
+                return "0000000000000000000000000000000000000000"
+              }
+
               return findBlockMiner(actualBlock)
             default:
               let replaced = value
@@ -304,7 +313,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       snapshot.writeSnapshotDebugFiles(
         toProtoJsonString(actualTrace),
         JSON.stringify(filteredActual, null, 2),
-        JSON.stringify(filteredExpected, null, 2),
+        JSON.stringify(filteredExpected, null, 2)
       )
 
       // Using directly to.deep.equal leads to losing the actual diff, but using to.equal
@@ -321,11 +330,11 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
             `See the diff locally by running: ` +
             `'${process.env.DIFF_EDITOR || "diff -u"} ${snapshot.toSnapshotPath(
               SnapshotKind.ActualNormalized,
-              true,
-            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`,
+              true
+            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`
         )
       }
-    },
+    }
   )
 }
 
@@ -334,7 +343,7 @@ function assertTrxOrdinals(
   ordinalsMap: Record<number, number>,
   trace: TransactionTrace,
   blockNumber: number,
-  options?: { skipOrdinalCheck?: boolean },
+  options?: { skipOrdinalCheck?: boolean }
 ) {
   if (options?.skipOrdinalCheck) {
     return
@@ -348,7 +357,7 @@ function assertTrxOrdinals(
   ordinals.forEach(([ordinal, count]) => {
     new chai.Assertion(
       count,
-      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`,
+      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`
     ).to.equal(1)
 
     if (previous) {
@@ -381,6 +390,22 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
 
     call.balanceChanges.forEach((change) => {
       if (change.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE) {
+        change.oldValue = zeroWeiF
+        change.newValue = oneWeiF
+
+        if (isNetwork("optimism-devnet")) {
+          // Optimism have more than one receive for the transaction fee making it hard for use to
+          // map the correct one to the correct address. The code below essentially remove validation
+          // of $coinbase value in the template
+          //
+          // Search 05aae6b910fa0b95 across this codebase to find linked comments to this one ($coinbase)
+          change.address = getBytes("0x0000000000000000000000000000000000000000")
+        }
+      }
+
+      // It seems gas buy changes over multiple runs and based on previous transactions sent, so
+      // we just "fix" them to a static value to avoid diff on this field
+      if (change.reason === BalanceChange_Reason.GAS_BUY && isNetwork("optimism-devnet")) {
         change.oldValue = zeroWeiF
         change.newValue = oneWeiF
       }
@@ -420,7 +445,7 @@ function deltaizeNonceValue(change: NonceChange) {
 
 function templatizeJsonTransactionTrace(
   parsed: Record<string, any>,
-  vars: Record<string, string>,
+  vars: Record<string, string>
 ): Record<string, any> {
   const valuesToName: Record<string, string> = {}
   for (const [key, value] of Object.entries(vars)) {

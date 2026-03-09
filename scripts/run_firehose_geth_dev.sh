@@ -19,7 +19,7 @@ main() {
     fork_version="$2"
   fi
 
-  if [[ "$tracer_version" != "2.3" && "$tracer_version" != "3.0" ]]; then
+  if [[ "$tracer_version" != "3.0" ]]; then
     usage_error "Invalid tracer version '$tracer_version'"
   fi
 
@@ -35,7 +35,7 @@ usage() {
   echo "Usage: $0 <tracer-version> [<fork-version>]"
   echo ""
   echo "Runs a Geth dev with the Firehose tracer activated using version <tracer-version>"
-  echo "which can be either '2.3' or '3.0'."
+  echo "which can be either '3.0'."
   echo ""
   echo "You can also optionally specify against which fork you want to test by specifying"
   echo "the <fork-version> which can be one of: 'cancun', 'prague'."
