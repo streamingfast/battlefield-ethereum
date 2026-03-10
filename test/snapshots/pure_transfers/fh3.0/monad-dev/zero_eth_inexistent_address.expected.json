@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$randomAddress2",
-      "gasLimit": "0",
-      "gasConsumed": "0",
+      "gasLimit": "21000",
+      "gasConsumed": "21000",
       "returnData": "",
       "input": "",
       "executedCode": false,
@@ -36,17 +36,15 @@
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "035b78f5501000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "0834eec96e6000",
           "newValue": ""
         },
         {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "7",
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
-          "newValue": "01"
+          "newValue": "befe6f672000"
         }
       ],
       "nonceChanges": [
@@ -83,7 +81,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",

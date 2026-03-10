@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "21015",
+  "gasUsed": "300000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,47 +25,30 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$precompileAddress",
-      "gasLimit": "279000",
-      "gasConsumed": "15",
+      "gasLimit": "300000",
+      "gasConsumed": "300000",
       "returnData": "",
       "input": "",
-      "executedCode": false,
+      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "2ff62db077c000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "753d533d968001",
           "newValue": ""
         },
         {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_TRANSFER",
-          "ordinal": "7",
-          "oldValue": "01",
-          "newValue": ""
-        },
-        {
-          "address": "$precompileAddress",
-          "reason": "REASON_TRANSFER",
-          "ordinal": "8",
-          "newValue": "01",
-          "oldValue": ""
-        },
-        {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "12",
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
-          "newValue": "2c9a1792051200"
+          "newValue": "0aa87bee538000"
         },
         {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "14",
+          "address": "0000000000000000000000000000000000000004",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
           "newValue": "01"
         }
@@ -129,7 +112,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "value": "01",
   "receipt": {
     "stateRoot": "",

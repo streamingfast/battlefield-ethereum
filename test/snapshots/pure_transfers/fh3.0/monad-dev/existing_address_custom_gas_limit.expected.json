@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "21000",
+  "gasUsed": "75000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "d549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
-      "gasLimit": "54000",
-      "gasConsumed": "0",
+      "gasLimit": "75000",
+      "gasConsumed": "75000",
       "returnData": "",
       "input": "",
       "executedCode": false,
@@ -36,36 +36,19 @@
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "0bfd8b6c1df000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "1d4f54cf65a001",
           "newValue": ""
         },
         {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_TRANSFER",
-          "ordinal": "7",
-          "oldValue": "01",
-          "newValue": ""
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "",
+          "newValue": "02aa1efb94e000"
         },
         {
           "address": "d549d2fd4b177767b84ab2fd17423cee1cf1d7bd",
-          "reason": "REASON_TRANSFER",
-          "ordinal": "8",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "11",
-          "oldValue": "",
-          "newValue": "08a21276cde000"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "13",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
           "newValue": "01"
         }
@@ -123,7 +106,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "value": "01",
   "receipt": {
     "stateRoot": "",
