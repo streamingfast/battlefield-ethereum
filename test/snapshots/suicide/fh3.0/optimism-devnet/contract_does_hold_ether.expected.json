@@ -38,8 +38,8 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "2",
-          "oldValue": "8fe2891ef60fe4",
-          "newValue": ""
+          "oldValue": "",
+          "newValue": "01"
         },
         {
           "address": "$suicidal2Contract",

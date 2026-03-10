@@ -124,14 +124,6 @@ function validateFirehoseBlockVersion(block: Block) {
   const tag = globalTag.split("/")[0]
 
   switch (tag) {
-    case "fh2.3":
-      if (block.ver !== 3) {
-        throw new Error(
-          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh2.3 expect version 3, it seems your geth instance is not running with the correct geth/Firehose version`,
-        )
-      }
-      break
-
     case "fh3.0":
       if (block.ver !== 4) {
         throw new Error(

@@ -77,13 +77,10 @@ describe("Deploys", function () {
           "*": 99309,
         }),
       }),
-    ).to.trxTraceEqualSnapshot(
-      "deploys/contract_fail_code_copy.expected.json",
-      {
-        $sender: deployer.address.toLowerCase().slice(2),
-        $createdContract: getCreateAddressHex(deployer.address, 0),
-      },
-    )
+    ).to.trxTraceEqualSnapshot("deploys/contract_fail_code_copy.expected.json", {
+      $sender: deployer.address.toLowerCase().slice(2),
+      $createdContract: getCreateAddressHex(deployer.address, 0),
+    })
   })
 
   it("Contract creation from call, without a constructor", async function () {

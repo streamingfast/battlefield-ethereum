@@ -161,8 +161,8 @@ check_op_node() {
 }
 
 check_op_geth() {
-  if ! command -v "$op_node" &> /dev/null; then
-    echo "The '$op_node' binary could not be found, install required"
+  if ! command -v "$op_geth" &> /dev/null; then
+    echo "The '$op_geth' binary could not be found, install required"
     echo "binary from our fork."
     echo ""
     echo "- git clone https://github.com/streamingfast/go-ethereum.git"

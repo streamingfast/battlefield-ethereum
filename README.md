@@ -15,15 +15,15 @@ Ensure you have `node` version 20 or more recent as as the chain's binary compil
 - Launch Firehose instance using `geth --dev` model (requires [geth](#build-firehose-geth) and [fireeth](#get-fireeth) to be available locally) in a terminal by running:
 
   ```bash
-  ./scripts/run_firehose_geth_dev.sh 2.3
+  ./scripts/run_firehose_geth_dev.sh 3.0
   ```
 
-  This launches the Geth node and Firehose tracer version 2.3, change `2.3` to `3.0` to run Geth node and Firehose tracer version 3.0 instead.
+  This launches the Geth node and Firehose tracer version 3.0.
 
 - Launch the test suite:
 
   ```bash
-  pnpm test:fh2.3:geth-dev
+  pnpm test:fh3.0:geth-dev
   ```
 
 Ensure that you run match command above with the Firehose Tracer Version you use when launching `./scripts/run_firehose_geth_dev.sh` as well
@@ -35,10 +35,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 
 | Chain                    | Firehose Launcher                                                                             | Tests Launcher                                             | Notes                                                                          |
 | ------------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Ethereum (Firehose 2.3)  | `./scripts/run_firehose_geth_dev.sh 2.3 cancun`                                               | `pnpm test:fh2.3:geth-dev`                                 | None                                                                           |
 | Ethereum (Firehose 3.0)  | `./scripts/run_firehose_geth_dev.sh 3.0 prague`                                               | `pnpm test:fh3.0:geth-dev`                                 | None                                                                           |
-| Arbitrum                 | `./scripts/run_firehose_geth_dev.sh 2.3 cancun`                                               | `pnpm test:fh2.3:arbitrum-geth-dev`                        | None                                                                           |
-| Optimism                 | `./scripts/run_firehose_geth_dev.sh 3.0 prague`                                               | `pnpm test:fh3.0:optimism-geth-dev`                        | None                                                                           |
 | Sei                      | `./scripts/run_firehose_sei.sh sequential`                                                    | `pnpm test:fh3.0:sei-dev`                                  | The `sequential` tag refers to transaction execution algorithm, test both      |
 | Sei                      | `./scripts/run_firehose_sei.sh parallel`                                                      | `pnpm test:fh3.0:sei-dev`                                  | The `parallel` tag refers to transaction execution algorithm, test both        |
 | BNB                      | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                     | `pnpm test:fh3.0:bnb-dev`                                  | None                                                                           |
@@ -77,7 +74,6 @@ pnpm test:<id> --grep "Calls Delegate with value"
 
 The test suite has different snapshot tags that can exercises different different tracer behavior. The snapshots tag to use when running tests is controlled by the environment variable `SNAPSHOTS_TAG`. Here the list of snapshot tags we currently support.
 
-- `SNAPSHOTS_TAG="fh2.3"` expects a Firehose Tracer Version 2.3 `./scripts/run_firehose_geth_dev.sh 2.3`
 - `SNAPSHOTS_TAG="fh3.0"` expects a Firehose Tracer Version 3.0 `./scripts/run_firehose_geth_dev.sh 3.0`
 
 > [!NOTE]
@@ -85,7 +81,7 @@ The test suite has different snapshot tags that can exercises different differen
 
 #### Network Snapshots Overrides
 
-Some network like Arbitrum have bugs compared to the "canonical" Ethereum Firehose tracer which is Ethereum Mainnet. They trace almost the same thing as their respective model (`fh2.3` or `fh3.0`) for most transactions but have some differences for specific test cases. We leverage Hardhat networks to implement this functionality.
+Some network like Arbitrum have bugs compared to the "canonical" Ethereum Firehose tracer which is Ethereum Mainnet. They trace almost the same thing as their respective model (`fh3.0`) for most transactions but have some differences for specific test cases. We leverage Hardhat networks to implement this functionality.
 
 Instead of creating a brand new tag specific for this network, instead it's possible to override the snapshot to use on a test case basis:
 
@@ -137,7 +133,6 @@ SNAPSHOTS_UPDATE="transfer_existing_address" pnpm test:<id>
 
 If you modify a setting/config that affects all snapshots, you technically need to update all affected tags. You can use `SNAPSHOTS_UPDATE=".*"` to update all snapshots, normally you will need to do it for each tag
 
-- `SNAPSHOTS_UPDATE=".*" pnpm test:fh2.3:geth-dev`
 - `SNAPSHOTS_UPDATE=".*" pnpm test:fh3.0:geth-dev`
 
 ### Snapshots

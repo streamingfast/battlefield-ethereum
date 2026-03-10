@@ -49,26 +49,20 @@ describe("Gas", function () {
   it("Deep nested low gas", async function () {
     await expect(
       contractCall(owner, Gas.deepNestedLowGas, [Child.address, GrandChild.address]),
-    ).to.trxTraceEqualSnapshot(
-      "gas/deep_nested_low_gas.expected.json",
-      {
-        $gasContract: Gas.addressHex,
-        $childContract: Child.addressHex,
-        $grandChildContract: GrandChild.addressHex,
-      },
-    )
+    ).to.trxTraceEqualSnapshot("gas/deep_nested_low_gas.expected.json", {
+      $gasContract: Gas.addressHex,
+      $childContract: Child.addressHex,
+      $grandChildContract: GrandChild.addressHex,
+    })
   })
 
   it("Deep nested call for lowest gas", async function () {
     await expect(
       contractCall(owner, Gas.deepNestedCallForLowestGas, [Child.address, GrandChild.address]),
-    ).to.trxTraceEqualSnapshot(
-      "gas/deep_nested_call_for_lowest_gas.expected.json",
-      {
-        $gasContract: Gas.addressHex,
-        $childContract: Child.addressHex,
-        $grandChildContract: GrandChild.addressHex,
-      },
-    )
+    ).to.trxTraceEqualSnapshot("gas/deep_nested_call_for_lowest_gas.expected.json", {
+      $gasContract: Gas.addressHex,
+      $childContract: Child.addressHex,
+      $grandChildContract: GrandChild.addressHex,
+    })
   })
 })

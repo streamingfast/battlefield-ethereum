@@ -14,6 +14,7 @@ describe("Storages", function () {
   it("Set long string & array", async function () {
     const customTx = networkValue({
       "sei-dev": { gasLimit: 1_525_000 },
+      "optimism-devnet": { gasLimit: 1_525_000 },
       "*": {},
     })
 

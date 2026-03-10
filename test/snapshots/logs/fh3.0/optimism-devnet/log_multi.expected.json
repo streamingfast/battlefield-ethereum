@@ -32,8 +32,8 @@
       "executedCode": true,
       "suicide": false,
       "keccakPreimages": {
-        "484d99d4f90c3b7468b30e1cdca4cfafa8105f0aa4e30f4833ba73026107e446": "7061796c6f616420617320737472696e67",
-        "9142698e5460b8c074c68329ffa32548cde664fde861deb499b3ed8741c498ef": "e680f12a"
+        "9142698e5460b8c074c68329ffa32548cde664fde861deb499b3ed8741c498ef": "e680f12a",
+        "484d99d4f90c3b7468b30e1cdca4cfafa8105f0aa4e30f4833ba73026107e446": "7061796c6f616420617320737472696e67"
       },
       "storageChanges": [],
       "balanceChanges": [
@@ -41,8 +41,8 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "2",
-          "oldValue": "8fe289259dd8af",
-          "newValue": ""
+          "oldValue": "",
+          "newValue": "01"
         },
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",

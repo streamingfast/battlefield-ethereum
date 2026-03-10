@@ -18,7 +18,7 @@ describe("Pure transfers", function () {
   it("Existing address", async function () {
     await expect(sendEth(owner, knownExistingAddress, oneWei)).to.trxTraceEqualSnapshot(
       "pure_transfers/existing_address.expected.json",
-      undefined
+      undefined,
     )
   })
 

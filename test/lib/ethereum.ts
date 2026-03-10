@@ -423,8 +423,14 @@ export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<
     block = "0x" + tag.toString(16)
   }
 
-  // Get RPC URL from hardhat config
-  const rpcUrl = (hre.network.config as any).url || "http://localhost:8545"
+  let rpcUrl = "http://localhost:8545"
+
+  // The url check is needed so Typescript can precise the type casting to a HttpNetworkConfig automatically,
+  // the url being non-existent for the Hardhat in-process network (hence why they have 2 types for it).
+  if ("url" in hre.network.config && hre.network.config.url) {
+    rpcUrl = hre.network.config.url
+  }
+
   const result = await fetch(rpcUrl, {
     method: "POST",
     headers: {
@@ -441,7 +447,7 @@ export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<
   const response = await result.json()
 
   if (response["result"] != null) {
-    debug("Fetched RPC block %O", response["result"])
+    debug("Fetched RPC block (from %s) %O", rpcUrl, response["result"])
     return response.result
   }
 

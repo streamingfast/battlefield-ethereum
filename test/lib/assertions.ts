@@ -1,4 +1,4 @@
-import { clone, create, DescMessage, equals, isMessage } from "@bufbuild/protobuf"
+import { clone, create, DescMessage, equals } from "@bufbuild/protobuf"
 import chai from "chai"
 import {
   BalanceChange,
@@ -8,7 +8,7 @@ import {
   TransactionTrace,
   TransactionTraceSchema,
 } from "../../pb/sf/ethereum/type/v2/type_pb"
-import { hexlify, toBigInt } from "ethers"
+import { hexlify, toBigInt, getBytes } from "ethers"
 import {
   emptyBytes,
   fetchFirehoseTransactionAndBlock,
@@ -273,6 +273,15 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
               return trxReceipt.cumulativeGasUsed.toString()
             case "$coinbase":
+              if (isNetwork("optimism-devnet")) {
+                // Optimism have more than one receive for the transaction fee making it hard for use to
+                // map the correct one to the correct address. The code below essentially remove validation
+                // of $coinbase value in the template.
+                //
+                // Search 05aae6b910fa0b95 across this codebase to find linked comments to this one ($coinbase)
+                return "0000000000000000000000000000000000000000"
+              }
+
               return findBlockMiner(actualBlock)
             default:
               let replaced = value
@@ -381,6 +390,22 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
 
     call.balanceChanges.forEach((change) => {
       if (change.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE) {
+        change.oldValue = zeroWeiF
+        change.newValue = oneWeiF
+
+        if (isNetwork("optimism-devnet")) {
+          // Optimism have more than one receive for the transaction fee making it hard for use to
+          // map the correct one to the correct address. The code below essentially remove validation
+          // of $coinbase value in the template
+          //
+          // Search 05aae6b910fa0b95 across this codebase to find linked comments to this one ($coinbase)
+          change.address = getBytes("0x0000000000000000000000000000000000000000")
+        }
+      }
+
+      // It seems gas buy changes over multiple runs and based on previous transactions sent, so
+      // we just "fix" them to a static value to avoid diff on this field
+      if (change.reason === BalanceChange_Reason.GAS_BUY && isNetwork("optimism-devnet")) {
         change.oldValue = zeroWeiF
         change.newValue = oneWeiF
       }

@@ -8,15 +8,10 @@ source "$ROOT/lib.sh"
 
 main() {
     data_dir="$(mktemp -d)"
-    firehose_version=${FIREHOSE_VERSION:-"2.3"}
-    fork_version=${FORK_VERSION:-"cancun"}
+    firehose_version=${FIREHOSE_VERSION:-"3.0"}
+    fork_version=${FORK_VERSION:-"prague"}
 
-    backward_compatibility="true"
-    if [[ "$firehose_version" == "2.3" ]]; then
-        backward_compatibility="true"
-    elif [[ "$firehose_version" == "3.0" ]]; then
-        backward_compatibility="false"
-    else
+    if [[ "$firehose_version" != "3.0" ]]; then
         echo "Unsupported Firehose version: $firehose_version"
         exit 1
     fi
@@ -33,20 +28,6 @@ main() {
     geth_extra_args=("--dev" "--dev.period=1" "--http" "--http.api=debug,eth,web3,net" "--datadir=$data_dir" "--gcmode=archive" "--state.scheme=hash")
     if has_vmtrace; then
         geth_extra_args+=("--vmtrace=firehose")
-
-        if has_vmtrace_jsonconfig_flag; then
-            forced_backward_compatibility=""
-            if [[ $FIREHOSE_ETHEREUM_TRACER_FORCED_BACKWARD_COMPATIBILITY == "true" ]]; then
-                forced_backward_compatibility=",\"_private\":{\"forcedBackwardCompatibility\":true}"
-            else
-                forced_backward_compatibility=""
-            fi
-
-            # There must be no spaces in the JSON config string otherwise bash is not happy
-            json_config="{\"applyBackwardCompatibility\":${backward_compatibility},\"concurrentBlockFlushing\":${concurrent_block_flushing}${forced_backward_compatibility}}"
-            echo "Using vmtrace.jsonconfig: $json_config"
-            geth_extra_args+=("--vmtrace.jsonconfig=$json_config")
-        fi
     fi
 
     echo "Running local Geth --dev chain"

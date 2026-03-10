@@ -24,9 +24,7 @@ import {
 } from "./global"
 import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
-import { isNetwork } from "./lib/network"
-
-const callsGasLimit = isNetwork("monad-dev") ? 30_000_000 : 3_500_000
+import { isNetwork, networkValue } from "./lib/network"
 
 // Arbitrum Geth Dev Suicide Note (comment ref id 5564fd945748)
 //
@@ -46,6 +44,11 @@ describe("Suicide", function () {
   let Suicidal1: Contract<Suicidal>
   let Suicidal2: Contract<Suicidal>
   let Calls: Contract<Calls>
+
+  const callsGasLimit = networkValue({
+    "*": 3_500_000,
+    "monad-dev": 30_000_000,
+  })
 
   before(async () => {
     await deployAll(
@@ -127,7 +130,9 @@ describe("Suicide", function () {
     let Calls = await deployStableContractCreator(owner, CallsFactory, [], 2, 2, { gasLimit: callsGasLimit })
     let firstCreatedContract = getCreateAddressHex(Calls.address, 1)
 
-    await expect(contractCall(owner, Calls.contractSuicideThenCall, [])).to.trxTraceEqualSnapshot(
+    await expect(
+      contractCall(owner, Calls.contractSuicideThenCall, [], { gasLimit: callsGasLimit }),
+    ).to.trxTraceEqualSnapshot(
       "suicide/create_contract_kill_it_and_try_to_call_within_same_call.expected.json",
       {
         $callsContract: Calls.addressHex,
