@@ -1,12 +1,12 @@
 {
   "to": "$suicidal2Contract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5000000",
   "input": "41c0e1b5",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "28484",
+  "gasUsed": "5000000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,49 +25,32 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$suicidal2Contract",
-      "gasLimit": "878936",
-      "gasConsumed": "7420",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
       "returnData": "",
       "input": "41c0e1b5",
       "executedCode": true,
-      "suicide": true,
+      "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "8fe28911674000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "07a1fe160276ffff",
           "newValue": ""
+        },
+        {
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "",
+          "newValue": "b1a2bc2ec50000"
         },
         {
           "address": "$suicidal2Contract",
-          "reason": "REASON_SUICIDE_WITHDRAW",
-          "ordinal": "8",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "01",
           "newValue": ""
-        },
-        {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_SUICIDE_REFUND",
-          "ordinal": "9",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "12",
-          "oldValue": "",
-          "newValue": "8b54c367d2b800"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "14",
-          "oldValue": "",
-          "newValue": "01"
         }
       ],
       "nonceChanges": [
@@ -125,10 +108,39 @@
       "beginOrdinal": "5",
       "endOrdinal": "11",
       "accountCreations": []
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "CALL",
+      "caller": "$suicidal2Contract",
+      "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "value": "01",
+      "gasLimit": "0",
+      "gasConsumed": "0",
+      "returnData": "",
+      "input": "",
+      "executedCode": false,
+      "suicide": true,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "0",
+      "endOrdinal": "0",
+      "accountCreations": []
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",
