@@ -1,12 +1,12 @@
 {
   "to": "$logsContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5000000",
   "input": "d129a4b8",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "21747",
+  "gasUsed": "5000000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$logsContract",
-      "gasLimit": "878936",
-      "gasConsumed": "683",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
       "returnData": "08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b6661696c65642063616c6c000000000000000000000000000000000000000000",
       "input": "d129a4b8",
       "executedCode": true,
@@ -36,24 +36,15 @@
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "8fe28911674000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "11",
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
-          "newValue": "8c687d81f4da00"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "13",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "b1a2bc2ec50000"
         }
       ],
       "nonceChanges": [
@@ -64,16 +55,7 @@
           "ordinal": "4"
         }
       ],
-      "logs": [
-        {
-          "address": "$logsContract",
-          "topics": [],
-          "data": "",
-          "index": 0,
-          "blockIndex": 0,
-          "ordinal": "8"
-        }
-      ],
+      "logs": [],
       "codeChanges": [],
       "gasChanges": [
         {
@@ -123,7 +105,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",

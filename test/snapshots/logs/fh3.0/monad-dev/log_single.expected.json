@@ -1,12 +1,12 @@
 {
   "to": "$logsContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5000000",
   "input": "6f8eef3b",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "23892",
+  "gasUsed": "5000000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,37 +25,26 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$logsContract",
-      "gasLimit": "878936",
-      "gasConsumed": "2828",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
       "returnData": "",
       "input": "6f8eef3b",
       "executedCode": true,
       "suicide": false,
-      "keccakPreimages": {
-        "484d99d4f90c3b7468b30e1cdca4cfafa8105f0aa4e30f4833ba73026107e446": "7061796c6f616420617320737472696e67"
-      },
+      "keccakPreimages": {},
       "storageChanges": [],
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "8fe28911674000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "12",
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
-          "newValue": "8c10b3879e9800"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "14",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "b1a2bc2ec50000"
         }
       ],
       "nonceChanges": [
@@ -134,7 +123,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",
