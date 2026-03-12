@@ -220,6 +220,15 @@ check_sd() {
   fi
 }
 
+check_monad() {
+  if ! command -v "monad" &> /dev/null; then
+    echo ""
+    echo "The 'monad' binary could not be found."
+    echo ""
+    exit 1
+  fi
+}
+
 check_builder_playground() {
   if ! command -v builder-playground &> /dev/null; then
     echo "The 'builder-playground' command is required for this script, please install it"

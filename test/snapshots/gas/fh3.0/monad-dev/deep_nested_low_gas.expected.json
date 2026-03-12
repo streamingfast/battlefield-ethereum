@@ -1,0 +1,281 @@
+{
+  "to": "$gasContract",
+  "nonce": "$nonce",
+  "gasLimit": "5000000",
+  "input": "f1130f73000000000000000000000000$childContract000000000000000000000000$grandChildContract",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "5000000",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "35",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$gasContract",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
+      "returnData": "",
+      "input": "f1130f73000000000000000000000000$childContract000000000000000000000000$grandChildContract",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [
+        {
+          "address": "$childContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000001",
+          "oldValue": "00000000000000000000000000000000000000000000000000000000004bf692",
+          "newValue": "00000000000000000000000000000000000000000000000000000000004bf4bc",
+          "ordinal": "0"
+        },
+        {
+          "address": "$childContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000002",
+          "oldValue": "00000000000000000000000000000000000000000000000000000000002548cc",
+          "newValue": "000000000000000000000000000000000000000000000000000000000025d907",
+          "ordinal": "0"
+        },
+        {
+          "address": "$grandChildContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000001",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
+          "newValue": "000000000000000000000000000000000000000000000000000000000025ade5",
+          "ordinal": "0"
+        },
+        {
+          "address": "$grandChildContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000002",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
+          "newValue": "00000000000000000000000000000000000000000000000000000000001606e4",
+          "ordinal": "0"
+        },
+        {
+          "address": "$grandChildContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000000",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
+          "newValue": "000000000000000000000000000000000000000000000000000000000016e360",
+          "ordinal": "0"
+        }
+      ],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "07a1fe1602770000",
+          "newValue": ""
+        },
+        {
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "",
+          "newValue": "b1a2bc2ec50000"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "4"
+        }
+      ],
+      "logs": [
+        {
+          "address": "$grandChildContract",
+          "topics": [
+            "5d6e09c3a2a72b85c9c8b4d91cae443f86bdc7bb8e2480ba2a3e7aa63f25e507"
+          ],
+          "data": "0000000000000000000000000000000000000000000000000000000000159910000000000000000000000000$childContract",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "21"
+        },
+        {
+          "address": "$childContract",
+          "topics": [
+            "5d6e09c3a2a72b85c9c8b4d91cae443f86bdc7bb8e2480ba2a3e7aa63f25e507"
+          ],
+          "data": "0000000000000000000000000000000000000000000000000000000000243454000000000000000000000000$gasContract",
+          "index": 1,
+          "blockIndex": 1,
+          "ordinal": "26"
+        }
+      ],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "900000",
+          "reason": "REASON_TX_INITIAL_BALANCE",
+          "ordinal": "1"
+        },
+        {
+          "oldValue": "900000",
+          "newValue": "878200",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "3"
+        },
+        {
+          "oldValue": "0",
+          "newValue": "878200",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "6"
+        },
+        {
+          "oldValue": "877038",
+          "newValue": "874538",
+          "reason": "REASON_CALL",
+          "ordinal": "8"
+        },
+        {
+          "oldValue": "13664",
+          "newValue": "789332",
+          "reason": "REASON_REFUND_AFTER_EXECUTION",
+          "ordinal": "29"
+        },
+        {
+          "oldValue": "789243",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "30"
+        },
+        {
+          "oldValue": "789243",
+          "newValue": "0",
+          "reason": "REASON_TX_LEFT_OVER_RETURNED",
+          "ordinal": "33"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "5",
+      "endOrdinal": "31",
+      "accountCreations": []
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "CALL",
+      "caller": "$gasContract",
+      "address": "$childContract",
+      "gasLimit": "2500000",
+      "gasConsumed": "128663",
+      "returnData": "",
+      "input": "cc905682000000000000000000000000$grandChildContract00000000000000000000000000000000000000000000000000000000002625a000000000000000000000000000000000000000000000000000000000004bf4bc",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "860874",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "10"
+        },
+        {
+          "oldValue": "775668",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "27"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "9",
+      "endOrdinal": "28",
+      "accountCreations": []
+    },
+    {
+      "index": 3,
+      "parentIndex": 2,
+      "depth": 2,
+      "callType": "CALL",
+      "caller": "$childContract",
+      "address": "$grandChildContract",
+      "gasLimit": "1500000",
+      "gasConsumed": "85911",
+      "returnData": "",
+      "input": "a64b9faf000000000000000000000000000000000000000000000000000000000016e360000000000000000000000000000000000000000000000000000000000025ade5",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "0",
+          "newValue": "831823",
+          "reason": "REASON_CALL_INITIAL_BALANCE",
+          "ordinal": "16"
+        },
+        {
+          "oldValue": "763897",
+          "newValue": "0",
+          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
+          "ordinal": "22"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "15",
+      "endOrdinal": "23",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "199c82cc00",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": [
+      {
+        "address": "$grandChildContract",
+        "topics": [
+          "5d6e09c3a2a72b85c9c8b4d91cae443f86bdc7bb8e2480ba2a3e7aa63f25e507"
+        ],
+        "data": "0000000000000000000000000000000000000000000000000000000000159910000000000000000000000000$childContract",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "21"
+      },
+      {
+        "address": "$childContract",
+        "topics": [
+          "5d6e09c3a2a72b85c9c8b4d91cae443f86bdc7bb8e2480ba2a3e7aa63f25e507"
+        ],
+        "data": "0000000000000000000000000000000000000000000000000000000000243454000000000000000000000000$gasContract",
+        "index": 1,
+        "blockIndex": 1,
+        "ordinal": "26"
+      }
+    ]
+  }
+}

@@ -3,6 +3,7 @@ import {
   Contract,
   contractCall,
   contractCreation,
+  defaultDeployerBalance,
   deployAll,
   deployContract,
   deployStableContractCreator,
@@ -16,9 +17,9 @@ import {
 import { Calls, Calls__factory } from "../typechain-types"
 import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./global"
 import { eth, oneWei } from "./lib/money"
-import { networkValue } from "./lib/network"
+import { networkValue, isNetwork } from "./lib/network"
 
-const callsGasLimit = 3_500_000
+const callsGasLimit = isNetwork("monad-dev") ? 30_000_000 : 3_500_000
 
 describe("Deploys", function () {
   let Calls: Contract<Calls>
@@ -55,7 +56,7 @@ describe("Deploys", function () {
   })
 
   it("Contract fail just enough gas for intrinsic gas", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, eth(1))
+    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
 
     await expect(koContractCreation(deployer, SuicidalFactory, [], { gasLimit: 63274 })).to.trxTraceEqualSnapshot(
       "deploys/contract_fail_intrinsic_gas.expected.json",
@@ -67,7 +68,7 @@ describe("Deploys", function () {
   })
 
   it("Contract fail not enough gas after code_copy", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, eth(1))
+    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
 
     await expect(
       koContractCreation(deployer, SuicidalFactory, [], {

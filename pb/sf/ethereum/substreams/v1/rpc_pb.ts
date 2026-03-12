@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sf/ethereum/substreams/v1/rpc.proto.
  */
 export const file_sf_ethereum_substreams_v1_rpc: GenFile = /*@__PURE__*/
-  fileDesc("CiNzZi9ldGhlcmV1bS9zdWJzdHJlYW1zL3YxL3JwYy5wcm90bxIZc2YuZXRoZXJldW0uc3Vic3RyZWFtcy52MSI9CghScGNDYWxscxIxCgVjYWxscxgBIAMoCzIiLnNmLmV0aGVyZXVtLnN1YnN0cmVhbXMudjEuUnBjQ2FsbCIoCgdScGNDYWxsEg8KB3RvX2FkZHIYASABKAwSDAoEZGF0YRgCIAEoDCJJCgxScGNSZXNwb25zZXMSOQoJcmVzcG9uc2VzGAEgAygLMiYuc2YuZXRoZXJldW0uc3Vic3RyZWFtcy52MS5ScGNSZXNwb25zZSIqCgtScGNSZXNwb25zZRILCgNyYXcYASABKAwSDgoGZmFpbGVkGAIgASgIQldaVWdpdGh1Yi5jb20vc3RyZWFtaW5nZmFzdC9maXJlaG9zZS1ldGhlcmV1bS90eXBlcy9wYi9zZi9ldGhlcmV1bS9zdWJzdHJlYW1zL3YxO3BiZXRoc3NiBnByb3RvMw");
+  fileDesc("CiNzZi9ldGhlcmV1bS9zdWJzdHJlYW1zL3YxL3JwYy5wcm90bxIZc2YuZXRoZXJldW0uc3Vic3RyZWFtcy52MSI9CghScGNDYWxscxIxCgVjYWxscxgBIAMoCzIiLnNmLmV0aGVyZXVtLnN1YnN0cmVhbXMudjEuUnBjQ2FsbCIoCgdScGNDYWxsEg8KB3RvX2FkZHIYASABKAwSDAoEZGF0YRgCIAEoDCJJCgxScGNSZXNwb25zZXMSOQoJcmVzcG9uc2VzGAEgAygLMiYuc2YuZXRoZXJldW0uc3Vic3RyZWFtcy52MS5ScGNSZXNwb25zZSIqCgtScGNSZXNwb25zZRILCgNyYXcYASABKAwSDgoGZmFpbGVkGAIgASgIIjYKFFJwY0dldEJhbGFuY2VSZXF1ZXN0Eg8KB2FkZHJlc3MYASABKAwSDQoFYmxvY2sYAiABKAkiOAoVUnBjR2V0QmFsYW5jZVJlc3BvbnNlEg8KB2JhbGFuY2UYASABKAwSDgoGZmFpbGVkGAIgASgIIloKFVJwY0dldEJhbGFuY2VSZXF1ZXN0cxJBCghyZXF1ZXN0cxgBIAMoCzIvLnNmLmV0aGVyZXVtLnN1YnN0cmVhbXMudjEuUnBjR2V0QmFsYW5jZVJlcXVlc3QiXQoWUnBjR2V0QmFsYW5jZVJlc3BvbnNlcxJDCglyZXNwb25zZXMYASADKAsyMC5zZi5ldGhlcmV1bS5zdWJzdHJlYW1zLnYxLlJwY0dldEJhbGFuY2VSZXNwb25zZUJXWlVnaXRodWIuY29tL3N0cmVhbWluZ2Zhc3QvZmlyZWhvc2UtZXRoZXJldW0vdHlwZXMvcGIvc2YvZXRoZXJldW0vc3Vic3RyZWFtcy92MTtwYmV0aHNzYgZwcm90bzM");
 
 /**
  * @generated from message sf.ethereum.substreams.v1.RpcCalls
@@ -89,4 +89,82 @@ export type RpcResponse = Message<"sf.ethereum.substreams.v1.RpcResponse"> & {
  */
 export const RpcResponseSchema: GenMessage<RpcResponse> = /*@__PURE__*/
   messageDesc(file_sf_ethereum_substreams_v1_rpc, 3);
+
+/**
+ * @generated from message sf.ethereum.substreams.v1.RpcGetBalanceRequest
+ */
+export type RpcGetBalanceRequest = Message<"sf.ethereum.substreams.v1.RpcGetBalanceRequest"> & {
+  /**
+   * @generated from field: bytes address = 1;
+   */
+  address: Uint8Array;
+
+  /**
+   * @generated from field: string block = 2;
+   */
+  block: string;
+};
+
+/**
+ * Describes the message sf.ethereum.substreams.v1.RpcGetBalanceRequest.
+ * Use `create(RpcGetBalanceRequestSchema)` to create a new message.
+ */
+export const RpcGetBalanceRequestSchema: GenMessage<RpcGetBalanceRequest> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_substreams_v1_rpc, 4);
+
+/**
+ * @generated from message sf.ethereum.substreams.v1.RpcGetBalanceResponse
+ */
+export type RpcGetBalanceResponse = Message<"sf.ethereum.substreams.v1.RpcGetBalanceResponse"> & {
+  /**
+   * @generated from field: bytes balance = 1;
+   */
+  balance: Uint8Array;
+
+  /**
+   * @generated from field: bool failed = 2;
+   */
+  failed: boolean;
+};
+
+/**
+ * Describes the message sf.ethereum.substreams.v1.RpcGetBalanceResponse.
+ * Use `create(RpcGetBalanceResponseSchema)` to create a new message.
+ */
+export const RpcGetBalanceResponseSchema: GenMessage<RpcGetBalanceResponse> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_substreams_v1_rpc, 5);
+
+/**
+ * @generated from message sf.ethereum.substreams.v1.RpcGetBalanceRequests
+ */
+export type RpcGetBalanceRequests = Message<"sf.ethereum.substreams.v1.RpcGetBalanceRequests"> & {
+  /**
+   * @generated from field: repeated sf.ethereum.substreams.v1.RpcGetBalanceRequest requests = 1;
+   */
+  requests: RpcGetBalanceRequest[];
+};
+
+/**
+ * Describes the message sf.ethereum.substreams.v1.RpcGetBalanceRequests.
+ * Use `create(RpcGetBalanceRequestsSchema)` to create a new message.
+ */
+export const RpcGetBalanceRequestsSchema: GenMessage<RpcGetBalanceRequests> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_substreams_v1_rpc, 6);
+
+/**
+ * @generated from message sf.ethereum.substreams.v1.RpcGetBalanceResponses
+ */
+export type RpcGetBalanceResponses = Message<"sf.ethereum.substreams.v1.RpcGetBalanceResponses"> & {
+  /**
+   * @generated from field: repeated sf.ethereum.substreams.v1.RpcGetBalanceResponse responses = 1;
+   */
+  responses: RpcGetBalanceResponse[];
+};
+
+/**
+ * Describes the message sf.ethereum.substreams.v1.RpcGetBalanceResponses.
+ * Use `create(RpcGetBalanceResponsesSchema)` to create a new message.
+ */
+export const RpcGetBalanceResponsesSchema: GenMessage<RpcGetBalanceResponses> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_substreams_v1_rpc, 7);
 
