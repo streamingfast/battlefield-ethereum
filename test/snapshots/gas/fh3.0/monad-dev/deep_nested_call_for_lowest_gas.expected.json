@@ -1,12 +1,12 @@
 {
   "to": "$gasContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5000000",
   "input": "92d0a958000000000000000000000000$childContract000000000000000000000000$grandChildContract",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "28743",
+  "gasUsed": "5000000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$gasContract",
-      "gasLimit": "878200",
-      "gasConsumed": "6943",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
       "returnData": "",
       "input": "92d0a958000000000000000000000000$childContract000000000000000000000000$grandChildContract",
       "executedCode": true,
@@ -36,24 +36,15 @@
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "8fe28911674000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "23",
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
-          "newValue": "8b4a29c3b03200"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "25",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "b1a2bc2ec50000"
         }
       ],
       "nonceChanges": [
@@ -131,8 +122,8 @@
       "callType": "STATIC",
       "caller": "$gasContract",
       "address": "$childContract",
-      "gasLimit": "861136",
-      "gasConsumed": "3462",
+      "gasLimit": "4889713",
+      "gasConsumed": "10936",
       "returnData": "",
       "input": "25b538ae000000000000000000000000$grandChildContract",
       "executedCode": true,
@@ -190,8 +181,8 @@
       "callType": "STATIC",
       "caller": "$childContract",
       "address": "$grandChildContract",
-      "gasLimit": "844497",
-      "gasConsumed": "144",
+      "gasLimit": "4802762",
+      "gasConsumed": "136",
       "returnData": "",
       "input": "ba90b72e",
       "executedCode": true,
@@ -226,7 +217,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",

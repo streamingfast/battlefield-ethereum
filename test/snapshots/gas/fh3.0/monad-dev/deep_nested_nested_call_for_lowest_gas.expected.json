@@ -1,12 +1,12 @@
 {
   "to": "$gasContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5000000",
   "input": "ad4f4645000000000000000000000000$childContract",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "24987",
+  "gasUsed": "5000000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$gasContract",
-      "gasLimit": "878568",
-      "gasConsumed": "3555",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
       "returnData": "",
       "input": "ad4f4645000000000000000000000000$childContract",
       "executedCode": true,
@@ -36,24 +36,15 @@
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
-          "oldValue": "8fe28911674000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
-          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "reason": "REASON_GAS_REFUND",
-          "ordinal": "16",
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
           "oldValue": "",
-          "newValue": "8be3e2ccbf8a00"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "18",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "b1a2bc2ec50000"
         }
       ],
       "nonceChanges": [
@@ -131,8 +122,8 @@
       "callType": "STATIC",
       "caller": "$gasContract",
       "address": "$childContract",
-      "gasLimit": "861635",
-      "gasConsumed": "232",
+      "gasLimit": "4890207",
+      "gasConsumed": "224",
       "returnData": "",
       "input": "ba90b72e",
       "executedCode": true,
@@ -167,7 +158,7 @@
     }
   ],
   "blobHashes": [],
-  "gasPrice": "0a7a358200",
+  "gasPrice": "199c82cc00",
   "receipt": {
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",
