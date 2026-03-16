@@ -19,7 +19,7 @@ describe("Dynamic Tx", function () {
 
     expect(hexlify(trace.hash)).to.equal(result.hash)
     expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_DYNAMIC_FEE)
-    expect(toBigInt(trace.gasPrice)).to.equal(result.gasPrice)
+    expect(toBigInt(trace.gasPrice)).to.equal(result.response.gasPrice)
     expect(toBigInt(trace.maxFeePerGas)).to.equal(defaultGasPrice)
     expect(toBigInt(block.header?.baseFeePerGas)).to.be.greaterThanOrEqual(0n)
 
