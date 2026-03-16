@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 ARG CONTRACT_TAG=v1.2.4 # https://github.com/bnb-chain/bsc-genesis-contract/tags
 ARG NPM_VERSION=v22.4.1 # need something decent, unlike it says in bsc-genesis-contract repo...
 ARG FORGE_VERSION=v1.7.3 # from https://github.com/bnb-chain/bsc-genesis-contract?tab=readme-ov-file#prepare
-ARG GETH_VERSION=v1.5.12 # https://github.com/bnb-chain/bsc/releases/
+ARG GETH_VERSION=v1.7.1 # https://github.com/bnb-chain/bsc/releases/
 
 RUN apt-get update && apt-get -y install ca-certificates python3 git curl build-essential jq
 
