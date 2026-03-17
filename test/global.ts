@@ -29,6 +29,7 @@ import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isNetwork, networkName } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
 import { besu_exclude_fields } from "./lib/constants"
+import { launchGethDev } from "./launcher"
 
 export let owner: NonceManager
 export let ownerAddress: string

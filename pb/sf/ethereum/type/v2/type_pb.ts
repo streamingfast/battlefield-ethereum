@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sf/ethereum/type/v2/type.proto.
  */
 export const file_sf_ethereum_type_v2_type: GenFile = /*@__PURE__*/
-  fileDesc("Ch5zZi9ldGhlcmV1bS90eXBlL3YyL3R5cGUucHJvdG8SE3NmLmV0aGVyZXVtLnR5cGUudjIimwQKBUJsb2NrEgwKBGhhc2gYAiABKAwSDgoGbnVtYmVyGAMgASgEEgwKBHNpemUYBCABKAQSMAoGaGVhZGVyGAUgASgLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9ja0hlYWRlchIwCgZ1bmNsZXMYBiADKAsyIC5zZi5ldGhlcmV1bS50eXBlLnYyLkJsb2NrSGVhZGVyEkEKEnRyYW5zYWN0aW9uX3RyYWNlcxgKIAMoCzIlLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25UcmFjZRI7Cg9iYWxhbmNlX2NoYW5nZXMYCyADKAsyIi5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2USPAoMZGV0YWlsX2xldmVsGAwgASgOMiYuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9jay5EZXRhaWxMZXZlbBI1Cgxjb2RlX2NoYW5nZXMYFCADKAsyHy5zZi5ldGhlcmV1bS50eXBlLnYyLkNvZGVDaGFuZ2USLwoMc3lzdGVtX2NhbGxzGBUgAygLMhkuc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsEgsKA3ZlchgBIAEoBSI9CgtEZXRhaWxMZXZlbBIYChRERVRBSUxMRVZFTF9FWFRFTkRFRBAAEhQKEERFVEFJTExFVkVMX0JBU0UQAkoECCgQKUoECCkQKkoECCoQKyLXBQoLQmxvY2tIZWFkZXISEwoLcGFyZW50X2hhc2gYASABKAwSEgoKdW5jbGVfaGFzaBgCIAEoDBIQCghjb2luYmFzZRgDIAEoDBISCgpzdGF0ZV9yb290GAQgASgMEhkKEXRyYW5zYWN0aW9uc19yb290GAUgASgMEhQKDHJlY2VpcHRfcm9vdBgGIAEoDBISCgpsb2dzX2Jsb29tGAcgASgMEi8KCmRpZmZpY3VsdHkYCCABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBI5ChB0b3RhbF9kaWZmaWN1bHR5GBEgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnRCAhgBEg4KBm51bWJlchgJIAEoBBIRCglnYXNfbGltaXQYCiABKAQSEAoIZ2FzX3VzZWQYCyABKAQSLQoJdGltZXN0YW1wGAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBISCgpleHRyYV9kYXRhGA0gASgMEhAKCG1peF9oYXNoGA4gASgMEg0KBW5vbmNlGA8gASgEEgwKBGhhc2gYECABKAwSNQoQYmFzZV9mZWVfcGVyX2dhcxgSIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhgKEHdpdGhkcmF3YWxzX3Jvb3QYEyABKAwSPQoNdHhfZGVwZW5kZW5jeRgUIAEoCzImLnNmLmV0aGVyZXVtLnR5cGUudjIuVWludDY0TmVzdGVkQXJyYXkSGgoNYmxvYl9nYXNfdXNlZBgWIAEoBEgAiAEBEhwKD2V4Y2Vzc19ibG9iX2dhcxgXIAEoBEgBiAEBEhoKEnBhcmVudF9iZWFjb25fcm9vdBgYIAEoDBIVCg1yZXF1ZXN0c19oYXNoGBkgASgMQhAKDl9ibG9iX2dhc191c2VkQhIKEF9leGNlc3NfYmxvYl9nYXMiQgoRVWludDY0TmVzdGVkQXJyYXkSLQoDdmFsGAEgAygLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5VaW50NjRBcnJheSIaCgtVaW50NjRBcnJheRILCgN2YWwYASADKAQiFwoGQmlnSW50Eg0KBWJ5dGVzGAEgASgMIuwJChBUcmFuc2FjdGlvblRyYWNlEgoKAnRvGAEgASgMEg0KBW5vbmNlGAIgASgEEi4KCWdhc19wcmljZRgDIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhEKCWdhc19saW1pdBgEIAEoBBIqCgV2YWx1ZRgFIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50Eg0KBWlucHV0GAYgASgMEgkKAXYYByABKAwSCQoBchgIIAEoDBIJCgFzGAkgASgMEhAKCGdhc191c2VkGAogASgEEjgKBHR5cGUYDCABKA4yKi5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2UuVHlwZRI1CgthY2Nlc3NfbGlzdBgOIAMoCzIgLnNmLmV0aGVyZXVtLnR5cGUudjIuQWNjZXNzVHVwbGUSNAoPbWF4X2ZlZV9wZXJfZ2FzGAsgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSPQoYbWF4X3ByaW9yaXR5X2ZlZV9wZXJfZ2FzGA0gASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSDQoFaW5kZXgYFCABKA0SDAoEaGFzaBgVIAEoDBIMCgRmcm9tGBYgASgMEhMKC3JldHVybl9kYXRhGBcgASgMEhIKCnB1YmxpY19rZXkYGCABKAwSFQoNYmVnaW5fb3JkaW5hbBgZIAEoBBITCgtlbmRfb3JkaW5hbBgaIAEoBBI7CgZzdGF0dXMYHiABKA4yKy5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2VTdGF0dXMSOAoHcmVjZWlwdBgfIAEoCzInLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25SZWNlaXB0EigKBWNhbGxzGCAgAygLMhkuc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsEhUKCGJsb2JfZ2FzGCEgASgESACIAQESOgoQYmxvYl9nYXNfZmVlX2NhcBgiIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50SAGIAQESEwoLYmxvYl9oYXNoZXMYIyADKAwi+gIKBFR5cGUSEwoPVFJYX1RZUEVfTEVHQUNZEAASGAoUVFJYX1RZUEVfQUNDRVNTX0xJU1QQARIYChRUUlhfVFlQRV9EWU5BTUlDX0ZFRRACEhEKDVRSWF9UWVBFX0JMT0IQAxIVChFUUlhfVFlQRV9TRVRfQ09ERRAEEh0KGVRSWF9UWVBFX0FSQklUUlVNX0RFUE9TSVQQZBIeChpUUlhfVFlQRV9BUkJJVFJVTV9VTlNJR05FRBBlEh4KGlRSWF9UWVBFX0FSQklUUlVNX0NPTlRSQUNUEGYSGwoXVFJYX1RZUEVfQVJCSVRSVU1fUkVUUlkQaBImCiJUUlhfVFlQRV9BUkJJVFJVTV9TVUJNSVRfUkVUUllBQkxFEGkSHgoaVFJYX1RZUEVfQVJCSVRSVU1fSU5URVJOQUwQahIcChhUUlhfVFlQRV9BUkJJVFJVTV9MRUdBQ1kQeBIdChlUUlhfVFlQRV9PUFRJTUlTTV9ERVBPU0lUEH5CCwoJX2Jsb2JfZ2FzQhMKEV9ibG9iX2dhc19mZWVfY2FwIjQKC0FjY2Vzc1R1cGxlEg8KB2FkZHJlc3MYASABKAwSFAoMc3RvcmFnZV9rZXlzGAIgAygMIvwBChJUcmFuc2FjdGlvblJlY2VpcHQSEgoKc3RhdGVfcm9vdBgBIAEoDBIbChNjdW11bGF0aXZlX2dhc191c2VkGAIgASgEEhIKCmxvZ3NfYmxvb20YAyABKAwSJgoEbG9ncxgEIAMoCzIYLnNmLmV0aGVyZXVtLnR5cGUudjIuTG9nEhoKDWJsb2JfZ2FzX3VzZWQYBSABKARIAIgBARI4Cg5ibG9iX2dhc19wcmljZRgGIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50SAGIAQFCEAoOX2Jsb2JfZ2FzX3VzZWRCEQoPX2Jsb2JfZ2FzX3ByaWNlImgKA0xvZxIPCgdhZGRyZXNzGAEgASgMEg4KBnRvcGljcxgCIAMoDBIMCgRkYXRhGAMgASgMEg0KBWluZGV4GAQgASgNEhIKCmJsb2NrSW5kZXgYBiABKA0SDwoHb3JkaW5hbBgHIAEoBCLiBwoEQ2FsbBINCgVpbmRleBgBIAEoDRIUCgxwYXJlbnRfaW5kZXgYAiABKA0SDQoFZGVwdGgYAyABKA0SMAoJY2FsbF90eXBlGAQgASgOMh0uc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsVHlwZRIOCgZjYWxsZXIYBSABKAwSDwoHYWRkcmVzcxgGIAEoDBIqCgV2YWx1ZRgHIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhEKCWdhc19saW1pdBgIIAEoBBIUCgxnYXNfY29uc3VtZWQYCSABKAQSEwoLcmV0dXJuX2RhdGEYDSABKAwSDQoFaW5wdXQYDiABKAwSFQoNZXhlY3V0ZWRfY29kZRgPIAEoCBIPCgdzdWljaWRlGBAgASgIEkgKEGtlY2Nha19wcmVpbWFnZXMYFCADKAsyLi5zZi5ldGhlcmV1bS50eXBlLnYyLkNhbGwuS2VjY2FrUHJlaW1hZ2VzRW50cnkSOwoPc3RvcmFnZV9jaGFuZ2VzGBUgAygLMiIuc2YuZXRoZXJldW0udHlwZS52Mi5TdG9yYWdlQ2hhbmdlEjsKD2JhbGFuY2VfY2hhbmdlcxgWIAMoCzIiLnNmLmV0aGVyZXVtLnR5cGUudjIuQmFsYW5jZUNoYW5nZRI3Cg1ub25jZV9jaGFuZ2VzGBggAygLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5Ob25jZUNoYW5nZRImCgRsb2dzGBkgAygLMhguc2YuZXRoZXJldW0udHlwZS52Mi5Mb2cSNQoMY29kZV9jaGFuZ2VzGBogAygLMh8uc2YuZXRoZXJldW0udHlwZS52Mi5Db2RlQ2hhbmdlEjMKC2dhc19jaGFuZ2VzGBwgAygLMh4uc2YuZXRoZXJldW0udHlwZS52Mi5HYXNDaGFuZ2USFQoNc3RhdHVzX2ZhaWxlZBgKIAEoCBIXCg9zdGF0dXNfcmV2ZXJ0ZWQYDCABKAgSFgoOZmFpbHVyZV9yZWFzb24YCyABKAkSFgoOc3RhdGVfcmV2ZXJ0ZWQYHiABKAgSFQoNYmVnaW5fb3JkaW5hbBgfIAEoBBITCgtlbmRfb3JkaW5hbBggIAEoBBI/ChFhY2NvdW50X2NyZWF0aW9ucxghIAMoCzIkLnNmLmV0aGVyZXVtLnR5cGUudjIuQWNjb3VudENyZWF0aW9uGjYKFEtlY2Nha1ByZWltYWdlc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAFKBAgbEBxKBAgdEB5KBAgyEDNKBAgzEDRKBAg8ED0iZAoNU3RvcmFnZUNoYW5nZRIPCgdhZGRyZXNzGAEgASgMEgsKA2tleRgCIAEoDBIRCglvbGRfdmFsdWUYAyABKAwSEQoJbmV3X3ZhbHVlGAQgASgMEg8KB29yZGluYWwYBSABKAQi1AUKDUJhbGFuY2VDaGFuZ2USDwoHYWRkcmVzcxgBIAEoDBIuCglvbGRfdmFsdWUYAiABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBIuCgluZXdfdmFsdWUYAyABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBI5CgZyZWFzb24YBCABKA4yKS5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2UuUmVhc29uEg8KB29yZGluYWwYBSABKAQihQQKBlJlYXNvbhISCg5SRUFTT05fVU5LTk9XThAAEhwKGFJFQVNPTl9SRVdBUkRfTUlORV9VTkNMRRABEhwKGFJFQVNPTl9SRVdBUkRfTUlORV9CTE9DSxACEh4KGlJFQVNPTl9EQU9fUkVGVU5EX0NPTlRSQUNUEAMSHQoZUkVBU09OX0RBT19BREpVU1RfQkFMQU5DRRAEEhMKD1JFQVNPTl9UUkFOU0ZFUhAFEhoKFlJFQVNPTl9HRU5FU0lTX0JBTEFOQ0UQBhISCg5SRUFTT05fR0FTX0JVWRAHEiEKHVJFQVNPTl9SRVdBUkRfVFJBTlNBQ1RJT05fRkVFEAgSGwoXUkVBU09OX1JFV0FSRF9GRUVfUkVTRVQQDhIVChFSRUFTT05fR0FTX1JFRlVORBAJEhgKFFJFQVNPTl9UT1VDSF9BQ0NPVU5UEAoSGQoVUkVBU09OX1NVSUNJREVfUkVGVU5EEAsSGwoXUkVBU09OX1NVSUNJREVfV0lUSERSQVcQDRIgChxSRUFTT05fQ0FMTF9CQUxBTkNFX09WRVJSSURFEAwSDwoLUkVBU09OX0JVUk4QDxIVChFSRUFTT05fV0lUSERSQVdBTBAQEhoKFlJFQVNPTl9SRVdBUkRfQkxPQl9GRUUQERIYChRSRUFTT05fSU5DUkVBU0VfTUlOVBASIlUKC05vbmNlQ2hhbmdlEg8KB2FkZHJlc3MYASABKAwSEQoJb2xkX3ZhbHVlGAIgASgEEhEKCW5ld192YWx1ZRgDIAEoBBIPCgdvcmRpbmFsGAQgASgEIjMKD0FjY291bnRDcmVhdGlvbhIPCgdhY2NvdW50GAEgASgMEg8KB29yZGluYWwYAiABKAQidgoKQ29kZUNoYW5nZRIPCgdhZGRyZXNzGAEgASgMEhAKCG9sZF9oYXNoGAIgASgMEhAKCG9sZF9jb2RlGAMgASgMEhAKCG5ld19oYXNoGAQgASgMEhAKCG5ld19jb2RlGAUgASgMEg8KB29yZGluYWwYBiABKAQi6QcKCUdhc0NoYW5nZRIRCglvbGRfdmFsdWUYASABKAQSEQoJbmV3X3ZhbHVlGAIgASgEEjUKBnJlYXNvbhgDIAEoDjIlLnNmLmV0aGVyZXVtLnR5cGUudjIuR2FzQ2hhbmdlLlJlYXNvbhIPCgdvcmRpbmFsGAQgASgEIu0GCgZSZWFzb24SEgoOUkVBU09OX1VOS05PV04QABIPCgtSRUFTT05fQ0FMTBABEhQKEFJFQVNPTl9DQUxMX0NPREUQAhIZChVSRUFTT05fQ0FMTF9EQVRBX0NPUFkQAxIUChBSRUFTT05fQ09ERV9DT1BZEAQSFwoTUkVBU09OX0NPREVfU1RPUkFHRRAFEhwKGFJFQVNPTl9DT05UUkFDVF9DUkVBVElPThAGEh0KGVJFQVNPTl9DT05UUkFDVF9DUkVBVElPTjIQBxIYChRSRUFTT05fREVMRUdBVEVfQ0FMTBAIEhQKEFJFQVNPTl9FVkVOVF9MT0cQCRIYChRSRUFTT05fRVhUX0NPREVfQ09QWRAKEhsKF1JFQVNPTl9GQUlMRURfRVhFQ1VUSU9OEAsSGAoUUkVBU09OX0lOVFJJTlNJQ19HQVMQDBIfChtSRUFTT05fUFJFQ09NUElMRURfQ09OVFJBQ1QQDRIhCh1SRUFTT05fUkVGVU5EX0FGVEVSX0VYRUNVVElPThAOEhEKDVJFQVNPTl9SRVRVUk4QDxIbChdSRUFTT05fUkVUVVJOX0RBVEFfQ09QWRAQEhEKDVJFQVNPTl9SRVZFUlQQERIYChRSRUFTT05fU0VMRl9ERVNUUlVDVBASEhYKElJFQVNPTl9TVEFUSUNfQ0FMTBATEhwKGFJFQVNPTl9TVEFURV9DT0xEX0FDQ0VTUxAUEh0KGVJFQVNPTl9UWF9JTklUSUFMX0JBTEFOQ0UQFRIVChFSRUFTT05fVFhfUkVGVU5EUxAWEiAKHFJFQVNPTl9UWF9MRUZUX09WRVJfUkVUVVJORUQQFxIfChtSRUFTT05fQ0FMTF9JTklUSUFMX0JBTEFOQ0UQGBIiCh5SRUFTT05fQ0FMTF9MRUZUX09WRVJfUkVUVVJORUQQGRIgChxSRUFTT05fV0lUTkVTU19DT05UUkFDVF9JTklUEBoSJAogUkVBU09OX1dJVE5FU1NfQ09OVFJBQ1RfQ1JFQVRJT04QGxIdChlSRUFTT05fV0lUTkVTU19DT0RFX0NIVU5LEBwSKwonUkVBU09OX1dJVE5FU1NfQ09OVFJBQ1RfQ09MTElTSU9OX0NIRUNLEB0SGAoUUkVBU09OX1RYX0RBVEFfRkxPT1IQHiJDCg9IZWFkZXJPbmx5QmxvY2sSMAoGaGVhZGVyGAUgASgLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9ja0hlYWRlciKiAQoNQmxvY2tXaXRoUmVmcxIKCgJpZBgBIAEoCRIpCgVibG9jaxgCIAEoCzIaLnNmLmV0aGVyZXVtLnR5cGUudjIuQmxvY2sSRAoWdHJhbnNhY3Rpb25fdHJhY2VfcmVmcxgDIAEoCzIkLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25SZWZzEhQKDGlycmV2ZXJzaWJsZRgEIAEoCCKGAQocVHJhbnNhY3Rpb25UcmFjZVdpdGhCbG9ja1JlZhI0CgV0cmFjZRgBIAEoCzIlLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25UcmFjZRIwCglibG9ja19yZWYYAiABKAsyHS5zZi5ldGhlcmV1bS50eXBlLnYyLkJsb2NrUmVmIiEKD1RyYW5zYWN0aW9uUmVmcxIOCgZoYXNoZXMYASADKAwiKAoIQmxvY2tSZWYSDAoEaGFzaBgBIAEoDBIOCgZudW1iZXIYAiABKAQqTgoWVHJhbnNhY3Rpb25UcmFjZVN0YXR1cxILCgdVTktOT1dOEAASDQoJU1VDQ0VFREVEEAESCgoGRkFJTEVEEAISDAoIUkVWRVJURUQQAypZCghDYWxsVHlwZRIPCgtVTlNQRUNJRklFRBAAEggKBENBTEwQARIMCghDQUxMQ09ERRACEgwKCERFTEVHQVRFEAMSCgoGU1RBVElDEAQSCgoGQ1JFQVRFEAVCT1pNZ2l0aHViLmNvbS9zdHJlYW1pbmdmYXN0L2ZpcmVob3NlLWV0aGVyZXVtL3R5cGVzL3BiL3NmL2V0aGVyZXVtL3R5cGUvdjI7cGJldGhiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("Ch5zZi9ldGhlcmV1bS90eXBlL3YyL3R5cGUucHJvdG8SE3NmLmV0aGVyZXVtLnR5cGUudjIi0QQKBUJsb2NrEgwKBGhhc2gYAiABKAwSDgoGbnVtYmVyGAMgASgEEgwKBHNpemUYBCABKAQSMAoGaGVhZGVyGAUgASgLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9ja0hlYWRlchIwCgZ1bmNsZXMYBiADKAsyIC5zZi5ldGhlcmV1bS50eXBlLnYyLkJsb2NrSGVhZGVyEkEKEnRyYW5zYWN0aW9uX3RyYWNlcxgKIAMoCzIlLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25UcmFjZRI7Cg9iYWxhbmNlX2NoYW5nZXMYCyADKAsyIi5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2USPAoMZGV0YWlsX2xldmVsGAwgASgOMiYuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9jay5EZXRhaWxMZXZlbBI1Cgxjb2RlX2NoYW5nZXMYFCADKAsyHy5zZi5ldGhlcmV1bS50eXBlLnYyLkNvZGVDaGFuZ2USLwoMc3lzdGVtX2NhbGxzGBUgAygLMhkuc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsEjQKC3dpdGhkcmF3YWxzGBYgAygLMh8uc2YuZXRoZXJldW0udHlwZS52Mi5XaXRoZHJhd2FsEgsKA3ZlchgBIAEoBSI9CgtEZXRhaWxMZXZlbBIYChRERVRBSUxMRVZFTF9FWFRFTkRFRBAAEhQKEERFVEFJTExFVkVMX0JBU0UQAkoECCgQKUoECCkQKkoECCoQKyLXBQoLQmxvY2tIZWFkZXISEwoLcGFyZW50X2hhc2gYASABKAwSEgoKdW5jbGVfaGFzaBgCIAEoDBIQCghjb2luYmFzZRgDIAEoDBISCgpzdGF0ZV9yb290GAQgASgMEhkKEXRyYW5zYWN0aW9uc19yb290GAUgASgMEhQKDHJlY2VpcHRfcm9vdBgGIAEoDBISCgpsb2dzX2Jsb29tGAcgASgMEi8KCmRpZmZpY3VsdHkYCCABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBI5ChB0b3RhbF9kaWZmaWN1bHR5GBEgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnRCAhgBEg4KBm51bWJlchgJIAEoBBIRCglnYXNfbGltaXQYCiABKAQSEAoIZ2FzX3VzZWQYCyABKAQSLQoJdGltZXN0YW1wGAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBISCgpleHRyYV9kYXRhGA0gASgMEhAKCG1peF9oYXNoGA4gASgMEg0KBW5vbmNlGA8gASgEEgwKBGhhc2gYECABKAwSNQoQYmFzZV9mZWVfcGVyX2dhcxgSIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhgKEHdpdGhkcmF3YWxzX3Jvb3QYEyABKAwSPQoNdHhfZGVwZW5kZW5jeRgUIAEoCzImLnNmLmV0aGVyZXVtLnR5cGUudjIuVWludDY0TmVzdGVkQXJyYXkSGgoNYmxvYl9nYXNfdXNlZBgWIAEoBEgAiAEBEhwKD2V4Y2Vzc19ibG9iX2dhcxgXIAEoBEgBiAEBEhoKEnBhcmVudF9iZWFjb25fcm9vdBgYIAEoDBIVCg1yZXF1ZXN0c19oYXNoGBkgASgMQhAKDl9ibG9iX2dhc191c2VkQhIKEF9leGNlc3NfYmxvYl9nYXMiQgoRVWludDY0TmVzdGVkQXJyYXkSLQoDdmFsGAEgAygLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5VaW50NjRBcnJheSIaCgtVaW50NjRBcnJheRILCgN2YWwYASADKAQiFwoGQmlnSW50Eg0KBWJ5dGVzGAEgASgMItoKChBUcmFuc2FjdGlvblRyYWNlEgoKAnRvGAEgASgMEg0KBW5vbmNlGAIgASgEEi4KCWdhc19wcmljZRgDIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhEKCWdhc19saW1pdBgEIAEoBBIqCgV2YWx1ZRgFIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50Eg0KBWlucHV0GAYgASgMEgkKAXYYByABKAwSCQoBchgIIAEoDBIJCgFzGAkgASgMEhAKCGdhc191c2VkGAogASgEEjgKBHR5cGUYDCABKA4yKi5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2UuVHlwZRI1CgthY2Nlc3NfbGlzdBgOIAMoCzIgLnNmLmV0aGVyZXVtLnR5cGUudjIuQWNjZXNzVHVwbGUSNAoPbWF4X2ZlZV9wZXJfZ2FzGAsgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSPQoYbWF4X3ByaW9yaXR5X2ZlZV9wZXJfZ2FzGA0gASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSDQoFaW5kZXgYFCABKA0SDAoEaGFzaBgVIAEoDBIMCgRmcm9tGBYgASgMEhMKC3JldHVybl9kYXRhGBcgASgMEhIKCnB1YmxpY19rZXkYGCABKAwSFQoNYmVnaW5fb3JkaW5hbBgZIAEoBBITCgtlbmRfb3JkaW5hbBgaIAEoBBI7CgZzdGF0dXMYHiABKA4yKy5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2VTdGF0dXMSOAoHcmVjZWlwdBgfIAEoCzInLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25SZWNlaXB0EigKBWNhbGxzGCAgAygLMhkuc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsEhUKCGJsb2JfZ2FzGCEgASgESACIAQESOgoQYmxvYl9nYXNfZmVlX2NhcBgiIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50SAGIAQESEwoLYmxvYl9oYXNoZXMYIyADKAwSSgoXc2V0X2NvZGVfYXV0aG9yaXphdGlvbnMYJCADKAsyKS5zZi5ldGhlcmV1bS50eXBlLnYyLlNldENvZGVBdXRob3JpemF0aW9uIpwDCgRUeXBlEhMKD1RSWF9UWVBFX0xFR0FDWRAAEhgKFFRSWF9UWVBFX0FDQ0VTU19MSVNUEAESGAoUVFJYX1RZUEVfRFlOQU1JQ19GRUUQAhIRCg1UUlhfVFlQRV9CTE9CEAMSFQoRVFJYX1RZUEVfU0VUX0NPREUQBBIdChlUUlhfVFlQRV9BUkJJVFJVTV9ERVBPU0lUEGQSHgoaVFJYX1RZUEVfQVJCSVRSVU1fVU5TSUdORUQQZRIeChpUUlhfVFlQRV9BUkJJVFJVTV9DT05UUkFDVBBmEhsKF1RSWF9UWVBFX0FSQklUUlVNX1JFVFJZEGgSJgoiVFJYX1RZUEVfQVJCSVRSVU1fU1VCTUlUX1JFVFJZQUJMRRBpEh4KGlRSWF9UWVBFX0FSQklUUlVNX0lOVEVSTkFMEGoSHAoYVFJYX1RZUEVfQVJCSVRSVU1fTEVHQUNZEHgSHQoZVFJYX1RZUEVfT1BUSU1JU01fREVQT1NJVBB+EiAKG1RSWF9UWVBFX1BPTFlHT05fU1RBVEVfU1lOQxDIAUILCglfYmxvYl9nYXNCEwoRX2Jsb2JfZ2FzX2ZlZV9jYXAiNAoLQWNjZXNzVHVwbGUSDwoHYWRkcmVzcxgBIAEoDBIUCgxzdG9yYWdlX2tleXMYAiADKAwiogEKFFNldENvZGVBdXRob3JpemF0aW9uEhEKCWRpc2NhcmRlZBgBIAEoCBIQCghjaGFpbl9pZBgCIAEoDBIPCgdhZGRyZXNzGAggASgMEg0KBW5vbmNlGAMgASgEEgkKAXYYBCABKA0SCQoBchgFIAEoDBIJCgFzGAYgASgMEhYKCWF1dGhvcml0eRgHIAEoDEgAiAEBQgwKCl9hdXRob3JpdHki/AEKElRyYW5zYWN0aW9uUmVjZWlwdBISCgpzdGF0ZV9yb290GAEgASgMEhsKE2N1bXVsYXRpdmVfZ2FzX3VzZWQYAiABKAQSEgoKbG9nc19ibG9vbRgDIAEoDBImCgRsb2dzGAQgAygLMhguc2YuZXRoZXJldW0udHlwZS52Mi5Mb2cSGgoNYmxvYl9nYXNfdXNlZBgFIAEoBEgAiAEBEjgKDmJsb2JfZ2FzX3ByaWNlGAYgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnRIAYgBAUIQCg5fYmxvYl9nYXNfdXNlZEIRCg9fYmxvYl9nYXNfcHJpY2UiaAoDTG9nEg8KB2FkZHJlc3MYASABKAwSDgoGdG9waWNzGAIgAygMEgwKBGRhdGEYAyABKAwSDQoFaW5kZXgYBCABKA0SEgoKYmxvY2tJbmRleBgGIAEoDRIPCgdvcmRpbmFsGAcgASgEIqIICgRDYWxsEg0KBWluZGV4GAEgASgNEhQKDHBhcmVudF9pbmRleBgCIAEoDRINCgVkZXB0aBgDIAEoDRIwCgljYWxsX3R5cGUYBCABKA4yHS5zZi5ldGhlcmV1bS50eXBlLnYyLkNhbGxUeXBlEg4KBmNhbGxlchgFIAEoDBIPCgdhZGRyZXNzGAYgASgMEiEKFGFkZHJlc3NfZGVsZWdhdGVzX3RvGCIgASgMSACIAQESKgoFdmFsdWUYByABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBIRCglnYXNfbGltaXQYCCABKAQSFAoMZ2FzX2NvbnN1bWVkGAkgASgEEhMKC3JldHVybl9kYXRhGA0gASgMEg0KBWlucHV0GA4gASgMEhUKDWV4ZWN1dGVkX2NvZGUYDyABKAgSDwoHc3VpY2lkZRgQIAEoCBJIChBrZWNjYWtfcHJlaW1hZ2VzGBQgAygLMi4uc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsLktlY2Nha1ByZWltYWdlc0VudHJ5EjsKD3N0b3JhZ2VfY2hhbmdlcxgVIAMoCzIiLnNmLmV0aGVyZXVtLnR5cGUudjIuU3RvcmFnZUNoYW5nZRI7Cg9iYWxhbmNlX2NoYW5nZXMYFiADKAsyIi5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2USNwoNbm9uY2VfY2hhbmdlcxgYIAMoCzIgLnNmLmV0aGVyZXVtLnR5cGUudjIuTm9uY2VDaGFuZ2USJgoEbG9ncxgZIAMoCzIYLnNmLmV0aGVyZXVtLnR5cGUudjIuTG9nEjUKDGNvZGVfY2hhbmdlcxgaIAMoCzIfLnNmLmV0aGVyZXVtLnR5cGUudjIuQ29kZUNoYW5nZRIzCgtnYXNfY2hhbmdlcxgcIAMoCzIeLnNmLmV0aGVyZXVtLnR5cGUudjIuR2FzQ2hhbmdlEhUKDXN0YXR1c19mYWlsZWQYCiABKAgSFwoPc3RhdHVzX3JldmVydGVkGAwgASgIEhYKDmZhaWx1cmVfcmVhc29uGAsgASgJEhYKDnN0YXRlX3JldmVydGVkGB4gASgIEhUKDWJlZ2luX29yZGluYWwYHyABKAQSEwoLZW5kX29yZGluYWwYICABKAQSQwoRYWNjb3VudF9jcmVhdGlvbnMYISADKAsyJC5zZi5ldGhlcmV1bS50eXBlLnYyLkFjY291bnRDcmVhdGlvbkICGAEaNgoUS2VjY2FrUHJlaW1hZ2VzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4AUIXChVfYWRkcmVzc19kZWxlZ2F0ZXNfdG9KBAgbEBxKBAgdEB5KBAgyEDNKBAgzEDRKBAg8ED0iZAoNU3RvcmFnZUNoYW5nZRIPCgdhZGRyZXNzGAEgASgMEgsKA2tleRgCIAEoDBIRCglvbGRfdmFsdWUYAyABKAwSEQoJbmV3X3ZhbHVlGAQgASgMEg8KB29yZGluYWwYBSABKAQihwYKDUJhbGFuY2VDaGFuZ2USDwoHYWRkcmVzcxgBIAEoDBIuCglvbGRfdmFsdWUYAiABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBIuCgluZXdfdmFsdWUYAyABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBI5CgZyZWFzb24YBCABKA4yKS5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2UuUmVhc29uEg8KB29yZGluYWwYBSABKAQiuAQKBlJlYXNvbhISCg5SRUFTT05fVU5LTk9XThAAEhwKGFJFQVNPTl9SRVdBUkRfTUlORV9VTkNMRRABEhwKGFJFQVNPTl9SRVdBUkRfTUlORV9CTE9DSxACEh4KGlJFQVNPTl9EQU9fUkVGVU5EX0NPTlRSQUNUEAMSHQoZUkVBU09OX0RBT19BREpVU1RfQkFMQU5DRRAEEhMKD1JFQVNPTl9UUkFOU0ZFUhAFEhoKFlJFQVNPTl9HRU5FU0lTX0JBTEFOQ0UQBhISCg5SRUFTT05fR0FTX0JVWRAHEiEKHVJFQVNPTl9SRVdBUkRfVFJBTlNBQ1RJT05fRkVFEAgSFQoRUkVBU09OX0dBU19SRUZVTkQQCRIYChRSRUFTT05fVE9VQ0hfQUNDT1VOVBAKEhkKFVJFQVNPTl9TVUlDSURFX1JFRlVORBALEiAKHFJFQVNPTl9DQUxMX0JBTEFOQ0VfT1ZFUlJJREUQDBIbChdSRUFTT05fU1VJQ0lERV9XSVRIRFJBVxANEhsKF1JFQVNPTl9SRVdBUkRfRkVFX1JFU0VUEA4SDwoLUkVBU09OX0JVUk4QDxIVChFSRUFTT05fV0lUSERSQVdBTBAQEhoKFlJFQVNPTl9SRVdBUkRfQkxPQl9GRUUQERIYChRSRUFTT05fSU5DUkVBU0VfTUlOVBASEhEKDVJFQVNPTl9SRVZFUlQQExIeChpSRUFTT05fTU9OQURfVFhfUE9TVF9TVEFURRAUIlUKC05vbmNlQ2hhbmdlEg8KB2FkZHJlc3MYASABKAwSEQoJb2xkX3ZhbHVlGAIgASgEEhEKCW5ld192YWx1ZRgDIAEoBBIPCgdvcmRpbmFsGAQgASgEIjMKD0FjY291bnRDcmVhdGlvbhIPCgdhY2NvdW50GAEgASgMEg8KB29yZGluYWwYAiABKAQidgoKQ29kZUNoYW5nZRIPCgdhZGRyZXNzGAEgASgMEhAKCG9sZF9oYXNoGAIgASgMEhAKCG9sZF9jb2RlGAMgASgMEhAKCG5ld19oYXNoGAQgASgMEhAKCG5ld19jb2RlGAUgASgMEg8KB29yZGluYWwYBiABKAQi6QcKCUdhc0NoYW5nZRIRCglvbGRfdmFsdWUYASABKAQSEQoJbmV3X3ZhbHVlGAIgASgEEjUKBnJlYXNvbhgDIAEoDjIlLnNmLmV0aGVyZXVtLnR5cGUudjIuR2FzQ2hhbmdlLlJlYXNvbhIPCgdvcmRpbmFsGAQgASgEIu0GCgZSZWFzb24SEgoOUkVBU09OX1VOS05PV04QABIPCgtSRUFTT05fQ0FMTBABEhQKEFJFQVNPTl9DQUxMX0NPREUQAhIZChVSRUFTT05fQ0FMTF9EQVRBX0NPUFkQAxIUChBSRUFTT05fQ09ERV9DT1BZEAQSFwoTUkVBU09OX0NPREVfU1RPUkFHRRAFEhwKGFJFQVNPTl9DT05UUkFDVF9DUkVBVElPThAGEh0KGVJFQVNPTl9DT05UUkFDVF9DUkVBVElPTjIQBxIYChRSRUFTT05fREVMRUdBVEVfQ0FMTBAIEhQKEFJFQVNPTl9FVkVOVF9MT0cQCRIYChRSRUFTT05fRVhUX0NPREVfQ09QWRAKEhsKF1JFQVNPTl9GQUlMRURfRVhFQ1VUSU9OEAsSGAoUUkVBU09OX0lOVFJJTlNJQ19HQVMQDBIfChtSRUFTT05fUFJFQ09NUElMRURfQ09OVFJBQ1QQDRIhCh1SRUFTT05fUkVGVU5EX0FGVEVSX0VYRUNVVElPThAOEhEKDVJFQVNPTl9SRVRVUk4QDxIbChdSRUFTT05fUkVUVVJOX0RBVEFfQ09QWRAQEhEKDVJFQVNPTl9SRVZFUlQQERIYChRSRUFTT05fU0VMRl9ERVNUUlVDVBASEhYKElJFQVNPTl9TVEFUSUNfQ0FMTBATEhwKGFJFQVNPTl9TVEFURV9DT0xEX0FDQ0VTUxAUEh0KGVJFQVNPTl9UWF9JTklUSUFMX0JBTEFOQ0UQFRIVChFSRUFTT05fVFhfUkVGVU5EUxAWEiAKHFJFQVNPTl9UWF9MRUZUX09WRVJfUkVUVVJORUQQFxIfChtSRUFTT05fQ0FMTF9JTklUSUFMX0JBTEFOQ0UQGBIiCh5SRUFTT05fQ0FMTF9MRUZUX09WRVJfUkVUVVJORUQQGRIgChxSRUFTT05fV0lUTkVTU19DT05UUkFDVF9JTklUEBoSJAogUkVBU09OX1dJVE5FU1NfQ09OVFJBQ1RfQ1JFQVRJT04QGxIdChlSRUFTT05fV0lUTkVTU19DT0RFX0NIVU5LEBwSKwonUkVBU09OX1dJVE5FU1NfQ09OVFJBQ1RfQ09MTElTSU9OX0NIRUNLEB0SGAoUUkVBU09OX1RYX0RBVEFfRkxPT1IQHiJDCg9IZWFkZXJPbmx5QmxvY2sSMAoGaGVhZGVyGAUgASgLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9ja0hlYWRlciKiAQoNQmxvY2tXaXRoUmVmcxIKCgJpZBgBIAEoCRIpCgVibG9jaxgCIAEoCzIaLnNmLmV0aGVyZXVtLnR5cGUudjIuQmxvY2sSRAoWdHJhbnNhY3Rpb25fdHJhY2VfcmVmcxgDIAEoCzIkLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25SZWZzEhQKDGlycmV2ZXJzaWJsZRgEIAEoCCKGAQocVHJhbnNhY3Rpb25UcmFjZVdpdGhCbG9ja1JlZhI0CgV0cmFjZRgBIAEoCzIlLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25UcmFjZRIwCglibG9ja19yZWYYAiABKAsyHS5zZi5ldGhlcmV1bS50eXBlLnYyLkJsb2NrUmVmIiEKD1RyYW5zYWN0aW9uUmVmcxIOCgZoYXNoZXMYASADKAwiKAoIQmxvY2tSZWYSDAoEaGFzaBgBIAEoDBIOCgZudW1iZXIYAiABKAQiVQoKV2l0aGRyYXdhbBINCgVpbmRleBgBIAEoBBIXCg92YWxpZGF0b3JfaW5kZXgYAiABKAQSDwoHYWRkcmVzcxgDIAEoDBIOCgZhbW91bnQYBCABKAQqTgoWVHJhbnNhY3Rpb25UcmFjZVN0YXR1cxILCgdVTktOT1dOEAASDQoJU1VDQ0VFREVEEAESCgoGRkFJTEVEEAISDAoIUkVWRVJURUQQAypZCghDYWxsVHlwZRIPCgtVTlNQRUNJRklFRBAAEggKBENBTEwQARIMCghDQUxMQ09ERRACEgwKCERFTEVHQVRFEAMSCgoGU1RBVElDEAQSCgoGQ1JFQVRFEAVCT1pNZ2l0aHViLmNvbS9zdHJlYW1pbmdmYXN0L2ZpcmVob3NlLWV0aGVyZXVtL3R5cGVzL3BiL3NmL2V0aGVyZXVtL3R5cGUvdjI7cGJldGhiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * Block is the representation of the tracing of a block in the Ethereum
@@ -58,6 +58,36 @@ export const file_sf_ethereum_type_v2_type: GenFile = /*@__PURE__*/
  * elements in the block as those element might have 0 as the ordinal. Only
  * successful calls have a reliable `ordinal` field.
  *
+ * ## Failed Transaction State Changes
+ *
+ * An important edge case to understand when processing Firehose blocks is that
+ * certain state changes persist even when a transaction fails. This behavior
+ * follows Ethereum's execution model where some operations are irreversible
+ * once they occur, regardless of transaction outcome.
+ *
+ * The following state changes are typically preserved even for failed transactions:
+ * - Gas consumption (BalanceChange.REASON_GAS_BUY, GasChange.REASON_INTRINSIC_GAS): Gas is always consumed
+ *   when a transaction is processed, even if execution fails
+ * - Gas refunds (BalanceChange.REASON_GAS_REFUND): Gas refunds are processed regardless of transaction outcome
+ * - Nonce increments: The sender's nonce is incremented to prevent replay attacks
+ * - Transaction fees (BalanceChange.REASON_REWARD_TRANSACTION_FEE): Miners receive fees regardless
+ *   of transaction success to compensate for computational work
+ *
+ * However, value transfers, contract state changes, and other application-level
+ * modifications are reverted on transaction failure. When processing failed
+ * transactions, applications should filter state changes appropriately based on
+ * their specific requirements and the transaction's success status.
+ *
+ * ## SetCode Transaction Handling (EIP-7702)
+ *
+ * SetCode transactions (TRX_TYPE_SET_CODE) require special handling for nonce and code changes.
+ * According to EIP-7702, nonce changes and code changes for each accepted authorization in the
+ * transaction should be recorded in the state even if the transaction fails. When processing
+ * SetCode transactions, both NonceChange and CodeChange entries will be present for each
+ * authorized account, with the transaction sender's nonce change appearing first without a
+ * corresponding code change. Applications must handle these state changes appropriately,
+ * preserving them regardless of transaction success status to maintain EIP-7702 compliance.
+ *
  * @generated from message sf.ethereum.type.v2.Block
  */
 export type Block = Message<"sf.ethereum.type.v2.Block"> & {
@@ -92,7 +122,7 @@ export type Block = Message<"sf.ethereum.type.v2.Block"> & {
   header?: BlockHeader;
 
   /**
-   * Uncles represents block produced with a valid solution but were not actually choosen
+   * Uncles represents block produced with a valid solution but were not actually chosen
    * as the canonical block for the given height so they are mostly "forked" blocks.
    *
    * If the Block has been produced using the Proof of Stake consensus algorithm, this
@@ -171,6 +201,20 @@ export type Block = Message<"sf.ethereum.type.v2.Block"> & {
    * @generated from field: repeated sf.ethereum.type.v2.Call system_calls = 21;
    */
   systemCalls: Call[];
+
+  /**
+   * Withdrawals represents the list of validator balance withdrawals processed in this block.
+   * Introduced in the Shanghai hard fork (EIP-4895).
+   *
+   * This field has been added because Geth blocks include withdrawals after Shanghai fork,
+   * but our previous Firehose model didn't capture this data. Currently experimental -
+   * NOT ready for production use yet as we validate the tracing implementation.
+   *
+   * Only available when Shanghai fork is active on the chain.
+   *
+   * @generated from field: repeated sf.ethereum.type.v2.Withdrawal withdrawals = 22;
+   */
+  withdrawals: Withdrawal[];
 
   /**
    * Ver represents that data model version of the block, it is used internally by Firehose on Ethereum
@@ -347,10 +391,11 @@ export type BlockHeader = Message<"sf.ethereum.type.v2.BlockHeader"> & {
    *    mix_hash,
    *    nonce,
    *    base_fee_per_gas (to be included only if London fork is active)
-   *    withdrawals_root (to be included only if Shangai fork is active)
+   *    withdrawals_root (to be included only if Shanghai fork is active)
    *    blob_gas_used (to be included only if Cancun fork is active)
    *    excess_blob_gas (to be included only if Cancun fork is active)
    *    parent_beacon_root (to be included only if Cancun fork is active)
+   *    requests_hash (to be included only if Prague fork is active)
    *  ]))
    *
    *
@@ -366,7 +411,7 @@ export type BlockHeader = Message<"sf.ethereum.type.v2.BlockHeader"> & {
   baseFeePerGas?: BigInt;
 
   /**
-   * Withdrawals root hash according to EIP-4895 (e.g. Shangai Fork) rules, only set if Shangai is present/active on the chain.
+   * Withdrawals root hash according to EIP-4895 (e.g. Shanghai Fork) rules, only set if Shanghai is present/active on the chain.
    *
    * Only available in DetailLevel: EXTENDED
    *
@@ -379,7 +424,7 @@ export type BlockHeader = Message<"sf.ethereum.type.v2.BlockHeader"> & {
    * header. This is metadata only that was used by the internal Polygon parallel execution engine.
    *
    * This field was available in a few versions on Polygon Mainnet and Polygon Mumbai chains. It was actually
-   * removed and is not populated anymore. It's now embeded in the `extraData` field, refer to Polygon source
+   * removed and is not populated anymore. It's now embedded in the `extraData` field, refer to Polygon source
    * code to determine how to extract it if you need it.
    *
    * Only available in DetailLevel: EXTENDED
@@ -502,6 +547,8 @@ export const BigIntSchema: GenMessage<BigInt> = /*@__PURE__*/
  * check the field `state_reverted` on the `Call` to determine if it was fully committed
  * to the chain or not.
  *
+ * Note: Some state changes may be present even for failed transactions (see Block documentation for details).
+ *
  * @generated from message sf.ethereum.type.v2.TransactionTrace
  */
 export type TransactionTrace = Message<"sf.ethereum.type.v2.TransactionTrace"> & {
@@ -591,7 +638,7 @@ export type TransactionTrace = Message<"sf.ethereum.type.v2.TransactionTrace"> &
   type: TransactionTrace_Type;
 
   /**
-   * AcccessList represents the storage access this transaction has agreed to do in which case those storage
+   * AccessList represents the storage access this transaction has agreed to do in which case those storage
    * access cost less gas unit per access.
    *
    * This will is populated only if `TransactionTrace.Type == TRX_TYPE_ACCESS_LIST || TRX_TYPE_DYNAMIC_FEE` which
@@ -605,7 +652,7 @@ export type TransactionTrace = Message<"sf.ethereum.type.v2.TransactionTrace"> &
    * MaxFeePerGas is the maximum fee per gas the user is willing to pay for the transaction gas used.
    *
    * This will is populated only if `TransactionTrace.Type == TRX_TYPE_DYNAMIC_FEE` which is possible only
-   * if Londong fork is active on the chain.
+   * if London fork is active on the chain.
    *
    * Only available in DetailLevel: EXTENDED
    *
@@ -645,6 +692,11 @@ export type TransactionTrace = Message<"sf.ethereum.type.v2.TransactionTrace"> &
 
   /**
    * Only available in DetailLevel: EXTENDED
+   * Known Issues
+   * - Version 3:
+   *    Field not populated. It will be empty.
+   *
+   *    Fixed in `Version 4`, see https://docs.substreams.dev/reference-material/chains-and-endpoints/ethereum-data-model for information about block versions.
    *
    * @generated from field: bytes return_data = 23;
    */
@@ -755,6 +807,22 @@ export type TransactionTrace = Message<"sf.ethereum.type.v2.TransactionTrace"> &
    * @generated from field: repeated bytes blob_hashes = 35;
    */
   blobHashes: Uint8Array[];
+
+  /**
+   * SetCodeAuthorizations represents the authorizations of a transaction to set code to an EOA (Externally Owned Accounts)
+   * as defined in EIP-7702. The list will contain all the authorizations as they were specified in the
+   * transaction itself regardless of their validity. If you need to determined if a given authorization was
+   * correctly applied on chain's state, refer to [SetCodeAuthorization.discarded] field that records
+   * if the authorization was discarded or not by the chain due to invalidity.
+   *
+   * This is specified by https://eips.ethereum.org/EIPS/eip-7702
+   *
+   * This will is populated only if `TransactionTrace.Type == TRX_TYPE_SET_CODE` which is possible only
+   * if Prague fork is active on the chain.
+   *
+   * @generated from field: repeated sf.ethereum.type.v2.SetCodeAuthorization set_code_authorizations = 36;
+   */
+  setCodeAuthorizations: SetCodeAuthorization[];
 };
 
 /**
@@ -798,11 +866,11 @@ export enum TransactionTrace_Type {
    * Transaction which contain a large amount of data that cannot be accessed by EVM execution, but whose commitment
    * can be accessed. The format is intended to be fully compatible with the format that will be used in full sharding.
    *
-   * Transaction that defines specifis an access list just like TRX_TYPE_ACCESS_LIST and enables dynamic fee just like
+   * Transaction that defines an access list just like TRX_TYPE_ACCESS_LIST and enables dynamic fee just like
    * TRX_TYPE_DYNAMIC_FEE but in addition defines the fields 'max_fee_per_data_gas' of type 'uint256' and the fields
-   * 'blob_versioned_hashes' field represents a list of hash outputs from 'kzg_to_versioned_hash'.
+   * 'blob_versioned_hashes' which represents a list of hash outputs from 'kzg_to_versioned_hash'.
    *
-   * Activated in Dencun
+   * Activated in Cancun fork (EIP-4844)
    *
    * @generated from enum value: TRX_TYPE_BLOB = 3;
    */
@@ -811,7 +879,7 @@ export enum TransactionTrace_Type {
   /**
    * Transaction that sets code to an EOA (Externally Owned Accounts)
    *
-   * Activated in Prague (eip-7702)
+   * Activated in Prague (EIP-7702)
    *
    * @generated from enum value: TRX_TYPE_SET_CODE = 4;
    */
@@ -860,6 +928,13 @@ export enum TransactionTrace_Type {
    * @generated from enum value: TRX_TYPE_OPTIMISM_DEPOSIT = 126;
    */
   TRX_TYPE_OPTIMISM_DEPOSIT = 126,
+
+  /**
+   * Polygon(bor)-specific
+   *
+   * @generated from enum value: TRX_TYPE_POLYGON_STATE_SYNC = 200;
+   */
+  TRX_TYPE_POLYGON_STATE_SYNC = 200,
 }
 
 /**
@@ -894,6 +969,109 @@ export const AccessTupleSchema: GenMessage<AccessTuple> = /*@__PURE__*/
   messageDesc(file_sf_ethereum_type_v2_type, 6);
 
 /**
+ * SetCodeAuthorization represents the authorization of a transaction to set code of an EOA (Externally Owned Account)
+ * as defined in EIP-7702.
+ *
+ * The 'authority' field is the address that is authorizing the delegation mechanism. The 'authority' value is computed
+ * from the signature contained in the message using the computation
+ * `authority = ecrecover(keccak(MAGIC || rlp([chain_id, address, nonce])), y_parity, r, s)`
+ * where `MAGIC` is `0x5`, `||` is the bytes concatenation operator, `ecrecover` is the Ethereum signature recovery
+ * and `y_parity` is the recovery ID value denoted `v` in the message below. Checking the go-ethereum implementation
+ * at https://github.com/ethereum/go-ethereum/blob/v1.15.0/core/types/tx_setcode.go#L117 might prove easier to "read".
+ *
+ * We do extract the 'authority' value from the signature in the message and store it in the 'authority' field for
+ * convenience so you don't need to perform the computation yourself.
+ *
+ * @generated from message sf.ethereum.type.v2.SetCodeAuthorization
+ */
+export type SetCodeAuthorization = Message<"sf.ethereum.type.v2.SetCodeAuthorization"> & {
+  /**
+   * Discarded determines if this authorization was skipped due to being invalid. As EIP-7702 states,
+   * if the authorization is invalid (invalid signature, nonce mismatch, etc.) it must be simply
+   * discarded and the transaction is processed as if the authorization was not present in the
+   * authorization list.
+   *
+   * This boolean records if the authorization was discarded or not by the chain due to invalidity.
+   *
+   * @generated from field: bool discarded = 1;
+   */
+  discarded: boolean;
+
+  /**
+   * ChainID is the chain ID of the chain where the transaction was executed, used
+   * to recover the authority from the signature.
+   *
+   * @generated from field: bytes chain_id = 2;
+   */
+  chainId: Uint8Array;
+
+  /**
+   * Address contains the address this account is delegating to. This address usually
+   * contain code that this account essentially "delegates" to.
+   *
+   * Note: This was missing when EIP-7702 was first activated on Holesky, Sepolia, BSC Chapel,
+   * BSC Mainnet and Arbitrum Sepolia but was ready for Ethereum Mainnet hard fork. We will backfill
+   * those missing values in the near future at which point we will remove this note.
+   *
+   * @generated from field: bytes address = 8;
+   */
+  address: Uint8Array;
+
+  /**
+   * Nonce is the nonce of the account that is authorizing delegation mechanism, EIP-7702 rules
+   * states that nonce should be verified using this rule:
+   *
+   * - Verify the nonce of authority is equal to nonce. In case authority does not exist in the trie,
+   * verify that nonce is equal to 0.
+   *
+   * Read SetCodeAuthorization to know how to recover the `authority` value.
+   *
+   * @generated from field: uint64 nonce = 3;
+   */
+  nonce: bigint;
+
+  /**
+   * V is the recovery ID value for the signature Y point. While it's defined as a
+   * `uint32`, it's actually bounded by a `uint8` data type withing the Ethereum protocol.
+   *
+   * @generated from field: uint32 v = 4;
+   */
+  v: number;
+
+  /**
+   * R is the signature's X point on the elliptic curve (32 bytes).
+   *
+   * @generated from field: bytes r = 5;
+   */
+  r: Uint8Array;
+
+  /**
+   * S is the signature's Y point on the elliptic curve (32 bytes).
+   *
+   * @generated from field: bytes s = 6;
+   */
+  s: Uint8Array;
+
+  /**
+   * Authority is the address of the account that is authorizing delegation mechanism, it
+   * is computed from the signature contained in the message and stored for convenience.
+   *
+   * If the authority cannot be recovered from the signature, this field will be empty and
+   * the `discarded` field will be set to `true`.
+   *
+   * @generated from field: optional bytes authority = 7;
+   */
+  authority?: Uint8Array;
+};
+
+/**
+ * Describes the message sf.ethereum.type.v2.SetCodeAuthorization.
+ * Use `create(SetCodeAuthorizationSchema)` to create a new message.
+ */
+export const SetCodeAuthorizationSchema: GenMessage<SetCodeAuthorization> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_type_v2_type, 7);
+
+/**
  * @generated from message sf.ethereum.type.v2.TransactionReceipt
  */
 export type TransactionReceipt = Message<"sf.ethereum.type.v2.TransactionReceipt"> & {
@@ -901,7 +1079,7 @@ export type TransactionReceipt = Message<"sf.ethereum.type.v2.TransactionReceipt
    * State root is an intermediate state_root hash, computed in-between transactions to make
    * **sure** you could build a proof and point to state in the middle of a block. Geth client
    * uses `PostState + root + PostStateOrStatus`` while Parity used `status_code, root...`` this piles
-   * hardforks, see (read the EIPs first):
+   * hard forks, see (read the EIPs first):
    * - https://github.com/ethereum/EIPs/blob/master/EIPS/eip-658.md
    *
    * Moreover, the notion of `Outcome`` in parity, which segregates the two concepts, which are
@@ -960,7 +1138,7 @@ export type TransactionReceipt = Message<"sf.ethereum.type.v2.TransactionReceipt
  * Use `create(TransactionReceiptSchema)` to create a new message.
  */
 export const TransactionReceiptSchema: GenMessage<TransactionReceipt> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 7);
+  messageDesc(file_sf_ethereum_type_v2_type, 8);
 
 /**
  * @generated from message sf.ethereum.type.v2.Log
@@ -983,7 +1161,7 @@ export type Log = Message<"sf.ethereum.type.v2.Log"> & {
 
   /**
    * Index is the index of the log relative to the transaction. This index
-   * is always populated regardless of the state revertion of the the call
+   * is always populated regardless of the state reversion of the the call
    * that emitted this log.
    *
    * Only available in DetailLevel: EXTENDED
@@ -1027,7 +1205,7 @@ export type Log = Message<"sf.ethereum.type.v2.Log"> & {
  * Use `create(LogSchema)` to create a new message.
  */
 export const LogSchema: GenMessage<Log> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 8);
+  messageDesc(file_sf_ethereum_type_v2_type, 9);
 
 /**
  * @generated from message sf.ethereum.type.v2.Call
@@ -1064,6 +1242,29 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
   address: Uint8Array;
 
   /**
+   * AddressDelegatesTo contains the address from which the actual code to execute will be loaded
+   * as defined per EIP-7702 rules. If the Call's address value resolves to a code
+   * that delegates to another address, this field will be populated with the address
+   * that the call is delegated to. It will be empty in all other situations.
+   *
+   * Assumes that a 'SetCode' transaction set address `0xA` to delegates to address `0xB`,
+   * then when a call is made to `0xA`, the Call object would have:
+   *
+   * - caller = <from>
+   * - address = 0xA
+   * - address_delegates_to = 0xB
+   *
+   * Again, it's important to emphasize that this field relates to EIP-7702, if the call is
+   * a DELEGATE or CALLCODE type, this field will not be populated and will remain empty.
+   *
+   * It will be populated only if EIP-7702 is active on the chain (Prague fork) and if the
+   * 'address' of the call was pointing to another address at time of execution.
+   *
+   * @generated from field: optional bytes address_delegates_to = 34;
+   */
+  addressDelegatesTo?: Uint8Array;
+
+  /**
    * @generated from field: sf.ethereum.type.v2.BigInt value = 7;
    */
   value?: BigInt;
@@ -1084,11 +1285,30 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
   returnData: Uint8Array;
 
   /**
+   * Known Issues
+   * - Version 3:
+   *    When call is `CREATE` or `CREATE2`, this field is not populated. A couple of suggestions:
+   *      1. You can get the contract's code in the `code_changes` field.
+   *      2. In the root `CREATE` call, you can directly use the `TransactionTrace`'s input field.
+   *
+   *    Fixed in `Version 4`, see https://docs.substreams.dev/reference-material/chains-and-endpoints/ethereum-data-model for information about block versions.
+   *
    * @generated from field: bytes input = 14;
    */
   input: Uint8Array;
 
   /**
+   * Indicates whether the call executed code.
+   *
+   * Known Issues
+   * - Version 3:
+   *    This may be incorrectly set to `false` for accounts with code handling native value transfers,
+   *    as well as for certain precompiles with no input.
+   *    The value is initially set based on `call.type != CREATE && len(call.input) > 0`
+   *    and later adjusted if the tracer detects an account without code.
+   *
+   *    Fixed in `Version 4`, see https://docs.substreams.dev/reference-material/chains-and-endpoints/ethereum-data-model for information about block versions.
+   *
    * @generated from field: bool executed_code = 15;
    */
   executedCode: boolean;
@@ -1106,6 +1326,12 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
   keccakPreimages: { [key: string]: string };
 
   /**
+   * Known Issues
+   * - Version 3:
+   *    The data might be not be in order.
+   *
+   *    Fixed in `Version 4`, see https://docs.substreams.dev/reference-material/chains-and-endpoints/ethereum-data-model for information about block versions.
+   *
    * @generated from field: repeated sf.ethereum.type.v2.StorageChange storage_changes = 21;
    */
   storageChanges: StorageChange[];
@@ -1131,13 +1357,21 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
   codeChanges: CodeChange[];
 
   /**
+   * Known Issues
+   * - Version 3:
+   *    Some gas changes are not correctly tracked:
+   *      1. Gas refunded due to data returned to the chain (occurs at the end of a transaction, before buyback).
+   *      2. Initial gas allocation (0 -> GasLimit) at the start of a call.
+   *      3. Final gas deduction (LeftOver -> 0) at the end of a call (if applicable).
+   *    Fixed in `Version 4`, see https://docs.substreams.dev/reference-material/chains-and-endpoints/ethereum-data-model for information about block versions.
+   *
    * @generated from field: repeated sf.ethereum.type.v2.GasChange gas_changes = 28;
    */
   gasChanges: GasChange[];
 
   /**
    * In Ethereum, a call can be either:
-   * - Successfull, execution passes without any problem encountered
+   * - Successful, execution passes without any problem encountered
    * - Failed, execution failed, and remaining gas should be consumed
    * - Reverted, execution failed, but only gas consumed so far is billed, remaining gas is refunded
    *
@@ -1163,7 +1397,7 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
   failureReason: string;
 
   /**
-   * This field represents wheter or not the state changes performed
+   * This field represents whether or not the state changes performed
    * by this call were correctly recorded by the blockchain.
    *
    * On Ethereum, a transaction can record state changes even if some
@@ -1198,23 +1432,41 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
   stateReverted: boolean;
 
   /**
-   * The block's global ordinal when the call started executing, refer to
-   * [Block] documentation for further information about ordinals and total ordering.
+   * Known Issues
+   * - Version 3:
+   *    1. The block's global ordinal when the call started executing, refer to
+   *      [Block] documentation for further information about ordinals and total ordering.
+   *    2. The transaction root call `begin_ordial` is always `0` (also in the GENESIS block), which can cause issues
+   *      when sorting by this field. To ensure proper execution order, set it as follows:
+   *      `trx.Calls[0].BeginOrdinal = trx.BeginOrdinal`.
+   *
+   *    Fixed in `Version 4`, see https://docs.substreams.dev/reference-material/chains-and-endpoints/ethereum-data-model for information about block versions.
    *
    * @generated from field: uint64 begin_ordinal = 31;
    */
   beginOrdinal: bigint;
 
   /**
-   * The block's global ordinal when the call finished executing, refer to
-   * [Block] documentation for further information about ordinals and total ordering.
+   * Known Issues
+   * - Version 3:
+   *    1. The block's global ordinal when the call finished executing, refer to
+   *     [Block] documentation for further information about ordinals and total ordering.
+   *    2. The root call of the GENESIS block is always `0`. To fix it, you can set it as follows:
+   *     `rx.Calls[0].EndOrdinal = max.Uint64`.
+   *
+   *    Fixed in `Version 4`, see https://docs.substreams.dev/reference-material/chains-and-endpoints/ethereum-data-model for information about block versions.
    *
    * @generated from field: uint64 end_ordinal = 32;
    */
   endOrdinal: bigint;
 
   /**
-   * @generated from field: repeated sf.ethereum.type.v2.AccountCreation account_creations = 33;
+   * Known Issues
+   * - Version 4:
+   *    AccountCreations are NOT SUPPORTED anymore. DO NOT rely on them.
+   *
+   * @generated from field: repeated sf.ethereum.type.v2.AccountCreation account_creations = 33 [deprecated = true];
+   * @deprecated
    */
   accountCreations: AccountCreation[];
 };
@@ -1224,7 +1476,7 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
  * Use `create(CallSchema)` to create a new message.
  */
 export const CallSchema: GenMessage<Call> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 9);
+  messageDesc(file_sf_ethereum_type_v2_type, 10);
 
 /**
  * @generated from message sf.ethereum.type.v2.StorageChange
@@ -1264,9 +1516,11 @@ export type StorageChange = Message<"sf.ethereum.type.v2.StorageChange"> & {
  * Use `create(StorageChangeSchema)` to create a new message.
  */
 export const StorageChangeSchema: GenMessage<StorageChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 10);
+  messageDesc(file_sf_ethereum_type_v2_type, 11);
 
 /**
+ * Note: Balance changes may occur even for failed transactions in certain cases (see Block documentation for details).
+ *
  * @generated from message sf.ethereum.type.v2.BalanceChange
  */
 export type BalanceChange = Message<"sf.ethereum.type.v2.BalanceChange"> & {
@@ -1330,15 +1584,9 @@ export type BalanceChange = Message<"sf.ethereum.type.v2.BalanceChange"> & {
  * Use `create(BalanceChangeSchema)` to create a new message.
  */
 export const BalanceChangeSchema: GenMessage<BalanceChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 11);
+  messageDesc(file_sf_ethereum_type_v2_type, 12);
 
 /**
- * Obtain all balanche change reasons under deep mind repository:
- *
- * ```shell
- * ack -ho 'BalanceChangeReason\(".*"\)' | grep -Eo '".*"' | sort | uniq
- * ```
- *
  * @generated from enum sf.ethereum.type.v2.BalanceChange.Reason
  */
 export enum BalanceChange_Reason {
@@ -1348,83 +1596,151 @@ export enum BalanceChange_Reason {
   UNKNOWN = 0,
 
   /**
+   * REASON_REWARD_MINE_UNCLE is a reward for mining an uncle block.
+   * Triggered when uncle blocks are processed during block finalization.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/consensus/ethash/consensus.go#L589
+   *
    * @generated from enum value: REASON_REWARD_MINE_UNCLE = 1;
    */
   REWARD_MINE_UNCLE = 1,
 
   /**
+   * REASON_REWARD_MINE_BLOCK is a reward for mining a block.
+   * Triggered when the block miner receives their mining reward.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/consensus/ethash/consensus.go#L594
+   *
    * @generated from enum value: REASON_REWARD_MINE_BLOCK = 2;
    */
   REWARD_MINE_BLOCK = 2,
 
   /**
+   * REASON_DAO_REFUND_CONTRACT is ether sent to the DAO refund contract.
+   * Used during the DAO hard fork to move funds to the refund contract.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/consensus/misc/dao.go#L85
+   *
    * @generated from enum value: REASON_DAO_REFUND_CONTRACT = 3;
    */
   DAO_REFUND_CONTRACT = 3,
 
   /**
+   * REASON_DAO_ADJUST_BALANCE is ether taken from a DAO account to be moved to the refund contract.
+   * Used during the DAO hard fork to extract funds from DAO-related accounts.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/consensus/misc/dao.go#L86
+   *
    * @generated from enum value: REASON_DAO_ADJUST_BALANCE = 4;
    */
   DAO_ADJUST_BALANCE = 4,
 
   /**
+   * REASON_TRANSFER is ether transferred via a call.
+   * This is a decrease for the sender and an increase for the recipient during value transfers.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/evm.go#L144
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/evm.go#L145
+   *
    * @generated from enum value: REASON_TRANSFER = 5;
    */
   TRANSFER = 5,
 
   /**
+   * REASON_GENESIS_BALANCE is ether allocated at the genesis block.
+   * Triggered when accounts are initialized with balances during genesis block creation.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/genesis.go#L154
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/genesis.go#L180
+   *
    * @generated from enum value: REASON_GENESIS_BALANCE = 6;
    */
   GENESIS_BALANCE = 6,
 
   /**
+   * REASON_GAS_BUY is spent to purchase gas for executing a transaction.
+   * The transaction sender's balance is decreased by gasLimit * gasPrice at transaction start.
+   * Note: This balance change persists even for failed transactions (see Block documentation).
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state_transition.go#L306
+   *
    * @generated from enum value: REASON_GAS_BUY = 7;
    */
   GAS_BUY = 7,
 
   /**
+   * REASON_REWARD_TRANSACTION_FEE is the transaction tip increasing block builder's balance.
+   * The coinbase (block miner) receives the transaction fees as a reward.
+   * Note: This balance change persists even for failed transactions (see Block documentation).
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state_transition.go#L560
+   *
    * @generated from enum value: REASON_REWARD_TRANSACTION_FEE = 8;
    */
   REWARD_TRANSACTION_FEE = 8,
 
   /**
-   * @generated from enum value: REASON_REWARD_FEE_RESET = 14;
-   */
-  REWARD_FEE_RESET = 14,
-
-  /**
+   * REASON_GAS_REFUND is ether returned for unused gas at the end of execution.
+   * Any unused gas from the transaction is refunded to the sender.
+   * Note: This balance change persists even for failed transactions (see Block documentation).
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state_transition.go#L658
+   *
    * @generated from enum value: REASON_GAS_REFUND = 9;
    */
   GAS_REFUND = 9,
 
   /**
+   * REASON_TOUCH_ACCOUNT is a transfer of zero value. It is only there to touch-create an account.
+   * Used to create an account without transferring value, often for contract interactions.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L442
+   *
    * @generated from enum value: REASON_TOUCH_ACCOUNT = 10;
    */
   TOUCH_ACCOUNT = 10,
 
   /**
+   * REASON_SUICIDE_REFUND is added to the recipient as indicated by a selfdestructing account.
+   * When a contract self-destructs, its remaining balance is sent to a designated recipient.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L890
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L910
+   *
    * @generated from enum value: REASON_SUICIDE_REFUND = 11;
    */
   SUICIDE_REFUND = 11,
 
   /**
-   * @generated from enum value: REASON_SUICIDE_WITHDRAW = 13;
-   */
-  SUICIDE_WITHDRAW = 13,
-
-  /**
+   * REASON_CALL_BALANCE_OVERRIDE represents a balance change due to call balance override.
+   * This is a Firehose-specific reason not directly mapped to Geth tracing reasons.
+   *
    * @generated from enum value: REASON_CALL_BALANCE_OVERRIDE = 12;
    */
   CALL_BALANCE_OVERRIDE = 12,
 
   /**
+   * REASON_SUICIDE_WITHDRAW is deducted from a contract due to self-destruct.
+   * The self-destructing contract's balance is reduced to zero.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L909
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state/statedb_hooked.go#L230
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state/statedb_hooked.go#L256
+   *
+   * @generated from enum value: REASON_SUICIDE_WITHDRAW = 13;
+   */
+  SUICIDE_WITHDRAW = 13,
+
+  /**
+   * REASON_REWARD_FEE_RESET represents a fee reset reward.
+   * This is a Firehose-specific reason not directly mapped to Geth tracing reasons.
+   *
+   * @generated from enum value: REASON_REWARD_FEE_RESET = 14;
+   */
+  REWARD_FEE_RESET = 14,
+
+  /**
    * Used on chain(s) where some Ether burning happens
+   * This represents ether that is effectively burned when sent to a destroyed contract.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state/statedb_hooked.go#L288
    *
    * @generated from enum value: REASON_BURN = 15;
    */
   BURN = 15,
 
   /**
+   * REASON_WITHDRAWAL is ether withdrawn from the beacon chain.
+   * Used for validator withdrawals from the Ethereum 2.0 beacon chain to the execution layer.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/consensus/beacon/consensus.go#L339
+   *
    * @generated from enum value: REASON_WITHDRAWAL = 16;
    */
   WITHDRAWAL = 16,
@@ -1438,20 +1754,40 @@ export enum BalanceChange_Reason {
   REWARD_BLOB_FEE = 17,
 
   /**
-   * USE on optimism chan
+   * This reason is used only on Optimism chain for minting operations.
    *
    * @generated from enum value: REASON_INCREASE_MINT = 18;
    */
   INCREASE_MINT = 18,
+
+  /**
+   * This reason is used only on Optimism chain for balance reverts.
+   *
+   * @generated from enum value: REASON_REVERT = 19;
+   */
+  REVERT = 19,
+
+  /**
+   * This reason is used only on Monad chain. The Monad execution layer does not report the reason
+   * for a balance change, only the pre and post-execution state per account. Because of Monad's
+   * parallel execution model, there is always exactly one balance change per modified address per
+   * transaction, representing the state change. Consumers should not expect granular per-operation
+   * entries (i.e. GAS_BUY, TRANSFER, GAS_REFUND, REWARD_TRANSACTION_FEE) because of this.
+   *
+   * @generated from enum value: REASON_MONAD_TX_POST_STATE = 20;
+   */
+  MONAD_TX_POST_STATE = 20,
 }
 
 /**
  * Describes the enum sf.ethereum.type.v2.BalanceChange.Reason.
  */
 export const BalanceChange_ReasonSchema: GenEnum<BalanceChange_Reason> = /*@__PURE__*/
-  enumDesc(file_sf_ethereum_type_v2_type, 11, 0);
+  enumDesc(file_sf_ethereum_type_v2_type, 12, 0);
 
 /**
+ * Note: Nonce changes typically persist even for failed transactions (see Block documentation for details).
+ *
  * @generated from message sf.ethereum.type.v2.NonceChange
  */
 export type NonceChange = Message<"sf.ethereum.type.v2.NonceChange"> & {
@@ -1484,7 +1820,7 @@ export type NonceChange = Message<"sf.ethereum.type.v2.NonceChange"> & {
  * Use `create(NonceChangeSchema)` to create a new message.
  */
 export const NonceChangeSchema: GenMessage<NonceChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 12);
+  messageDesc(file_sf_ethereum_type_v2_type, 13);
 
 /**
  * @generated from message sf.ethereum.type.v2.AccountCreation
@@ -1509,9 +1845,11 @@ export type AccountCreation = Message<"sf.ethereum.type.v2.AccountCreation"> & {
  * Use `create(AccountCreationSchema)` to create a new message.
  */
 export const AccountCreationSchema: GenMessage<AccountCreation> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 13);
+  messageDesc(file_sf_ethereum_type_v2_type, 14);
 
 /**
+ * Note: Code changes may have special handling for failed transactions (see Block documentation for details).
+ *
  * @generated from message sf.ethereum.type.v2.CodeChange
  */
 export type CodeChange = Message<"sf.ethereum.type.v2.CodeChange"> & {
@@ -1554,7 +1892,7 @@ export type CodeChange = Message<"sf.ethereum.type.v2.CodeChange"> & {
  * Use `create(CodeChangeSchema)` to create a new message.
  */
 export const CodeChangeSchema: GenMessage<CodeChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 14);
+  messageDesc(file_sf_ethereum_type_v2_type, 15);
 
 /**
  * The gas change model represents the reason why some gas cost has occurred.
@@ -1596,15 +1934,9 @@ export type GasChange = Message<"sf.ethereum.type.v2.GasChange"> & {
  * Use `create(GasChangeSchema)` to create a new message.
  */
 export const GasChangeSchema: GenMessage<GasChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 15);
+  messageDesc(file_sf_ethereum_type_v2_type, 16);
 
 /**
- * Obtain all gas change reasons under deep mind repository:
- *
- * ```shell
- * ack -ho 'GasChangeReason\(".*"\)' | grep -Eo '".*"' | sort | uniq
- * ```
- *
  * @generated from enum sf.ethereum.type.v2.GasChange.Reason
  */
 export enum GasChange_Reason {
@@ -1614,230 +1946,286 @@ export enum GasChange_Reason {
   UNKNOWN = 0,
 
   /**
-   * REASON_CALL is the amount of gas that will be charged for a 'CALL' opcode executed by the EVM
+   * REASON_CALL is the amount of gas that will be charged for a 'CALL' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_CALL = 1;
    */
   CALL = 1,
 
   /**
-   * REASON_CALL_CODE is the amount of gas that will be charged for a 'CALLCODE' opcode executed by the EVM
+   * REASON_CALL_CODE is the amount of gas that will be charged for a 'CALLCODE' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_CALL_CODE = 2;
    */
   CALL_CODE = 2,
 
   /**
-   * REASON_CALL_DATA_COPY is the amount of gas that will be charged for a 'CALLDATACOPY' opcode executed by the EVM
+   * REASON_CALL_DATA_COPY is the amount of gas that will be charged for a 'CALLDATACOPY' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_CALL_DATA_COPY = 3;
    */
   CALL_DATA_COPY = 3,
 
   /**
-   * REASON_CODE_COPY is the amount of gas that will be charged for a 'CALLDATACOPY' opcode executed by the EVM
+   * REASON_CODE_COPY is the amount of gas that will be charged for a 'CODECOPY' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_CODE_COPY = 4;
    */
   CODE_COPY = 4,
 
   /**
-   * REASON_CODE_STORAGE is the amount of gas that will be charged for code storage
+   * REASON_CODE_STORAGE is the amount of gas that will be charged for code storage.
+   * Triggered when storing contract code during contract creation.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L593
    *
    * @generated from enum value: REASON_CODE_STORAGE = 5;
    */
   CODE_STORAGE = 5,
 
   /**
-   * REASON_CONTRACT_CREATION is the amount of gas that will be charged for a 'CREATE' opcode executed by the EVM and for the gas
-   * burned for a CREATE, today controlled by EIP150 rules
+   * REASON_CONTRACT_CREATION is the amount of gas that will be burned for a CREATE opcode.
+   * Triggered during contract creation via CREATE opcode, controlled by EIP150 rules.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L672
    *
    * @generated from enum value: REASON_CONTRACT_CREATION = 6;
    */
   CONTRACT_CREATION = 6,
 
   /**
-   * REASON_CONTRACT_CREATION2 is the amount of gas that will be charged for a 'CREATE2' opcode executed by the EVM and for the gas
-   * burned for a CREATE2, today controlled by EIP150 rules
+   * REASON_CONTRACT_CREATION2 is the amount of gas that will be burned for a CREATE2 opcode.
+   * Triggered during contract creation via CREATE2 opcode, controlled by EIP150 rules.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L712
    *
    * @generated from enum value: REASON_CONTRACT_CREATION2 = 7;
    */
   CONTRACT_CREATION2 = 7,
 
   /**
-   * REASON_DELEGATE_CALL is the amount of gas that will be charged for a 'DELEGATECALL' opcode executed by the EVM
+   * REASON_DELEGATE_CALL is the amount of gas that will be charged for a 'DELEGATECALL' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_DELEGATE_CALL = 8;
    */
   DELEGATE_CALL = 8,
 
   /**
-   * REASON_EVENT_LOG is the amount of gas that will be charged for a 'LOG<N>' opcode executed by the EVM
+   * REASON_EVENT_LOG is the amount of gas that will be charged for a 'LOG<N>' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_EVENT_LOG = 9;
    */
   EVENT_LOG = 9,
 
   /**
-   * REASON_EXT_CODE_COPY is the amount of gas that will be charged for a 'LOG<N>' opcode executed by the EVM
+   * REASON_EXT_CODE_COPY is the amount of gas that will be charged for an 'EXTCODECOPY' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_EXT_CODE_COPY = 10;
    */
   EXT_CODE_COPY = 10,
 
   /**
-   * REASON_FAILED_EXECUTION is the burning of the remaining gas when the execution failed without a revert
+   * REASON_FAILED_EXECUTION is the burning of the remaining gas when the execution failed without a revert.
+   * Triggered when a call fails and all remaining gas is consumed.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L308
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L363
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L407
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L462
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L521
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L567
    *
    * @generated from enum value: REASON_FAILED_EXECUTION = 11;
    */
   FAILED_EXECUTION = 11,
 
   /**
-   * REASON_INTRINSIC_GAS is the amount of gas that will be charged for the intrinsic cost of the transaction, there is
-   * always exactly one of those per transaction
+   * REASON_INTRINSIC_GAS is the amount of gas charged for the intrinsic cost of the transaction.
+   * There is always exactly one of these per transaction, representing the base cost.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state_transition.go#L464
    *
    * @generated from enum value: REASON_INTRINSIC_GAS = 12;
    */
   INTRINSIC_GAS = 12,
 
   /**
-   * GasChangePrecompiledContract is the amount of gas that will be charged for a precompiled contract execution
+   * REASON_PRECOMPILED_CONTRACT is the amount of gas charged for a precompiled contract execution.
+   * Triggered when calling precompiled contracts (addresses 0x01-0x09, etc.).
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/contracts.go#L271
    *
    * @generated from enum value: REASON_PRECOMPILED_CONTRACT = 13;
    */
   PRECOMPILED_CONTRACT = 13,
 
   /**
-   * REASON_REFUND_AFTER_EXECUTION is the amount of gas that will be refunded to the caller after the execution of the call,
-   * if there is left over at the end of execution
+   * REASON_REFUND_AFTER_EXECUTION is the amount of gas refunded to the caller after call execution.
+   * Triggered when gas is refunded after a successful call completes.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L688
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L724
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L764
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L797
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L826
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/instructions.go#L855
    *
    * @generated from enum value: REASON_REFUND_AFTER_EXECUTION = 14;
    */
   REFUND_AFTER_EXECUTION = 14,
 
   /**
-   * REASON_RETURN is the amount of gas that will be charged for a 'RETURN' opcode executed by the EVM
+   * REASON_RETURN is the amount of gas that will be charged for a 'RETURN' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_RETURN = 15;
    */
   RETURN = 15,
 
   /**
-   * REASON_RETURN_DATA_COPY is the amount of gas that will be charged for a 'RETURNDATACOPY' opcode executed by the EVM
+   * REASON_RETURN_DATA_COPY is the amount of gas that will be charged for a 'RETURNDATACOPY' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_RETURN_DATA_COPY = 16;
    */
   RETURN_DATA_COPY = 16,
 
   /**
-   * REASON_REVERT is the amount of gas that will be charged for a 'REVERT' opcode executed by the EVM
+   * REASON_REVERT is the amount of gas that will be charged for a 'REVERT' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_REVERT = 17;
    */
   REVERT = 17,
 
   /**
-   * REASON_SELF_DESTRUCT is the amount of gas that will be charged for a 'SELFDESTRUCT' opcode executed by the EVM
+   * REASON_SELF_DESTRUCT is the amount of gas that will be charged for a 'SELFDESTRUCT' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_SELF_DESTRUCT = 18;
    */
   SELF_DESTRUCT = 18,
 
   /**
-   * REASON_STATIC_CALL is the amount of gas that will be charged for a 'STATICALL' opcode executed by the EVM
+   * REASON_STATIC_CALL is the amount of gas that will be charged for a 'STATICCALL' opcode executed by the EVM.
+   * This is an opcode-related gas change mapped from Geth tracing via OnGasChange(gasCopy, gasCopy-cost, tracing.GasChangeCallOpCode).
+   * See: https://github.com/streamingfast/go-ethereum/blob/firehose-fh3.0/eth/tracers/firehose.go#L1247-L1264
    *
    * @generated from enum value: REASON_STATIC_CALL = 19;
    */
   STATIC_CALL = 19,
 
   /**
-   * REASON_STATE_COLD_ACCESS is the amount of gas that will be charged for a cold storage access as controlled by EIP2929 rules
-   *
+   * REASON_STATE_COLD_ACCESS is the amount of gas charged for a cold storage access as controlled by EIP2929 rules.
+   * Triggered when accessing storage slots or accounts that haven't been accessed in the current transaction.
    * Added in Berlin fork (Geth 1.10+)
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/operations_acl.go#L167
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/operations_acl.go#L268
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/operations_acl.go#L283
    *
    * @generated from enum value: REASON_STATE_COLD_ACCESS = 20;
    */
   STATE_COLD_ACCESS = 20,
 
   /**
-   * REASON_TX_INITIAL_BALANCE is the initial balance for the call which will be equal to the gasLimit of the call
-   *
-   * Added as new tracing reason in Geth, available only on some chains
+   * REASON_TX_INITIAL_BALANCE is the initial gas balance for the transaction equal to the gasLimit.
+   * There is only one such gas change per transaction, representing the initial gas allocation.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state_transition.go#L300
    *
    * @generated from enum value: REASON_TX_INITIAL_BALANCE = 21;
    */
   TX_INITIAL_BALANCE = 21,
 
   /**
-   * REASON_TX_REFUNDS is the sum of all refunds which happened during the tx execution (e.g. storage slot being cleared)
-   * this generates an increase in gas. There is only one such gas change per transaction.
-   *
-   * Added as new tracing reason in Geth, available only on some chains
+   * REASON_TX_REFUNDS is the sum of all refunds during transaction execution (e.g. storage slot clearing).
+   * This generates an increase in gas. There is only one such gas change per transaction.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state_transition.go#L648
    *
    * @generated from enum value: REASON_TX_REFUNDS = 22;
    */
   TX_REFUNDS = 22,
 
   /**
-   * REASON_TX_LEFT_OVER_RETURNED is the amount of gas left over at the end of transaction's execution that will be returned
-   * to the chain. This change will always be a negative change as we "drain" left over gas towards 0. If there was no gas
-   * left at the end of execution, no such even will be emitted. The returned gas's value in Wei is returned to caller.
-   * There is at most one of such gas change per transaction.
-   *
-   * Added as new tracing reason in Geth, available only on some chains
+   * REASON_TX_LEFT_OVER_RETURNED is the amount of gas left over at transaction end that will be returned.
+   * This change will always be negative as we "drain" left over gas towards 0. If there was no gas
+   * left at the end of execution, no such event will be emitted. There is at most one per transaction.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state_transition.go#L661
    *
    * @generated from enum value: REASON_TX_LEFT_OVER_RETURNED = 23;
    */
   TX_LEFT_OVER_RETURNED = 23,
 
   /**
-   * REASON_CALL_INITIAL_BALANCE is the initial balance for the call which will be equal to the gasLimit of the call. There is only
-   * one such gas change per call.
-   *
-   * Added as new tracing reason in Geth, available only on some chains
+   * REASON_CALL_INITIAL_BALANCE is the initial gas balance for a call equal to the gasLimit of the call.
+   * There is only one such gas change per call.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L662
    *
    * @generated from enum value: REASON_CALL_INITIAL_BALANCE = 24;
    */
   CALL_INITIAL_BALANCE = 24,
 
   /**
-   * REASON_CALL_LEFT_OVER_RETURNED is the amount of gas left over that will be returned to the caller, this change will always
-   * be a negative change as we "drain" left over gas towards 0. If there was no gas left at the end of execution, no such even
-   * will be emitted.
+   * REASON_CALL_LEFT_OVER_RETURNED is the amount of gas left over that will be returned to the caller.
+   * This change will always be negative as we "drain" left over gas towards 0. If there was no gas
+   * left at the end of execution, no such event will be emitted.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L669
    *
    * @generated from enum value: REASON_CALL_LEFT_OVER_RETURNED = 25;
    */
   CALL_LEFT_OVER_RETURNED = 25,
 
   /**
+   * REASON_WITNESS_CONTRACT_INIT flags the event of adding to the witness during contract creation initialization.
+   * Used in stateless Ethereum (Verkle trees) for witness data collection.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L548
+   *
    * @generated from enum value: REASON_WITNESS_CONTRACT_INIT = 26;
    */
   WITNESS_CONTRACT_INIT = 26,
 
   /**
-   * GasChangeWitnessContractCreation flags the event of adding to the witness during the contract creation finalization step.
+   * REASON_WITNESS_CONTRACT_CREATION flags the event of adding to the witness during contract creation finalization.
+   * Used in stateless Ethereum (Verkle trees) for witness data collection.
+   * This is a Firehose-specific reason not directly mapped to current Geth tracing reasons.
    *
    * @generated from enum value: REASON_WITNESS_CONTRACT_CREATION = 27;
    */
   WITNESS_CONTRACT_CREATION = 27,
 
   /**
-   * GasChangeWitnessCodeChunk flags the event of adding one or more contract code chunks to the witness.
+   * REASON_WITNESS_CODE_CHUNK flags the event of adding one or more contract code chunks to the witness.
+   * Used in stateless Ethereum (Verkle trees) for witness data collection.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L598
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/interpreter.go#L179
    *
    * @generated from enum value: REASON_WITNESS_CODE_CHUNK = 28;
    */
   WITNESS_CODE_CHUNK = 28,
 
   /**
-   * GasChangeWitnessContractCollisionCheck flags the event of adding to the witness when checking for contract address collision.
+   * REASON_WITNESS_CONTRACT_COLLISION_CHECK flags the event of adding to the witness when checking for contract address collision.
+   * Used in stateless Ethereum (Verkle trees) for witness data collection.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/vm/evm.go#L500
    *
    * @generated from enum value: REASON_WITNESS_CONTRACT_COLLISION_CHECK = 29;
    */
   WITNESS_CONTRACT_COLLISION_CHECK = 29,
 
   /**
-   * GasChangeTxDataFloor is the amount of extra gas the transaction has to pay to reach the minimum gas requirement for the
-   * transaction data. This change will always be a negative change.
+   * REASON_TX_DATA_FLOOR is the amount of extra gas the transaction has to pay to reach the minimum gas requirement.
+   * This change will always be negative and represents additional gas cost for transaction data.
+   * See: https://github.com/ethereum/go-ethereum/blob/v1.16.4/core/state_transition.go#L538
    *
    * @generated from enum value: REASON_TX_DATA_FLOOR = 30;
    */
@@ -1848,7 +2236,7 @@ export enum GasChange_Reason {
  * Describes the enum sf.ethereum.type.v2.GasChange.Reason.
  */
 export const GasChange_ReasonSchema: GenEnum<GasChange_Reason> = /*@__PURE__*/
-  enumDesc(file_sf_ethereum_type_v2_type, 15, 0);
+  enumDesc(file_sf_ethereum_type_v2_type, 16, 0);
 
 /**
  * HeaderOnlyBlock is used to optimally unpack the [Block] structure (note the
@@ -1872,7 +2260,7 @@ export type HeaderOnlyBlock = Message<"sf.ethereum.type.v2.HeaderOnlyBlock"> & {
  * Use `create(HeaderOnlyBlockSchema)` to create a new message.
  */
 export const HeaderOnlyBlockSchema: GenMessage<HeaderOnlyBlock> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 16);
+  messageDesc(file_sf_ethereum_type_v2_type, 17);
 
 /**
  * BlockWithRefs is a lightweight block, with traces and transactions
@@ -1908,7 +2296,7 @@ export type BlockWithRefs = Message<"sf.ethereum.type.v2.BlockWithRefs"> & {
  * Use `create(BlockWithRefsSchema)` to create a new message.
  */
 export const BlockWithRefsSchema: GenMessage<BlockWithRefs> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 17);
+  messageDesc(file_sf_ethereum_type_v2_type, 18);
 
 /**
  * @generated from message sf.ethereum.type.v2.TransactionTraceWithBlockRef
@@ -1930,7 +2318,7 @@ export type TransactionTraceWithBlockRef = Message<"sf.ethereum.type.v2.Transact
  * Use `create(TransactionTraceWithBlockRefSchema)` to create a new message.
  */
 export const TransactionTraceWithBlockRefSchema: GenMessage<TransactionTraceWithBlockRef> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 18);
+  messageDesc(file_sf_ethereum_type_v2_type, 19);
 
 /**
  * @generated from message sf.ethereum.type.v2.TransactionRefs
@@ -1947,7 +2335,7 @@ export type TransactionRefs = Message<"sf.ethereum.type.v2.TransactionRefs"> & {
  * Use `create(TransactionRefsSchema)` to create a new message.
  */
 export const TransactionRefsSchema: GenMessage<TransactionRefs> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 19);
+  messageDesc(file_sf_ethereum_type_v2_type, 20);
 
 /**
  * @generated from message sf.ethereum.type.v2.BlockRef
@@ -1969,7 +2357,50 @@ export type BlockRef = Message<"sf.ethereum.type.v2.BlockRef"> & {
  * Use `create(BlockRefSchema)` to create a new message.
  */
 export const BlockRefSchema: GenMessage<BlockRef> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 20);
+  messageDesc(file_sf_ethereum_type_v2_type, 21);
+
+/**
+ * Withdrawal represents a validator withdrawal from the beacon chain to the EVM.
+ * Introduced in EIP-4895 (Shanghai hard fork).
+ *
+ * @generated from message sf.ethereum.type.v2.Withdrawal
+ */
+export type Withdrawal = Message<"sf.ethereum.type.v2.Withdrawal"> & {
+  /**
+   * Index is the monotonically increasing identifier of the withdrawal
+   *
+   * @generated from field: uint64 index = 1;
+   */
+  index: bigint;
+
+  /**
+   * ValidatorIndex is the index of the validator that is withdrawing
+   *
+   * @generated from field: uint64 validator_index = 2;
+   */
+  validatorIndex: bigint;
+
+  /**
+   * Address is the Ethereum address receiving the withdrawn funds
+   *
+   * @generated from field: bytes address = 3;
+   */
+  address: Uint8Array;
+
+  /**
+   * Amount is the value of the withdrawal in gwei (1 gwei = 1e9 wei)
+   *
+   * @generated from field: uint64 amount = 4;
+   */
+  amount: bigint;
+};
+
+/**
+ * Describes the message sf.ethereum.type.v2.Withdrawal.
+ * Use `create(WithdrawalSchema)` to create a new message.
+ */
+export const WithdrawalSchema: GenMessage<Withdrawal> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_type_v2_type, 22);
 
 /**
  * @generated from enum sf.ethereum.type.v2.TransactionTraceStatus
