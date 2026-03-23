@@ -24,6 +24,7 @@ scripts/.firehose-data
 scripts/ethereum_devnet/.playground
 scripts/optimism/op-chain
 scripts/optimism/op-node-db
+scripts/polygon/data
 
 # E2E test repository (cloned by polygon-bridge script)
 polygon-e2e-tests/
