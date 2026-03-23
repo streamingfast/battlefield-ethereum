@@ -73,10 +73,6 @@ describe("Suicide", function () {
       },
       {
         eipSnapshotOverrides,
-        networkSnapshotOverrides: [
-          // See comment with ref id 5564fd945748 in this file
-          "arbitrum-geth-dev",
-        ],
       },
     )
 
@@ -89,11 +85,6 @@ describe("Suicide", function () {
         eipSnapshotOverrides: {
           cancun: ["eip6780"],
         },
-        networkSnapshotOverrides: [
-          // See comment with ref id 5564fd945748 in this file
-          "arbitrum-geth-dev",
-          "bnb-dev", // on bnb, there is no executedCode, no suicide, no gas change for REASON_SELF_DESTRUCT
-        ],
       },
     )
   })
@@ -106,20 +97,6 @@ describe("Suicide", function () {
       {
         $suicidal2Contract: Suicidal2.addressHex,
       },
-      {
-        networkSnapshotOverrides: [
-          // Arbitrum Geth uses Firehose 3.0-beta tracer but using backwards compatibility mode
-          // generating Firehose 2.3 block model. However the tracer had a bug not correctly aligning
-          // with Firehose 2.3 model when dealing with balance change happening due to a selfdestruct.
-          //
-          // When a contracts suicide, if the contract had a balance, Firehose 2.3 model is
-          // generating one `BalanceChange` with reason `REASON_SUICIDE_WITHDRAW` but the bogus
-          // Arbitrum Geth model is generating two, twice the same. The second one being a duplicate
-          // of the first and shouldn't have been there
-          "arbitrum-geth-dev",
-          "bnb-dev", // on bnb, the refund happens BEFORE the withdraw
-        ],
-      },
     )
   })
 
@@ -129,21 +106,12 @@ describe("Suicide", function () {
 
     await expect(
       contractCall(owner, Calls.contractSuicideThenCall, [], { gasLimit: callsGasLimit }),
-    ).to.trxTraceEqualSnapshot(
-      "suicide/create_contract_kill_it_and_try_to_call_within_same_call.expected.json",
-      {
-        $callsContract: Calls.addressHex,
-        $firstCreatedContract: firstCreatedContract,
-        $secondCreatedContract: getCreateAddressHex("0x" + firstCreatedContract, 1),
-        $thirdCreatedContract: getCreateAddressHex("0x" + firstCreatedContract, 2),
-      },
-      {
-        networkSnapshotOverrides: [
-          // See comment with ref id 5564fd945748 in this file
-          "arbitrum-geth-dev",
-        ],
-      },
-    )
+    ).to.trxTraceEqualSnapshot("suicide/create_contract_kill_it_and_try_to_call_within_same_call.expected.json", {
+      $callsContract: Calls.addressHex,
+      $firstCreatedContract: firstCreatedContract,
+      $secondCreatedContract: getCreateAddressHex("0x" + firstCreatedContract, 1),
+      $thirdCreatedContract: getCreateAddressHex("0x" + firstCreatedContract, 2),
+    })
   })
 
   it("Create contract to fixed address (create2), kill it and try instantiate it again at same address", async function () {
@@ -152,35 +120,17 @@ describe("Suicide", function () {
 
     await expect(
       contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, []),
-    ).to.trxTraceEqualSnapshot(
-      "suicide/create_contract_to_fixed_address_kill_it.expected.json",
-      {
-        $callsContract: Calls.addressHex,
-        $createdContract: createdContract,
-      },
-      {
-        networkSnapshotOverrides: [
-          // See comment with ref id 5564fd945748 in this file
-          "arbitrum-geth-dev",
-        ],
-      },
-    )
+    ).to.trxTraceEqualSnapshot("suicide/create_contract_to_fixed_address_kill_it.expected.json", {
+      $callsContract: Calls.addressHex,
+      $createdContract: createdContract,
+    })
 
     await expect(
       contractCall(owner, Calls.contractFixedAddressSuicideThenTryToCreateOnSameAddress, []),
-    ).to.trxTraceEqualSnapshot(
-      "suicide/create_contract_to_fixed_address_kill_it_while_already_killed.expected.json",
-      {
-        $callsContract: Calls.addressHex,
-        $createdContract: createdContract,
-      },
-      {
-        networkSnapshotOverrides: [
-          // See comment with ref id 5564fd945748 in this file
-          "arbitrum-geth-dev",
-        ],
-      },
-    )
+    ).to.trxTraceEqualSnapshot("suicide/create_contract_to_fixed_address_kill_it_while_already_killed.expected.json", {
+      $callsContract: Calls.addressHex,
+      $createdContract: createdContract,
+    })
   })
 
   it("Contract created in trx and suicides in constructor", async function () {
@@ -191,12 +141,6 @@ describe("Suicide", function () {
       {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: getCreateAddressHex(deployer.address, 0),
-      },
-      {
-        networkSnapshotOverrides: [
-          // See comment with ref id 5564fd945748 in this file
-          "arbitrum-geth-dev",
-        ],
       },
     )
   })
@@ -213,13 +157,6 @@ describe("Suicide", function () {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: Contract.addressHex,
       },
-      {
-        networkSnapshotOverrides: [
-          // See comment with ref id 5564fd945748 in this file
-          "arbitrum-geth-dev",
-          "bnb-dev", // on bnb, the refund happens BEFORE the withdraw
-        ],
-      },
     )
   })
 
@@ -234,13 +171,6 @@ describe("Suicide", function () {
       {
         $contract: Contract.addressHex,
         $createdContract: createdContract,
-      },
-      {
-        networkSnapshotOverrides: [
-          // See comment with ref id 5564fd945748 in this file
-          "arbitrum-geth-dev",
-          "bnb-dev", // bnb does not show the 'double withdraw' behavior, but the result is the same because the account gets drained.
-        ],
       },
     )
   })

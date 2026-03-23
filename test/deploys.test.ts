@@ -39,18 +39,6 @@ describe("Deploys", function () {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: createdContract,
       },
-      {
-        networkSnapshotOverrides: [
-          // Arbitrum Geth uses Firehose 3.0-beta tracer but using backwards compatibility mode
-          // generating Firehose 2.3 block model. However the tracer had a bug not correctly aligning
-          // with Firehose 2.3 model when dealing account creation.
-          //
-          // In Arbitrum Firehose tracer, the account creation are emitted only if the account did not
-          // previously existed while on Firehose 2.3, they are emitted in every cases (it previously
-          // existed or not).
-          "arbitrum-geth-dev",
-        ],
-      },
     )
   })
 
@@ -115,10 +103,6 @@ describe("Deploys", function () {
         $callsContract: Calls.addressHex,
         $createdContract: getCreateAddressHex(Calls.address, 1),
       },
-      {
-        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev"],
-      },
     )
   })
 
@@ -132,10 +116,6 @@ describe("Deploys", function () {
         $callsContract: Calls.addressHex,
         $firstCreatedContract: firstCreatedContract,
         $secondCreatedContract: getCreateAddressHex("0x" + firstCreatedContract, 1),
-      },
-      {
-        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev"],
       },
     )
   })
@@ -162,7 +142,6 @@ describe("Deploys", function () {
           // New gas cost for contract creation & calldata
           prague: ["eip7623"],
         },
-        networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
       },
     )
   })
@@ -188,8 +167,6 @@ describe("Deploys", function () {
         eipSnapshotOverrides: {
           prague: ["eip7623"],
         },
-        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"], // less gas used on bnb here
       },
     )
   })
@@ -199,17 +176,11 @@ describe("Deploys", function () {
 
     await expect(
       contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false]),
-    ).to.trxTraceEqualSnapshot(
-      "deploys/contract_create2_successful_creation.expected.json",
-      {
-        $callsContract: Calls.addressHex,
-        $createdContract: create2Data.address,
-        $salt: create2Data.salt,
-      },
-      {
-        networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
-      },
-    )
+    ).to.trxTraceEqualSnapshot("deploys/contract_create2_successful_creation.expected.json", {
+      $callsContract: Calls.addressHex,
+      $createdContract: create2Data.address,
+      $salt: create2Data.salt,
+    })
   })
 
   it("Contract with create2, inner call fail due to address already exists (transaction succeed though)", async function () {
@@ -221,17 +192,11 @@ describe("Deploys", function () {
 
     await expect(
       contractCall(owner, Calls.contractCreate2, [Calls__factory.bytecode, "0", `0x${create2Data.salt}`, false]),
-    ).to.trxTraceEqualSnapshot(
-      "deploys/contract_create2_inner_call_fails_address_already_exists.expected.json",
-      {
-        $callsContract: Calls.addressHex,
-        $createdContract: create2Data.address,
-        $salt: create2Data.salt,
-      },
-      {
-        networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"], // less gas used on bnb here
-      },
-    )
+    ).to.trxTraceEqualSnapshot("deploys/contract_create2_inner_call_fails_address_already_exists.expected.json", {
+      $callsContract: Calls.addressHex,
+      $createdContract: create2Data.address,
+      $salt: create2Data.salt,
+    })
   })
 
   it("Contract with create2, inner call fail due to address already exists and transaction fails too", async function () {
@@ -249,10 +214,6 @@ describe("Deploys", function () {
         $callsContract: Calls.addressHex,
         $createdContract: create2Data.address,
         $salt: create2Data.salt,
-      },
-      {
-        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev", "bnb-dev"], // less gas used on bnb here
       },
     )
   })

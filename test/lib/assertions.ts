@@ -61,32 +61,8 @@ type TrxTracerEqualSnapshotOptions = {
    * If the test are running on a network that is not matching any EIPs, the snapshot file loaded will be
    * as usual, e.g. `<groupOf(snapshotFileID)>/<nameOf(snapshotFileID)>`.
    *
-   * This value works in conjunction with `networkSnapshotOverrides` to allow for a more fine-grained
-   * snapshot override. In the possibility that both matches, the EIP is put first in the snapshot path
-   * and the overridden network name second so a test matching both would be picked as
-   * `<groupOf(snapshotFileID)>/<eip-key>/<network-name>/<nameOf(snapshotFileID)>`.
    */
   eipSnapshotOverrides?: Record<string, EIP[]>
-
-  /**
-   * This option list networks for which network specific snapshots should be used. Certain networks
-   * like Arbitrum have discrepancies either from the tracing implementation of because of the chain
-   * itself on certain situations.
-   *
-   * The input element should be a network name, as defined in `./hardhat.config.ts` file. If the tests
-   * are running on a network that is in this list, the snapshot file loaded will be
-   * `<groupOf(snapshotFileID)>/<network-name>/<nameOf(snapshotFileID)>` instead of
-   * being picked up as `<groupOf(snapshotFileID)>/<nameOf(snapshotFileID)>`.
-   *
-   * If the test are running on a network that is not in this list, the snapshot file loaded will be
-   * as usual, e.g. `<groupOf(snapshotFileID)>/<nameOf(snapshotFileID)>`.
-   *
-   * This value works in conjunction with `eipSnapshotOverrides` to allow for a more fine-grained
-   * snapshot override. In the possibility that both matches, the EIP is put first in the snapshot path
-   * and the overridden network name second so a test matching both would be picked as
-   * `<groupOf(snapshotFileID)>/<eip-key>/<network-name>/<nameOf(snapshotFileID)>`.
-   */
-  networkSnapshotOverrides?: string[]
 }
 
 declare global {
@@ -383,6 +359,13 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
   trace.v = emptyBytes
   trace.r = emptyBytes
   trace.s = emptyBytes
+
+  // Normalize setCodeAuthorizations: an empty array and an absent field are semantically
+  // identical, but proto repeated fields default to [] while old snapshots omit the key.
+  // Cast to any to delete the key so JSON.stringify omits it entirely.
+  if (trace.setCodeAuthorizations.length === 0) {
+    delete (trace as any).setCodeAuthorizations
+  }
 
   for (const call of trace.calls) {
     call.balanceChanges.forEach(deltaizeBalanceValue)
