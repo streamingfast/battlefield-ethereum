@@ -7,7 +7,7 @@ import { knownExistingAddress } from "./lib/addresses"
 import { TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner } from "./global"
 import { toBigInt } from "./lib/numbers"
-import { isNetwork, networkName } from "./lib/network"
+import { isNetwork } from "./lib/network"
 
 describe("Dynamic Tx", function () {
   it("Dynamic transaction max fee", async function () {

@@ -1,8 +1,7 @@
-
-set -e
+#!/usr/bin/env bash
 
 PARENT_PID=$$
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 source "$ROOT/lib.sh"
 
@@ -10,6 +9,8 @@ main() {
     data_dir="$(mktemp -d)"
     firehose_version=${FIREHOSE_VERSION:-"3.0"}
     fork_version=${FORK_VERSION:-"prague"}
+
+    # Yes we re-use Geth genesis files as they work as-is with Reth too
     genesis_file="$ROOT/geth_dev/genesis.$fork_version.json"
 
     "$reth" init --datadir="$data_dir" --chain="$genesis_file" 2> /dev/null
