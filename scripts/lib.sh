@@ -1,4 +1,5 @@
 root_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo "Root directory at top of lib.sh: $root_dir"
 
 firehose_data_dir="$root_dir/.firehose-data"
 
@@ -33,11 +34,15 @@ run_fireeth() {
   node_args="$1"; shift
 
   data_dir="$root_dir/.firehose-data"
+  echo "Using Firehose data directory: $data_dir"
 
   if [[ -d "$data_dir" ]]; then
+    echo "Cleaning up existing Firehose data directory at '$data_dir'"
     rm -rf "$data_dir"
   fi
 
+  echo "Before stating Firehose"
+  ls "$data_dir/storage/one-blocks"
   "$fireeth" \
     start \
     reader-node,relayer,merger,firehose,substreams-tier1,substreams-tier2 \

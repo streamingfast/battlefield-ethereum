@@ -10,6 +10,9 @@ importers:
       "@types/debug":
         specifier: ^4.1.12
         version: 4.1.12
+      c-kzg:
+        specifier: ^4.1.0
+        version: 4.1.0
     devDependencies:
       "@bufbuild/buf":
         specifier: ^1.47.2
@@ -1034,6 +1037,10 @@ packages:
       { integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw== }
     engines: { node: ">=8" }
 
+  bindings@1.5.0:
+    resolution:
+      { integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ== }
+
   blakejs@1.2.1:
     resolution:
       { integrity: sha512-QXUSXI3QVc/gJME0dBpXrag1kbzOqCjCX8/b54ntNyW6sjtoqxqRk3LTmXzaJoh71zMsDCjM+47jS7XiwN/+fQ== }
@@ -1104,6 +1111,10 @@ packages:
     resolution:
       { integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg== }
     engines: { node: ">= 0.8" }
+
+  c-kzg@4.1.0:
+    resolution:
+      { integrity: sha512-eliOBB2GKoT5Nk4LwN418O8kWfXCwepHj3kd6z0zKrzIdJbry0Y8IDPYzE5Dxw/fs386PGO6zQRqy8LSVtR5tQ== }
 
   call-bind@1.0.7:
     resolution:
@@ -1572,6 +1583,10 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  file-uri-to-path@1.0.0:
+    resolution:
+      { integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw== }
 
   fill-range@7.1.1:
     resolution:
@@ -2318,6 +2333,11 @@ packages:
   node-addon-api@5.1.0:
     resolution:
       { integrity: sha512-eh0GgfEkpnoWDq+VY8OyvYhFEzBk6jIYbRKdIlyTiAXIVJ8PyBaKb0rp7oDtoddbdoHWhq8wwr+XZ81F1rpNdA== }
+
+  node-addon-api@8.7.0:
+    resolution:
+      { integrity: sha512-9MdFxmkKaOYVTV+XVRG8ArDwwQ77XIgIPyKASB1k3JPq3M8fGQQQE3YpMOrKm6g//Ktx8ivZr8xo1Qmtqub+GA== }
+    engines: { node: ^18 || ^20 || >= 21 }
 
   node-emoji@1.11.0:
     resolution:
@@ -4216,6 +4236,10 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
+  bindings@1.5.0:
+    dependencies:
+      file-uri-to-path: 1.0.0
+
   blakejs@1.2.1: {}
 
   bn.js@4.11.6: {}
@@ -4278,6 +4302,11 @@ snapshots:
   buffer-xor@1.0.3: {}
 
   bytes@3.1.2: {}
+
+  c-kzg@4.1.0:
+    dependencies:
+      bindings: 1.5.0
+      node-addon-api: 8.7.0
 
   call-bind@1.0.7:
     dependencies:
@@ -4769,6 +4798,8 @@ snapshots:
   fdir@6.4.2(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
+
+  file-uri-to-path@1.0.0: {}
 
   fill-range@7.1.1:
     dependencies:
@@ -5425,6 +5456,8 @@ snapshots:
   node-addon-api@2.0.2: {}
 
   node-addon-api@5.1.0: {}
+
+  node-addon-api@8.7.0: {}
 
   node-emoji@1.11.0:
     dependencies:

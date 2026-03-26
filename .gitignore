@@ -1,7 +1,7 @@
 node_modules
 .env
 .envrc
-
+.pnpm-store
 # macOS files
 .DS_Store
 

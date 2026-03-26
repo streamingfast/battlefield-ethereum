@@ -30,7 +30,6 @@ describe("Prague (EIP-7702 SetCode)", function () {
   const key1 = "0xb71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291"
   const key2 = "0x8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a"
 
-  let pragueActive = false
   let wallet1: Wallet
   let wallet2: Wallet
 
@@ -43,12 +42,11 @@ describe("Prague (EIP-7702 SetCode)", function () {
   let setterBBAddress: string
 
   before(async function () {
-    console.log("Fecthing latest block to check for Prague support...")
     const rpcBlock = await mustGetRpcBlock("latest")
     if (!isBlockOnPragueOrLater(rpcBlock)) {
+      this.skip()
       return
     }
-    pragueActive = true
 
     wallet1 = new Wallet(key1, hre.ethers.provider)
     wallet2 = new Wallet(key2, hre.ethers.provider)
@@ -74,16 +72,7 @@ describe("Prague (EIP-7702 SetCode)", function () {
     setterBBAddress = setterBB.address
   })
 
-  console.log(
-    "Executing tests here",
-    pragueActive ? "on Prague-enabled chain" : "on non-Prague chain (tests will be no-ops)",
-  )
-
   it("SetCode transaction sets delegation codes via authorization list", async function () {
-    if (!pragueActive) {
-      return
-    }
-
     const chainId = (await hre.ethers.provider.getNetwork()).chainId
     const wallet1Nonce = await wallet1.getNonce()
     const wallet2Nonce = await wallet2.getNonce()
@@ -226,10 +215,6 @@ describe("Prague (EIP-7702 SetCode)", function () {
   })
 
   it("Delegated EOA executes delegation code on subsequent legacy call", async function () {
-    if (!pragueActive) {
-      return
-    }
-
     // wallet1 is now delegated to Caller (from TX1).
     // wallet2 is now delegated to SetterBB (from TX1).
     // Sending a legacy tx to wallet1 triggers Caller which calls wallet2 which runs SetterBB.
@@ -288,10 +273,6 @@ describe("Prague (EIP-7702 SetCode)", function () {
   })
 
   it("SetCode transaction with zero-address authorization resets delegation", async function () {
-    if (!pragueActive) {
-      return
-    }
-
     const chainId = (await hre.ethers.provider.getNetwork()).chainId
     const wallet1Nonce = await wallet1.getNonce()
 
