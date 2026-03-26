@@ -123,6 +123,20 @@ node-gyp rebuild
 
 ---
 
+## Avoiding Data Directory Conflicts
+
+The Firehose stack writes all its state (chain data, logs, block files) to a single data directory, defaulting to `.firehose-data/` inside the repo. If a human developer and an agent run chains simultaneously, they will collide on this directory.
+
+**Always set `FIREHOSE_DATA_DIR` to an isolated path before starting any chain.** Use a path that is unique to your session and will not conflict with the developer's default:
+
+```bash
+export FIREHOSE_DATA_DIR=/tmp/firehose-battlefield-agent
+```
+
+Set this in your shell before running any `./scripts/run_firehose_*.sh` command. The scripts read this variable and use it as the data directory instead of the default.
+
+---
+
 ## Test Cycle — `geth-dev`
 
 This is the primary and simplest chain to test against. Uses the StreamingFast Firehose-instrumented `geth` in `--dev` mode.

@@ -1,6 +1,6 @@
 root_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-firehose_data_dir="$root_dir/.firehose-data"
+firehose_data_dir="${FIREHOSE_DATA_DIR:-"$root_dir/.firehose-data"}"
 
 private_key_to_fund="${PRIVATE_KEY_TO_FUND:-"0x52e1cc4b9c8b4fc9b202adf06462bdcc248e170c9abd56b2adb84c8d87bee674"}"
 # FIXME: Ideally we would derive the address from the private key to fund directly, for now, they must both match
@@ -32,7 +32,7 @@ run_fireeth() {
   node_binary="$1"; shift
   node_args="$1"; shift
 
-  data_dir="$root_dir/.firehose-data"
+  data_dir="$firehose_data_dir"
 
   if [[ -d "$data_dir" ]]; then
     rm -rf "$data_dir"
