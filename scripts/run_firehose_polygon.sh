@@ -97,17 +97,17 @@ prepare_kurtosis_environment() {
 
     address_to_fund=0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab
 
-    ## Pull the required Docker image
-    #echo "Pulling Docker image..."
-    #docker pull --platform=linux/amd64 ghcr.io/agglayer/e2e:9fd2d09
+    # Pull the required Docker image
+    echo "Pulling Docker image..."
+    docker pull --platform=linux/amd64 ghcr.io/agglayer/e2e:9fd2d09
 
     ## Clean up any existing enclave before starting fresh
     #echo "Cleaning up any existing 'pos' enclave..."
     #kurtosis enclave rm --force pos 2>/dev/null || true
 
-    ## Run Kurtosis
-    #echo "Starting Kurtosis POS environment..."
-    #kurtosis run --enclave pos github.com/streamingfast/kurtosis-pos
+    # Run Kurtosis
+    echo "Starting Kurtosis POS environment..."
+    kurtosis run --enclave pos github.com/streamingfast/kurtosis-pos
 
     export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
     pk="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea"
@@ -179,8 +179,7 @@ run_local_bor() {
     echo "Starting Fireeth with Bor server and Firehose tracing..."
     echo "Running: fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments=\"server --config localconfig/config.toml --vmtrace=firehose\" --advertise-chain-name=devnet --firehose-grpc-listen-addr=\"localhost:8089\""
     echo ""
-    export FIREHOSE_ETHEREUM_TRACER_LOG_LEVEL=debug
-    fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --parallelevm.enable=false --config localconfig/config.toml --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
+    fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
 }
 
 # Main function
