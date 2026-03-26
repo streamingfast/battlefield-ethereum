@@ -177,9 +177,9 @@ run_local_bor() {
 
     # Run fireeth with bor server
     echo "Starting Fireeth with Bor server and Firehose tracing..."
-    echo "Running: fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments=\"server --config localconfig/config.toml --vmtrace=firehose\" --advertise-chain-name=devnet --firehose-grpc-listen-addr=\"localhost:8089\""
+    echo "Running: fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments=\"server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose\" --advertise-chain-name=devnet --firehose-grpc-listen-addr=\"localhost:8089\""
     echo ""
-    fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
+    fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
 }
 
 # Main function
