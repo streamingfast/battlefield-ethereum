@@ -25,7 +25,7 @@ import { SetCode7702Caller__factory } from "../typechain-types"
  * If the connected chain does not support Prague (no requestsHash in block header),
  * every test returns successfully without assertions.
  */
-describe("Prague (EIP-7702 SetCode)", function () {
+describe("Prague", function () {
   // Private keys from the Go test (TestFirehose_EIP7702 in firehose_test.go)
   const key1 = "0xb71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291"
   const key2 = "0x8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a"

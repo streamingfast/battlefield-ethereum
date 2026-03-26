@@ -60,5 +60,8 @@
   "dependencies": {
     "@types/debug": "^4.1.12",
     "c-kzg": "^4.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["c-kzg", "keccak", "secp256k1"]
   }
 }

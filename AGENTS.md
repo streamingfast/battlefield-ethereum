@@ -99,10 +99,14 @@ The blob transaction tests (`cancun.test.ts`) use the `c-kzg` package which requ
 # Check
 g++ --version
 
-# Install
-sudo apt-get install -y g++          # Debian/Ubuntu
-brew install gcc                      # macOS
+# Install — Debian/Ubuntu
+sudo apt-get install -y g++
+
+# Install — macOS (Xcode Command Line Tools, includes clang/g++)
+xcode-select --install
 ```
+
+The `postinstall` script in `package.json` automatically rebuilds `c-kzg` after every `pnpm install`. If the build fails, it means the C++ compiler is missing — install it first, then re-run `pnpm install`.
 
 ---
 
@@ -112,13 +116,6 @@ Always run this from the repo root before running any tests:
 
 ```bash
 pnpm install
-```
-
-If `c-kzg` fails to load its native binding after `pnpm install`, rebuild it manually:
-
-```bash
-cd node_modules/.pnpm/c-kzg*/node_modules/c-kzg
-node-gyp rebuild
 ```
 
 ---

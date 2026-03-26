@@ -27,7 +27,7 @@ const SLOT_0 = "0x00000000000000000000000000000000000000000000000000000000000000
 const SLOT_1 = "0x0000000000000000000000000000000000000000000000000000000000000001"
 const SLOT_2 = "0x0000000000000000000000000000000000000000000000000000000000000002"
 
-describe("Berlin (EIP-2930 AccessList)", function () {
+describe("Berlin", function () {
   it("Access list transaction with address-only entry", async function () {
     const response = await owner.sendTransaction({
       to: knownExistingAddress,

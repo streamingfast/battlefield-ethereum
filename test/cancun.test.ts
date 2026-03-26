@@ -45,7 +45,7 @@ const ZERO_BLOB = new Uint8Array(131072)
 // This is deterministic given the fixed trusted setup and fixed blob content.
 const ZERO_BLOB_VERSIONED_HASH = "0x010657f37554c781402a22917dee2f75def7ab966d7b770905398eba3c444014"
 
-describe("Cancun (EIP-4844 Blob)", function () {
+describe("Cancun", function () {
   // Hardhat's NonceManager strips blob-specific fields (blobs, kzg, maxFeePerBlobGas)
   // when sending transactions, so we use a dedicated ethers Wallet connected directly
   // to the provider — the same pattern used by the Prague (EIP-7702) tests.
