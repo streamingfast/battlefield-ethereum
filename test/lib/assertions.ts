@@ -28,6 +28,85 @@ import { EIP } from "./chain_eips"
 import { isNetwork, networkName } from "./network"
 import { excludeFieldsFromObject, getGlobalExcludedFields } from "./field-exclusion"
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { structuredPatch } = require("diff") as {
+  structuredPatch: (
+    oldFileName: string,
+    newFileName: string,
+    oldStr: string,
+    newStr: string,
+    oldHeader: string,
+    newHeader: string,
+    options: { context: number },
+  ) => {
+    hunks: Array<{
+      oldStart: number
+      oldLines: number
+      newStart: number
+      newLines: number
+      lines: string[]
+    }>
+  }
+}
+
+const ANSI_RED = "\x1b[31m"
+const ANSI_GREEN = "\x1b[32m"
+const ANSI_DIM = "\x1b[2m"
+const ANSI_RESET = "\x1b[0m"
+
+function formatSnapshotDiff(
+  expectedLabel: string,
+  actualLabel: string,
+  expectedStr: string,
+  actualStr: string,
+  diffEditorHint: string,
+): string {
+  const patch = structuredPatch(expectedLabel, actualLabel, expectedStr, actualStr, "", "", { context: 5 })
+
+  const lineNumWidth = Math.max(
+    ...patch.hunks.flatMap((h) => [h.oldStart + h.oldLines, h.newStart + h.newLines]),
+    1,
+  ).toString().length
+
+  const pad = (n: number) => String(n).padStart(lineNumWidth, " ")
+
+  const out: string[] = []
+  out.push(`${ANSI_RED}--- ${expectedLabel}${ANSI_RESET}`)
+  out.push(`${ANSI_GREEN}+++ ${actualLabel}${ANSI_RESET}`)
+
+  for (const hunk of patch.hunks) {
+    out.push(`${ANSI_DIM}@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@${ANSI_RESET}`)
+
+    let oldLine = hunk.oldStart
+    let newLine = hunk.newStart
+
+    for (const rawLine of hunk.lines) {
+      const sign = rawLine[0]
+      const content = rawLine.slice(1)
+
+      // Skip the "\ No newline at end of file" marker
+      if (rawLine.startsWith("\\")) continue
+
+      if (sign === "-") {
+        out.push(`${ANSI_RED}-${pad(oldLine)} | ${content}${ANSI_RESET}`)
+        oldLine++
+      } else if (sign === "+") {
+        out.push(`${ANSI_GREEN}+${pad(newLine)} | ${content}${ANSI_RESET}`)
+        newLine++
+      } else {
+        out.push(`${ANSI_DIM} ${pad(oldLine)} |${ANSI_RESET} ${content}`)
+        oldLine++
+        newLine++
+      }
+    }
+    out.push("")
+  }
+
+  out.push(`${ANSI_RED}See the full diff by running: '${diffEditorHint}'${ANSI_RESET}`)
+
+  return out.join("\n")
+}
+
 const debug = debugFactory("battlefield:assertions")
 
 type Chai = typeof chai
@@ -292,23 +371,19 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
         JSON.stringify(filteredExpected, null, 2),
       )
 
-      // Using directly to.deep.equal leads to losing the actual diff, but using to.equal
-      // directly leads to equality failing since it's not deep. So we use deep-eql
-      // (which Chai uses under the hood) to check differences, and if there are differences
-      // we use to.equal so the diff is clear.
       if (!deepEqual(filteredActual, filteredExpected)) {
-        new chai.Assertion(filteredActual).to.equal(
-          filteredExpected,
-          `Transaction ${trxReceipt.hash} (Block #${trxReceipt.blockNumber}) trace mismatch against stored snapshot ${snapshot.id}` +
-            "\n" +
-            `Use SNAPSHOTS_UPDATE=true to update all snapshots or SNAPSHOTS_UPDATE="^${snapshot.id}$" this specific snapshot` +
-            "\n\n" +
-            `See the diff locally by running: ` +
-            `'${process.env.DIFF_EDITOR || "diff -u"} ${snapshot.toSnapshotPath(
-              SnapshotKind.ActualNormalized,
-              true,
-            )} ${snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)}'`,
-        )
+        const expectedLabel = snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)
+        const actualLabel = snapshot.toSnapshotPath(SnapshotKind.ActualNormalized, true)
+        const expectedStr = JSON.stringify(filteredExpected, null, 2)
+        const actualStr = JSON.stringify(filteredActual, null, 2)
+
+        const diffEditorHint = `${process.env.DIFF_EDITOR || "diff -u"} ${expectedLabel} ${actualLabel}`
+        const message =
+          `Transaction ${trxReceipt.hash} (Block #${trxReceipt.blockNumber}) trace mismatch against stored snapshot ${snapshot.id}\n` +
+          `Use SNAPSHOTS_UPDATE=true to update all snapshots or SNAPSHOTS_UPDATE="^${snapshot.id}$" this specific snapshot\n\n` +
+          formatSnapshotDiff(expectedLabel, actualLabel, expectedStr, actualStr, diffEditorHint)
+
+        throw new chai.AssertionError(message, { showDiff: false })
       }
     },
   )
