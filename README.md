@@ -199,6 +199,22 @@ To install `fireeth`, you can simply do `brew install tap/streamingfast/firehose
   > [!NOTE]
   > If you have some problem running the built binary on OSX, it could be due to OSX code signing issue, fix signature of the built binary with `codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,runtime $(which geth)`
 
+### Build tools for native addons (`c-kzg`)
+
+The blob transaction tests (`cancun.test.ts`) use the `c-kzg` package which requires a C++ compiler and `node-gyp`. On Linux, if `pnpm install` fails or `c-kzg` fails to load at runtime:
+
+```bash
+# Option 1, via npm
+npm install -g node-gyp
+rm -rf node_modules && pnpm install
+```
+
+```bash
+# Option 2, via apt
+sudo apt-get install -y node-gyp
+cd node_modules/.pnpm/c-kzg@4.1.0/node_modules/c-kzg && npx node-gyp rebuild
+```
+
 ### Alternative: Use Besu
 
 As an alternative to Geth, you can use Besu directly. This provides a Java-based Ethereum client option for battlefield testing.
