@@ -3,7 +3,6 @@ import path from "path"
 import debugFactory from "debug"
 import { EIP, isEIPActive } from "./chain_eips"
 import { chainStaticInfo } from "./chain"
-import { networkName } from "./network"
 
 const debug = debugFactory("battlefield:snapshots")
 
@@ -53,7 +52,6 @@ export enum SnapshotKind {
 
 export class Snapshot {
   public eipOverride: string | undefined
-  public networkOverride: string | undefined
 
   constructor(
     public id: string,
@@ -68,11 +66,7 @@ export class Snapshot {
     }
 
     const eipOverrides = options.eipSnapshotOverrides || {}
-    debug(
-      `Looking for EIP overrides again current network ${networkName()} (EIPS %o): %o`,
-      chainStaticInfo.eips,
-      eipOverrides,
-    )
+    debug(`Looking for EIP overrides again current network (EIPS %o): %o`, chainStaticInfo.eips, eipOverrides)
 
     if (Object.keys(eipOverrides).length > 0) {
       const matchingEipsPerOverride = Object.fromEntries(
@@ -97,14 +91,6 @@ export class Snapshot {
         debug("EIP specific override(s) found, using it: %o", eipOverrides)
         this.eipOverride = eipSnapshotOverride
       }
-    }
-
-    const networkOverrides = options.networkSnapshotOverrides || []
-    debug(`Looking for network specific overrides again current network ${networkName()}: %o`, networkOverrides)
-    const hasNetworkOverride = networkOverrides.some((network) => networkName() === network)
-    if (hasNetworkOverride) {
-      debug("Network specific override found, using it")
-      this.networkOverride = networkName()
     }
 
     this.id = local
@@ -155,17 +141,7 @@ export class Snapshot {
     }
 
     if (globalNetworkOverride) {
-      if (this.networkOverride) {
-        throw new Error(
-          `Snapshot ${this.id} has both a global network override and a local network override that matched, this is not allowed`,
-        )
-      }
-
       segments.push(globalNetworkOverride)
-    } else {
-      if (this.networkOverride) {
-        segments.push(this.networkOverride)
-      }
     }
 
     segments.push(lastSegment)
@@ -208,7 +184,6 @@ export class Snapshot {
 
 type ResolveSnapshotOptions = {
   eipSnapshotOverrides?: Record<string, EIP[]>
-  networkSnapshotOverrides?: string[]
 }
 
 export function resolveSnapshot(identifier: string, options: ResolveSnapshotOptions = {}): Snapshot {

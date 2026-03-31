@@ -23,9 +23,6 @@ describe("Storages", function () {
       {
         $storageContract: Storage.addressHex,
       },
-      {
-        networkSnapshotOverrides: ["optimism-geth-dev"], // less gas used on bnb here
-      },
     )
 
     await expect(contractCall(owner, Storage.setAfter, [])).to.trxTraceEqualSnapshot(

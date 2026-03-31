@@ -160,6 +160,7 @@ export async function getReceiptForTransactionTrace(
       ),
       maxFeePerBlobGas: toBigInt(trxTrace.blobGas),
       blobVersionedHashes: trxTrace.blobHashes.map((h) => hexlify(h)),
+      authorizationList: null,
     },
     hre.ethers.provider,
   )

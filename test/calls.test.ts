@@ -70,10 +70,6 @@ describe("Calls", function () {
         $childContract: Child.addressHex,
         $grandChildContract: GrandChild!.addressHex,
       },
-      {
-        // Seems BNB has different error message `bn256: malformed point` vs `point is not on curve`
-        networkSnapshotOverrides: ["bnb-dev", "optimism-geth-dev"],
-      },
     )
   })
 
@@ -93,15 +89,6 @@ describe("Calls", function () {
       "calls/delegate_to_empty_contract.expected.json",
       {
         $contract: Contract.addressHex,
-      },
-      {
-        networkSnapshotOverrides: [
-          // Arbitrum had a bogus apply backward compatibility change around executed code
-          // when dealing with a call going into an empty contract.
-          "arbitrum-geth-dev",
-          "bnb-dev", // less gas used on bnb here, also an extra 'REASON_STATE_COLD_ACCESS' gas change
-          "optimism-geth-dev", // less gas used on bnb here, also an extra 'REASON_STATE_COLD_ACCESS' gas change
-        ],
       },
     )
   })
@@ -153,10 +140,6 @@ describe("Calls", function () {
       "calls/revert_failure_root_call.expected.json",
       {
         $callsContract: Calls.addressHex,
-      },
-      {
-        // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-        networkSnapshotOverrides: ["optimism-geth-dev"],
       },
     )
   })

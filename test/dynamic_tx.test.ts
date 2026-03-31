@@ -7,7 +7,10 @@ import { knownExistingAddress } from "./lib/addresses"
 import { TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner } from "./global"
 import { toBigInt } from "./lib/numbers"
-import { isNetwork, networkName } from "./lib/network"
+import { isNetwork } from "./lib/network"
+import { waitForTransaction } from "./lib/ethers"
+
+const SLOT_1 = "0x0000000000000000000000000000000000000000000000000000000000000001"
 
 describe("Dynamic Tx", function () {
   it("Dynamic transaction max fee", async function () {
@@ -51,5 +54,31 @@ describe("Dynamic Tx", function () {
     expect(toBigInt(trace.gasPrice)).to.be.lessThanOrEqual(toBigInt(defaultGasPrice))
     expect(toBigInt(block.header?.baseFeePerGas)).to.be.greaterThanOrEqual(0n)
     expect(toBigInt(trace.maxPriorityFeePerGas)).to.equal(maxPriorityFeePerGas)
+  })
+
+  it("Dynamic transaction with access list", async function () {
+    const response = await owner.sendTransaction({
+      to: knownExistingAddress,
+      value: oneWei,
+      gasLimit: 100_000,
+      maxFeePerGas: defaultGasPrice,
+      type: 2,
+      accessList: [{ address: knownExistingAddress, storageKeys: [SLOT_1] }],
+    })
+    const result = await waitForTransaction(response, false)
+    const { trace } = await fetchFirehoseTransactionAndBlock(result)
+
+    expect(hexlify(trace.hash)).to.equal(result.hash)
+    expect(trace.type).to.equal(
+      TransactionTrace_Type.TRX_TYPE_DYNAMIC_FEE,
+      "transaction must remain TRX_TYPE_DYNAMIC_FEE even with access list",
+    )
+    expect(trace.accessList).to.have.length(1, "access list must have exactly one entry")
+    expect(hexlify(trace.accessList[0].address)).to.equal(
+      knownExistingAddress.toLowerCase(),
+      "access list entry address must match",
+    )
+    expect(trace.accessList[0].storageKeys).to.have.length(1, "access list entry must have one storage key")
+    expect(hexlify(trace.accessList[0].storageKeys[0])).to.equal(SLOT_1, "storage key must match slot 1")
   })
 })

@@ -40,26 +40,9 @@ describe("Logs", function () {
     const result = await koContractCall(owner, LogsNoTopics.fullyEmptyReverts, [])
     const { block, trace } = await fetchFirehoseTransactionAndBlock(result)
 
-    await expect([result, trace, block]).to.trxTraceEqualSnapshot(
-      "logs/log_no_topics_but_call_reverts.expected.json",
-      {
-        $logsContract: LogsNoTopics.addressHex,
-      },
-      {
-        networkSnapshotOverrides: [
-          // Arbitrum Geth uses Firehose 3.0-beta tracer but using backwards compatibility mode
-          // generating Firehose 2.3 block model. However the tracer had a bug not correctly aligning
-          // with Firehose 2.3 model when a log as no topics and the call reverts.
-          //
-          // Firehose 2.3 model generates `topics: [""]` while bogus Arbitrum Geth model
-          // generates `topics: []`.
-          "arbitrum-geth-dev",
-
-          // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-          "optimism-geth-dev",
-        ],
-      },
-    )
+    await expect([result, trace, block]).to.trxTraceEqualSnapshot("logs/log_no_topics_but_call_reverts.expected.json", {
+      $logsContract: LogsNoTopics.addressHex,
+    })
   })
 
   it("No topics but with data (log0) but call reverts", async function () {
@@ -67,20 +50,6 @@ describe("Logs", function () {
       "logs/log_no_topics_with_data_but_call_reverts.expected.json",
       {
         $logsContract: LogsNoTopics.addressHex,
-      },
-      {
-        networkSnapshotOverrides: [
-          // Arbitrum Geth uses Firehose 3.0-beta tracer but using backwards compatibility mode
-          // generating Firehose 2.3 block model. However the tracer had a bug not correctly aligning
-          // with Firehose 2.3 model when a log as no topics and the call reverts.
-          //
-          // Firehose 2.3 model generates `topics: [""]` while bogus Arbitrum Geth model
-          // generates `topics: []`.
-          "arbitrum-geth-dev",
-
-          // Optimism revert vs failed, see comment with ref id 1be64cf0820f in this project for details
-          "optimism-geth-dev",
-        ],
       },
     )
   })
@@ -143,9 +112,6 @@ describe("Logs", function () {
         $logsContract: Logs.addressHex,
         $childContract: Child.addressHex,
       },
-      {
-        networkSnapshotOverrides: ["arbitrum-geth-dev"],
-      },
     )
   })
 
@@ -155,9 +121,6 @@ describe("Logs", function () {
       {
         $logsContract: Logs.addressHex,
         $childContract: Child.addressHex,
-      },
-      {
-        networkSnapshotOverrides: ["arbitrum-geth-dev"],
       },
     )
   })
