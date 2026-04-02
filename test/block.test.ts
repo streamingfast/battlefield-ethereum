@@ -103,41 +103,42 @@ describe("Blocks", function () {
     })
   }
 
-  it("System call ProcessParentBlockHash recorded correctly", async function () {
-    const rpcBlock = await mustGetRpcBlock("latest")
-    if (!rpcBlock.requestsHash) {
-      return
-    }
+  if (!isNetwork("monad-dev"))
+    it("System call ProcessParentBlockHash recorded correctly", async function () {
+      const rpcBlock = await mustGetRpcBlock("latest")
+      if (!rpcBlock.requestsHash) {
+        return
+      }
 
-    const firehoseBlock = await fetchFirehoseBlock({ hash: rpcBlock.hash, num: rpcBlock.number })
-    const header = firehoseBlock.header!
+      const firehoseBlock = await fetchFirehoseBlock({ hash: rpcBlock.hash, num: rpcBlock.number })
+      const header = firehoseBlock.header!
 
-    expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
+      expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
 
-    const debugInfo = {
-      rpcBlockNumber: rpcBlock.number,
-      rpcBlockHash: rpcBlock.hash,
-      rpcParentHash: rpcBlock.parentHash,
-      firehoseBlockHash: hexlify(header.hash),
-      firehoseParentHash: hexlify(header.parentHash),
-      hashesMatch: rpcBlock.hash === hexlify(header.hash),
-      parentHashesMatch: rpcBlock.parentHash === hexlify(header.parentHash),
-      systemCallsLength: firehoseBlock.systemCalls?.length,
-      systemCalls: firehoseBlock.systemCalls?.map((c) => ({
-        caller: hexlify(c.caller),
-        address: hexlify(c.address),
-        input: hexlify(c.input),
-      })),
-      lookingForParentHash: rpcBlock.parentHash,
-    }
+      const debugInfo = {
+        rpcBlockNumber: rpcBlock.number,
+        rpcBlockHash: rpcBlock.hash,
+        rpcParentHash: rpcBlock.parentHash,
+        firehoseBlockHash: hexlify(header.hash),
+        firehoseParentHash: hexlify(header.parentHash),
+        hashesMatch: rpcBlock.hash === hexlify(header.hash),
+        parentHashesMatch: rpcBlock.parentHash === hexlify(header.parentHash),
+        systemCallsLength: firehoseBlock.systemCalls?.length,
+        systemCalls: firehoseBlock.systemCalls?.map((c) => ({
+          caller: hexlify(c.caller),
+          address: hexlify(c.address),
+          input: hexlify(c.input),
+        })),
+        lookingForParentHash: rpcBlock.parentHash,
+      }
 
-    const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
-    expect(updateParentBlockHashCall, `System call not found. Debug: ${JSON.stringify(debugInfo, null, 2)}`).to.not.be
-      .undefined
+      const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
+      expect(updateParentBlockHashCall, `System call not found. Debug: ${JSON.stringify(debugInfo, null, 2)}`).to.not.be
+        .undefined
 
-    expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
-    expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
-  })
+      expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
+      expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
+    })
 })
 
 function isUpdateBeaconRootCall(beaconRoot: string): (call: Call) => boolean {

@@ -72,7 +72,7 @@ before(async () => {
 
   // Register global excluded fields for specific networks
   registerGlobalExcludedFields("besu-devnet", besuExcludeFields)
-  registerGlobalExcludedFields("monad-devnet", monadExcludeFields)
+  registerGlobalExcludedFields("monad-dev", monadExcludeFields)
   registerGlobalExcludedFields("reth-dev", rethExcludeFields)
 
   debug("Initializing contract factories sequentially")
