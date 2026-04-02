@@ -81,7 +81,7 @@
       ],
       "statusFailed": true,
       "statusReverted": false,
-      "failureReason": "out of gas",
+      "failureReason": "contract creation code storage out of gas",
       "stateReverted": true,
       "beginOrdinal": "4",
       "endOrdinal": "7",

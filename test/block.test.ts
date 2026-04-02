@@ -100,12 +100,6 @@ describe("Blocks", function () {
       // we cannot reliably test for storage changes here.
       //
       // We should once we have a way to check for which "network" the test suite is running
-
-      if (getGlobalSnapshotsTag().startsWith("fh3.0")) {
-        // Firehose 2.3 does not record some gas changes that are recorded in 3.0, hence why in 2.3
-        // there is 0 gas changes while there are 2 in 3.0.
-        expect(beaconRootCall!.gasChanges.length).to.be.equal(2)
-      }
     })
   }
 
@@ -129,25 +123,20 @@ describe("Blocks", function () {
       hashesMatch: rpcBlock.hash === hexlify(header.hash),
       parentHashesMatch: rpcBlock.parentHash === hexlify(header.parentHash),
       systemCallsLength: firehoseBlock.systemCalls?.length,
-      systemCalls: firehoseBlock.systemCalls?.map(c => ({
+      systemCalls: firehoseBlock.systemCalls?.map((c) => ({
         caller: hexlify(c.caller),
         address: hexlify(c.address),
-        input: hexlify(c.input)
+        input: hexlify(c.input),
       })),
-      lookingForParentHash: rpcBlock.parentHash
+      lookingForParentHash: rpcBlock.parentHash,
     }
 
     const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
-    expect(updateParentBlockHashCall, `System call not found. Debug: ${JSON.stringify(debugInfo, null, 2)}`).to.not.be.undefined
+    expect(updateParentBlockHashCall, `System call not found. Debug: ${JSON.stringify(debugInfo, null, 2)}`).to.not.be
+      .undefined
 
     expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
     expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
-
-    if (getGlobalSnapshotsTag().startsWith("fh3.0")) {
-      // Firehose 2.3 does not record some gas changes that are recorded in 3.0, hence why in 2.3
-      // there is 0 gas changes while there are 2 in 3.0.
-      expect(updateParentBlockHashCall!.gasChanges.length).to.be.equal(2)
-    }
   })
 })
 

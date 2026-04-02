@@ -17,17 +17,23 @@ export const besu_exclude_fields = [
 ]
 
 export const monad_exclude_fields = [
-  "beginOrdinal",
-  "endOrdinal",
   "calls[].gasChanges",
+  "calls[].executedCode",
+  // TODO: remove
+  "setCodeAuthorizations",
+]
+
+export const reth_exclude_fields = [
+  // Changes
+  "calls[].balanceChanges",
+  "calls[].gasChanges",
+  "calls[].nonceChanges[]",
+  "calls[].codeChanges[]",
+  // Ordinals
   "calls[].beginOrdinal",
   "calls[].endOrdinal",
   "calls[].logs[].ordinal",
-  "calls[].balanceChanges[].ordinal",
-  "calls[].nonceChanges[].ordinal",
   "calls[].storageChanges[].ordinal",
-  "calls[].codeChanges[].ordinal",
+  "endOrdinal",
   "receipt.logs[].ordinal",
-  // TODO: remove
-  "setCodeAuthorizations",
 ]

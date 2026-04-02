@@ -28,7 +28,11 @@ import { fetchFirehoseBlock } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isNetwork, networkName } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
-import { besu_exclude_fields, monad_exclude_fields } from "./lib/constants"
+import {
+  besu_exclude_fields as besuExcludeFields,
+  reth_exclude_fields as rethExcludeFields,
+  monad_exclude_fields as monadExcludeFields,
+} from "./lib/constants"
 import { launchGethDev } from "./launcher"
 
 export let owner: NonceManager
@@ -67,8 +71,9 @@ before(async () => {
   setGlobalSnapshotsTag(process.env.SNAPSHOTS_TAG)
 
   // Register global excluded fields for specific networks
-  registerGlobalExcludedFields("besu-devnet", besu_exclude_fields)
-  registerGlobalExcludedFields("monad-dev", monad_exclude_fields)
+  registerGlobalExcludedFields("besu-devnet", besuExcludeFields)
+  registerGlobalExcludedFields("monad-devnet", monadExcludeFields)
+  registerGlobalExcludedFields("reth-dev", rethExcludeFields)
 
   debug("Initializing contract factories sequentially")
   ContractEmptyFactory = await hre.ethers.getContractFactory("ContractEmpty")
@@ -126,9 +131,9 @@ function validateFirehoseBlockVersion(block: Block) {
 
   switch (tag) {
     case "fh3.0":
-      if (block.ver !== 4) {
+      if (block.ver !== 4 && block.ver !== 5) {
         throw new Error(
-          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh3.0 expect version 4, it seems your geth instance is not running with the correct geth/Firehose version`,
+          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh3.0 expect version 4 or version 5, it seems your geth instance is not running with the correct geth/Firehose version`,
         )
       }
       break
