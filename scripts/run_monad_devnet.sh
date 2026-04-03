@@ -19,7 +19,27 @@ main() {
     export FIREHOSE_ENDPOINT=localhost:20028
     export FIREHOSE_GRPC_ENDPOINT=http://localhost:20028
 
-    pnpm hardhat test --network monad-dev "$@"
+    if [[ "${LOOP_MODE:-false}" == "true" ]]; then
+        local iteration=1
+        local failures=0
+        while true; do
+            echo ""
+            echo "===== Iteration $iteration (failures: $failures) ====="
+            pnpm hardhat test --network monad-dev "$@" && local exit_code=0 || local exit_code=$?
+            if [[ $exit_code -ne 0 ]]; then
+                failures=$((failures + 1))
+                echo "FAIL at iteration $iteration (total failures: $failures)"
+            else
+                echo "PASS at iteration $iteration"
+            fi
+            iteration=$((iteration + 1))
+            setup_monad_infrastructure
+            setup_firehose_infrastructure
+            cd "$BATTLEFIELD_DIR"
+        done
+    else
+        pnpm hardhat test --network monad-dev "$@"
+    fi
 }
 
 usage() {
@@ -133,7 +153,17 @@ setup_firehose_infrastructure() {
     }
 
     echo "Waiting for Firehose to process blocks..."
-    sleep 20
+    for i in {1..60}; do
+        if docker logs monad-localnet-extended-firehose-api 2>&1 | grep -q "Hub is ready"; then
+            echo "Firehose hub is ready!"
+            break
+        fi
+        if [[ $i -eq 60 ]]; then
+            echo "ERROR: Firehose hub not ready after 60 seconds"
+            exit 1
+        fi
+        sleep 1
+    done
 
     echo "Verifying Firehose containers are running..."
     if ! docker ps | grep -q "monad-localnet-extended-firehose"; then
@@ -199,6 +229,14 @@ cleanup() {
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     usage
     exit 0
+fi
+
+if [[ "$1" == "--loop" ]]; then
+    shift
+    LOG="/tmp/monad-test-loop-$(date +%Y%m%d-%H%M%S).log"
+    echo "Looping — logging to $LOG"
+    exec > >(tee -a "$LOG") 2>&1
+    LOOP_MODE=true
 fi
 
 main "$@"
