@@ -38,8 +38,8 @@ peers = []
 [peer_discovery]
 self_address = "0.0.0.0:8000"
 self_auth_port = 8001
-self_record_seq_num = 0
-self_name_record_sig = "85663053b3d719985357b56270ba320abadd1c51e10ea06430f3990d81393dc7770ff661c331bd631afca705029b0fd77cc0f48d46b37c8d8523c73c6af1242801"
+self_record_seq_num = 1
+self_name_record_sig = "348531c72123caff1e2b7d8d45c7f35d4f7f1589f71323e8d30ab90bf7a170b35ba1b5ecdd701eaf7e8b3a0be1962112987f94c0f79054ecb95e06047307828b01"
 refresh_period = 120
 request_timeout = 5
 unresponsive_prune_threshold = 5
