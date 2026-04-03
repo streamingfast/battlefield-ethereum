@@ -153,8 +153,10 @@ setup_firehose_infrastructure() {
     }
 
     echo "Waiting for Firehose to process blocks..."
+    local firehose_start
+    firehose_start=$(date -u +%Y-%m-%dT%H:%M:%SZ)
     for i in {1..60}; do
-        if docker logs monad-localnet-extended-firehose-api 2>&1 | grep -q "Hub is ready"; then
+        if docker logs --since "$firehose_start" monad-localnet-extended-firehose-api 2>&1 | grep -q "Hub is ready"; then
             echo "Firehose hub is ready!"
             break
         fi
