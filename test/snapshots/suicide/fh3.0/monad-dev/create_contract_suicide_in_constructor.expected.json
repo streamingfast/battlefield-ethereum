@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "16",
+  "endOrdinal": "9",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "",
       "input": "6080604052348015600f57600080fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055503373ffffffffffffffffffffffffffffffffffffffff16fffe",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [
@@ -38,19 +37,21 @@
           "key": "0000000000000000000000000000000000000000000000000000000000000000",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "000000000000000000000000$sender",
-          "ordinal": "8"
+          "ordinal": "7"
         }
       ],
       "balanceChanges": [
         {
           "address": "$sender",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "4",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "6",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -60,55 +61,18 @@
           "address": "$sender",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "6"
+          "ordinal": "5"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "82792",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "82792",
-          "newValue": "28124",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "28124",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "5"
-        },
-        {
-          "oldValue": "5908",
-          "newValue": "908",
-          "reason": "REASON_SELF_DESTRUCT",
-          "ordinal": "9"
-        },
-        {
-          "oldValue": "908",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "11"
-        },
-        {
-          "oldValue": "908",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "14"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "4",
-      "endOrdinal": "12",
+      "beginOrdinal": "1",
+      "endOrdinal": "8",
       "accountCreations": []
     },
     {
@@ -122,7 +86,6 @@
       "gasConsumed": "0",
       "returnData": "",
       "input": "",
-      "executedCode": false,
       "suicide": true,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -135,9 +98,10 @@
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "0",
-      "endOrdinal": "0",
-      "accountCreations": []
+      "beginOrdinal": "2",
+      "endOrdinal": "3",
+      "accountCreations": [],
+      "executedCode": true
     }
   ],
   "blobHashes": [],

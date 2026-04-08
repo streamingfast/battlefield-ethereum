@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "13",
+  "endOrdinal": "6",
   "status": "FAILED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "",
       "input": "57e5c655",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -37,12 +36,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "3",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "5",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -57,50 +58,13 @@
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878936",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878936",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "878586",
-          "newValue": "878577",
-          "reason": "REASON_CALL_DATA_COPY",
-          "ordinal": "7"
-        },
-        {
-          "oldValue": "878481",
-          "newValue": "875939",
-          "reason": "REASON_EVENT_LOG",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "875923",
-          "newValue": "0",
-          "reason": "REASON_FAILED_EXECUTION",
-          "ordinal": "10"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": false,
       "failureReason": "execution failed",
       "stateReverted": true,
-      "beginOrdinal": "5",
-      "endOrdinal": "11",
+      "beginOrdinal": "1",
+      "endOrdinal": "2",
       "accountCreations": []
     }
   ],

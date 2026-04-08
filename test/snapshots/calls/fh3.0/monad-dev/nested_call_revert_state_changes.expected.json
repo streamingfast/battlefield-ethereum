@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "22",
+  "endOrdinal": "9",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "",
       "input": "59d21640000000000000000000000000$childContract",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [
@@ -38,19 +37,21 @@
           "key": "0000000000000000000000000000000000000000000000000000000000000003",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000001",
-          "ordinal": "7"
+          "ordinal": "8"
         }
       ],
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "5",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -60,73 +61,18 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "6"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878568",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878568",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "855615",
-          "newValue": "853115",
-          "reason": "REASON_STATE_COLD_ACCESS",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "855715",
-          "newValue": "13329",
-          "reason": "REASON_CALL",
-          "ordinal": "9"
-        },
-        {
-          "oldValue": "13329",
-          "newValue": "830529",
-          "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "15"
-        },
-        {
-          "oldValue": "830433",
-          "newValue": "830409",
-          "reason": "REASON_RETURN_DATA_COPY",
-          "ordinal": "16"
-        },
-        {
-          "oldValue": "830016",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "17"
-        },
-        {
-          "oldValue": "830016",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "20"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "5",
-      "endOrdinal": "18",
+      "beginOrdinal": "1",
+      "endOrdinal": "4",
       "accountCreations": []
     },
     {
@@ -140,7 +86,6 @@
       "gasConsumed": "28566",
       "returnData": "08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000009726576657274696e670000000000000000000000000000000000000000000000",
       "input": "5cd7142d",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -148,26 +93,13 @@
       "nonceChanges": [],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "839786",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "11"
-        },
-        {
-          "oldValue": "817200",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "13"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": true,
       "failureReason": "execution reverted",
       "stateReverted": true,
-      "beginOrdinal": "10",
-      "endOrdinal": "14",
+      "beginOrdinal": "2",
+      "endOrdinal": "3",
       "accountCreations": []
     }
   ],

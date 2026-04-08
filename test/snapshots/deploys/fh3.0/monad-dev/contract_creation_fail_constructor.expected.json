@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "23",
+  "endOrdinal": "8",
   "status": "REVERTED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "",
       "input": "f3f91650",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -37,12 +36,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "5",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
-          "address": "$coinbase",
+          "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -52,73 +53,18 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "6"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878936",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878936",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "878674",
-          "newValue": "878638",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "7"
-        },
-        {
-          "oldValue": "878568",
-          "newValue": "846556",
-          "reason": "REASON_CONTRACT_CREATION",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "846556",
-          "newValue": "13227",
-          "reason": "REASON_CONTRACT_CREATION",
-          "ordinal": "9"
-        },
-        {
-          "oldValue": "13194",
-          "newValue": "13191",
-          "reason": "REASON_RETURN_DATA_COPY",
-          "ordinal": "17"
-        },
-        {
-          "oldValue": "13186",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "18"
-        },
-        {
-          "oldValue": "13186",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "21"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": true,
       "failureReason": "execution reverted",
       "stateReverted": true,
-      "beginOrdinal": "5",
-      "endOrdinal": "19",
+      "beginOrdinal": "1",
+      "endOrdinal": "4",
       "accountCreations": []
     },
     {
@@ -132,7 +78,6 @@
       "gasConsumed": "4869291",
       "returnData": "",
       "input": "6080604052348015600f57600080fd5b50604051609a380380609a83398181016040526020811015602f57600080fd5b81019080805190602001909291905050508015604d576000604c57fe5b5b50603f80605b6000396000f3fe6080604052600080fdfea2646970667358221220576419740318f8cd23647c635b12ad73cda79d434d8e3a4e074b3e9da5df7ea264736f6c634300060c00330000000000000000000000000000000000000000000000000000000000000001",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -140,32 +85,13 @@
       "nonceChanges": [],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "833329",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "11"
-        },
-        {
-          "oldValue": "833264",
-          "newValue": "833252",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "14"
-        },
-        {
-          "oldValue": "833131",
-          "newValue": "0",
-          "reason": "REASON_FAILED_EXECUTION",
-          "ordinal": "15"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": false,
       "failureReason": "execution failed",
       "stateReverted": true,
-      "beginOrdinal": "10",
-      "endOrdinal": "16",
+      "beginOrdinal": "2",
+      "endOrdinal": "3",
       "accountCreations": []
     }
   ],

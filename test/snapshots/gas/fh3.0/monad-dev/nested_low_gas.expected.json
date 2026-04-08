@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "22",
+  "endOrdinal": "11",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "",
       "input": "b470c8c2000000000000000000000000$childContract",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [
@@ -38,33 +37,35 @@
           "key": "0000000000000000000000000000000000000000000000000000000000000001",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "00000000000000000000000000000000000000000000000000000000004bf692",
-          "ordinal": "0"
+          "ordinal": "8"
         },
         {
           "address": "$childContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000002",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "00000000000000000000000000000000000000000000000000000000002548cc",
-          "ordinal": "0"
+          "ordinal": "9"
         },
         {
           "address": "$childContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000000",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "00000000000000000000000000000000000000000000000000000000002625a0",
-          "ordinal": "0"
+          "ordinal": "10"
         }
       ],
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "5",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -74,67 +75,18 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "6"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878568",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878568",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "877625",
-          "newValue": "875125",
-          "reason": "REASON_STATE_COLD_ACCESS",
-          "ordinal": "7"
-        },
-        {
-          "oldValue": "877725",
-          "newValue": "13673",
-          "reason": "REASON_CALL",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "13673",
-          "newValue": "808461",
-          "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "16"
-        },
-        {
-          "oldValue": "808374",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "17"
-        },
-        {
-          "oldValue": "808374",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "20"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "5",
-      "endOrdinal": "18",
+      "beginOrdinal": "1",
+      "endOrdinal": "4",
       "accountCreations": []
     },
     {
@@ -148,7 +100,6 @@
       "gasConsumed": "84656",
       "returnData": "",
       "input": "a64b9faf00000000000000000000000000000000000000000000000000000000002625a000000000000000000000000000000000000000000000000000000000004bf692",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -156,26 +107,13 @@
       "nonceChanges": [],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "861452",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "10"
-        },
-        {
-          "oldValue": "794788",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "14"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "9",
-      "endOrdinal": "15",
+      "beginOrdinal": "2",
+      "endOrdinal": "3",
       "accountCreations": []
     }
   ],

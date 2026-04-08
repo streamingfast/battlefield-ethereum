@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "26",
+  "endOrdinal": "11",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "",
       "input": "e680f12a",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -37,12 +36,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "8",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "10",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -52,7 +53,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "9"
         }
       ],
       "logs": [
@@ -64,7 +65,7 @@
           "data": "",
           "index": 0,
           "blockIndex": 0,
-          "ordinal": "8"
+          "ordinal": "1"
         },
         {
           "address": "$logsContract",
@@ -75,7 +76,7 @@
           "data": "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004c7265616c6c79206c6f6e6720737472696e67206c6172676572207468616e20333220627974657320746f2074657374206f757420736f6c69646974792073706c697474696e672073747566660000000000000000000000000000000000000000",
           "index": 1,
           "blockIndex": 1,
-          "ordinal": "11"
+          "ordinal": "2"
         },
         {
           "address": "$logsContract",
@@ -85,7 +86,7 @@
           "data": "00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000004beb12000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7abe680f12a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004e680f12a00000000000000000000000000000000000000000000000000000000",
           "index": 2,
           "blockIndex": 2,
-          "ordinal": "14"
+          "ordinal": "3"
         },
         {
           "address": "$logsContract",
@@ -98,7 +99,7 @@
           "data": "",
           "index": 3,
           "blockIndex": 3,
-          "ordinal": "17"
+          "ordinal": "4"
         },
         {
           "address": "$logsContract",
@@ -111,102 +112,17 @@
           "data": "e680f12a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
           "index": 4,
           "blockIndex": 4,
-          "ordinal": "20"
+          "ordinal": "5"
         }
       ],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878936",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878936",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "878732",
-          "newValue": "877982",
-          "reason": "REASON_EVENT_LOG",
-          "ordinal": "7"
-        },
-        {
-          "oldValue": "877822",
-          "newValue": "877801",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "9"
-        },
-        {
-          "oldValue": "877770",
-          "newValue": "875365",
-          "reason": "REASON_EVENT_LOG",
-          "ordinal": "10"
-        },
-        {
-          "oldValue": "875190",
-          "newValue": "875181",
-          "reason": "REASON_CALL_DATA_COPY",
-          "ordinal": "12"
-        },
-        {
-          "oldValue": "875085",
-          "newValue": "872543",
-          "reason": "REASON_EVENT_LOG",
-          "ordinal": "13"
-        },
-        {
-          "oldValue": "872504",
-          "newValue": "872498",
-          "reason": "REASON_CALL_DATA_COPY",
-          "ordinal": "15"
-        },
-        {
-          "oldValue": "872390",
-          "newValue": "870515",
-          "reason": "REASON_EVENT_LOG",
-          "ordinal": "16"
-        },
-        {
-          "oldValue": "870476",
-          "newValue": "870470",
-          "reason": "REASON_CALL_DATA_COPY",
-          "ordinal": "18"
-        },
-        {
-          "oldValue": "870297",
-          "newValue": "867910",
-          "reason": "REASON_EVENT_LOG",
-          "ordinal": "19"
-        },
-        {
-          "oldValue": "867901",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "21"
-        },
-        {
-          "oldValue": "867901",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "24"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "5",
-      "endOrdinal": "22",
+      "beginOrdinal": "6",
+      "endOrdinal": "7",
       "accountCreations": []
     }
   ],
@@ -225,7 +141,7 @@
         "data": "",
         "index": 0,
         "blockIndex": 0,
-        "ordinal": "8"
+        "ordinal": "1"
       },
       {
         "address": "$logsContract",
@@ -236,7 +152,7 @@
         "data": "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004c7265616c6c79206c6f6e6720737472696e67206c6172676572207468616e20333220627974657320746f2074657374206f757420736f6c69646974792073706c697474696e672073747566660000000000000000000000000000000000000000",
         "index": 1,
         "blockIndex": 1,
-        "ordinal": "11"
+        "ordinal": "2"
       },
       {
         "address": "$logsContract",
@@ -246,7 +162,7 @@
         "data": "00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000004beb12000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7abe680f12a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004e680f12a00000000000000000000000000000000000000000000000000000000",
         "index": 2,
         "blockIndex": 2,
-        "ordinal": "14"
+        "ordinal": "3"
       },
       {
         "address": "$logsContract",
@@ -259,7 +175,7 @@
         "data": "",
         "index": 3,
         "blockIndex": 3,
-        "ordinal": "17"
+        "ordinal": "4"
       },
       {
         "address": "$logsContract",
@@ -272,7 +188,7 @@
         "data": "e680f12a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         "index": 4,
         "blockIndex": 4,
-        "ordinal": "20"
+        "ordinal": "5"
       }
     ]
   }

@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "18",
+  "endOrdinal": "8",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "",
       "input": "c0406226",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -37,12 +36,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "5",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -52,61 +53,18 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "6"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878936",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878936",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "878453",
-          "newValue": "13724",
-          "reason": "REASON_DELEGATE_CALL",
-          "ordinal": "7"
-        },
-        {
-          "oldValue": "13724",
-          "newValue": "878353",
-          "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "12"
-        },
-        {
-          "oldValue": "878287",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "13"
-        },
-        {
-          "oldValue": "878287",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "16"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "5",
-      "endOrdinal": "14",
+      "beginOrdinal": "1",
+      "endOrdinal": "4",
       "accountCreations": []
     },
     {
@@ -120,7 +78,6 @@
       "gasConsumed": "0",
       "returnData": "",
       "input": "e4608b73",
-      "executedCode": false,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -128,26 +85,13 @@
       "nonceChanges": [],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "864629",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "9"
-        },
-        {
-          "oldValue": "864629",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "10"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "8",
-      "endOrdinal": "11",
+      "beginOrdinal": "2",
+      "endOrdinal": "3",
       "accountCreations": []
     }
   ],

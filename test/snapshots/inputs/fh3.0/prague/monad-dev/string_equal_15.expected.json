@@ -1,18 +1,18 @@
 {
-  "to": "$randomAddress2",
+  "to": "$inputContract",
   "nonce": "$nonce",
-  "gasLimit": "21000",
-  "input": "",
+  "gasLimit": "5000000",
+  "input": "f93d3def0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000f6a75737420313520636861727321210000000000000000000000000000000000",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "21000",
+  "gasUsed": "5000000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
   "hash": "$hash",
   "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-  "returnData": "",
+  "returnData": "0000000000000000000000000000000000000000000000000000000000000000",
   "publicKey": "",
   "beginOrdinal": "0",
   "endOrdinal": "6",
@@ -24,11 +24,11 @@
       "depth": 0,
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-      "address": "$randomAddress2",
-      "gasLimit": "21000",
-      "gasConsumed": "21000",
-      "returnData": "",
-      "input": "",
+      "address": "$inputContract",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
+      "returnData": "0000000000000000000000000000000000000000000000000000000000000000",
+      "input": "f93d3def0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000f6a75737420313520636861727321210000000000000000000000000000000000",
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -37,7 +37,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
           "ordinal": "3",
-          "oldValue": "0834eec96e6000",
+          "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
@@ -45,7 +45,7 @@
           "reason": "REASON_MONAD_TX_POST_STATE",
           "ordinal": "5",
           "oldValue": "",
-          "newValue": "befe6f672000"
+          "newValue": "b1a2bc2ec50000"
         }
       ],
       "nonceChanges": [

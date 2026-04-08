@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "15",
+  "endOrdinal": "7",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "",
       "input": "ad70e366",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
@@ -37,12 +36,14 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "4",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "6",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -52,7 +53,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "5"
         }
       ],
       "logs": [
@@ -67,60 +68,17 @@
           "data": "ad70e366000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
           "index": 0,
           "blockIndex": 0,
-          "ordinal": "9"
+          "ordinal": "1"
         }
       ],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878936",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878936",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "878786",
-          "newValue": "878774",
-          "reason": "REASON_CALL_DATA_COPY",
-          "ordinal": "7"
-        },
-        {
-          "oldValue": "878598",
-          "newValue": "876211",
-          "reason": "REASON_EVENT_LOG",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "876202",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "10"
-        },
-        {
-          "oldValue": "876202",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "13"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "5",
-      "endOrdinal": "11",
+      "beginOrdinal": "2",
+      "endOrdinal": "3",
       "accountCreations": []
     }
   ],
@@ -142,7 +100,7 @@
         "data": "ad70e366000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         "index": 0,
         "blockIndex": 0,
-        "ordinal": "9"
+        "ordinal": "1"
       }
     ]
   }

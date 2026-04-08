@@ -15,7 +15,7 @@
   "returnData": "0000000000000000000000000000000000000000000000000000000000000078",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "43",
+  "endOrdinal": "25",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -29,7 +29,6 @@
       "gasConsumed": "5000000",
       "returnData": "0000000000000000000000000000000000000000000000000000000000000078",
       "input": "4f628d84",
-      "executedCode": true,
       "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [
@@ -38,145 +37,147 @@
           "key": "c575c31fea594a6eb97c8e9d3f9caee4c16218c6ef37e923234c0fe9014a61e7",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "6200000000000000000000000000000000000000000000000000000000000002",
-          "ordinal": "0"
+          "ordinal": "6"
         },
         {
           "address": "$storageContract",
           "key": "51e58ebd97a4adfd70a2c4a93cdfeb8ec1734bb8b59e914c91128ce8eaf3d6fa",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000001",
-          "ordinal": "0"
+          "ordinal": "7"
         },
         {
           "address": "$storageContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000002",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000097",
-          "ordinal": "0"
+          "ordinal": "8"
         },
         {
           "address": "$storageContract",
           "key": "405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ad0",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "7474696e67207374756666000000000000000000000000000000000000000000",
-          "ordinal": "0"
+          "ordinal": "9"
         },
         {
           "address": "$storageContract",
           "key": "fde8f39e0a91faa32831810c264649fa24d605fac9215ba27482bf4e132f4090",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000100",
-          "ordinal": "0"
+          "ordinal": "10"
         },
         {
           "address": "$storageContract",
           "key": "c2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "000000000000000000000000000000000000000000000000000000000000004b",
-          "ordinal": "0"
+          "ordinal": "11"
         },
         {
           "address": "$storageContract",
           "key": "ba40e88584dab201477e552750a64dff89c2c1602b3c0d2688d95217d549b277",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "000000000000000000000000000000000000000000000000000000000000000a",
-          "ordinal": "0"
+          "ordinal": "12"
         },
         {
           "address": "$storageContract",
           "key": "405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5acf",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "20627974657320746f2074657374206f757420736f6c69646974792073706c69",
-          "ordinal": "0"
+          "ordinal": "13"
         },
         {
           "address": "$storageContract",
           "key": "b10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "3132333435363738393031323334353637383930313233343536373839303132",
-          "ordinal": "0"
+          "ordinal": "14"
         },
         {
           "address": "$storageContract",
           "key": "ba40e88584dab201477e552750a64dff89c2c1602b3c0d2688d95217d549b278",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000014",
-          "ordinal": "0"
+          "ordinal": "15"
         },
         {
           "address": "$storageContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000005",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000028",
-          "ordinal": "0"
+          "ordinal": "16"
         },
         {
           "address": "$storageContract",
           "key": "405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "7265616c79206c6f6e6720737472696e67206c6172676572207468616e203332",
-          "ordinal": "0"
+          "ordinal": "17"
         },
         {
           "address": "$storageContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000000",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "313233343536373839303132333435363738393031323334353637383930313e",
-          "ordinal": "0"
+          "ordinal": "18"
         },
         {
           "address": "$storageContract",
           "key": "fc48ef9e069d0395cd1f80d417094126b894d379beefb9734ebf983eb2abec04",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "6100000000000000000000000000000000000000000000000000000000000002",
-          "ordinal": "0"
+          "ordinal": "19"
         },
         {
           "address": "$storageContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000001",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000041",
-          "ordinal": "0"
+          "ordinal": "20"
         },
         {
           "address": "$storageContract",
           "key": "c2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85c",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000037",
-          "ordinal": "0"
+          "ordinal": "21"
         },
         {
           "address": "$storageContract",
           "key": "17a31065c429279cba32eebeafb5f7c841238f15332f92839e8bc3702b5f68c7",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "6100000000000000000000000000000000000000000000000000000000000002",
-          "ordinal": "0"
+          "ordinal": "22"
         },
         {
           "address": "$storageContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000003",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "0000000000000000000000000000000000000000000000000000000000000002",
-          "ordinal": "0"
+          "ordinal": "23"
         },
         {
           "address": "$storageContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000004",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "000000000000000000000000000000000000000000000000000000000000001e",
-          "ordinal": "0"
+          "ordinal": "24"
         }
       ],
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "3",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "5",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -191,74 +192,13 @@
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878936",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878936",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "678007",
-          "newValue": "677986",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "18"
-        },
-        {
-          "oldValue": "655391",
-          "newValue": "655376",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "20"
-        },
-        {
-          "oldValue": "655254",
-          "newValue": "655242",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "21"
-        },
-        {
-          "oldValue": "565524",
-          "newValue": "565503",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "26"
-        },
-        {
-          "oldValue": "431218",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "37"
-        },
-        {
-          "oldValue": "431218",
-          "newValue": "451118",
-          "reason": "REASON_TX_REFUNDS",
-          "ordinal": "39"
-        },
-        {
-          "oldValue": "451118",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "41"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "5",
-      "endOrdinal": "38",
+      "beginOrdinal": "1",
+      "endOrdinal": "2",
       "accountCreations": []
     }
   ],
