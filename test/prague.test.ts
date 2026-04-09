@@ -57,8 +57,10 @@ describe("Prague", function () {
     // same chain, wallet2 may still carry delegation code from a previous run (we only reset
     // wallet1 in TX3).  If delegation code is present the plain ETH transfer executes the
     // delegated contract, which requires more gas (e.g. SetterBB does an SSTORE).
-    await sendEth(owner, wallet1.address, eth(1), { gasLimit: 100_000 })
-    await sendEth(owner, wallet2.address, eth(1), { gasLimit: 100_000 })
+    // On Monad, delegated EOAs cannot dip below their reserve balance (10 MON)
+    const fundAmount = isNetwork("monad-dev") ? eth(11) : eth(1)
+    await sendEth(owner, wallet1.address, fundAmount, { gasLimit: 100_000 })
+    await sendEth(owner, wallet2.address, fundAmount, { gasLimit: 100_000 })
 
     // Deploy the Caller and two Setter instances (CC and BB are identical code, different addresses)
     const CallerFactory = await hre.ethers.getContractFactory("SetCode7702Caller")
