@@ -6,6 +6,8 @@ private_key_to_fund="${PRIVATE_KEY_TO_FUND:-"0x52e1cc4b9c8b4fc9b202adf06462bdcc2
 # FIXME: Ideally we would derive the address from the private key to fund directly, for now, they must both match
 address_to_fund="${ADDRESS_TO_FUND:-"0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab"}"
 
+monad_devnet_genesis_private_key="${MONAD_DEVNET_GENESIS_PRIVATE_KEY:-"0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"}"
+
 fireeth="${FIREETH_BINARY:-fireeth}"
 geth="${GETH_BINARY:-geth}"
 nitro="${NITRO_BINARY:-nitro}"

@@ -80,6 +80,9 @@ importers:
       deep-equal:
         specifier: ^2.2.3
         version: 2.2.3
+      diff:
+        specifier: ^5.2.0
+        version: 5.2.0
       ethers:
         specifier: ^6.16.0
         version: 6.16.0

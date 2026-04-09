@@ -16,11 +16,14 @@ import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../
 import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
 import { TransactionReceiptResult, waitForTransaction } from "./ethers"
 import { eth } from "./money"
-import { isNetwork } from "./network"
+import { isNetwork, networkValue } from "./network"
 
 const debug = debugFactory("battlefield:eth")
 
-export const defaultGasPrice = isNetwork("monad-dev") ? 110_000_000_000 : 45_000_000_000
+export const defaultGasPrice = networkValue({
+  "monad-dev": 110_000_000_000,
+  "*": 45_000_000_000,
+})
 export const defaultGasLimit = isNetwork("monad-dev") ? 5_000_000 : 900_000
 export const defaultDeployerBalance = isNetwork("monad-dev") ? eth(100) : eth(0.01)
 

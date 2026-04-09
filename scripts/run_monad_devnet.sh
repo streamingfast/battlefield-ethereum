@@ -197,8 +197,8 @@ wait_event_ring() {
 }
 
 fund_geth_account() {
-    local foundry_key="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-    local geth_account="0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
+    local foundry_key="$monad_devnet_genesis_private_key"
+    local geth_account="$address_to_fund"
     local funding_amount="10000ether"
 
     cast send --rpc-url http://127.0.0.1:18080 \

@@ -1,6 +1,6 @@
 # Monad Devnet Setup for Battlefield Testing
 
-Before running the Monad battlefield tests, ensure you have a monad nude configured. ([Monad docs](https://docs.monad.xyz/node-ops/full-node-installation))
+Before running the Monad battlefield tests, ensure you have a monad node configured. ([Monad docs](https://docs.monad.xyz/node-ops/full-node-installation))
 ## Configuration Files
 
 This directory contains pre-configured files for running Monad devnet:

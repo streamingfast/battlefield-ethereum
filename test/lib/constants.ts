@@ -16,12 +16,7 @@ export const besu_exclude_fields = [
   "calls[].keccakPreimages",
 ]
 
-export const monad_exclude_fields = [
-  "calls[].gasChanges",
-  "calls[].executedCode",
-  // TODO: remove
-  "setCodeAuthorizations",
-]
+export const monad_exclude_fields = ["calls[].gasChanges", "calls[].executedCode"]
 
 export const reth_exclude_fields = [
   // Changes
