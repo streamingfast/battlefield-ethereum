@@ -139,13 +139,12 @@ describe("Suicide", function () {
   it("Contract created in trx and suicides in constructor", async function () {
     const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
 
-    await expect(contractCreation(deployer, SuicideOnConstructorFactory, [], { gasLimit: defaultGasLimit })).to.trxTraceEqualSnapshot(
-      "suicide/create_contract_suicide_in_constructor.json",
-      {
-        $sender: deployer.address.toLowerCase().slice(2),
-        $createdContract: getCreateAddressHex(deployer.address, 0),
-      },
-    )
+    await expect(
+      contractCreation(deployer, SuicideOnConstructorFactory, [], { gasLimit: defaultGasLimit }),
+    ).to.trxTraceEqualSnapshot("suicide/create_contract_suicide_in_constructor.json", {
+      $sender: deployer.address.toLowerCase().slice(2),
+      $createdContract: getCreateAddressHex(deployer.address, 0),
+    })
   })
 
   it("Contract and suicide beneficiary are the same", async function () {
