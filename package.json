@@ -18,6 +18,7 @@
     "test:fh3.0:optimism-geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0/optimism-geth-dev hardhat test --network optimism-geth-dev",
     "test:fh3.0:besu-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/besu-devnet hardhat test --network besu-devnet",
     "test:fh3.0:amoy": "cross-env SNAPSHOTS_TAG=fh3.0/amoy hardhat test --network amoy",
+    "test:fh3.0:monad-dev": "cross-env SNAPSHOTS_TAG=fh3.0/monad-dev bash scripts/run_monad_devnet.sh",
     "test:fh2.3:arbitrum-geth-dev": "cross-env SNAPSHOTS_TAG=fh2.3/arbitrum-geth-dev hardhat test --network arbitrum-geth-dev"
   },
   "keywords": [],

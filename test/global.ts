@@ -28,7 +28,11 @@ import { fetchFirehoseBlock } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isNetwork, networkName } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
-import { besu_exclude_fields as besuExcludeFields, reth_exclude_fields as rethExcludeFields } from "./lib/constants"
+import {
+  besu_exclude_fields as besuExcludeFields,
+  reth_exclude_fields as rethExcludeFields,
+  monad_exclude_fields as monadExcludeFields,
+} from "./lib/constants"
 import { launchGethDev } from "./launcher"
 
 export let owner: NonceManager
@@ -68,6 +72,7 @@ before(async () => {
 
   // Register global excluded fields for specific networks
   registerGlobalExcludedFields("besu-devnet", besuExcludeFields)
+  registerGlobalExcludedFields("monad-dev", monadExcludeFields)
   registerGlobalExcludedFields("reth-dev", rethExcludeFields)
 
   debug("Initializing contract factories sequentially")
@@ -110,7 +115,7 @@ before(async () => {
       .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
       .catch(abortTagged("Executing initialization transactions"))
   } else {
-    debug("Skipping initial funding transactions on Amoy testnet")
+    debug("Skipping initial funding transactions on %s", hre.network.name)
   }
 
   // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall

@@ -8,6 +8,7 @@ import { TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner } from "./global"
 import { waitForTransaction } from "./lib/ethers"
 import { isBlockOnCancunOrLater } from "./lib/chain_eips"
+import { isNetwork } from "./lib/network"
 import { toBigInt } from "./lib/numbers"
 import { eth } from "./lib/money"
 import hre from "hardhat"
@@ -70,64 +71,69 @@ describe("Cancun", function () {
     await sendEth(owner, blobWallet.address, eth(1))
   })
 
-  it("Blob transaction with single blob", async function () {
-    const maxFeePerBlobGas = 1_000_000_000n // 1 gwei per blob gas unit
+  if (!isNetwork("monad-dev"))
+    it("Blob transaction with single blob", async function () {
+      const maxFeePerBlobGas = 1_000_000_000n // 1 gwei per blob gas unit
 
-    const response = await blobWallet.sendTransaction({
-      to: knownExistingAddress,
-      value: oneWei,
-      maxFeePerGas: defaultGasPrice,
-      maxPriorityFeePerGas: 25_000n,
-      type: 3,
-      maxFeePerBlobGas,
-      blobs: [ZERO_BLOB],
-      kzg: kzg as any,
+      const response = await blobWallet.sendTransaction({
+        to: knownExistingAddress,
+        value: oneWei,
+        maxFeePerGas: defaultGasPrice,
+        maxPriorityFeePerGas: 25_000n,
+        type: 3,
+        maxFeePerBlobGas,
+        blobs: [ZERO_BLOB],
+        kzg: kzg as any,
+      })
+      const result = await waitForTransaction(response, false)
+      const { trace } = await fetchFirehoseTransactionAndBlock(result)
+
+      expect(hexlify(trace.hash)).to.equal(result.hash)
+      expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_BLOB, "transaction must be TRX_TYPE_BLOB")
+
+      expect(trace.blobHashes).to.have.length(1, "must have exactly one blob hash")
+      expect(hexlify(trace.blobHashes[0])).to.equal(
+        ZERO_BLOB_VERSIONED_HASH,
+        "blob versioned hash must match: 0x01 || sha256(commitment)[1:]",
+      )
+
+      expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
+
+      // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
+      expect(trace.blobGas).to.equal(GAS_PER_BLOB * 1n, "blob gas must be GAS_PER_BLOB * numBlobs")
     })
-    const result = await waitForTransaction(response, false)
-    const { trace } = await fetchFirehoseTransactionAndBlock(result)
 
-    expect(hexlify(trace.hash)).to.equal(result.hash)
-    expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_BLOB, "transaction must be TRX_TYPE_BLOB")
+  if (!isNetwork("monad-dev"))
+    it("Blob transaction with multiple blobs", async function () {
+      const maxFeePerBlobGas = 1_000_000_000n // 1 gwei per blob gas unit
 
-    expect(trace.blobHashes).to.have.length(1, "must have exactly one blob hash")
-    expect(hexlify(trace.blobHashes[0])).to.equal(
-      ZERO_BLOB_VERSIONED_HASH,
-      "blob versioned hash must match: 0x01 || sha256(commitment)[1:]",
-    )
+      const response = await blobWallet.sendTransaction({
+        to: knownExistingAddress,
+        value: oneWei,
+        maxFeePerGas: defaultGasPrice,
+        maxPriorityFeePerGas: 25_000n,
+        type: 3,
+        maxFeePerBlobGas,
+        blobs: [ZERO_BLOB, ZERO_BLOB, ZERO_BLOB],
+        kzg: kzg as any,
+      })
+      const result = await waitForTransaction(response, false)
+      const { trace } = await fetchFirehoseTransactionAndBlock(result)
 
-    expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
+      expect(hexlify(trace.hash)).to.equal(result.hash)
+      expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_BLOB, "transaction must be TRX_TYPE_BLOB")
 
-    // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
-    expect(trace.blobGas).to.equal(GAS_PER_BLOB * 1n, "blob gas must be GAS_PER_BLOB * numBlobs")
-  })
+      expect(trace.blobHashes).to.have.length(3, "must have exactly three blob hashes")
+      for (const hash of trace.blobHashes) {
+        expect(hexlify(hash)).to.equal(
+          ZERO_BLOB_VERSIONED_HASH,
+          "each blob versioned hash must match the zero blob hash",
+        )
+      }
 
-  it("Blob transaction with multiple blobs", async function () {
-    const maxFeePerBlobGas = 1_000_000_000n // 1 gwei per blob gas unit
+      expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
 
-    const response = await blobWallet.sendTransaction({
-      to: knownExistingAddress,
-      value: oneWei,
-      maxFeePerGas: defaultGasPrice,
-      maxPriorityFeePerGas: 25_000n,
-      type: 3,
-      maxFeePerBlobGas,
-      blobs: [ZERO_BLOB, ZERO_BLOB, ZERO_BLOB],
-      kzg: kzg as any,
+      // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
+      expect(trace.blobGas).to.equal(GAS_PER_BLOB * 3n, "blob gas must be GAS_PER_BLOB * numBlobs")
     })
-    const result = await waitForTransaction(response, false)
-    const { trace } = await fetchFirehoseTransactionAndBlock(result)
-
-    expect(hexlify(trace.hash)).to.equal(result.hash)
-    expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_BLOB, "transaction must be TRX_TYPE_BLOB")
-
-    expect(trace.blobHashes).to.have.length(3, "must have exactly three blob hashes")
-    for (const hash of trace.blobHashes) {
-      expect(hexlify(hash)).to.equal(ZERO_BLOB_VERSIONED_HASH, "each blob versioned hash must match the zero blob hash")
-    }
-
-    expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
-
-    // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
-    expect(trace.blobGas).to.equal(GAS_PER_BLOB * 3n, "blob gas must be GAS_PER_BLOB * numBlobs")
-  })
 })

@@ -16,10 +16,16 @@ import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../
 import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
 import { TransactionReceiptResult, waitForTransaction } from "./ethers"
 import { eth } from "./money"
+import { isNetwork, networkValue } from "./network"
 
 const debug = debugFactory("battlefield:eth")
 
-export const defaultGasPrice = 45_000_000_000
+export const defaultGasPrice = networkValue({
+  "monad-dev": 110_000_000_000,
+  "*": 45_000_000_000,
+})
+export const defaultGasLimit = isNetwork("monad-dev") ? 5_000_000 : 900_000
+export const defaultDeployerBalance = isNetwork("monad-dev") ? eth(100) : eth(0.01)
 
 /**
  * Our own internal allowed transaction request, it will only allow the value and gasLimit
@@ -100,7 +106,7 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   const trxCall = await call.populateTransaction(...args)
   const trxRequest = {
     ...trxCall,
-    gasLimit: 900_000,
+    gasLimit: defaultGasLimit,
     gasPrice: defaultGasPrice,
     ...customTx,
   }
@@ -211,6 +217,7 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
     const trx = await factory.getDeployTransaction(...constructorArgs)
     const trxRequest = {
       ...trx,
+      gasLimit: defaultGasLimit,
       gasPrice: defaultGasPrice,
       ...customTx,
     }
