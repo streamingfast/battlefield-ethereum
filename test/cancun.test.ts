@@ -56,7 +56,6 @@ describe("Cancun", function () {
     const rpcBlock = await mustGetRpcBlock("latest")
     if (!isBlockOnCancunOrLater(rpcBlock)) {
       this.skip()
-      return
     }
 
     // Load the mainnet KZG trusted setup (preset 0).
@@ -98,6 +97,7 @@ describe("Cancun", function () {
     expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
 
     // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
+    expect(trace.blobGas).to.not.be.undefined
     expect(trace.blobGas).to.equal(GAS_PER_BLOB * 1n, "blob gas must be GAS_PER_BLOB * numBlobs")
   })
 
@@ -128,6 +128,7 @@ describe("Cancun", function () {
     expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
 
     // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
+    expect(trace.blobGas).to.not.be.undefined
     expect(trace.blobGas).to.equal(GAS_PER_BLOB * 3n, "blob gas must be GAS_PER_BLOB * numBlobs")
   })
 })

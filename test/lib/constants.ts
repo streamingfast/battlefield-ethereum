@@ -18,14 +18,21 @@ export const besu_exclude_fields = [
 
 export const reth_exclude_fields = [
   // Changes
-  "calls[].balanceChanges",
+  // This is from v4 but we target v5 which don't save gas changes anymore, we will re-generate fully the
+  // snapshots at one point and remove excluded fields.
   "calls[].gasChanges",
-  "calls[].nonceChanges[]",
-  "calls[].codeChanges[]",
-  // Ordinals
+
+  "calls[].balanceChanges",
+  "calls[].nonceChanges",
+  "calls[].codeChanges",
+
+  // Ordinals (we keep them for the very end when we will re-generate fully the snapshots and remove excluded fields)
   "calls[].beginOrdinal",
   "calls[].endOrdinal",
   "calls[].logs[].ordinal",
+  "calls[].balanceChanges[].ordinal",
+  "calls[].nonceChanges[].ordinal",
+  "calls[].codeChanges[].ordinal",
   "calls[].storageChanges[].ordinal",
   "endOrdinal",
   "receipt.logs[].ordinal",
