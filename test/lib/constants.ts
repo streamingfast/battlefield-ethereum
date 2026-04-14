@@ -22,14 +22,11 @@ export const reth_exclude_fields = [
   // snapshots at one point and remove excluded fields.
   "calls[].gasChanges",
 
-  "calls[].balanceChanges",
-  "calls[].nonceChanges",
-  "calls[].codeChanges",
-
   // Ordinals (we keep them for the very end when we will re-generate fully the snapshots and remove excluded fields)
   "calls[].beginOrdinal",
   "calls[].endOrdinal",
   "calls[].logs[].ordinal",
+  "calls[].balanceChanges[].reason",
   "calls[].balanceChanges[].ordinal",
   "calls[].nonceChanges[].ordinal",
   "calls[].codeChanges[].ordinal",
