@@ -21,7 +21,7 @@ services:
       - --reader-node-grpc-listen-addr=:9000
       - --reader-node-manager-api-addr=:8081
       - --reader-node-blocks-chan-capacity=1000
-      - --reader-node-arguments=--debug --chain-id=20143 --network-name=monad-localnet --monad-event-ring-path=/dev/hugepages/monad-localnet/monad-events --buffer-size=524288
+      - --reader-node-arguments=--debug --chain-id=20143 --network-name=monad-localnet --monad-event-ring-path=/dev/hugepages/monad-localnet/monad-events --event-channel-buffer-size=524288
       - --metrics-listen-addr=:9102
     volumes:
       - ../../localnet-firehose-data:/data/firehose
