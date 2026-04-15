@@ -46,7 +46,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "19",
           "oldValue": "",
-          "newValue": "01941da3d02400"
+          "newValue": "012dcc31469c00"
         },
         {
           "address": "$coinbase",
