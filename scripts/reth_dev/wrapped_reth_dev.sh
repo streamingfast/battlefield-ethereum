@@ -15,7 +15,7 @@ main() {
 
     "$reth" init --datadir="$data_dir" --chain="$genesis_file" 2> /dev/null
 
-    reth_extra_args=("node" "--datadir=$data_dir" "--dev" "--dev.block-time=1s" "--chain=$genesis_file")
+    reth_extra_args=("node" "--datadir=$data_dir" "--dev" "--dev.block-max-transactions=1" "--chain=$genesis_file")
 
     echo "Running local Reth --dev chain"
     echo "Address to fund: $address_to_fund"

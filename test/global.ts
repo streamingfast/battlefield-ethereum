@@ -24,7 +24,7 @@ import { executeTransactions, sendImmediateEth } from "./lib/ethereum"
 import { knownExistingAddress, precompileWithBalanceAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
 import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
-import { fetchFirehoseBlock } from "./lib/firehose"
+import { fetchFirehoseBlock, waitForFirehoseReady } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isNetwork, networkName } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
@@ -94,6 +94,13 @@ before(async () => {
   ownerAddress = first.address
   ownerAddressBytes = getBytes(ownerAddress)
   debug("Initialized owner")
+
+  if (isNetwork("reth-dev")) {
+    debug("Waiting for Firehose to be ready on reth-dev")
+    const firehoseReadyStart = Date.now()
+    await waitForFirehoseReady(() => sendImmediateEth(owner, knownExistingAddress, oneWei))
+    debug("Firehose ready in %d ms", Date.now() - firehoseReadyStart)
+  }
 
   // Do not wait for this to finish, other stuff will fail if it's not fast enough of if provider is broken
   const initChainStart = Date.now()

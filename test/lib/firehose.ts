@@ -344,6 +344,72 @@ function normalizeCallFailureReason(reason: string): string {
   return reason
 }
 
+/**
+ * Waits for Firehose to become ready on mine-on-demand chains (e.g. reth-dev, geth --dev).
+ *
+ * On these chains the node only mines a block when there is a pending transaction. Firehose
+ * will not mark itself as ready until it has processed at least one live block. This creates
+ * a chicken-and-egg situation at startup: Firehose is waiting for blocks, but no blocks are
+ * produced until someone sends a transaction.
+ *
+ * This function breaks the deadlock by:
+ *   1. Continuously sending transactions (via `sendTransaction`) so the chain keeps mining.
+ *   2. Polling the Firehose HTTP health endpoint (`/` on the gRPC port, returns
+ *      `{"is_ready":true}`) until it reports ready.
+ *
+ * Why HTTP and not gRPC `Block(1)`? The gRPC block-fetch call holds the connection open
+ * and waits for the requested block to appear (Firehose server-side streaming behaviour).
+ * This makes it unsuitable as a readiness probe — it hangs indefinitely if block 1 has not
+ * been produced yet, and AbortController interactions with the ConnectRPC Node transport
+ * are unreliable. The plain HTTP health endpoint responds immediately and is safe to poll.
+ *
+ * Throws if Firehose does not become ready within `timeoutMs` milliseconds.
+ */
+export async function waitForFirehoseReady(sendTransaction: () => Promise<unknown>, timeoutMs = 30_000): Promise<void> {
+  let done = false
+
+  // Continuously pump transactions so the chain keeps mining while we wait.
+  // Fire-and-forget each send so the 200 ms timer drives the pace regardless
+  // of how long the node takes to acknowledge each submission.
+  const pump = async () => {
+    while (!done) {
+      sendTransaction().catch(() => {})
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+  }
+
+  const pumping = pump()
+
+  try {
+    const deadline = Date.now() + timeoutMs
+
+    while (true) {
+      try {
+        // Use the plain HTTP health endpoint rather than the gRPC `firehose` client:
+        // the gRPC Block() call holds the connection open waiting for the block to appear,
+        // so it hangs instead of failing fast when Firehose is not yet ready.
+        const response = await fetch("http://localhost:8089", { signal: AbortSignal.timeout(1_000) })
+        const body = (await response.json()) as { is_ready?: boolean }
+        if (body.is_ready === true) {
+          debug("Firehose ready")
+          return
+        }
+      } catch {
+        // not ready yet
+      }
+
+      if (Date.now() >= deadline) {
+        throw new Error(`Firehose did not become ready within ${timeoutMs}ms`)
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 500))
+    }
+  } finally {
+    done = true
+    await pumping
+  }
+}
+
 type FirehoseBlockTag = string | number | bigint | { hash: string; num: number | bigint }
 
 function firehoseBlockTagToRef(tag: FirehoseBlockTag): MessageInitShape<typeof SingleBlockRequestSchema>["reference"] {

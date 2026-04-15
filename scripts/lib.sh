@@ -47,7 +47,8 @@ run_fireeth() {
     --common-first-streamable-block=${first_streamable_block} \
     --reader-node-path="$node_binary" \
     --reader-node-arguments="$node_args" \
-    --firehose-grpc-listen-addr="localhost:8089" $@
+    --firehose-grpc-listen-addr="localhost:8089" \
+    --substreams-tier1-block-type="sf.ethereum.type.v2.Block" $@
 }
 
 check_docker() {
