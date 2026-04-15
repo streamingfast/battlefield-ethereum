@@ -26,7 +26,6 @@ export const reth_exclude_fields = [
   "calls[].beginOrdinal",
   "calls[].endOrdinal",
   "calls[].logs[].ordinal",
-  "calls[].balanceChanges[].reason",
   "calls[].balanceChanges[].ordinal",
   "calls[].nonceChanges[].ordinal",
   "calls[].codeChanges[].ordinal",
