@@ -95,8 +95,8 @@ before(async () => {
   ownerAddressBytes = getBytes(ownerAddress)
   debug("Initialized owner")
 
-  if (isNetwork("reth-dev")) {
-    debug("Waiting for Firehose to be ready on reth-dev")
+  if (isNetwork("reth-dev") || isNetwork("geth-dev")) {
+    debug("Waiting for Firehose to be ready on mine-on-demand chain")
     const firehoseReadyStart = Date.now()
     await waitForFirehoseReady(() => sendImmediateEth(owner, knownExistingAddress, oneWei))
     debug("Firehose ready in %d ms", Date.now() - firehoseReadyStart)
