@@ -374,8 +374,8 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       if (!deepEqual(filteredActual, filteredExpected)) {
         const expectedLabel = snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)
         const actualLabel = snapshot.toSnapshotPath(SnapshotKind.ActualNormalized, true)
-        const expectedStr = JSON.stringify(filteredExpected, null, 2)
-        const actualStr = JSON.stringify(filteredActual, null, 2)
+        const expectedStr = JSON.stringify(sortKeysDeep(filteredExpected), null, 2)
+        const actualStr = JSON.stringify(sortKeysDeep(filteredActual), null, 2)
 
         const diffEditorHint = `${process.env.DIFF_EDITOR || "diff -u"} ${expectedLabel} ${actualLabel}`
         const message =
@@ -602,4 +602,18 @@ function findBlockMiner(block: Block): string {
   }
 
   return hexlify(block.header!.coinbase).slice(2)
+}
+
+function sortKeysDeep(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(sortKeysDeep)
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value as object)
+        .sort()
+        .map((k) => [k, sortKeysDeep((value as Record<string, unknown>)[k])]),
+    )
+  }
+  return value
 }
