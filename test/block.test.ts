@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { mustGetRpcBlock, sendEth } from "./lib/ethereum"
+import { mustGetRpcBlock, mustGetRpcBlockReceipts, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { fetchFirehoseBlock, fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import {
@@ -12,9 +12,10 @@ import {
 import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
-import { Call } from "../pb/sf/ethereum/type/v2/type_pb"
+import { BalanceChange, BalanceChange_Reason, Call } from "../pb/sf/ethereum/type/v2/type_pb"
 import { getGlobalSnapshotsTag } from "./lib/snapshots"
 import { isNetwork } from "./lib/network"
+import { network } from "hardhat"
 
 describe("Blocks", function () {
   it("Header corresponds to RPC", async function () {
@@ -73,6 +74,87 @@ describe("Blocks", function () {
 
     if (rpcBlock.requestsHash) {
       expect(hexlify(firehoseBlock.requestsHash)).to.be.equal(rpcBlock.requestsHash, field("requestsHash"))
+    }
+  })
+
+  it("Transaction fee reward (REWARD_TRANSACTION_FEE) recorded for coinbase", async function () {
+    // Send a dynamic-fee transaction with an explicit tip so that a REWARD_TRANSACTION_FEE
+    // balance change is guaranteed to be emitted (tip = 0 produces no reward entry).
+    const result = await sendEth(owner, knownExistingAddress, oneWei, {
+      maxFeePerGas: 10_000_000_000n,
+      maxPriorityFeePerGas: 1_000_000_000n,
+    })
+    const block = await fetchFirehoseBlock(result.blockNumber)
+    const coinbase = hexlify(block.header!.coinbase)
+
+    // On PoA/PoS chains (geth-dev, reth-dev) the tip paid by each transaction is recorded as
+    // REWARD_TRANSACTION_FEE inside that transaction's call balance changes (not at block level).
+    const txFeeRewardChanges = block.transactionTraces.flatMap((tx) =>
+      tx.calls.flatMap((call) =>
+        call.balanceChanges.filter(
+          (change) =>
+            change.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE &&
+            isSameAddress(hexlify(change.address), coinbase),
+        ),
+      ),
+    )
+
+    expect(txFeeRewardChanges.length).to.be.greaterThan(
+      0,
+      `coinbase ${coinbase} should have at least one REWARD_TRANSACTION_FEE in transaction call balance changes`,
+    )
+
+    for (const change of txFeeRewardChanges) {
+      expect(change.reason).to.equal(BalanceChange_Reason.REWARD_TRANSACTION_FEE)
+    }
+
+    const totalReward = txFeeRewardChanges.reduce(
+      (sum, change) => sum + toBigInt(change.newValue) - toBigInt(change.oldValue),
+      0n,
+    )
+
+    const rpcBlock = await mustGetRpcBlock(result.blockNumber)
+    const baseFeePerGas = BigInt(rpcBlock.baseFeePerGas ?? 0)
+    const receipts = await mustGetRpcBlockReceipts(result.blockNumber)
+    const expectedReward = receipts.reduce(
+      (sum, r) => sum + BigInt(r.gasUsed) * (BigInt(r.effectiveGasPrice) - baseFeePerGas),
+      0n,
+    )
+
+    expect(totalReward).to.be.equal(
+      expectedReward,
+      "total fee reward should equal sum of gasUsed × effectiveTip across all block transactions",
+    )
+  })
+
+  it("Block mining reward (REWARD_MINE_BLOCK) recorded for coinbase", async function () {
+    if (network.name === "geth-dev") {
+      // Skip networks that doesn't have a block mining reward
+      this.skip()
+    }
+
+    const result = await sendEth(owner, knownExistingAddress, oneWei)
+    const block = await fetchFirehoseBlock(result.blockNumber)
+    const coinbase = hexlify(block.header!.coinbase)
+
+    // On PoW chains the mining reward is recorded in block.balanceChanges because it happens
+    // outside any transaction flow (consensus layer, not EVM execution).
+    const blockRewardChanges = block.balanceChanges.filter(
+      (change) =>
+        change.reason === BalanceChange_Reason.REWARD_MINE_BLOCK && isSameAddress(hexlify(change.address), coinbase),
+    )
+
+    expect(blockRewardChanges.length).to.be.greaterThan(
+      0,
+      `coinbase ${coinbase} should have at least one REWARD_MINE_BLOCK in block.balanceChanges`,
+    )
+
+    for (const change of blockRewardChanges) {
+      expect(change.reason).to.equal(BalanceChange_Reason.REWARD_MINE_BLOCK)
+      expect(toBigInt(change.newValue)).to.be.greaterThan(
+        toBigInt(change.oldValue),
+        "coinbase balance should have increased by the mining reward",
+      )
     }
   })
 
