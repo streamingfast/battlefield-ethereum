@@ -94,7 +94,12 @@ function formatSnapshotDiff(
         out.push(`${ANSI_GREEN}+${pad(newLine)} | ${content}${ANSI_RESET}`)
         newLine++
       } else {
-        out.push(`${ANSI_DIM} ${pad(oldLine)} |${ANSI_RESET} ${content}`)
+        const maxLen = 120
+        const displayContent =
+          content.length > maxLen
+            ? `${content.slice(0, maxLen)}${ANSI_DIM}..(+${content.length - maxLen} chars)${ANSI_RESET}`
+            : content
+        out.push(`${ANSI_DIM} ${pad(oldLine)} |${ANSI_RESET} ${displayContent}`)
         oldLine++
         newLine++
       }

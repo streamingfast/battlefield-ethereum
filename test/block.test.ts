@@ -128,7 +128,7 @@ describe("Blocks", function () {
   })
 
   it("Block mining reward (REWARD_MINE_BLOCK) recorded for coinbase", async function () {
-    if (network.name === "geth-dev") {
+    if (["geth-dev", "reth-dev"].includes(network.name)) {
       // Skip networks that doesn't have a block mining reward
       this.skip()
     }
