@@ -9,7 +9,7 @@
     "prepare": "husky",
     "generate": "buf generate buf.build/streamingfast/firehose-ethereum",
     "generate:local": "buf generate ../firehose-ethereum/proto",
-    "test:fh3.0:geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0/geth-dev hardhat test --network geth-dev",
+    "test:fh3.0:geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0/v5/geth-dev hardhat test --network geth-dev",
     "test:fh3.0:reth-dev": "cross-env SNAPSHOTS_TAG=fh3.0/reth-dev hardhat test --network reth-dev",
     "test:fh3.0:sei-dev": "cross-env SNAPSHOTS_TAG=fh3.0/sei-dev hardhat test --network sei-dev",
     "test:fh3.0:bnb-dev": "cross-env SNAPSHOTS_TAG=fh3.0/bnb-dev hardhat test --network bnb-dev",
@@ -63,6 +63,10 @@
     "c-kzg": "^4.1.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["c-kzg", "keccak", "secp256k1"]
+    "onlyBuiltDependencies": [
+      "c-kzg",
+      "keccak",
+      "secp256k1"
+    ]
   }
 }
