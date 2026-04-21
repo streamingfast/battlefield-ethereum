@@ -125,31 +125,32 @@ describe("Blocks", function () {
     )
   })
 
-  // bnb-dev in dev mode does not seem to update any parentBeaconRoot. being set to 00000000000 makes it skip that, so I skipped the test
-  if (!isNetwork("bnb-dev")) {
-    it("System call ProcessBeaconRoot recorded correctly", async function () {
-      const rpcBlock = await mustGetRpcBlock("latest")
-      if (!rpcBlock.parentBeaconBlockRoot) {
-        // Test do not apply to this network
-        return
-      }
+  it("System call ProcessBeaconRoot recorded correctly", async function () {
+    if (isNetwork("bnb-dev")) {
+      // bnb-dev in dev mode does not seem to update any parentBeaconRoot, so skip the test in that case.
+      this.skip()
+    }
 
-      const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
-      const header = firehoseBlock.header!
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (!rpcBlock.parentBeaconBlockRoot) {
+      this.skip()
+    }
 
-      expect(hexlify(header.parentBeaconRoot)).to.be.equal(rpcBlock.parentBeaconBlockRoot)
+    const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
+    const header = firehoseBlock.header!
 
-      const beaconRootCall = firehoseBlock.systemCalls.find(isUpdateBeaconRootCall(rpcBlock.parentBeaconBlockRoot))
-      expect(beaconRootCall).to.not.be.undefined
+    expect(hexlify(header.parentBeaconRoot)).to.be.equal(rpcBlock.parentBeaconBlockRoot)
 
-      // A storage change could exist but not in `geth --dev` mode, at least not consistently because
-      // in dev mode, the beacon root is also sets to 0x0 and in the tracer, storage changes
-      // with `prev == new` are ignored hence the storage change is not recorded in that case. So
-      // we cannot reliably test for storage changes here.
-      //
-      // We should once we have a way to check for which "network" the test suite is running
-    })
-  }
+    const beaconRootCall = firehoseBlock.systemCalls.find(isUpdateBeaconRootCall(rpcBlock.parentBeaconBlockRoot))
+    expect(beaconRootCall).to.not.be.undefined
+
+    // A storage change could exist but not in `geth --dev` mode, at least not consistently because
+    // in dev mode, the beacon root is also sets to 0x0 and in the tracer, storage changes
+    // with `prev == new` are ignored hence the storage change is not recorded in that case. So
+    // we cannot reliably test for storage changes here.
+    //
+    // We should once we have a way to check for which "network" the test suite is running
+  })
 
   it("System call ProcessParentBlockHash recorded correctly", async function () {
     const rpcBlock = await mustGetRpcBlock("latest")
@@ -176,7 +177,7 @@ describe("Blocks", function () {
     }
   })
 
-  if (isNetwork("geth-devnet")) {
+  if (isNetwork("geth-devnet") || isNetwork("reth-devnet")) {
     it("Beacon withdrawals recorded correctly in block", async function () {
       // builder-playground validators are created with 0x01 (execution-layer) withdrawal credentials.
       // Partial withdrawals are swept automatically when a validator balance exceeds 32 ETH.
@@ -185,7 +186,7 @@ describe("Blocks", function () {
       const { firehoseBlock } = await waitForBlockWithWithdrawals(90_000)
 
       // Navigate to the correct beacon slot via parentBeaconRoot rather than assuming
-      // EL block number == CL slot (they diverge when the geth secondary joins after the
+      // EL block number == CL slot (they diverge when the secondary joins after the
       // playground has been running for a while).
       // parentBeaconRoot = root of beacon block B-1 → resolve its slot → B = B-1.slot + 1.
       const parentBeaconRoot = hexlify(firehoseBlock.header!.parentBeaconRoot)
@@ -200,15 +201,37 @@ describe("Blocks", function () {
         "Firehose and beacon block withdrawal count must match",
       )
 
+      // Collect block-level WITHDRAWAL balance changes once for reuse below.
+      const withdrawalBalanceChanges = firehoseBlock.balanceChanges.filter(
+        (bc) => bc.reason === BalanceChange_Reason.WITHDRAWAL,
+      )
+      expect(withdrawalBalanceChanges.length).to.equal(
+        firehoseBlock.withdrawals.length,
+        "number of WITHDRAWAL balance changes must match withdrawal count",
+      )
+
       for (let i = 0; i < firehoseBlock.withdrawals.length; i++) {
         const fw = firehoseBlock.withdrawals[i]
         const bw = beaconWithdrawals[i]
+        const fwAddress = hexlify(fw.address).toLowerCase()
 
+        // Cross-check withdrawal fields against the beacon block (authoritative CL source).
         // Beacon API uses decimal strings; Firehose uses uint64 (bigint). Amounts are in Gwei.
         expect(fw.index).to.equal(BigInt(bw.index), `withdrawal[${i}].index`)
         expect(fw.validatorIndex).to.equal(BigInt(bw.validator_index), `withdrawal[${i}].validatorIndex`)
-        expect(hexlify(fw.address).toLowerCase()).to.equal(bw.address.toLowerCase(), `withdrawal[${i}].address`)
+        expect(fwAddress).to.equal(bw.address.toLowerCase(), `withdrawal[${i}].address`)
         expect(fw.amount).to.equal(BigInt(bw.amount), `withdrawal[${i}].amount (Gwei)`)
+
+        // Verify the corresponding WITHDRAWAL balance change at block level.
+        // The delta in wei must equal the withdrawal amount converted from Gwei.
+        const bc = withdrawalBalanceChanges.find((c) => hexlify(c.address).toLowerCase() === fwAddress)
+        ;(expect(bc).to.not.be.undefined, `no WITHDRAWAL balance change found for address ${fwAddress}`)
+        expect(bc!.reason).to.equal(BalanceChange_Reason.WITHDRAWAL, `withdrawal[${i}] balance change reason`)
+        const delta = toBigInt(bc!.newValue) - toBigInt(bc!.oldValue)
+        expect(delta).to.equal(
+          fw.amount * 1_000_000_000n,
+          `withdrawal[${i}] balance change delta (wei) must equal amount_gwei × 1e9`,
+        )
       }
     })
   }
