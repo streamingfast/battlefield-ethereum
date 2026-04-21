@@ -117,7 +117,7 @@ reth_extra_args=(
 )
 
 if [ -n "$RETH_ENODE" ]; then
-    reth_extra_args+=("--peers=$RETH_ENODE")
+    reth_extra_args+=("--trusted-peers=$RETH_ENODE")
 fi
 
 # Function to add primary Reth as a peer via admin_addPeer once our node is up

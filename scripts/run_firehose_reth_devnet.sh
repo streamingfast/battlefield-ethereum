@@ -10,7 +10,7 @@ main() {
   check_reth_firehose_tracer
 
   echo "Running Reth devnet node with Firehose tracer activated via 'fireeth'"
-  run_fireeth 0 "bash" "$ROOT/ethereum_devnet/wrapped_reth.sh"
+  run_fireeth 1 "bash" "$ROOT/ethereum_devnet/wrapped_reth.sh"
 }
 
 usage() {
