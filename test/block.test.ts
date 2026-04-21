@@ -12,10 +12,8 @@ import {
 import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
-import { BalanceChange, BalanceChange_Reason, Call } from "../pb/sf/ethereum/type/v2/type_pb"
-import { getGlobalSnapshotsTag } from "./lib/snapshots"
+import { BalanceChange_Reason, Block, Call } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isNetwork } from "./lib/network"
-import { network } from "hardhat"
 
 describe("Blocks", function () {
   it("Header corresponds to RPC", async function () {
@@ -127,38 +125,6 @@ describe("Blocks", function () {
     )
   })
 
-  it("Block mining reward (REWARD_MINE_BLOCK) recorded for coinbase", async function () {
-    // This is an always-true condition until we put a network that works for this.
-    if (network.name != "any") {
-      // Ethereum networks that are post-merge never emit a REWARD_MINE_BLOCK
-      this.skip()
-    }
-
-    const result = await sendEth(owner, knownExistingAddress, oneWei)
-    const block = await fetchFirehoseBlock(result.blockNumber)
-    const coinbase = hexlify(block.header!.coinbase)
-
-    // On PoW chains the mining reward is recorded in block.balanceChanges because it happens
-    // outside any transaction flow (consensus layer, not EVM execution).
-    const blockRewardChanges = block.balanceChanges.filter(
-      (change) =>
-        change.reason === BalanceChange_Reason.REWARD_MINE_BLOCK && isSameAddress(hexlify(change.address), coinbase),
-    )
-
-    expect(blockRewardChanges.length).to.be.greaterThan(
-      0,
-      `coinbase ${coinbase} should have at least one REWARD_MINE_BLOCK in block.balanceChanges`,
-    )
-
-    for (const change of blockRewardChanges) {
-      expect(change.reason).to.equal(BalanceChange_Reason.REWARD_MINE_BLOCK)
-      expect(toBigInt(change.newValue)).to.be.greaterThan(
-        toBigInt(change.oldValue),
-        "coinbase balance should have increased by the mining reward",
-      )
-    }
-  })
-
   // bnb-dev in dev mode does not seem to update any parentBeaconRoot. being set to 00000000000 makes it skip that, so I skipped the test
   if (!isNetwork("bnb-dev")) {
     it("System call ProcessBeaconRoot recorded correctly", async function () {
@@ -200,10 +166,107 @@ describe("Blocks", function () {
     const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
     expect(updateParentBlockHashCall).to.not.be.undefined
 
-    expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
-    expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
+    // Only verify the storage write when the contract was actually executed. On some networks
+    // (e.g. geth-devnet running a playground genesis) the EIP-2935 history-storage contract
+    // is not pre-deployed, so the system call succeeds with executedCode:false and writes
+    // nothing to storage.
+    if (updateParentBlockHashCall?.executedCode) {
+      expect(updateParentBlockHashCall.storageChanges).to.be.lengthOf(1)
+      expect(updateParentBlockHashCall.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
+    }
   })
+
+  if (isNetwork("geth-devnet")) {
+    it("Beacon withdrawals recorded correctly in block", async function () {
+      // builder-playground validators are created with 0x01 (execution-layer) withdrawal credentials.
+      // Partial withdrawals are swept automatically when a validator balance exceeds 32 ETH.
+      // With 1-second slots the devnet accumulates rewards quickly, so a block with withdrawals
+      // should appear well within the 2-minute test timeout.
+      const { firehoseBlock } = await waitForBlockWithWithdrawals(90_000)
+
+      // Navigate to the correct beacon slot via parentBeaconRoot rather than assuming
+      // EL block number == CL slot (they diverge when the geth secondary joins after the
+      // playground has been running for a while).
+      // parentBeaconRoot = root of beacon block B-1 → resolve its slot → B = B-1.slot + 1.
+      const parentBeaconRoot = hexlify(firehoseBlock.header!.parentBeaconRoot)
+      const beaconWithdrawals = await fetchBeaconBlockWithdrawals(parentBeaconRoot)
+
+      expect(firehoseBlock.withdrawals.length).to.be.greaterThan(
+        0,
+        `expected at least one withdrawal in block #${firehoseBlock.number}`,
+      )
+      expect(firehoseBlock.withdrawals.length).to.equal(
+        beaconWithdrawals.length,
+        "Firehose and beacon block withdrawal count must match",
+      )
+
+      for (let i = 0; i < firehoseBlock.withdrawals.length; i++) {
+        const fw = firehoseBlock.withdrawals[i]
+        const bw = beaconWithdrawals[i]
+
+        // Beacon API uses decimal strings; Firehose uses uint64 (bigint). Amounts are in Gwei.
+        expect(fw.index).to.equal(BigInt(bw.index), `withdrawal[${i}].index`)
+        expect(fw.validatorIndex).to.equal(BigInt(bw.validator_index), `withdrawal[${i}].validatorIndex`)
+        expect(hexlify(fw.address).toLowerCase()).to.equal(bw.address.toLowerCase(), `withdrawal[${i}].address`)
+        expect(fw.amount).to.equal(BigInt(bw.amount), `withdrawal[${i}].amount (Gwei)`)
+      }
+    })
+  }
 })
+
+async function waitForBlockWithWithdrawals(timeoutMs: number): Promise<{ firehoseBlock: Block }> {
+  const deadline = Date.now() + timeoutMs
+
+  while (Date.now() < deadline) {
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (rpcBlock.withdrawals && rpcBlock.withdrawals.length > 0) {
+      const blockNumber = BigInt(parseInt(rpcBlock.number, 16))
+      const firehoseBlock = await fetchFirehoseBlock(blockNumber)
+      return { firehoseBlock }
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+  }
+
+  throw new Error(`No block with withdrawals found within ${timeoutMs}ms`)
+}
+
+// Beacon API fields use snake_case and decimal strings (per the CL REST API spec).
+type BeaconWithdrawal = {
+  index: string
+  validator_index: string
+  address: string
+  amount: string // Gwei, decimal
+}
+
+// Fetches the withdrawals from the beacon block that wraps the given EL block.
+// Takes the EL block's parentBeaconRoot (root of beacon block B-1) to resolve the correct
+// CL slot, avoiding the assumption that EL block number == CL slot number.
+// Uses the Lighthouse beacon REST API at the playground's default port (3500).
+async function fetchBeaconBlockWithdrawals(parentBeaconRoot: string): Promise<BeaconWithdrawal[]> {
+  // Step 1: resolve the parent beacon block's slot from its root.
+  const headerResp = await fetch(`http://localhost:3500/eth/v1/beacon/headers/${parentBeaconRoot}`, {
+    headers: { Accept: "application/json" },
+  })
+  if (!headerResp.ok) {
+    throw new Error(`Beacon headers API returned ${headerResp.status} for root ${parentBeaconRoot}`)
+  }
+  const headerBody = (await headerResp.json()) as { data: { header: { message: { slot: string } } } }
+  const parentSlot = BigInt(headerBody.data.header.message.slot)
+
+  // Step 2: fetch the beacon block at parentSlot + 1 (the block that contains our EL block).
+  const slot = parentSlot + 1n
+  const blockResp = await fetch(`http://localhost:3500/eth/v2/beacon/blocks/${slot}`, {
+    headers: { Accept: "application/json" },
+  })
+  if (!blockResp.ok) {
+    throw new Error(`Beacon blocks API returned ${blockResp.status} for slot ${slot}`)
+  }
+  const blockBody = (await blockResp.json()) as {
+    data: { message: { body: { execution_payload: { withdrawals: BeaconWithdrawal[] } } } }
+  }
+
+  return blockBody.data.message.body.execution_payload.withdrawals
+}
 
 function isUpdateBeaconRootCall(beaconRoot: string): (call: Call) => boolean {
   return (call: Call) =>

@@ -509,7 +509,7 @@ export type RpcBlock = {
   baseFeePerGas?: string
 
   // EIP-4895 (Shangai Fork)
-  withdrawals?: Array<any>
+  withdrawals?: Array<RpcWithdrawal>
   withdrawalsRoot?: string
 
   // EIP-4844 (Cancun fork)
@@ -527,6 +527,14 @@ export type RpcTransactionReceipt = {
   transactionHash: string
   gasUsed: string
   effectiveGasPrice: string
+}
+
+// All numeric fields are hex-encoded strings as returned by eth_getBlockByNumber.
+export type RpcWithdrawal = {
+  index: string
+  validatorIndex: string
+  address: string
+  amount: string // in Gwei (hex)
 }
 
 export function getBalance(address: string): Promise<BigInt> {
