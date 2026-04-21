@@ -27,7 +27,7 @@ const config: HardhatUserConfig = {
 
   networks: {
     "geth-dev": firehoseNetwork([]),
-    "reth-dev": firehoseNetwork([]),
+    "reth-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:9545" },
     "arbitrum-geth-dev": firehoseNetwork([]),
     "arbitrum-nitro-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
     "optimism-geth-dev": firehoseNetwork([]),
@@ -35,6 +35,7 @@ const config: HardhatUserConfig = {
     "bnb-dev": firehoseNetwork([]),
     "polygon-dev": firehoseNetwork([]),
     "optimism-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
+    "geth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
     "besu-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
   },
 

@@ -128,8 +128,9 @@ describe("Blocks", function () {
   })
 
   it("Block mining reward (REWARD_MINE_BLOCK) recorded for coinbase", async function () {
-    if (["geth-dev", "reth-dev"].includes(network.name)) {
-      // Skip networks that doesn't have a block mining reward
+    // This is an always-true condition until we put a network that works for this.
+    if (network.name != "any") {
+      // Ethereum networks that are post-merge never emit a REWARD_MINE_BLOCK
       this.skip()
     }
 

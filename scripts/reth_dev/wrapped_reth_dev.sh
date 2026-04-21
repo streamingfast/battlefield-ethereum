@@ -15,7 +15,19 @@ main() {
 
     "$reth" init --datadir="$data_dir" --chain="$genesis_file" 2> /dev/null
 
-    reth_extra_args=("node" "--datadir=$data_dir" "--dev" "--dev.block-max-transactions=1" "--chain=$genesis_file")
+    # Use non-default ports so this battlefield instance does not conflict with any other
+    # reth node the developer may be running locally (which would use the defaults below).
+    reth_extra_args=(
+        "node"
+        "--datadir=$data_dir"
+        "--dev"
+        "--dev.block-max-transactions=1"
+        "--chain=$genesis_file"
+        "--http.port=9545"
+        "--ws.port=9546"
+        "--authrpc.port=9551"
+        "--port=30403"
+    )
 
     echo "Running local Reth --dev chain"
     echo "Address to fund: $address_to_fund"
