@@ -536,7 +536,7 @@
       "gasChanges": [],
       "statusFailed": true,
       "statusReverted": false,
-      "failureReason": "point is not on curve",
+      "failureReason": "precompile error",
       "stateReverted": true,
       "beginOrdinal": "41",
       "endOrdinal": "42",

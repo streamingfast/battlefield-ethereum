@@ -45,6 +45,36 @@ const ZERO_BLOB = new Uint8Array(131072)
 // This is deterministic given the fixed trusted setup and fixed blob content.
 const ZERO_BLOB_VERSIONED_HASH = "0x010657f37554c781402a22917dee2f75def7ab966d7b770905398eba3c444014"
 
+// Resolve blob receipt fields using the raw RPC receipt when available, with fallbacks
+// for clients (e.g. reth) that omit blobGasUsed/blobGasPrice from eth_getTransactionReceipt.
+//   blobGasUsed  → receipt field, or GAS_PER_BLOB * numBlobs (EIP-4844 protocol constant)
+//   blobGasPrice → receipt field, or block's blobBaseFee from eth_getBlockByHash
+async function resolveReceiptBlobGas(
+  txHash: string,
+  blockHash: string,
+  numBlobs: bigint,
+): Promise<{ blobGasUsed: bigint; blobGasPrice: bigint }> {
+  const rawReceipt = await hre.ethers.provider.send("eth_getTransactionReceipt", [txHash])
+
+  const blobGasUsed: bigint = rawReceipt?.blobGasUsed ? BigInt(rawReceipt.blobGasUsed) : GAS_PER_BLOB * numBlobs
+
+  console.log("Resolved blobGasUsed:", blobGasUsed.toString())
+
+  let blobGasPrice: bigint | undefined = rawReceipt?.blobGasPrice ? BigInt(rawReceipt.blobGasPrice) : undefined
+  if (blobGasPrice === undefined) {
+    const rawBlock = await hre.ethers.provider.send("eth_getBlockByHash", [blockHash, false])
+    if (rawBlock?.blobBaseFee) {
+      blobGasPrice = BigInt(rawBlock.blobBaseFee)
+    }
+  }
+
+  if (blobGasPrice === undefined) {
+    throw new Error(`Could not resolve blobGasPrice for tx ${txHash}: absent from receipt and block`)
+  }
+
+  return { blobGasUsed, blobGasPrice }
+}
+
 describe("Cancun", function () {
   // Hardhat's NonceManager strips blob-specific fields (blobs, kzg, maxFeePerBlobGas)
   // when sending transactions, so we use a dedicated ethers Wallet connected directly
@@ -99,6 +129,26 @@ describe("Cancun", function () {
     // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
     expect(trace.blobGas).to.not.be.undefined
     expect(trace.blobGas).to.equal(GAS_PER_BLOB * 1n, "blob gas must be GAS_PER_BLOB * numBlobs")
+
+    const { blobGasUsed: rpcBlobGasUsed1, blobGasPrice: rpcBlobGasPrice1 } = await resolveReceiptBlobGas(
+      result.hash,
+      result.blockHash,
+      1n,
+    )
+
+    // Receipt blob gas fields — validated against resolved values (with fallbacks for clients
+    // like reth that omit blobGasUsed/blobGasPrice from eth_getTransactionReceipt and the
+    // Firehose trace). Only assert when the trace receipt field is actually present.
+    expect(trace.receipt, "trace must have a receipt").to.not.be.undefined
+    if (trace.receipt!.blobGasUsed !== undefined) {
+      expect(trace.receipt!.blobGasUsed).to.equal(rpcBlobGasUsed1, "receipt blob gas used must match resolved value")
+    }
+    if (trace.receipt!.blobGasPrice !== undefined) {
+      expect(toBigInt(trace.receipt!.blobGasPrice)).to.equal(
+        rpcBlobGasPrice1,
+        "receipt blob gas price must match resolved value",
+      )
+    }
   })
 
   it("Blob transaction with multiple blobs", async function () {
@@ -130,5 +180,27 @@ describe("Cancun", function () {
     // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
     expect(trace.blobGas).to.not.be.undefined
     expect(trace.blobGas).to.equal(GAS_PER_BLOB * 3n, "blob gas must be GAS_PER_BLOB * numBlobs")
+
+    const { blobGasUsed: rpcBlobGasUsed2, blobGasPrice: rpcBlobGasPrice2 } = await resolveReceiptBlobGas(
+      result.hash,
+      result.blockHash,
+      3n,
+    )
+
+    // Receipt blob gas fields — validated against resolved values (with fallbacks for clients
+    // like reth that omit blobGasUsed/blobGasPrice from eth_getTransactionReceipt and the
+    // Firehose trace). Only assert when the trace receipt field is actually present.
+    expect(trace.receipt, "trace must have a receipt").to.not.be.undefined
+    if (trace.receipt!.blobGasUsed !== undefined) {
+      console.log("Trace blobGasUsed:", trace.receipt!.blobGasUsed.toString())
+
+      expect(trace.receipt!.blobGasUsed).to.equal(rpcBlobGasUsed2, "receipt blob gas used must match resolved value")
+    }
+    if (trace.receipt!.blobGasPrice !== undefined) {
+      expect(toBigInt(trace.receipt!.blobGasPrice)).to.equal(
+        rpcBlobGasPrice2,
+        "receipt blob gas price must match resolved value",
+      )
+    }
   })
 })

@@ -8,17 +8,22 @@ import {
 } from "./lib/addresses"
 import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
-import { Child, Transfers } from "../typechain-types"
-import { ChildFactory, owner, TransfersFactory } from "./global"
+import { Child, GasRefund, Transfers } from "../typechain-types"
+import { ChildFactory, GasRefundFactory, owner, TransfersFactory } from "./global"
+import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
+import { BalanceChange_Reason } from "../pb/sf/ethereum/type/v2/type_pb"
+import { toBigInt } from "./lib/numbers"
 
 describe("Contract transfers", function () {
   let Child: Contract<Child>
   let Transfers: Contract<Transfers>
+  let GasRefundContract: Contract<GasRefund>
 
   before(async () => {
     await deployAll(
       async () => (Child = await deployContract(owner, ChildFactory, [])),
       async () => (Transfers = await deployContract(owner, TransfersFactory, [])),
+      async () => (GasRefundContract = await deployContract(owner, GasRefundFactory, [])),
     )
   })
 
@@ -68,5 +73,37 @@ describe("Contract transfers", function () {
       $childContract: Child.addressHex,
       $randomAddress4: randomAddress4Hex,
     })
+  })
+
+  it("Failing call with value transfer, gas refund old value taken pre-transfer", async function () {
+    const response = await koContractCall(
+      owner,
+      GasRefundContract.consumeGasTransferAndRevert,
+      [knownExistingAddress],
+      { value: oneWei },
+    )
+
+    await expect(response).to.trxTraceEqualSnapshot("contract_transfers/gas_refund_pre_transfer.expected.json", {
+      $gasRefundContract: GasRefundContract.addressHex,
+    })
+
+    const { trace } = await fetchFirehoseTransactionAndBlock(response)
+    const rootCall = trace.calls[0]
+
+    const gasBuyChanges = rootCall.balanceChanges.filter((bc) => bc.reason === BalanceChange_Reason.GAS_BUY)
+    const gasRefundChanges = rootCall.balanceChanges.filter((bc) => bc.reason === BalanceChange_Reason.GAS_REFUND)
+
+    expect(gasBuyChanges).to.have.length(1, "must have exactly one REASON_GAS_BUY balance change")
+    expect(gasRefundChanges).to.have.length(1, "must have exactly one REASON_GAS_REFUND balance change")
+
+    const gasBuyChange = gasBuyChanges[0]
+    const gasRefundChange = gasRefundChanges[0]
+
+    // The gas refund oldValue must equal the gas buy newValue: the refund restores unused gas
+    // to the post-gas-buy balance, which excludes the reverted value transfer.
+    expect(toBigInt(gasRefundChange.oldValue)).to.equal(
+      toBigInt(gasBuyChange.newValue),
+      "gas refund oldValue must equal gas buy newValue (balance after gas buying, before reverted transfer)",
+    )
   })
 })

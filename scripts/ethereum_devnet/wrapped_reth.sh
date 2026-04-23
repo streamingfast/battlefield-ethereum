@@ -111,9 +111,7 @@ reth_extra_args=(
     "--port=30304"
     "--engine.persistence-threshold=0"
     "--engine.memory-block-buffer-target=0"
-    "--color=never"
     "--disable-discovery"
-    "-vvvv"
 )
 
 if [ -n "$RETH_ENODE" ]; then

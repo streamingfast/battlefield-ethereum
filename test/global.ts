@@ -5,6 +5,7 @@ import {
   Calls__factory,
   Child__factory,
   ContractEmpty__factory,
+  GasRefund__factory,
   GrandChild__factory,
   Logs__factory,
   LogsNoTopics__factory,
@@ -39,6 +40,7 @@ export let MainFactory: Main__factory
 export let ChildFactory: Child__factory
 export let GrandChildFactory: GrandChild__factory
 export let CallsFactory: Calls__factory
+export let GasRefundFactory: GasRefund__factory
 export let CompleteCallTreeFactory: CompleteCallTree__factory
 export let ContractEmptyFactory: ContractEmpty__factory
 export let DelegateToEmptyContract: DelegateToEmptyContract__factory
@@ -72,6 +74,7 @@ before(async () => {
 
   debug("Initializing contract factories sequentially")
   ContractEmptyFactory = await hre.ethers.getContractFactory("ContractEmpty")
+  GasRefundFactory = await hre.ethers.getContractFactory("GasRefund")
   MainFactory = await hre.ethers.getContractFactory("Main")
   ChildFactory = await hre.ethers.getContractFactory("Child")
   GrandChildFactory = await hre.ethers.getContractFactory("GrandChild")
