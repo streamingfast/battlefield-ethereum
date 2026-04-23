@@ -16,6 +16,7 @@ import {
   DelegateToEmptyContract__factory,
   SuicideContractAsBeneficiary__factory,
   SuicideContractAsBeneficiarySameTrx__factory,
+  TripleSuicide__factory,
   CompleteCallTree__factory,
 } from "../typechain-types"
 import debugFactory from "debug"
@@ -51,6 +52,7 @@ export let SuicidalFactory: Suicidal__factory
 export let SuicideOnConstructorFactory: SuicideOnConstructor__factory
 export let SuicideContractAsBeneficiary: SuicideContractAsBeneficiary__factory
 export let SuicideContractAsBeneficiarySameTrx: SuicideContractAsBeneficiarySameTrx__factory
+export let TripleSuicideFactory: TripleSuicide__factory
 
 const debug = debugFactory("battlefield:global")
 
@@ -88,6 +90,7 @@ before(async () => {
   SuicideOnConstructorFactory = await hre.ethers.getContractFactory("SuicideOnConstructor")
   SuicideContractAsBeneficiary = await hre.ethers.getContractFactory("SuicideContractAsBeneficiary")
   SuicideContractAsBeneficiarySameTrx = await hre.ethers.getContractFactory("SuicideContractAsBeneficiarySameTrx")
+  TripleSuicideFactory = await hre.ethers.getContractFactory("TripleSuicide")
   debug("Initialized contract factories")
 
   debug("Initializing owner")

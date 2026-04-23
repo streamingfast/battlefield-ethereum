@@ -19,10 +19,15 @@ import {
   SuicideOnConstructorFactory,
   SuicideContractAsBeneficiary,
   SuicideContractAsBeneficiarySameTrx,
+  TripleSuicideFactory,
 } from "./global"
 import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
 import { isNetwork, networkValue } from "./lib/network"
+import { hexlify } from "ethers"
+import { CallType } from "../pb/sf/ethereum/type/v2/type_pb"
+import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
+import { isSameAddress } from "./lib/addresses"
 
 // Arbitrum Geth Dev Suicide Note (comment ref id 5564fd945748)
 //
@@ -173,5 +178,56 @@ describe("Suicide", function () {
         $createdContract: createdContract,
       },
     )
+  })
+
+  it("Create 3 contracts and suicide all in same transaction", async function () {
+    const Factory = await deployStableContractCreator(owner, TripleSuicideFactory, [], 3, 1, {
+      gasLimit: callsGasLimit,
+    })
+    const childAddrs = [
+      getCreateAddressHex(Factory.address, 1),
+      getCreateAddressHex(Factory.address, 2),
+      getCreateAddressHex(Factory.address, 3),
+    ]
+
+    const response = await contractCall(owner, Factory.createAndDestroyThree, [], { gasLimit: callsGasLimit })
+    const { trace } = await fetchFirehoseTransactionAndBlock(response)
+
+    // root + 3 CREATEs + 3 kill() calls
+    expect(trace.calls).to.have.length(7, "must have 7 calls: root + 3 CREATE + 3 kill")
+
+    const createCalls = trace.calls.filter((c) => c.callType === CallType.CREATE)
+    expect(createCalls).to.have.length(3, "must have exactly 3 CREATE calls")
+
+    const suicideCalls = trace.calls.filter((c) => c.suicide)
+    expect(suicideCalls).to.have.length(3, "must have exactly 3 suicide calls")
+
+    for (const call of suicideCalls) {
+      const addr = hexlify(call.address)
+      expect(childAddrs.some((a) => isSameAddress(a, addr))).to.be.true
+    }
+
+    // selfdestruct finalization writes code removals and nonce resets to the root call; verify
+    // they are sorted by address (exercises statedb_hooked finalization sorting).
+    const rootCall = trace.calls[0]
+
+    const codeRemovals = rootCall.codeChanges.filter(
+      (cc) => cc.newCode.length === 0 && childAddrs.some((a) => isSameAddress(a, hexlify(cc.address))),
+    )
+    expect(codeRemovals).to.have.length(3, "root call must have 3 code removals for child contracts")
+
+    const codeRemovalAddrs = codeRemovals.map((cc) => hexlify(cc.address))
+    expect(codeRemovalAddrs).to.deep.equal(
+      [...codeRemovalAddrs].sort(),
+      "code removals must be in sorted address order",
+    )
+
+    const nonceResets = rootCall.nonceChanges.filter(
+      (nc) => nc.newValue === 0n && childAddrs.some((a) => isSameAddress(a, hexlify(nc.address))),
+    )
+    expect(nonceResets).to.have.length(3, "root call must have 3 nonce resets for child contracts")
+
+    const nonceResetAddrs = nonceResets.map((nc) => hexlify(nc.address))
+    expect(nonceResetAddrs).to.deep.equal([...nonceResetAddrs].sort(), "nonce resets must be in sorted address order")
   })
 })
