@@ -20,9 +20,9 @@ export const besu_exclude_fields = [
 
 export const reth_exclude_fields = [
   // Ordinals (we have a bug to investigate with Deploys tests, order inversion on nonce <> code changes)
-  "calls[].beginOrdinal",
-  "calls[].endOrdinal",
-  "calls[].codeChanges[].ordinal",
-  "calls[].nonceChanges[].ordinal",
-  "calls[].storageChanges[].ordinal",
+  // "calls[].beginOrdinal",
+  // "calls[].endOrdinal",
+  // "calls[].codeChanges[].ordinal",
+  // "calls[].nonceChanges[].ordinal",
+  // "calls[].storageChanges[].ordinal",
 ]
