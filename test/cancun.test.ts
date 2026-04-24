@@ -58,8 +58,6 @@ async function resolveReceiptBlobGas(
 
   const blobGasUsed: bigint = rawReceipt?.blobGasUsed ? BigInt(rawReceipt.blobGasUsed) : GAS_PER_BLOB * numBlobs
 
-  console.log("Resolved blobGasUsed:", blobGasUsed.toString())
-
   let blobGasPrice: bigint | undefined = rawReceipt?.blobGasPrice ? BigInt(rawReceipt.blobGasPrice) : undefined
   if (blobGasPrice === undefined) {
     const rawBlock = await hre.ethers.provider.send("eth_getBlockByHash", [blockHash, false])
@@ -192,8 +190,6 @@ describe("Cancun", function () {
     // Firehose trace). Only assert when the trace receipt field is actually present.
     expect(trace.receipt, "trace must have a receipt").to.not.be.undefined
     if (trace.receipt!.blobGasUsed !== undefined) {
-      console.log("Trace blobGasUsed:", trace.receipt!.blobGasUsed.toString())
-
       expect(trace.receipt!.blobGasUsed).to.equal(rpcBlobGasUsed2, "receipt blob gas used must match resolved value")
     }
     if (trace.receipt!.blobGasPrice !== undefined) {
