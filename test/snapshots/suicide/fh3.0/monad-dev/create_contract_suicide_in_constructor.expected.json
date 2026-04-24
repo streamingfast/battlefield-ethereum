@@ -37,21 +37,21 @@
           "key": "0000000000000000000000000000000000000000000000000000000000000000",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "000000000000000000000000$sender",
-          "ordinal": "7"
+          "ordinal": "8"
         }
       ],
       "balanceChanges": [
         {
           "address": "$sender",
           "reason": "REASON_MONAD_TX_POST_STATE",
-          "ordinal": "4",
+          "ordinal": "5",
           "oldValue": "07a1fe1602770000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
-          "ordinal": "6",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "b1a2bc2ec50000"
         }
@@ -61,7 +61,7 @@
           "address": "$sender",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "5"
+          "ordinal": "6"
         }
       ],
       "logs": [],
@@ -72,7 +72,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "1",
-      "endOrdinal": "8",
+      "endOrdinal": "4",
       "accountCreations": []
     },
     {

@@ -37,21 +37,21 @@
           "key": "0000000000000000000000000000000000000000000000000000000000000000",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
-          "ordinal": "36"
+          "ordinal": "37"
         }
       ],
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_MONAD_TX_POST_STATE",
-          "ordinal": "32",
+          "ordinal": "33",
           "oldValue": "2dcbf4840eca0000",
           "newValue": ""
         },
         {
           "address": "0000000000000000000000000000000000000000",
           "reason": "REASON_MONAD_TX_POST_STATE",
-          "ordinal": "34",
+          "ordinal": "35",
           "oldValue": "",
           "newValue": "0429d069189e0000"
         }
@@ -61,25 +61,25 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "33"
+          "ordinal": "34"
         },
         {
           "address": "$callsContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "35"
+          "ordinal": "36"
         },
         {
           "address": "$secondCreatedContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "37"
+          "ordinal": "38"
         },
         {
           "address": "$thirdCreatedContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "38"
+          "ordinal": "39"
         }
       ],
       "logs": [
@@ -124,7 +124,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "4",
-      "endOrdinal": "39",
+      "endOrdinal": "32",
       "accountCreations": []
     },
     {
