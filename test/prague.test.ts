@@ -2,7 +2,7 @@ import { expect } from "chai"
 import { mustGetRpcBlock, sendEth, defaultGasPrice, deployContract } from "./lib/ethereum"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import { isBlockOnPragueOrLater } from "./lib/chain_eips"
-// import { isNetwork } from "./lib/network"
+import { isNetwork } from "./lib/network"
 import { CodeChange, TransactionTrace, TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner } from "./global"
 import { isSameAddress } from "./lib/addresses"
@@ -58,9 +58,9 @@ describe("Prague", function () {
     // wallet1 in TX3).  If delegation code is present the plain ETH transfer executes the
     // delegated contract, which requires more gas (e.g. SetterBB does an SSTORE).
     // On Monad, delegated EOAs cannot dip below their reserve balance (10 MON)
-    // const fundAmount = isNetwork("monad-dev") ? eth(11) : eth(1)
-    await sendEth(owner, wallet1.address, eth(1), { gasLimit: 100_000 })
-    await sendEth(owner, wallet2.address, eth(1), { gasLimit: 100_000 })
+    const fundAmount = isNetwork("monad-dev") ? eth(11) : eth(1)
+    await sendEth(owner, wallet1.address, fundAmount, { gasLimit: 100_000 })
+    await sendEth(owner, wallet2.address, fundAmount, { gasLimit: 100_000 })
 
     // Deploy the Caller and two Setter instances (CC and BB are identical code, different addresses)
     const CallerFactory = await hre.ethers.getContractFactory("SetCode7702Caller")
@@ -135,9 +135,9 @@ describe("Prague", function () {
     const calldata = callerIface.encodeFunctionData("callTarget", [wallet2.address])
 
     // Monad's txpool caps EIP-7702 auth lists at 4 entries (to bound ECRECOVER costs at admission).
-    // const authorizationList = isNetwork("monad-dev")
-    //   ? [auth1, auth2, auth3InvalidAuthority, auth4]
-    //   : [auth1, auth2, auth3InvalidAuthority, auth4, auth5InvalidNonce]
+    const authorizationList = isNetwork("monad-dev")
+      ? [auth1, auth2, auth3InvalidAuthority, auth4]
+      : [auth1, auth2, auth3InvalidAuthority, auth4, auth5InvalidNonce]
 
     // TX1: type-4 SetCode transaction
     const tx1Response = await wallet1.sendTransaction({
@@ -148,7 +148,7 @@ describe("Prague", function () {
       maxFeePerGas: BigInt(defaultGasPrice),
       maxPriorityFeePerGas: 25_000n,
       type: 4,
-      authorizationList: [auth1, auth2, auth3InvalidAuthority, auth4, auth5InvalidNonce],
+      authorizationList: authorizationList,
     })
     const tx1Result = await waitForTransaction(tx1Response, false)
     const { trace: trace1 } = await fetchFirehoseTransactionAndBlock(tx1Result)
@@ -180,9 +180,9 @@ describe("Prague", function () {
 
     // TX1 authorization list: 5 entries mirroring the Go test
     // On monad-dev the txpool caps auth lists at 4 entries:
-    // const expectedAuthCount = isNetwork("monad-dev") ? 4 : 5
+    const expectedAuthCount = isNetwork("monad-dev") ? 4 : 5
     expect(trace1.setCodeAuthorizations).to.have.length(
-      5,
+      expectedAuthCount,
       "TX1 must record all 5 authorizations in setCodeAuthorizations",
     )
 
@@ -216,12 +216,15 @@ describe("Prague", function () {
     expect(a4.nonce).to.equal(BigInt(wallet2Nonce + 1), "auth4 nonce must be wallet2Nonce+1")
 
     // auth[4] = auth5: wallet2, same nonce as auth4 (wallet2Nonce+1), nonce change already consumed → discarded
-    const a5 = trace1.setCodeAuthorizations[4]
-    expect(a5.discarded).to.equal(true, "auth5 (stale nonce) must be discarded")
-    expect(hexlify(a5.authority!)).to.equal(
-      wallet2.address.toLowerCase(),
-      "auth5 authority must be wallet2 (valid sig)",
-    )
+    // On monad-dev the txpool caps auth lists at 4 entries, so auth5 is never submitted
+    if (!isNetwork("monad-dev")) {
+      const a5 = trace1.setCodeAuthorizations[4]
+      expect(a5.discarded).to.equal(true, "auth5 (stale nonce) must be discarded")
+      expect(hexlify(a5.authority!)).to.equal(
+        wallet2.address.toLowerCase(),
+        "auth5 authority must be wallet2 (valid sig)",
+      )
+    }
   })
 
   it("Delegated EOA executes delegation code on subsequent legacy call", async function () {
