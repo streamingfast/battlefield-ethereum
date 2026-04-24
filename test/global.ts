@@ -28,10 +28,9 @@ import { oneWei } from "./lib/money"
 import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
 import { fetchFirehoseBlock, waitForFirehoseReady } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
-import { isNetwork, networkName } from "./lib/network"
+import { isNetwork } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
-import { besu_exclude_fields as besuExcludeFields, reth_exclude_fields as rethExcludeFields } from "./lib/constants"
-import { launchGethDev } from "./launcher"
+import { besu_exclude_fields as besuExcludeFields } from "./lib/constants"
 
 export let owner: NonceManager
 export let ownerAddress: string
@@ -72,7 +71,6 @@ before(async () => {
 
   // Register global excluded fields for specific networks
   registerGlobalExcludedFields("besu-devnet", besuExcludeFields)
-  registerGlobalExcludedFields("reth-dev", rethExcludeFields)
 
   debug("Initializing contract factories sequentially")
   ContractEmptyFactory = await hre.ethers.getContractFactory("ContractEmpty")
@@ -96,6 +94,7 @@ before(async () => {
   debug("Initializing owner")
   // first and owner are the same here, but first is of type HardhatSigner and have .address already resolved
   const [first] = await hre.ethers.getSigners()
+  // @ts-ignore - TypeScript is not aware that NonceManager can be used as a signer, but it can, and it is useful for our tests to have a signer that automatically manage the nonce for us
   owner = new hre.ethers.NonceManager(first)
   ownerAddress = first.address
   ownerAddressBytes = getBytes(ownerAddress)
