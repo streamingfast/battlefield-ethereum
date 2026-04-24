@@ -4,7 +4,7 @@ import { BalanceChange_Reason, TransactionTrace_Type } from "../pb/sf/ethereum/t
 
 describe("Genesis Block", function () {
   it("Block 0 has a single genesis transaction trace with correct structure", async function () {
-    const block = await fetchFirehoseBlock(0)
+    const block = await fetchFirehoseBlock(0, { timeoutMs: 30_000 })
 
     expect(block.number).to.equal(0n, "genesis block number must be 0")
     expect(block.transactionTraces).to.have.length(1, "genesis block must have exactly one synthetic transaction trace")

@@ -50,8 +50,9 @@ export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Pro
 
 export async function fetchFirehoseBlock(
   tag: number | bigint | string | { hash: string; num: number | bigint },
+  options?: { timeoutMs?: number },
 ): Promise<Block> {
-  const block = await fetchFirehoseBlockNoLogging(tag)
+  const block = await fetchFirehoseBlockNoLogging(tag, options?.timeoutMs)
   if (block) {
     debug(`Found Firehose block #${block.number} (${block.hash}) %O`, toProtoJsonObject(block))
   }
@@ -61,16 +62,25 @@ export async function fetchFirehoseBlock(
 
 async function fetchFirehoseBlockNoLogging(
   tag: number | bigint | string | { hash: string; num: number | bigint },
+  timeoutMs?: number,
 ): Promise<Block> {
+  const deadline = timeoutMs !== undefined ? Date.now() + timeoutMs : Infinity
   let attempts = 0
   let lastError: unknown
 
   while (attempts <= 10) {
+    const remaining = deadline - Date.now()
+    if (remaining <= 0) {
+      throw new ConnectError(
+        `Block ${firehoseBlockTagToString(tag)} not found in Firehose within ${timeoutMs}ms, last error: ${lastError}`,
+      )
+    }
+
     attempts += 1
 
     try {
       const abort = new AbortController()
-      const timer = setTimeout(() => abort.abort(), 10_000)
+      const timer = setTimeout(() => abort.abort(), Math.min(10_000, remaining))
       try {
         const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) }, { signal: abort.signal })
         return anyUnpack(response.block!, messageRegistry) as Block
@@ -81,7 +91,7 @@ async function fetchFirehoseBlockNoLogging(
       lastError = error
 
       if (isConnectError(error) && error.code !== Code.InvalidArgument) {
-        let retryIn = 125 + 250 * (attempts - 1)
+        const retryIn = Math.max(0, Math.min(125 + 250 * (attempts - 1), deadline - Date.now()))
         debug(`Block ${firehoseBlockTagToString(tag)} not found in Firehose yet, retrying in ${retryIn}ms`)
         await new Promise((resolve) => setTimeout(resolve, retryIn))
 
@@ -92,7 +102,7 @@ async function fetchFirehoseBlockNoLogging(
     }
   }
 
-  throw new ConnectError(`Block not found in Firehose after 3 attempts, last error: ${lastError}`)
+  throw new ConnectError(`Block not found in Firehose after ${attempts} attempts, last error: ${lastError}`)
 }
 
 export async function fetchFirehoseTransactionAndBlock(
