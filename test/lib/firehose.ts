@@ -69,8 +69,14 @@ async function fetchFirehoseBlockNoLogging(
     attempts += 1
 
     try {
-      const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) })
-      return anyUnpack(response.block!, messageRegistry) as Block
+      const abort = new AbortController()
+      const timer = setTimeout(() => abort.abort(), 10_000)
+      try {
+        const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) }, { signal: abort.signal })
+        return anyUnpack(response.block!, messageRegistry) as Block
+      } finally {
+        clearTimeout(timer)
+      }
     } catch (error) {
       lastError = error
 
