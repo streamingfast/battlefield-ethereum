@@ -42,13 +42,13 @@
     "@typechain/hardhat": "^9.0.0",
     "@types/chai": "^4.2.0",
     "@types/deep-equal": "^1.0.4",
-    "diff": "^5.2.0",
     "@types/mocha": ">=9.1.0",
     "@types/node": ">=18.0.0",
     "chai": "^4.2.0",
     "cross-env": "^7.0.3",
     "debug": "^4.3.7",
     "deep-equal": "^2.2.3",
+    "diff": "^5.2.0",
     "ethers": "^6.16.0",
     "hardhat": "^2.24.2",
     "hardhat-gas-reporter": "^1.0.8",
@@ -69,6 +69,9 @@
       "c-kzg",
       "keccak",
       "secp256k1"
+    ],
+    "ignoredBuiltDependencies": [
+      "@bufbuild/buf"
     ]
   }
 }

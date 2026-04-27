@@ -67,6 +67,7 @@ describe("Pure transfers", function () {
     // This is a tricky test as once run, the address will have a balance so it cannot run twice.
     if ((await getBalance(precompileWithoutBalanceAddress)) !== 0n) {
       if (canSkipFreshChainOnlyTests()) {
+        this.skip()
       }
 
       throw new Error(

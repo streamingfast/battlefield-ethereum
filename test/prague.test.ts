@@ -45,7 +45,6 @@ describe("Prague", function () {
     const rpcBlock = await mustGetRpcBlock("latest")
     if (!isBlockOnPragueOrLater(rpcBlock)) {
       this.skip()
-      return
     }
 
     wallet1 = new Wallet(key1, hre.ethers.provider)

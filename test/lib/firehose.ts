@@ -390,7 +390,7 @@ export async function waitForFirehoseReady(sendTransaction: () => Promise<unknow
   const pump = async () => {
     while (!done) {
       sendTransaction().catch(() => {})
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 200))
     }
   }
 

@@ -108,6 +108,12 @@ xcode-select --install
 
 The `postinstall` script in `package.json` automatically rebuilds `c-kzg` after every `pnpm install`. If the build fails, it means the C++ compiler is missing — install it first, then re-run `pnpm install`.
 
+**Rebuilding after OS change:** If the addon was compiled on a different OS (e.g. the workspace was set up on macOS but is now mounted in a Linux container), it will fail with `invalid ELF header` or a similar binary-format error. Fix it by running `pnpm install` from the repo root — the postinstall script will recompile it for the current platform. If `pnpm install` itself fails due to store path permission issues (common in containers), fall back to invoking `node-gyp` directly:
+
+```bash
+cd node_modules/.pnpm/c-kzg@4.1.0/node_modules/c-kzg && node-gyp rebuild
+```
+
 ---
 
 ## Installing JavaScript Dependencies
@@ -134,6 +140,27 @@ Set this in your shell before running any `./scripts/run_firehose_*.sh` command.
 
 ---
 
+## Mine-on-Demand Networks — `geth-dev` and `reth-dev`
+
+Both `geth-dev` and `reth-dev` use **mine-on-demand** mode: the node produces a new block only when a pending transaction arrives. No transaction → no block → no mining.
+
+This creates a chicken-and-egg situation at startup: Firehose cannot become ready until it has processed at least one merged bundle of blocks (100 blocks), but blocks are only mined when transactions are submitted.
+
+**The test suite handles this automatically.** The global setup (`test/global.ts`) runs `waitForFirehoseReady()` which simultaneously:
+1. Pumps lightweight ETH transfer transactions every 200 ms so the chain keeps mining.
+2. Polls the Firehose HTTP health endpoint (`http://localhost:8089`) until it returns `{"is_ready":true}`.
+
+The `waitForFirehoseReady` timeout is 30 seconds. If Firehose is not ready within that window the whole test run aborts with an error.
+
+**Consequences for agents:**
+
+- **Do NOT wait for `http://localhost:8089` to return `is_ready` before launching the tests.** On a cold chain it will never become ready on its own — only the test run's transaction pump can bootstrap it.
+- **Do NOT send transactions manually** to try to pre-warm the chain; the test suite handles it.
+- The only readiness check you need before running tests is that the node's JSON-RPC is accepting connections on port 8545.
+- Keep the chain running between `--grep` runs. There is no need to restart between individual test invocations.
+
+---
+
 ## Test Cycle — `geth-dev`
 
 This is the primary and simplest chain to test against. Uses the StreamingFast Firehose-instrumented `geth` in `--dev` mode.
@@ -150,25 +177,16 @@ In one terminal (or background), start `geth` and the full Firehose stack:
 ./scripts/run_firehose_geth_dev.sh 3.0 cancun
 ```
 
-Wait until you see the gRPC server become ready. Verify with:
+Wait only until the node's JSON-RPC is accepting connections — **do not wait for Firehose to be ready**:
 
 ```bash
+# Retry until you get a valid JSON response (a hex block number)
 curl -s http://localhost:8545 -X POST -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
-# Expected: a JSON response with a hex block number
-
-curl -s http://localhost:8089
-# Expected: {"is_ready":true}
+# Expected: {"jsonrpc":"2.0","id":1,"result":"0x0"}
 ```
 
-Also verify blocks are advancing (run twice, 2 seconds apart — the block number must increase):
-
-```bash
-curl -s http://localhost:8545 -X POST -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
-```
-
-If the block number is stuck, the `geth` process is stalled. Kill all related processes and restart.
+Once you see that response, the chain is ready to receive transactions and you can proceed to run the tests. The test suite's global setup will bootstrap Firehose on its own.
 
 ### Step 2 — Run the tests
 
@@ -209,7 +227,7 @@ Strategies:
 
 ## Test Cycle — `reth-dev`
 
-Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Always runs with the Prague fork. The test script and snapshots mirror `geth-dev`.
+Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Always runs with the Prague fork. The test script and snapshots mirror `geth-dev`. Same mine-on-demand behaviour applies — see the section above.
 
 ### Step 1 — Start the chain
 
@@ -217,7 +235,7 @@ Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Always runs w
 ./scripts/run_firehose_reth_dev.sh
 ```
 
-Verify the same way as geth-dev (ports `8545` for RPC, `8089` for Firehose gRPC).
+Wait only until the node's JSON-RPC is accepting connections on port 8545 (same check as geth-dev above). Do not wait for port 8089.
 
 ### Step 2 — Run the tests
 
