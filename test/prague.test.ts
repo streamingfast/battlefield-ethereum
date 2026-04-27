@@ -211,6 +211,14 @@ describe("Prague", function () {
       wallet2.address.toLowerCase(),
       "auth5 authority must be wallet2 (valid sig)",
     )
+
+    await expect(tx1Result).to.trxTraceEqualSnapshot("prague/setcode_set_delegations.expected.json", {
+      $wallet1: wallet1.address.toLowerCase().slice(2),
+      $wallet2: wallet2.address.toLowerCase().slice(2),
+      $callerContract: callerAddress.toLowerCase().slice(2),
+      $setterCC: setterCCAddress.toLowerCase().slice(2),
+      $setterBB: setterBBAddress.toLowerCase().slice(2),
+    })
   })
 
   it("Delegated EOA executes delegation code on subsequent legacy call", async function () {
