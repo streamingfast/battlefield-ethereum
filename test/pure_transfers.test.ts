@@ -12,7 +12,7 @@ import {
 } from "./lib/addresses"
 import { getBalance, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
-import { owner } from "./global"
+import { owner, ownerAddress } from "./global"
 
 describe("Pure transfers", function () {
   it("Existing address", async function () {
@@ -59,6 +59,15 @@ describe("Pure transfers", function () {
       "pure_transfers/precompiled_address_with_balance.json",
       {
         $precompileAddress: precompileWithBalanceAddressHex,
+      },
+    )
+  })
+
+  it("Self transfer (caller == recipient)", async function () {
+    await expect(sendEth(owner, ownerAddress, oneWei)).to.trxTraceEqualSnapshot(
+      "pure_transfers/self_transfer.expected.json",
+      {
+        $ownerAddress: ownerAddress.toLowerCase().slice(2),
       },
     )
   })
