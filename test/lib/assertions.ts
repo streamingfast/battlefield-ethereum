@@ -118,6 +118,17 @@ type Chai = typeof chai
 
 type TrxTracerEqualSnapshotOptions = {
   /**
+   * Per-snapshot field exclusions. Each entry is a field path (see
+   * [./field-exclusion.ts](./field-exclusion.ts) for the supported syntax) that will be
+   * stripped from both the actual normalized trace and the expected resolved trace before
+   * comparison. Useful to ignore fields whose value is non-deterministic across runs (e.g.
+   * `gasPrice` when the basefee floats with chain history).
+   *
+   * Merged with the network-wide exclusions registered via `registerGlobalExcludedFields`.
+   */
+  excludeFields?: string[]
+
+  /**
    * This option list EIPs for which specific snapshots should be used. Certain EIP
    * like EIP6780 changed the overall behavior of a transaction creating differences on the
    * traced transaction that could be desirable to have a specific snapshot for so that
@@ -363,7 +374,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       // Merge global excluded fields with test-specific excluded fields
       let filteredActual = actual
       let filteredExpected = expected
-      const fieldsToExclude = getGlobalExcludedFields(networkName())
+      const fieldsToExclude = [...getGlobalExcludedFields(networkName()), ...(options?.excludeFields ?? [])]
 
       if (fieldsToExclude.length > 0) {
         filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)

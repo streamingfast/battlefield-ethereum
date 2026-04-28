@@ -216,13 +216,32 @@ describe("Prague", function () {
     // like signatures, gas price and others. We will to revisit that, either we trimmed down the
     // trx and make templated what is needed or we move to an assertion based approach fully. I
     // would create a unique new test just for this I think
-    // await expect(tx1Result).to.trxTraceEqualSnapshot("prague/setcode_set_delegations.expected.json", {
-    //   $wallet1: wallet1.address.toLowerCase().slice(2),
-    //   $wallet2: wallet2.address.toLowerCase().slice(2),
-    //   $callerContract: callerAddress.toLowerCase().slice(2),
-    //   $setterCC: setterCCAddress.toLowerCase().slice(2),
-    //   $setterBB: setterBBAddress.toLowerCase().slice(2),
-    // })
+    await expect(tx1Result).to.trxTraceEqualSnapshot(
+      "prague/setcode_set_delegations.expected.json",
+      {
+        $wallet1: wallet1.address.toLowerCase().slice(2),
+        $wallet2: wallet2.address.toLowerCase().slice(2),
+        $callerContract: callerAddress.toLowerCase().slice(2),
+        $setterCC: setterCCAddress.toLowerCase().slice(2),
+        $setterBB: setterBBAddress.toLowerCase().slice(2),
+      },
+      {
+        // gasPrice (and the gas-buy / gas-refund balance change values that derive from it)
+        // float with the chain's basefee, which is non-deterministic across runs. We assert
+        // the structure of the trace via the snapshot and rely on inline assertions above for
+        // the semantic checks that matter for EIP-7702.
+        excludeFields: [
+          "gasPrice",
+          "calls[0].balanceChanges[0].oldValue",
+          "calls[0].balanceChanges[1].newValue",
+          "calls[0].codeChanges[].newHash",
+          "calls[0].codeChanges[].oldHash",
+          "setCodeAuthorizations[].r",
+          "setCodeAuthorizations[].s",
+          "setCodeAuthorizations[].v",
+        ],
+      },
+    )
   })
 
   it("Delegated EOA executes delegation code on subsequent legacy call", async function () {
