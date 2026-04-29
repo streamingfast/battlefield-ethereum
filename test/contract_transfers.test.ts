@@ -6,9 +6,10 @@ import {
   randomAddress4,
   randomAddress4Hex,
 } from "./lib/addresses"
+import hre from "hardhat"
 import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
-import { Child, GasRefund, Transfers } from "../typechain-types"
+import { Child, GasRefund, SelfTransfers, SelfTransfers__factory, Transfers } from "../typechain-types"
 import { ChildFactory, GasRefundFactory, owner, TransfersFactory } from "./global"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import { BalanceChange_Reason } from "../pb/sf/ethereum/type/v2/type_pb"
@@ -18,12 +19,17 @@ describe("Contract transfers", function () {
   let Child: Contract<Child>
   let Transfers: Contract<Transfers>
   let GasRefundContract: Contract<GasRefund>
+  let SelfTransfersContract: Contract<SelfTransfers>
 
   before(async () => {
     await deployAll(
       async () => (Child = await deployContract(owner, ChildFactory, [])),
       async () => (Transfers = await deployContract(owner, TransfersFactory, [])),
       async () => (GasRefundContract = await deployContract(owner, GasRefundFactory, [])),
+      async () => {
+        const factory = (await hre.ethers.getContractFactory("SelfTransfers")) as SelfTransfers__factory
+        SelfTransfersContract = await deployContract(owner, factory, [])
+      },
     )
   })
 
@@ -72,6 +78,22 @@ describe("Contract transfers", function () {
       $contract: Transfers.addressHex,
       $childContract: Child.addressHex,
       $randomAddress4: randomAddress4Hex,
+    })
+  })
+
+  it("Self transfer, root call reverts", async function () {
+    await expect(
+      koContractCall(owner, SelfTransfersContract.selfTransferThenRevert, [], { value: oneWei }),
+    ).to.trxTraceEqualSnapshot("contract_transfers/self_transfer_root_reverts.expected.json", {
+      $contract: SelfTransfersContract.addressHex,
+    })
+  })
+
+  it("Self transfer, nested call reverts but root succeeds", async function () {
+    await expect(
+      contractCall(owner, SelfTransfersContract.nestedSelfTransferThenRevert, [], { value: oneWei }),
+    ).to.trxTraceEqualSnapshot("contract_transfers/self_transfer_nested_reverts.expected.json", {
+      $contract: SelfTransfersContract.addressHex,
     })
   })
 

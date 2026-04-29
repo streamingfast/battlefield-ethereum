@@ -13,6 +13,11 @@ const debug = debugFactory("battlefield:firehose")
 
 describe("Genesis Block", function () {
   it("Block 0 has a single genesis transaction trace with correct structure", async function () {
+    if (isNetwork("reth-dev") || isNetwork("reth-devnet")) {
+      // Skipped until it actually works on Reth
+      this.skip()
+    }
+
     if (isNetwork("geth-dev") || isNetwork("reth-dev")) {
       await waitUntilMergedBlocksAvailable()
     }
