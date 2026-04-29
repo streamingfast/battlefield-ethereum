@@ -21,6 +21,7 @@ import {
   SuicideContractAsBeneficiarySameTrx,
   TripleSuicideFactory,
 } from "./global"
+import hre from "hardhat"
 import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
 import { isNetwork, networkValue } from "./lib/network"
@@ -178,6 +179,50 @@ describe("Suicide", function () {
         $createdContract: createdContract,
       },
     )
+  })
+
+  it("Contract created in subcall suicides in its constructor", async function () {
+    // Reproduces the pattern observed in Optimism trx 1be5b6c3...:
+    //   root tx → wrapper.execute() (depth 0)
+    //                → CREATE child (depth 1) — child constructor selfdestructs
+    //
+    // Because the create and the suicide happen in the same transaction, the child
+    // is fully removed at end-of-tx (true on every fork: pre-Cancun by default,
+    // post-Cancun via the EIP-6780 same-tx exception). Finalization writes the
+    // nonce 1→0 reset to the root call.
+    const CreateSuicideInSubcallFactory = await hre.ethers.getContractFactory("CreateSuicideInSubcall")
+    const Wrapper = await deployStableContractCreator(owner, CreateSuicideInSubcallFactory, [], 1, 1, {
+      gasLimit: callsGasLimit,
+    })
+    const childAddress = getCreateAddressHex(Wrapper.address, 1)
+
+    const response = await contractCall(owner, Wrapper.execute, [], { gasLimit: callsGasLimit })
+    const { trace } = await fetchFirehoseTransactionAndBlock(response)
+
+    // Root + wrapper.execute() + CREATE child
+    expect(trace.calls).to.have.length(2, "must have 2 calls: root wrapper call + CREATE child")
+
+    const rootCall = trace.calls[0]
+    expect(rootCall.depth).to.equal(0, "first call must be the root call")
+
+    const createCall = trace.calls[1]
+    expect(createCall.callType).to.equal(CallType.CREATE, "second call must be a CREATE")
+    expect(isSameAddress(hexlify(createCall.address), childAddress)).to.be.true
+    expect(createCall.suicide).to.be.true
+
+    // CREATE subcall: nonce 0→1 for the freshly created child
+    const childNonceCreate = createCall.nonceChanges.find((nc) => isSameAddress(hexlify(nc.address), childAddress))
+    expect(childNonceCreate, "CREATE subcall must record a nonce change for the child contract").to.not.be.undefined
+    expect(childNonceCreate!.oldValue).to.equal(0n, "child nonce in CREATE subcall must start at 0")
+    expect(childNonceCreate!.newValue).to.equal(1n, "child nonce in CREATE subcall must end at 1")
+
+    // Root call: nonce 1→0 cleanup written during end-of-tx finalization
+    const childNonceCleanup = rootCall.nonceChanges.find(
+      (nc) => isSameAddress(hexlify(nc.address), childAddress) && nc.newValue === 0n,
+    )
+    expect(childNonceCleanup, "root call must record nonce 1→0 cleanup for the suicided child").to.not.be.undefined
+    expect(childNonceCleanup!.oldValue).to.equal(1n)
+    expect(childNonceCleanup!.newValue).to.equal(0n)
   })
 
   it("Create 3 contracts and suicide all in same transaction", async function () {
