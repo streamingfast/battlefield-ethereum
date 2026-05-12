@@ -76,6 +76,13 @@ describe("Blocks", function () {
   })
 
   it("Transaction fee reward (REWARD_TRANSACTION_FEE) recorded for coinbase", async function () {
+    // Polygon Bor leaves block.coinbase as the zero address and routes tips through the
+    // 0x...01010 MATIC system contract instead of paying the block proposer directly, so
+    // this test's coinbase-based assertion does not apply.
+    if (isNetwork("polygon-dev")) {
+      this.skip()
+    }
+
     // Send a dynamic-fee transaction with an explicit tip so that a REWARD_TRANSACTION_FEE
     // balance change is guaranteed to be emitted (tip = 0 produces no reward entry).
     const result = await sendEth(owner, knownExistingAddress, oneWei, {

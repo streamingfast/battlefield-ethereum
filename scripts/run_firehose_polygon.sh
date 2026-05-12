@@ -91,23 +91,52 @@ check_dependencies() {
     echo ""
 }
 
+# Pinned versions. Bump these to roll the kurtosis-deployed validators forward.
+# - KURTOSIS_POS_REF: pinned commit of streamingfast/kurtosis-pos for reproducibility.
+# - BOR_IMAGE / HEIMDALL_IMAGE: must be compatible with the locally-built `bor` binary
+#   that fireeth peers with. Mismatched bor versions will fail to peer.
+KURTOSIS_POS_REF="a76f5263dfa44ba0f936ad1d9d543368387aa4ce"
+BOR_IMAGE="0xpolygon/bor:2.8.0-beta"
+HEIMDALL_IMAGE="0xpolygon/heimdall-v2:0.7.2-beta2"
+
 # Function to prepare the Kurtosis environment
 prepare_kurtosis_environment() {
     echo "Preparing Kurtosis environment..."
 
     address_to_fund=0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab
 
-    # Pull the required Docker image
-    echo "Pulling Docker image..."
-    docker pull --platform=linux/amd64 ghcr.io/agglayer/e2e:9fd2d09
+    # By default, wipe any existing 'pos' enclave so we start from a clean chain.
+    # Pass --keep-data to opt out (warns and bails out if a 'pos' enclave already exists,
+    # since `kurtosis run --enclave pos` cannot reuse a running one).
+    if kurtosis enclave inspect pos >/dev/null 2>&1; then
+        if [[ "$KEEP_DATA" == "1" ]]; then
+            echo "❌ A 'pos' Kurtosis enclave already exists and --keep-data was passed." >&2
+            echo "   Drop --keep-data to delete and recreate it, or stop manually first." >&2
+            exit 1
+        else
+            echo "Removing existing 'pos' enclave (default; pass --keep-data to opt out)..."
+            kurtosis enclave rm pos --force
+        fi
+    fi
 
-    ## Clean up any existing enclave before starting fresh
-    #echo "Cleaning up any existing 'pos' enclave..."
-    #kurtosis enclave rm --force pos 2>/dev/null || true
+    # Write a kurtosis args file overriding the bor/heimdall images so the
+    # kurtosis-deployed validators run versions compatible with the local
+    # fireeth-driven bor binary.
+    KURTOSIS_ARGS_FILE=$(mktemp -t kurtosis-pos-args.XXXXXX.yaml)
+    cat > "$KURTOSIS_ARGS_FILE" <<EOF
+polygon_pos_package:
+  participants:
+    - el_type: bor
+      el_image: $BOR_IMAGE
+      cl_type: heimdall-v2
+      cl_image: $HEIMDALL_IMAGE
+EOF
 
-    # Run Kurtosis
-    echo "Starting Kurtosis POS environment..."
-    kurtosis run --enclave pos github.com/streamingfast/kurtosis-pos
+    # Run Kurtosis (pinned to a specific kurtosis-pos commit for reproducibility)
+    echo "Starting Kurtosis POS environment (kurtosis-pos@$KURTOSIS_POS_REF, $BOR_IMAGE, $HEIMDALL_IMAGE)..."
+    kurtosis run --enclave pos \
+        "github.com/streamingfast/kurtosis-pos@$KURTOSIS_POS_REF" \
+        --args-file "$KURTOSIS_ARGS_FILE"
 
     export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
     pk="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea"
@@ -203,7 +232,7 @@ main() {
 
 # Show usage information
 usage() {
-    echo "Usage: $0"
+    echo "Usage: $0 [--keep-data]"
     echo ""
     echo "This script sets up a complete Polygon development environment including:"
     echo "1. Dependency checking and installation instructions"
@@ -212,17 +241,37 @@ usage() {
     echo "4. Instructions for running bridge tests"
     echo "5. Running local Bor node with Firehose tracing"
     echo ""
+    echo "Options:"
+    echo "  --keep-data   Do not delete an existing 'pos' Kurtosis enclave on startup."
+    echo "                Default behavior wipes it via 'kurtosis enclave rm pos --force'"
+    echo "                so the chain starts fresh."
+    echo ""
     echo "Requirements:"
     echo "- macOS (installation instructions are Mac-specific)"
     echo "- Internet connection for downloading dependencies and Docker images"
     echo ""
 }
 
-# Handle help flags
-if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-    usage
-    exit 0
-fi
+# Parse options
+KEEP_DATA=0
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --keep-data)
+            KEEP_DATA=1
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+export KEEP_DATA
 
 # Run main function
-main "$@"
+main
