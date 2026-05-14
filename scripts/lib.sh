@@ -124,7 +124,7 @@ check_reth_firehose_tracer() {
   if ! command -v "$reth" &> /dev/null; then
     echo "The '$reth' binary could not be found, you can install it with:"
     echo ""
-    echo "- cargo install reth-firehose-tracer --git"
+    echo "- Download from https://firehose.streamingfast.io/firehose/overview/chains and place as 'reth' on PATH"
     echo ""
     echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
     exit 1

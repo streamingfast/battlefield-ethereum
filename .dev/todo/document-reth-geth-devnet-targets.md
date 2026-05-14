@@ -25,7 +25,8 @@ We run the test suite with them with:
 
 ## Dev Feedback
 
-<Empty initially>
+1. In the Readme, for devnet versions (geth & reth), in the table, make it clear that `devnet` playground and run firehose and pnpm must all be run in different terminal
+2. `reth-firehose-tracer` this is not the correct bin anymore, the correct bin is `reth`, if we found that somewhere in the codebase, please adjust also the codebase default value(s). Search all occurencces to understand where its used and fixed it.
 
 ## Spec & Implementation
 
@@ -56,11 +57,16 @@ We run the test suite with them with:
 ## State Tracker
 
 **Last Updated:** 2026-05-14
-**Current Step:** Step 2 — Implementation complete, ready for review
-**Status:** Committed; awaiting developer review
+**Current Step:** Step 3 — Address dev feedback (terminal clarity + reth binary rename)
+**Status:** Changes committed; ready for re-review
 
 ### Step 1 — Begin implementation ✅
 Completed: Read task file, README.md, AGENTS.md, scripts, and package.json.
 
-### Step 2 — Implementation complete ✅ `Current`
+### Step 2 — Implementation complete ✅
 Committed documentation updates to README.md and AGENTS.md covering all three targets.
+
+### Step 3 — Address dev feedback ✅ `Current`
+- README.md Chain Tests table: Geth Devnet and Reth Devnet rows now explicitly show Terminal 1/2/3 separation
+- README.md devnet setup sections: steps now labeled "Terminal 1", "Terminal 2", "Terminal 3"
+- Renamed `reth-firehose-tracer` → `reth` everywhere: README.md, AGENTS.md, scripts/lib.sh (install hint updated to point to download page)

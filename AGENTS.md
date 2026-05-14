@@ -74,18 +74,18 @@ codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,ru
 
 ### Firehose-instrumented `reth` (for `reth-dev`)
 
-The Firehose-instrumented Reth binary must be on your `PATH` as `reth-firehose-tracer`.
+The Firehose-instrumented Reth binary must be on your `PATH` as `reth`.
 
 ```bash
 # Check
-reth-firehose-tracer --version
+reth --version
 ```
 
 Find the correct pre-built binary for your chain and architecture on the Firehose chains overview page:
 
 **https://firehose.streamingfast.io/firehose/overview/chains**
 
-Download the binary, rename it to `reth-firehose-tracer`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
+Download the binary, rename it to `reth`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
 
 ```bash
 export RETH_BINARY=/path/to/your/reth-binary
@@ -254,7 +254,7 @@ pnpm test:fh3.0:reth-dev
 Stop the chain as soon as you no longer need it.
 
 ```bash
-kill $(ps aux | grep -E "run_firehose_reth_dev|fireeth|reth-firehose-tracer" | grep -v grep | awk '{print $2}') 2>/dev/null
+kill $(ps aux | grep -E "run_firehose_reth_dev|fireeth|reth" | grep -v grep | awk '{print $2}') 2>/dev/null
 ```
 
 ---
@@ -301,7 +301,7 @@ kill $(ps aux | grep -E "run_firehose_geth_devnet|fireeth| geth " | grep -v grep
 
 ## Test Cycle — `reth-devnet`
 
-Uses the StreamingFast Firehose-instrumented Reth (`reth-firehose-tracer`) as a secondary execution-layer client on top of a [builder-playground](https://github.com/flashbots/builder-playground) devnet. Always runs with the Prague fork.
+Uses the StreamingFast Firehose-instrumented Reth (`reth`) as a secondary execution-layer client on top of a [builder-playground](https://github.com/flashbots/builder-playground) devnet. Always runs with the Prague fork.
 
 ### Step 1 — Start the playground devnet
 
@@ -334,7 +334,7 @@ pnpm test:fh3.0:reth-devnet
 ### Step 4 — Stop the chain
 
 ```bash
-kill $(ps aux | grep -E "run_firehose_reth_devnet|fireeth|reth-firehose-tracer" | grep -v grep | awk '{print $2}') 2>/dev/null
+kill $(ps aux | grep -E "run_firehose_reth_devnet|fireeth|reth" | grep -v grep | awk '{print $2}') 2>/dev/null
 ```
 
 ---
