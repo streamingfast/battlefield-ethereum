@@ -36,10 +36,13 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Chain                    | Firehose Launcher                                                                             | Tests Launcher                                             | Notes                                                                          |
 | ------------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | Ethereum (Firehose 3.0)  | `./scripts/run_firehose_geth_dev.sh 3.0 prague`                                               | `pnpm test:fh3.0:geth-dev`                                 | None                                                                           |
+| Reth Dev (fh 3.0)        | `./scripts/run_firehose_reth_dev.sh`                                                          | `pnpm test:fh3.0:reth-dev`                                 | Requires [reth-firehose-tracer](#get-reth-firehose-tracer) and [fireeth](#get-fireeth) |
 | Sei                      | `./scripts/run_firehose_sei.sh sequential`                                                    | `pnpm test:fh3.0:sei-dev`                                  | The `sequential` tag refers to transaction execution algorithm, test both      |
 | Sei                      | `./scripts/run_firehose_sei.sh parallel`                                                      | `pnpm test:fh3.0:sei-dev`                                  | The `parallel` tag refers to transaction execution algorithm, test both        |
 | BNB                      | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                     | `pnpm test:fh3.0:bnb-dev`                                  | None                                                                           |
 | Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, bats...)                       |
+| Geth Devnet (fh 3.0)     | `./scripts/ethereum_devnet/run_playground_devnet.sh` then `./scripts/run_firehose_geth_devnet.sh` | `pnpm test:fh3.0:geth-devnet`                          | Requires [geth](#build-firehose-geth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
+| Reth Devnet (fh 3.0)     | `./scripts/ethereum_devnet/run_playground_devnet.sh` then `./scripts/run_firehose_reth_devnet.sh` | `pnpm test:fh3.0:reth-devnet`                          | Requires [reth-firehose-tracer](#get-reth-firehose-tracer), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_optimism_devnet.sh`. | `pnpm test:fh3.0:optimism-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
 
@@ -182,6 +185,25 @@ Dependencies you will need to have locally to run the scripts contained in this 
 
 To install `fireeth`, you can simply do `brew install tap/streamingfast/firehose-ethereum` or follow [other installations](https://github.com/streamingfast/firehose-core/tree/develop?tab=readme-ov-file#installation) section of the project's README.
 
+### Get `reth-firehose-tracer`
+
+The Firehose-instrumented Reth binary must be on your `PATH` as `reth-firehose-tracer`.
+
+```bash
+# Check
+reth-firehose-tracer --version
+```
+
+Find the correct pre-built binary for your chain and architecture on the Firehose chains overview page:
+
+**https://firehose.streamingfast.io/firehose/overview/chains**
+
+Download the binary, rename it to `reth-firehose-tracer`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
+
+```bash
+export RETH_BINARY=/path/to/your/reth-binary
+```
+
 ### Build Firehose `geth`
 
 - Clone https://github.com/streamingfast/go-ethereum/tree/firehose-fh3.0
@@ -214,6 +236,57 @@ rm -rf node_modules && pnpm install
 sudo apt-get install -y node-gyp
 cd node_modules/.pnpm/c-kzg@4.1.0/node_modules/c-kzg && npx node-gyp rebuild
 ```
+
+### Geth Devnet and Reth Devnet
+
+Both `geth-devnet` and `reth-devnet` run as a secondary execution layer client alongside an existing devnet spun up by [builder-playground](https://github.com/flashbots/builder-playground). The Firehose tracer is injected via `fireeth`.
+
+#### Prerequisites
+
+- [builder-playground](https://github.com/flashbots/builder-playground) installed and available on `PATH`
+- Firehose-instrumented `geth` binary (for `geth-devnet`) — see [Build Firehose geth](#build-firehose-geth)
+- `reth-firehose-tracer` binary on `PATH` (for `reth-devnet`) — see [Get reth-firehose-tracer](#get-reth-firehose-tracer)
+- `fireeth` binary — see [Get fireeth](#get-fireeth)
+
+#### Setup for `geth-devnet`
+
+1. **Start the playground devnet** (in a separate terminal, keep it running):
+
+   ```bash
+   ./scripts/ethereum_devnet/run_playground_devnet.sh
+   ```
+
+2. **Run Geth as a secondary EL client with the Firehose tracer**:
+
+   ```bash
+   ./scripts/run_firehose_geth_devnet.sh
+   ```
+
+3. **Run the tests**:
+
+   ```bash
+   pnpm test:fh3.0:geth-devnet
+   ```
+
+#### Setup for `reth-devnet`
+
+1. **Start the playground devnet** (in a separate terminal, keep it running):
+
+   ```bash
+   ./scripts/ethereum_devnet/run_playground_devnet.sh
+   ```
+
+2. **Run Reth as a secondary EL client with the Firehose tracer**:
+
+   ```bash
+   ./scripts/run_firehose_reth_devnet.sh
+   ```
+
+3. **Run the tests**:
+
+   ```bash
+   pnpm test:fh3.0:reth-devnet
+   ```
 
 ### Alternative: Use Besu
 

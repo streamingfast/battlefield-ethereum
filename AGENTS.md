@@ -259,6 +259,86 @@ kill $(ps aux | grep -E "run_firehose_reth_dev|fireeth|reth-firehose-tracer" | g
 
 ---
 
+## Test Cycle — `geth-devnet`
+
+Uses the StreamingFast Firehose-instrumented `geth` as a secondary execution-layer client on top of a [builder-playground](https://github.com/flashbots/builder-playground) devnet. Always runs with the Prague fork.
+
+### Step 1 — Start the playground devnet
+
+In a separate terminal (keep it running throughout the test cycle):
+
+```bash
+./scripts/ethereum_devnet/run_playground_devnet.sh
+```
+
+### Step 2 — Start the Firehose-instrumented geth
+
+In another terminal:
+
+```bash
+./scripts/run_firehose_geth_devnet.sh
+```
+
+Wait only until the node's JSON-RPC is accepting connections on port 8545 (same `eth_blockNumber` check as `geth-dev`). Do not wait for port 8089.
+
+### Step 3 — Run the tests
+
+```bash
+pnpm test:fh3.0:geth-devnet --grep "Berlin"
+pnpm test:fh3.0:geth-devnet --grep "Cancun"
+
+# Full suite (final validation only, against a fresh chain)
+pnpm test:fh3.0:geth-devnet
+```
+
+### Step 4 — Stop the chain
+
+```bash
+kill $(ps aux | grep -E "run_firehose_geth_devnet|fireeth| geth " | grep -v grep | awk '{print $2}') 2>/dev/null
+```
+
+---
+
+## Test Cycle — `reth-devnet`
+
+Uses the StreamingFast Firehose-instrumented Reth (`reth-firehose-tracer`) as a secondary execution-layer client on top of a [builder-playground](https://github.com/flashbots/builder-playground) devnet. Always runs with the Prague fork.
+
+### Step 1 — Start the playground devnet
+
+In a separate terminal (keep it running throughout the test cycle):
+
+```bash
+./scripts/ethereum_devnet/run_playground_devnet.sh
+```
+
+### Step 2 — Start the Firehose-instrumented reth
+
+In another terminal:
+
+```bash
+./scripts/run_firehose_reth_devnet.sh
+```
+
+Wait only until the node's JSON-RPC is accepting connections on port 8545. Do not wait for port 8089.
+
+### Step 3 — Run the tests
+
+```bash
+pnpm test:fh3.0:reth-devnet --grep "Berlin"
+pnpm test:fh3.0:reth-devnet --grep "Cancun"
+
+# Full suite (final validation only, against a fresh chain)
+pnpm test:fh3.0:reth-devnet
+```
+
+### Step 4 — Stop the chain
+
+```bash
+kill $(ps aux | grep -E "run_firehose_reth_devnet|fireeth|reth-firehose-tracer" | grep -v grep | awk '{print $2}') 2>/dev/null
+```
+
+---
+
 ## Snapshot Behaviour
 
 Most tests use **inline assertions**. A subset uses **snapshot files** stored under `test/snapshots/<category>/fh3.0/<network>/`.
