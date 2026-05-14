@@ -31,3 +31,4 @@ polygon-e2e-tests/
 
 # Misc
 .DS_Store
+/.worktrees
