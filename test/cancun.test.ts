@@ -101,7 +101,7 @@ describe("Cancun", function () {
   it("Blob transaction with single blob", async function () {
     // Unable to make it work on Optimism devnet, we get "failed to decode signed transaction" which is unclear
     // where it fails, could be that L2 itself don't accept blob transactions, skipping for now.
-    if (isNetworkOneOf("op-geth-devnet")) {
+    if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet")) {
       this.skip()
     }
 
@@ -159,7 +159,7 @@ describe("Cancun", function () {
   it("Blob transaction with multiple blobs", async function () {
     // Unable to make it work on Optimism devnet, we get "failed to decode signed transaction" which is unclear
     // where it fails, could be that L2 itself don't accept blob transactions, skipping for now.
-    if (isNetworkOneOf("op-geth-devnet")) {
+    if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet")) {
       this.skip()
     }
 

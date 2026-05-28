@@ -185,6 +185,10 @@ describe("Suicide", function () {
     // Bor 2.8.0-beta and latest Optimism Geth has not yet rebased onto geth 1.17, so the
     // end-of-tx finalization hooks (code removals and nonce resets written to the root call
     // in sorted address order) that this test asserts on are not produced by the tracer yet.
+    //
+    // op-reth-devnet is intentionally NOT skipped here: Reth emits block v5 which differs a bit
+    // and is expected to produce the end-of-tx finalization correctly, so this test is likely to
+    // pass on op-reth-devnet. To be revisited once validated against a live op-reth devnet.
     if (isNetworkOneOf("polygon-dev", "op-geth-devnet")) {
       this.skip()
     }
@@ -236,6 +240,10 @@ describe("Suicide", function () {
     // Bor 2.8.0-beta and latest Optimism Geth has not yet rebased onto geth 1.17, so the
     // end-of-tx finalization hooks (code removals and nonce resets written to the root call
     // in sorted address order) that this test asserts on are not produced by the tracer yet.
+    //
+    // op-reth-devnet is intentionally NOT skipped here: Reth emits block v5 which differs a bit
+    // and is expected to produce the end-of-tx finalization correctly, so this test is likely to
+    // pass on op-reth-devnet. To be revisited once validated against a live op-reth devnet.
     if (isNetworkOneOf("polygon-dev", "op-geth-devnet")) {
       this.skip()
     }

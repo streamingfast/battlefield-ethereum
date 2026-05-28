@@ -74,7 +74,7 @@ describe("Pure transfers", function () {
   })
 
   it("Transfer to precompiled address without balance", async function () {
-    if (isNetworkOneOf("op-geth-devnet")) {
+    if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet")) {
       // On Optimism devnet, the precompile at address 0x0000000000000000000000000000000000000808 have balance, so we cannot run this test,
       // there is no much we can do about it, skipping the test for this network.
       this.skip()
