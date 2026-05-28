@@ -2,7 +2,7 @@ import { expect } from "chai"
 import hre from "hardhat"
 import { fetchFirehoseBlock } from "./lib/firehose"
 import { BalanceChange_Reason, TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
-import { isNetwork } from "./lib/network"
+import { isNetwork, isNetworkOneOf } from "./lib/network"
 import { sendImmediateEth } from "./lib/ethereum"
 import { owner } from "./global"
 import { knownExistingAddress } from "./lib/addresses"
@@ -13,19 +13,19 @@ const debug = debugFactory("battlefield:firehose")
 
 describe("Genesis Block", function () {
   it("Block 0 has a single genesis transaction trace with correct structure", async function () {
-    if (isNetwork("reth-dev") || isNetwork("reth-devnet")) {
-      // Skipped until it actually works on Reth
+    // Reasons:
+    // - Reth don't record genesis yet, work in progress so reth-dev and reth-devnet must be skipped until it's ready.
+    // - Firehose has problem return block 0 with devent env, so we disable is otherwise the test times out until first bundle ready
+    //   we get error like 'Block #0 not found in Firehose within 30000ms'. Outside of this problem, those chains works if you
+    //   wait long enough:
+    //    - geth-devnet
+    //    - op-geth-devnet
+    if (isNetworkOneOf("reth-dev", "geth-devnet", "reth-devnet", "op-geth-devnet")) {
       this.skip()
     }
 
-    if (isNetwork("geth-dev") || isNetwork("reth-dev")) {
+    if (isNetworkOneOf("geth-dev")) {
       await waitUntilMergedBlocksAvailable()
-    }
-
-    if (isNetwork("geth-devnet") || isNetwork("reth-devnet")) {
-      // Until we fix Firehose to return genesis block 0 without waiting on first bundle
-      // to be available.
-      this.skip()
     }
 
     const block = await fetchFirehoseBlock(0, { timeoutMs: 30_000 })

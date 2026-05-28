@@ -24,7 +24,7 @@ import {
 import hre from "hardhat"
 import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
-import { isNetwork, networkValue } from "./lib/network"
+import { isNetwork, isNetworkOneOf, isNetworkStartsWith, networkValue } from "./lib/network"
 import { hexlify } from "ethers"
 import { CallType } from "../pb/sf/ethereum/type/v2/type_pb"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
@@ -182,10 +182,10 @@ describe("Suicide", function () {
   })
 
   it("Contract created in subcall suicides in its constructor", async function () {
-    // Bor 2.8.0-beta has not yet rebased onto geth 1.17, so the end-of-tx finalization
-    // hooks (nonce 1→0 cleanup, code removal written to the root call) that this test
-    // asserts on are not produced by the polygon-dev tracer yet.
-    if (isNetwork("polygon-dev")) {
+    // Bor 2.8.0-beta and latest Optimism Geth has not yet rebased onto geth 1.17, so the
+    // end-of-tx finalization hooks (code removals and nonce resets written to the root call
+    // in sorted address order) that this test asserts on are not produced by the tracer yet.
+    if (isNetworkOneOf("polygon-dev", "op-geth-devnet")) {
       this.skip()
     }
 
@@ -233,10 +233,10 @@ describe("Suicide", function () {
   })
 
   it("Create 3 contracts and suicide all in same transaction", async function () {
-    // Bor 2.8.0-beta has not yet rebased onto geth 1.17, so the end-of-tx finalization
-    // hooks (code removals and nonce resets written to the root call in sorted address order)
-    // that this test asserts on are not produced by the polygon-dev tracer yet.
-    if (isNetwork("polygon-dev")) {
+    // Bor 2.8.0-beta and latest Optimism Geth has not yet rebased onto geth 1.17, so the
+    // end-of-tx finalization hooks (code removals and nonce resets written to the root call
+    // in sorted address order) that this test asserts on are not produced by the tracer yet.
+    if (isNetworkOneOf("polygon-dev", "op-geth-devnet")) {
       this.skip()
     }
 

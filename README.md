@@ -44,7 +44,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Geth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_geth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:geth-devnet` | Requires [geth](#build-firehose-geth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Reth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_reth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:reth-devnet` | Requires [reth](#get-reth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
-| Optimism Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_optimism_devnet.sh`. | `pnpm test:fh3.0:optimism-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
+| Optimism Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_geth_devnet.sh`. | `pnpm test:fh3.0:op-geth-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
 
 After each test, you should also run:
 

@@ -13,6 +13,7 @@ import {
 import { getBalance, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { owner, ownerAddress } from "./global"
+import { isNetworkOneOf } from "./lib/network"
 
 describe("Pure transfers", function () {
   it("Existing address", async function () {
@@ -73,6 +74,12 @@ describe("Pure transfers", function () {
   })
 
   it("Transfer to precompiled address without balance", async function () {
+    if (isNetworkOneOf("op-geth-devnet")) {
+      // On Optimism devnet, the precompile at address 0x0000000000000000000000000000000000000808 have balance, so we cannot run this test,
+      // there is no much we can do about it, skipping the test for this network.
+      this.skip()
+    }
+
     // This is a tricky test as once run, the address will have a balance so it cannot run twice.
     if ((await getBalance(precompileWithoutBalanceAddress)) !== 0n) {
       if (canSkipFreshChainOnlyTests()) {

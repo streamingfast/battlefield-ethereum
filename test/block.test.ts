@@ -83,6 +83,12 @@ describe("Blocks", function () {
       this.skip()
     }
 
+    // Optimism has different rules of transaction fee rewards distribution as such computation
+    // would need to be adjusted and a specific test created, for now simply skip the test.
+    if (isNetwork("op-geth-devnet") || isNetwork("op-reth-devnet")) {
+      this.skip()
+    }
+
     // Send a dynamic-fee transaction with an explicit tip so that a REWARD_TRANSACTION_FEE
     // balance change is guaranteed to be emitted (tip = 0 produces no reward entry).
     const result = await sendEth(owner, knownExistingAddress, oneWei, {

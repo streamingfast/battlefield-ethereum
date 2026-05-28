@@ -58,12 +58,23 @@ check_docker() {
         exit 1
     fi
     if [[ -n "$1" ]]; then
-        if ! docker ps --format '{{.Names}}' | grep -q "^$1$"; then
+        container_name="$1"
+        found_container="$(find_docker_by_name_ends_with "$container_name")"
+
+        if [[ "$found_container" == "" ]]; then
             ERR="You should run the appropriate docker-compose recipe first"
             [[ -n "$2" ]] && ERR="$2"
-            echo "Docker container '$1' is not running. $ERR"
+            echo "Docker container '$container_name' is not running. $ERR"
             exit 1
         fi
+    fi
+}
+
+find_docker_by_name_ends_with() {
+    if [[ -n "$1" ]]; then
+        echo "$(docker ps --format '{{.Names}}' | grep "$1$" | head -n1)"
+    else
+        lib_error "Wrong method call 'find_docker_by_name_ends_with \"<name_suffix>\"'"
     fi
 }
 

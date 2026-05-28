@@ -26,18 +26,17 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
-    "geth-dev": firehoseNetwork([]),
-    "reth-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:9545" },
     "arbitrum-geth-dev": firehoseNetwork([]),
     "arbitrum-nitro-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
-    "optimism-geth-dev": firehoseNetwork([]),
-    "sei-dev": firehoseNetwork([]),
-    "bnb-dev": firehoseNetwork([]),
-    "polygon-dev": firehoseNetwork([]),
-    "optimism-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
-    "geth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
-    "reth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
     "besu-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
+    "bnb-dev": firehoseNetwork([]),
+    "geth-dev": firehoseNetwork([]),
+    "geth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
+    "op-geth-dev": firehoseNetwork([]),
+    "op-geth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
+    "polygon-dev": firehoseNetwork([]),
+    "reth-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:9545" },
+    "reth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
   },
 
   mocha: {

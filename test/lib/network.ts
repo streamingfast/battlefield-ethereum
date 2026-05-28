@@ -14,8 +14,22 @@ export function isNetwork(name: string): boolean {
   return networkName() === name
 }
 
+// Returns true if the current network name matches any of the provided names. To look
+// for a list of supported network names, see `hardhat.config.ts` file in the `config.networks`
+// location.
+export function isNetworkOneOf(...names: string[]): boolean {
+  return names.includes(networkName())
+}
+
+// Returns true if the current network name starts with any of the provided prefixes. To look
+// for a list of supported network names, see `hardhat.config.ts` file in the `config.networks`
+// location.
+export function isNetworkStartsWith(prefixes: string[]): boolean {
+  const name = networkName()
+  return prefixes.some((prefix) => name.startsWith(prefix))
+}
+
 // Returns a value from a mapping based on the current network name. If no value
-// is found for the current network name, it will return the provided default value
 // or will try to find a default value in the mapping using the keys "*", "default" or "".
 export function networkValue<T>(mapping: { [name: string]: T }, defaultValue?: T): T {
   const name = networkName()
