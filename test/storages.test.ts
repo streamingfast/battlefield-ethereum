@@ -33,6 +33,7 @@ describe("Storages", function () {
     const customTx = networkValue({
       "sei-dev": { gasLimit: 1_525_000 },
       "op-geth-devnet": { gasLimit: 1_525_000 },
+      "op-reth-devnet": { gasLimit: 1_525_000 },
       "*": {},
     })
 

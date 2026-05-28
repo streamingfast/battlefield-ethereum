@@ -34,6 +34,7 @@ const config: HardhatUserConfig = {
     "geth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
     "op-geth-dev": firehoseNetwork([]),
     "op-geth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
+    "op-reth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
     "polygon-dev": firehoseNetwork([]),
     "reth-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:9545" },
     "reth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },

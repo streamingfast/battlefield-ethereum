@@ -14,13 +14,14 @@ const debug = debugFactory("battlefield:firehose")
 describe("Genesis Block", function () {
   it("Block 0 has a single genesis transaction trace with correct structure", async function () {
     // Reasons:
-    // - Reth don't record genesis yet, work in progress so reth-dev and reth-devnet must be skipped until it's ready.
+    // - Reth don't record genesis yet, work in progress so reth-dev, reth-devnet and op-reth-devnet must be skipped
+    //   until it's ready.
     // - Firehose has problem return block 0 with devent env, so we disable is otherwise the test times out until first bundle ready
     //   we get error like 'Block #0 not found in Firehose within 30000ms'. Outside of this problem, those chains works if you
     //   wait long enough:
     //    - geth-devnet
     //    - op-geth-devnet
-    if (isNetworkOneOf("reth-dev", "geth-devnet", "reth-devnet", "op-geth-devnet")) {
+    if (isNetworkOneOf("reth-dev", "geth-devnet", "reth-devnet", "op-geth-devnet", "op-reth-devnet")) {
       this.skip()
     }
 

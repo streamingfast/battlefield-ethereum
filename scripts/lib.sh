@@ -14,6 +14,7 @@ bor="${BOR_BINARY:-bor}"
 reth="${RETH_BINARY:-reth}"
 op_node="${OP_NODE_BINARY:-op-node}"
 op_geth="${OP_GETH_BINARY:-op-geth}"
+op_reth="${OP_RETH_BINARY:-op-reth}"
 besu="${BESU_BINARY:-besu}"
 
 # Colors for output
@@ -180,6 +181,19 @@ check_op_geth() {
     echo "- git clone https://github.com/streamingfast/go-ethereum.git"
     echo "- cd go-ethereum"
     echo "- go build -o \`go env GOPATH\`/bin/op-geth ./cmd/geth"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
+  fi
+}
+
+check_op_reth() {
+  if ! command -v "$op_reth" &> /dev/null; then
+    echo "The '$op_reth' binary could not be found, install the firehose-enabled"
+    echo "Op Stack Reth execution client."
+    echo ""
+    echo "- Download the Firehose-instrumented op-reth from https://firehose.streamingfast.io/firehose/overview/chains"
+    echo "  and place it as 'op-reth' on your PATH (or set OP_RETH_BINARY=/path/to/op-reth)"
     echo ""
     echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
     exit 1
