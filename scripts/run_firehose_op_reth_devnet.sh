@@ -58,8 +58,10 @@ main() {
       "--metrics=0.0.0.0:16061"
       "--engine.persistence-threshold=0"
       "--engine.memory-block-buffer-target=0"
-      "--vmtrace=firehose"
-      "--vmtrace.jsonconfig='{\"applyBackwardCompatibility\":false}'"
+      # NOTE: firehose-instrumented op-reth initializes the Firehose tracer unconditionally in
+      # its `main` (no `--vmtrace` flag — the SF reth fork's CLI has no such flag either). Passing
+      # `--vmtrace=firehose` makes op-reth abort with "unexpected argument". Always-on, like the
+      # vanilla-reth devnet/dev scripts.
     )
     # 'run_fireeth' expects the node arguments as a single string, so we join the
     # readable multi-line array above into one space-separated argument string.
