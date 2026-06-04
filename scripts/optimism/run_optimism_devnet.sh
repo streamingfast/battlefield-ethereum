@@ -187,7 +187,7 @@ wait_for_chain_op_geth() {
   wait_for_block="1"
 
   while [ $attempts -lt $max_attempts ]; do
-    imported_block="$(docker logs "$docker_op_geth_name" 2>&1 | grep "Imported new potential chain segment" | grep -oE "number=$wait_for_block")"
+    imported_block="$(docker logs "$docker_op_geth_name" 2>&1 | grep "Imported new potential chain segment" | grep -oE "number=$wait_for_block" | head -n 1)"
 
     if [ -n "$imported_block" ]; then
       echo "Found imported block: $imported_block"
