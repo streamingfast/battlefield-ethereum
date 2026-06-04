@@ -52,14 +52,14 @@
         {
           "address": "$sender",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "8",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "252975c91800"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "9",
+          "ordinal": "8",
           "oldValue": "",
           "newValue": "01"
         },
@@ -90,26 +90,23 @@
           "oldValue": "0",
           "newValue": "1",
           "ordinal": "4"
+        },
+        {
+          "address": "$createdContract",
+          "oldValue": "1",
+          "newValue": "0",
+          "ordinal": "9"
         }
       ],
       "logs": [],
-      "codeChanges": [
-        {
-          "address": "$createdContract",
-          "oldHash": "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
-          "oldCode": "",
-          "newHash": "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
-          "newCode": "",
-          "ordinal": "6"
-        }
-      ],
+      "codeChanges": [],
       "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "2",
-      "endOrdinal": "7",
+      "endOrdinal": "6",
       "accountCreations": []
     }
   ],

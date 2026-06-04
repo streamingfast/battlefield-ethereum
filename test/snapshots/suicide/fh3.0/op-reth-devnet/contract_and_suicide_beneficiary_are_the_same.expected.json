@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "13",
+  "endOrdinal": "11",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -44,28 +44,28 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "9",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "8b96d1e52c5400"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "8",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "9",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "10",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "11",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "12",
           "oldValue": "",
           "newValue": "01"
         }
@@ -86,7 +86,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "3",
-      "endOrdinal": "8",
+      "endOrdinal": "6",
       "accountCreations": []
     },
     {
@@ -104,22 +104,7 @@
       "suicide": true,
       "keccakPreimages": {},
       "storageChanges": [],
-      "balanceChanges": [
-        {
-          "address": "$createdContract",
-          "reason": "REASON_SUICIDE_WITHDRAW",
-          "ordinal": "5",
-          "oldValue": "01",
-          "newValue": ""
-        },
-        {
-          "address": "$createdContract",
-          "reason": "REASON_SUICIDE_REFUND",
-          "ordinal": "6",
-          "newValue": "01",
-          "oldValue": ""
-        }
-      ],
+      "balanceChanges": [],
       "nonceChanges": [],
       "logs": [],
       "codeChanges": [],
@@ -129,7 +114,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "4",
-      "endOrdinal": "7",
+      "endOrdinal": "5",
       "accountCreations": []
     }
   ],
