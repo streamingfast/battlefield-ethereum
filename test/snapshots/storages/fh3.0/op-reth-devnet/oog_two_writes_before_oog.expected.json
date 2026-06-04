@@ -84,7 +84,7 @@
       "gasChanges": [],
       "statusFailed": true,
       "statusReverted": false,
-      "failureReason": "out of gas: not enough gas for reentrancy sentry",
+      "failureReason": "out of gas",
       "stateReverted": true,
       "beginOrdinal": "3",
       "endOrdinal": "7",
