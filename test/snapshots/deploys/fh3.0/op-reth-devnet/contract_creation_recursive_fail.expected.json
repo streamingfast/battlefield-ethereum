@@ -16,7 +16,7 @@
   "publicKey": "",
   "beginOrdinal": "0",
   "endOrdinal": "17",
-  "status": "FAILED",
+  "status": "REVERTED",
   "calls": [
     {
       "index": 1,
