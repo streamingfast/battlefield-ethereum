@@ -58,14 +58,21 @@ main() {
       "--metrics=0.0.0.0:16061"
       "--engine.persistence-threshold=0"
       "--engine.memory-block-buffer-target=0"
-      "--vmtrace=firehose"
-      "--vmtrace.jsonconfig='{\"applyBackwardCompatibility\":false}'"
+      # NOTE: firehose-instrumented op-reth initializes the Firehose tracer unconditionally in
+      # its `main` (no `--vmtrace` flag — the SF reth fork's CLI has no such flag either). Passing
+      # `--vmtrace=firehose` makes op-reth abort with "unexpected argument". Always-on, like the
+      # vanilla-reth devnet/dev scripts.
     )
     # 'run_fireeth' expects the node arguments as a single string, so we join the
     # readable multi-line array above into one space-separated argument string.
     op_reth_args="${op_reth_args_parts[*]}"
 
-    run_fireeth 0 "$op_reth" "$op_reth_args"
+    # First streamable block is 1, not 0: op-reth's genesis (block 0) is written by `op-reth init`
+    # and never flows through the engine API, so the Firehose stream starts at block 1 (which the
+    # tracer emits as the genesis/anchor block). With 0, fireeth waits forever for block 0 and every
+    # block is reported "not linkable". The vanilla-reth devnet/dev launchers use 1 for the same
+    # reason. (op-geth emits block 0 itself, hence run_firehose_op_geth_devnet.sh keeps 0.)
+    run_fireeth 1 "$op_reth" "$op_reth_args"
   popd > /dev/null
 
 }
