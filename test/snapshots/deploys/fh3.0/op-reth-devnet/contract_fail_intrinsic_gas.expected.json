@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "11",
+  "endOrdinal": "9",
   "status": "FAILED",
   "calls": [
     {
@@ -37,7 +37,21 @@
         {
           "address": "$sender",
           "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
+          "ordinal": "1",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "6",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "01"
         },
@@ -47,20 +61,6 @@
           "ordinal": "8",
           "oldValue": "",
           "newValue": "01"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "9",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "10",
-          "oldValue": "",
-          "newValue": "01"
         }
       ],
       "nonceChanges": [
@@ -68,37 +68,24 @@
           "address": "$sender",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "5"
+          "ordinal": "3"
         },
         {
           "address": "$createdContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "6"
+          "ordinal": "4"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "63274",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "63274",
-          "newValue": "0",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": false,
-      "failureReason": "out of gas",
+      "failureReason": "contract creation code storage out of gas",
       "stateReverted": true,
-      "beginOrdinal": "4",
-      "endOrdinal": "7",
+      "beginOrdinal": "2",
+      "endOrdinal": "5",
       "accountCreations": []
     }
   ],

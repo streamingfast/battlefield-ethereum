@@ -15,8 +15,8 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "36",
-  "status": "FAILED",
+  "endOrdinal": "17",
+  "status": "REVERTED",
   "calls": [
     {
       "index": 1,
@@ -37,35 +37,35 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
+          "ordinal": "1",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "31",
+          "ordinal": "13",
           "oldValue": "",
           "newValue": "041a5b74288000"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "33",
+          "ordinal": "14",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "34",
+          "ordinal": "15",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "35",
+          "ordinal": "16",
           "oldValue": "",
           "newValue": "01"
         }
@@ -75,79 +75,18 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "2"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878936",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878936",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "878742",
-          "newValue": "878670",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "7"
-        },
-        {
-          "oldValue": "878634",
-          "newValue": "846612",
-          "reason": "REASON_CONTRACT_CREATION",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "846612",
-          "newValue": "13228",
-          "reason": "REASON_CONTRACT_CREATION",
-          "ordinal": "9"
-        },
-        {
-          "oldValue": "13228",
-          "newValue": "25705",
-          "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "27"
-        },
-        {
-          "oldValue": "25672",
-          "newValue": "25669",
-          "reason": "REASON_RETURN_DATA_COPY",
-          "ordinal": "28"
-        },
-        {
-          "oldValue": "25664",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "29"
-        },
-        {
-          "oldValue": "25664",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "32"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": true,
       "failureReason": "execution reverted",
       "stateReverted": true,
-      "beginOrdinal": "5",
-      "endOrdinal": "30",
+      "beginOrdinal": "3",
+      "endOrdinal": "12",
       "accountCreations": []
     },
     {
@@ -171,61 +110,24 @@
           "address": "$callsContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "12"
+          "ordinal": "5"
         },
         {
           "address": "$firstCreatedContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "13"
+          "ordinal": "6"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "833384",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "11"
-        },
-        {
-          "oldValue": "833303",
-          "newValue": "833267",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "14"
-        },
-        {
-          "oldValue": "833197",
-          "newValue": "801185",
-          "reason": "REASON_CONTRACT_CREATION",
-          "ordinal": "15"
-        },
-        {
-          "oldValue": "801185",
-          "newValue": "12518",
-          "reason": "REASON_CONTRACT_CREATION",
-          "ordinal": "16"
-        },
-        {
-          "oldValue": "12485",
-          "newValue": "12482",
-          "reason": "REASON_RETURN_DATA_COPY",
-          "ordinal": "24"
-        },
-        {
-          "oldValue": "12477",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "25"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": true,
       "failureReason": "execution reverted",
       "stateReverted": true,
-      "beginOrdinal": "10",
-      "endOrdinal": "26",
+      "beginOrdinal": "4",
+      "endOrdinal": "11",
       "accountCreations": []
     },
     {
@@ -249,43 +151,24 @@
           "address": "$firstCreatedContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "19"
+          "ordinal": "8"
         },
         {
           "address": "$secondCreatedContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "20"
+          "ordinal": "9"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "788667",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "18"
-        },
-        {
-          "oldValue": "788602",
-          "newValue": "788590",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "21"
-        },
-        {
-          "oldValue": "788469",
-          "newValue": "0",
-          "reason": "REASON_FAILED_EXECUTION",
-          "ordinal": "22"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": false,
       "failureReason": "invalid opcode: INVALID",
       "stateReverted": true,
-      "beginOrdinal": "17",
-      "endOrdinal": "23",
+      "beginOrdinal": "7",
+      "endOrdinal": "10",
       "accountCreations": []
     }
   ],

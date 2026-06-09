@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "24",
+  "endOrdinal": "14",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -37,35 +37,35 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
+          "ordinal": "1",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "19",
+          "ordinal": "10",
           "oldValue": "",
           "newValue": "813c88be346c00"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "21",
+          "ordinal": "11",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "22",
+          "ordinal": "12",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "23",
+          "ordinal": "13",
           "oldValue": "",
           "newValue": "01"
         }
@@ -75,67 +75,18 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "2"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "900000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "900000",
-          "newValue": "878568",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "878568",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "877625",
-          "newValue": "875125",
-          "reason": "REASON_STATE_COLD_ACCESS",
-          "ordinal": "7"
-        },
-        {
-          "oldValue": "877725",
-          "newValue": "13673",
-          "reason": "REASON_CALL",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "13673",
-          "newValue": "808461",
-          "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "16"
-        },
-        {
-          "oldValue": "808374",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "17"
-        },
-        {
-          "oldValue": "808374",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "20"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "5",
-      "endOrdinal": "18",
+      "beginOrdinal": "3",
+      "endOrdinal": "9",
       "accountCreations": []
     },
     {
@@ -158,47 +109,34 @@
           "key": "0000000000000000000000000000000000000000000000000000000000000000",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "00000000000000000000000000000000000000000000000000000000002625a0",
-          "ordinal": "11"
+          "ordinal": "5"
         },
         {
           "address": "$childContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000001",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "00000000000000000000000000000000000000000000000000000000000d66ea",
-          "ordinal": "12"
+          "ordinal": "6"
         },
         {
           "address": "$childContract",
           "key": "0000000000000000000000000000000000000000000000000000000000000002",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "00000000000000000000000000000000000000000000000000000000000c7710",
-          "ordinal": "13"
+          "ordinal": "7"
         }
       ],
       "balanceChanges": [],
       "nonceChanges": [],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "861452",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "10"
-        },
-        {
-          "oldValue": "794788",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "14"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "9",
-      "endOrdinal": "15",
+      "beginOrdinal": "4",
+      "endOrdinal": "8",
       "accountCreations": []
     }
   ],

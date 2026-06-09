@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "18",
+  "endOrdinal": "11",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -37,35 +37,35 @@
         {
           "address": "$sender",
           "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
+          "ordinal": "1",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$sender",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "13",
+          "ordinal": "7",
           "oldValue": "",
           "newValue": "45370c72e85800"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "15",
+          "ordinal": "8",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "16",
+          "ordinal": "9",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "17",
+          "ordinal": "10",
           "oldValue": "",
           "newValue": "01"
         }
@@ -75,13 +75,13 @@
           "address": "$sender",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "6"
+          "ordinal": "3"
         },
         {
           "address": "$createdContract",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "7"
+          "ordinal": "4"
         }
       ],
       "logs": [],
@@ -92,59 +92,16 @@
           "oldCode": "",
           "newHash": "4aa628c7b0af8704c9166b097d8df626b6a523903b838cb3555edfe36026fc47",
           "newCode": "6080604052600080fdfea26469706673582212209cd6a6851cb6439ef3009ed902d5ec5ff9bdb7a3428995f1f0ec1542b5ec423964736f6c634300060c0033",
-          "ordinal": "10"
-        }
-      ],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "500000",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "500000",
-          "newValue": "445606",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "445606",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
           "ordinal": "5"
-        },
-        {
-          "oldValue": "445552",
-          "newValue": "445543",
-          "reason": "REASON_CODE_COPY",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "445540",
-          "newValue": "432940",
-          "reason": "REASON_CODE_STORAGE",
-          "ordinal": "9"
-        },
-        {
-          "oldValue": "432940",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "11"
-        },
-        {
-          "oldValue": "432940",
-          "newValue": "0",
-          "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "14"
         }
       ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "4",
-      "endOrdinal": "12",
+      "beginOrdinal": "2",
+      "endOrdinal": "6",
       "accountCreations": []
     }
   ],

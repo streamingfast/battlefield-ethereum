@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "20",
+  "endOrdinal": "11",
   "status": "FAILED",
   "calls": [
     {
@@ -38,35 +38,35 @@
           "key": "0000000000000000000000000000000000000000000000000000000000000000",
           "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
           "newValue": "b2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc",
-          "ordinal": "7"
+          "ordinal": "4"
         }
       ],
       "balanceChanges": [
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
-          "ordinal": "2",
+          "ordinal": "1",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "17",
+          "ordinal": "8",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "18",
+          "ordinal": "9",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "19",
+          "ordinal": "10",
           "oldValue": "",
           "newValue": "01"
         }
@@ -76,55 +76,18 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "4"
+          "ordinal": "2"
         }
       ],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "45571",
-          "reason": "REASON_TX_INITIAL_BALANCE",
-          "ordinal": "1"
-        },
-        {
-          "oldValue": "45571",
-          "newValue": "23507",
-          "reason": "REASON_INTRINSIC_GAS",
-          "ordinal": "3"
-        },
-        {
-          "oldValue": "0",
-          "newValue": "23507",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "6"
-        },
-        {
-          "oldValue": "1142",
-          "newValue": "16",
-          "reason": "REASON_STATIC_CALL",
-          "ordinal": "8"
-        },
-        {
-          "oldValue": "16",
-          "newValue": "970",
-          "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "14"
-        },
-        {
-          "oldValue": "909",
-          "newValue": "0",
-          "reason": "REASON_FAILED_EXECUTION",
-          "ordinal": "15"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": true,
       "statusReverted": false,
-      "failureReason": "out of gas: not enough gas for reentrancy sentry",
+      "failureReason": "out of gas",
       "stateReverted": true,
-      "beginOrdinal": "5",
-      "endOrdinal": "16",
+      "beginOrdinal": "3",
+      "endOrdinal": "7",
       "accountCreations": []
     },
     {
@@ -146,32 +109,13 @@
       "nonceChanges": [],
       "logs": [],
       "codeChanges": [],
-      "gasChanges": [
-        {
-          "oldValue": "0",
-          "newValue": "1026",
-          "reason": "REASON_CALL_INITIAL_BALANCE",
-          "ordinal": "10"
-        },
-        {
-          "oldValue": "1026",
-          "newValue": "954",
-          "reason": "REASON_PRECOMPILED_CONTRACT",
-          "ordinal": "11"
-        },
-        {
-          "oldValue": "954",
-          "newValue": "0",
-          "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "12"
-        }
-      ],
+      "gasChanges": [],
       "statusFailed": false,
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": true,
-      "beginOrdinal": "9",
-      "endOrdinal": "13",
+      "beginOrdinal": "5",
+      "endOrdinal": "6",
       "accountCreations": []
     }
   ],
