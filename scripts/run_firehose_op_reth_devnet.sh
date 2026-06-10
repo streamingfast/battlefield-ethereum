@@ -72,7 +72,7 @@ main() {
     # tracer emits as the genesis/anchor block). With 0, fireeth waits forever for block 0 and every
     # block is reported "not linkable". The vanilla-reth devnet/dev launchers use 1 for the same
     # reason. (op-geth emits block 0 itself, hence run_firehose_op_geth_devnet.sh keeps 0.)
-    run_fireeth 1 "$op_reth" "$op_reth_args"
+    run_fireeth ${OP_RETH_FIRST_BLOCK:-1} "$op_reth" "$op_reth_args"
   popd > /dev/null
 
 }
