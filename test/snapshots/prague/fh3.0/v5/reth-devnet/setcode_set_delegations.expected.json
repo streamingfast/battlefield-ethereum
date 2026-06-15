@@ -1,0 +1,237 @@
+{
+  "to": "$wallet1",
+  "nonce": "$nonce",
+  "gasLimit": "500000",
+  "input": "86114454000000000000000000000000$wallet2",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "142940",
+  "type": "TRX_TYPE_SET_CODE",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "$wallet1",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "18",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "$wallet1",
+      "address": "$wallet1",
+      "gasLimit": "353568",
+      "gasConsumed": "32243",
+      "returnData": "",
+      "input": "86114454000000000000000000000000$wallet2",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "$wallet1",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "02e94444e0",
+          "newValue": ""
+        },
+        {
+          "address": "$wallet1",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "16",
+          "oldValue": "",
+          "newValue": "021435b7fc"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "17",
+          "oldValue": "",
+          "newValue": "01"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "$wallet1",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "2"
+        },
+        {
+          "address": "$wallet1",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "3"
+        },
+        {
+          "address": "$wallet2",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "5"
+        },
+        {
+          "address": "$wallet2",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "7"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [
+        {
+          "address": "$wallet1",
+          "oldHash": "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+          "oldCode": "",
+          "newHash": "34599f58d9cb2d60f36c45f57a497eebf8ece7f18f716fbdf2591014194ff016",
+          "newCode": "ef0100$callerContract",
+          "ordinal": "4"
+        },
+        {
+          "address": "$wallet2",
+          "oldHash": "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+          "oldCode": "",
+          "newHash": "6e6b398cf8f60578b81499837d01d777af537cf65c29110143548a9c6fd743bc",
+          "newCode": "ef0100$setterCC",
+          "ordinal": "6"
+        },
+        {
+          "address": "$wallet2",
+          "oldHash": "6e6b398cf8f60578b81499837d01d777af537cf65c29110143548a9c6fd743bc",
+          "oldCode": "ef0100$setterCC",
+          "newHash": "57501937d96153d772e6877f5008a70c5c33c0b20b007d36f8bc1287deee4633",
+          "newCode": "ef0100$setterBB",
+          "ordinal": "8"
+        }
+      ],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "9",
+      "endOrdinal": "15",
+      "accountCreations": [],
+      "addressDelegatesTo": "$callerContract"
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "CALL",
+      "caller": "$wallet1",
+      "address": "$wallet2",
+      "gasLimit": "338201",
+      "gasConsumed": "22139",
+      "returnData": "",
+      "input": "",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [
+        {
+          "address": "$wallet2",
+          "key": "0000000000000000000000000000000000000000000000000000000000000042",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
+          "newValue": "0000000000000000000000000000000000000000000000000000000000000042",
+          "ordinal": "13"
+        }
+      ],
+      "balanceChanges": [
+        {
+          "address": "$wallet1",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "11",
+          "oldValue": "01",
+          "newValue": ""
+        },
+        {
+          "address": "$wallet2",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "12",
+          "oldValue": "",
+          "newValue": "01"
+        }
+      ],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "10",
+      "endOrdinal": "14",
+      "accountCreations": [],
+      "addressDelegatesTo": "$setterBB",
+      "value": "01"
+    }
+  ],
+  "blobHashes": [],
+  "setCodeAuthorizations": [
+    {
+      "discarded": false,
+      "chainId": "0539",
+      "address": "$callerContract",
+      "nonce": "1",
+      "v": 0,
+      "r": "9a391c26e2093c80a7685e22c76428b7a756d84c15de00dd8112a9be37d05654",
+      "s": "3d22a1e62a8edf3269439316056f43bc098ae6bc03882093d55dfbf4044a5591",
+      "authority": "$wallet1"
+    },
+    {
+      "discarded": false,
+      "chainId": "",
+      "address": "$setterCC",
+      "nonce": "0",
+      "v": 1,
+      "r": "7914df7c60ff582979611822d0545eb010923f5e495d88e7863fb4b0631c0c77",
+      "s": "7596cd99ccd537809ed845b3c0a0be12dc36e95ba1643d503da84611fcfe5814",
+      "authority": "$wallet2"
+    },
+    {
+      "discarded": true,
+      "chainId": "",
+      "address": "$setterCC",
+      "nonce": "0",
+      "v": 1,
+      "r": "",
+      "s": ""
+    },
+    {
+      "discarded": false,
+      "chainId": "0539",
+      "address": "$setterBB",
+      "nonce": "1",
+      "v": 1,
+      "r": "6ba40c2076e8c12aaebcd544608954c5288118d3336f9983e1d61d2c1939a492",
+      "s": "460fa3c6dfb412d7ef48e9efddd6d25a962aa29315be427570d75d228479e823",
+      "authority": "$wallet2"
+    },
+    {
+      "discarded": true,
+      "chainId": "0539",
+      "address": "$setterBB",
+      "nonce": "1",
+      "v": 1,
+      "r": "6ba40c2076e8c12aaebcd544608954c5288118d3336f9983e1d61d2c1939a492",
+      "s": "460fa3c6dfb412d7ef48e9efddd6d25a962aa29315be427570d75d228479e823",
+      "authority": "$wallet2"
+    }
+  ],
+  "gasPrice": "61af",
+  "maxFeePerGas": "0a7a358200",
+  "maxPriorityFeePerGas": "61a8",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}

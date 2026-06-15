@@ -66,13 +66,13 @@ async function fetchFirehoseBlockNoLogging(
 ): Promise<Block> {
   const deadline = timeoutMs !== undefined ? Date.now() + timeoutMs : Infinity
   let attempts = 0
-  let lastError: unknown
+  let lastErrors: unknown[] = []
 
   while (attempts <= 10) {
     const remaining = deadline - Date.now()
     if (remaining <= 0) {
       throw new ConnectError(
-        `Block ${firehoseBlockTagToString(tag)} not found in Firehose within ${timeoutMs}ms, last error: ${lastError}`,
+        `Block ${firehoseBlockTagToString(tag)} not found in Firehose within ${timeoutMs}ms, last errors: ${lastErrors}`,
       )
     }
 
@@ -88,7 +88,7 @@ async function fetchFirehoseBlockNoLogging(
         clearTimeout(timer)
       }
     } catch (error) {
-      lastError = error
+      lastErrors.push(error)
 
       if (isConnectError(error) && error.code !== Code.InvalidArgument) {
         const retryIn = Math.max(0, Math.min(125 + 250 * (attempts - 1), deadline - Date.now()))
@@ -102,7 +102,7 @@ async function fetchFirehoseBlockNoLogging(
     }
   }
 
-  throw new ConnectError(`Block not found in Firehose after ${attempts} attempts, last error: ${lastError}`)
+  throw new ConnectError(`Block not found in Firehose after ${attempts} attempts, last errors: ${lastErrors}`)
 }
 
 export async function fetchFirehoseTransactionAndBlock(

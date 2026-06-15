@@ -127,7 +127,12 @@ before(async () => {
 
   // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall
   // setup faster and more reliable
-  fetchFirehoseBlock(1).then(validateFirehoseBlockVersion).catch(abortTagged("Validating Firehose block version"))
+  try {
+    const block = await fetchFirehoseBlock(2, { timeoutMs: 30_000 })
+    validateFirehoseBlockVersion(block)
+  } catch (err) {
+    abortTagged("Validating Firehose block version")(err)
+  }
 
   debug("Global setup completed in %d ms", Date.now() - start)
 })
