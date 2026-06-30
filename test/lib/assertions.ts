@@ -14,7 +14,7 @@ import {
   fetchFirehoseTransactionAndBlock,
   normalizeTrxCallFailureReasons,
   relativizeTrxTraceOrdinals,
-  trxTraceOrdinals,
+  trxTraceOrdinalSources,
 } from "./firehose"
 import { oneWeiF, weiF, zeroWeiF } from "./money"
 import { readFileSync } from "fs"
@@ -25,7 +25,7 @@ import { getReceiptForTransactionTrace, TransactionReceiptResult } from "./ether
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
-import { isNetwork, isNetworkOneOf, networkName } from "./network"
+import { isArbitrum, isNetwork, isNetworkOneOf, networkName } from "./network"
 import { excludeFieldsFromObject, getGlobalExcludedFields } from "./field-exclusion"
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -304,9 +304,8 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
         })
       }
       // Check on original trace for correctness of ordinal handling
-      const ordinals = trxTraceOrdinals(actualTrace)
       const skipOrdinalCheck = options && (options as any).skipOrdinalCheck
-      assertTrxOrdinals(chai, ordinals, actualTrace, trxReceipt.blockNumber, { skipOrdinalCheck })
+      assertTrxOrdinals(chai, actualTrace, trxReceipt.blockNumber, { skipOrdinalCheck })
 
       const actualNormalized = normalizeTrace(clone(TransactionTraceSchema, actualTrace))
       const actualNormalizedJson = toProtoJsonString(actualNormalized)
@@ -407,7 +406,6 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
 function assertTrxOrdinals(
   chai: Chai,
-  ordinalsMap: Record<number, number>,
   trace: TransactionTrace,
   blockNumber: number,
   options?: { skipOrdinalCheck?: boolean },
@@ -415,28 +413,30 @@ function assertTrxOrdinals(
   if (options?.skipOrdinalCheck) {
     return
   }
-  const ordinals = Object.entries(ordinalsMap)
+  // We validate ordinal uniqueness from the per-ordinal source locations rather than from a
+  // bare count, so we can apply targeted leniency for known chain quirks while still catching
+  // every other collision.
+  const sources = trxTraceOrdinalSources(trace)
+  const ordinals = Object.entries(sources)
   ordinals.sort(([a], [b]) => parseInt(a) - parseInt(b))
 
   new chai.Assertion(ordinals.length).to.be.greaterThan(0)
 
-  let previous: number | undefined = undefined
-  ordinals.forEach(([ordinal, count]) => {
-    new chai.Assertion(
-      count,
-      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`,
-    ).to.equal(1)
-
-    if (previous) {
-      // FIXME: It seems Firehose 3.0 in backward compatibility mode is skipping one ordinal, need to investigate, allow it for now
-      // new chai.Assertion(
-      //   previous + 1,
-      //   `Ordinal ${ordinal} should have strictly follow ${previous}, so that ${previous} + 1 == ${ordinal} which was not the case here\n\n` +
-      //     toProtoJsonString(trace)
-      // ).to.be.equal(parseInt(ordinal))
+  ordinals.forEach(([ordinal, locations]) => {
+    // Arbitrum/Nitro (Firehose block v3) emits the two account-creation records of a single
+    // CREATE/CREATE2 sharing the same ordinal. This is a known and stable divergence we keep
+    // until those chains move to block v5. Tolerate exactly that shape — every other ordinal,
+    // including any collision involving a non-account-creation event, must still be unique.
+    const isArbitrumAccountCreationPair =
+      isArbitrum() && locations.length === 2 && locations.every((l) => l.includes(".accountCreation["))
+    if (isArbitrumAccountCreationPair) {
+      return
     }
 
-    previous = parseInt(ordinal)
+    new chai.Assertion(
+      locations.length,
+      `Ordinal ${ordinal} has been seen ${locations.length} times throughout transaction ${hexlify(trace.hash)} at block ${blockNumber}, that is invalid (sources: ${locations.join(", ")})`,
+    ).to.equal(1)
   })
 }
 

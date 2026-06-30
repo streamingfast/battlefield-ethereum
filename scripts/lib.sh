@@ -200,6 +200,19 @@ check_op_reth() {
   fi
 }
 
+check_nitro() {
+  if ! command -v "$nitro" &> /dev/null; then
+    echo "The '$nitro' binary could not be found, install the firehose-enabled"
+    echo "Arbitrum Nitro execution client from our fork."
+    echo ""
+    echo "- Download the Firehose-instrumented nitro from https://firehose.streamingfast.io/firehose/overview/chains"
+    echo "  and place it as 'nitro' on your PATH (or set NITRO_BINARY=/path/to/nitro)"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
+  fi
+}
+
 check_seid() {
   if ! command -v "$seid" &> /dev/null; then
     echo "The '$seid' binary could not be found, you can install it with:"

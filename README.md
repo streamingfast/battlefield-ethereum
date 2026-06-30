@@ -46,6 +46,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Geth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_geth_devnet.sh`. | `pnpm test:fh3.0:op-geth-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Reth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_reth_devnet.sh`. | `pnpm test:fh3.0:op-reth-devnet`                          | Requires [op-reth](#get-reth) (firehose-instrumented Op Stack Reth on PATH as `op-reth`), and [builder-playground](https://github.com/flashbots/builder-playground) |
+| Nitro Dev (fh 2.3 because block version == 3)       | `./scripts/run_firehose_nitro_dev.sh`                                   | `pnpm test:fh2.3:nitro-dev`                               | Standalone mine-on-demand Arbitrum chain. Requires [nitro](#get-nitro) and [fireeth](#get-fireeth) |
 
 After each test, you should also run:
 
@@ -204,6 +205,27 @@ Download the binary, rename it to `reth`, make it executable, and place it on yo
 ```bash
 export RETH_BINARY=/path/to/your/reth-binary
 ```
+
+### Get `nitro`
+
+The Firehose-instrumented Arbitrum Nitro binary must be on your `PATH` as `nitro`.
+
+```bash
+# Check
+nitro --version
+```
+
+Find the correct pre-built binary for your architecture on the Firehose chains overview page:
+
+**https://firehose.streamingfast.io/firehose/overview/chains**
+
+Download the binary, rename it to `nitro`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
+
+```bash
+export NITRO_BINARY../nitro/target/bin/nitro
+```
+
+`run_firehose_nitro_dev.sh` launches a standalone mine-on-demand Nitro chain (`--dev`) with the Firehose tracer (`--node.firehose`) wrapped by `fireeth`. Like `geth-dev`/`reth-dev`, it only mines when a transaction arrives — the test suite bootstraps Firehose readiness on its own, so launch the chain then run `pnpm test:fh2.3:nitro-dev` (wait only for JSON-RPC on `http://127.0.0.1:8547`, do not wait for port 8089).
 
 ### Build Firehose `geth`
 

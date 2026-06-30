@@ -4,6 +4,7 @@ import { oneWei } from "./lib/money"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import { hexlify } from "ethers"
 import { knownExistingAddress } from "./lib/addresses"
+import { gasLimitOverride } from "./lib/network"
 import { TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner, ownerAddress } from "./global"
 import { waitForTransaction } from "./lib/ethers"
@@ -32,7 +33,7 @@ describe("Berlin", function () {
     const response = await owner.sendTransaction({
       to: knownExistingAddress,
       value: oneWei,
-      gasLimit: 100_000,
+      ...gasLimitOverride(100_000),
       gasPrice: defaultGasPrice,
       type: 1,
       accessList: [{ address: knownExistingAddress, storageKeys: [] }],
@@ -54,7 +55,7 @@ describe("Berlin", function () {
     const response = await owner.sendTransaction({
       to: knownExistingAddress,
       value: oneWei,
-      gasLimit: 100_000,
+      ...gasLimitOverride(100_000),
       gasPrice: defaultGasPrice,
       type: 1,
       accessList: [{ address: knownExistingAddress, storageKeys: [SLOT_0, SLOT_1] }],
@@ -78,7 +79,7 @@ describe("Berlin", function () {
     const response = await owner.sendTransaction({
       to: knownExistingAddress,
       value: oneWei,
-      gasLimit: 100_000,
+      ...gasLimitOverride(100_000),
       gasPrice: defaultGasPrice,
       type: 1,
       accessList: [

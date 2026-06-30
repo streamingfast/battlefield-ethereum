@@ -16,9 +16,9 @@ import {
 import { Calls, Calls__factory } from "../typechain-types"
 import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./global"
 import { eth, oneWei } from "./lib/money"
-import { networkValue } from "./lib/network"
+import { isArbitrum, networkValue, dynamicGasLimit } from "./lib/network"
 
-const callsGasLimit = 3_500_000
+const callsGasLimit = dynamicGasLimit(3_500_000)
 
 describe("Deploys", function () {
   let Calls: Contract<Calls>
@@ -28,6 +28,12 @@ describe("Deploys", function () {
   })
 
   it("Contract create on previously funded address", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     const deployer = await stableDeployerFunded(owner, 1, eth(1))
     const createdContract = getCreateAddressHex(deployer.address, 0)
 
@@ -43,6 +49,12 @@ describe("Deploys", function () {
   })
 
   it("Contract fail just enough gas for intrinsic gas", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     const deployer = await stableDeployerFunded(owner, 1, eth(1))
 
     await expect(koContractCreation(deployer, SuicidalFactory, [], { gasLimit: 63274 })).to.trxTraceEqualSnapshot(
@@ -55,6 +67,12 @@ describe("Deploys", function () {
   })
 
   it("Contract fail not enough gas after code_copy", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     const deployer = await stableDeployerFunded(owner, 1, eth(1))
 
     await expect(

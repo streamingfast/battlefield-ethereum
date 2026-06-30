@@ -30,7 +30,10 @@ import { fetchFirehoseBlock, waitForFirehoseReady } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isNetwork } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
-import { besu_exclude_fields as besuExcludeFields } from "./lib/constants"
+import {
+  besu_exclude_fields as besuExcludeFields,
+  arbitrum_exclude_fields as arbitrumExcludeFields,
+} from "./lib/constants"
 
 export let owner: NonceManager
 export let ownerAddress: string
@@ -71,6 +74,7 @@ before(async () => {
 
   // Register global excluded fields for specific networks
   registerGlobalExcludedFields("besu-devnet", besuExcludeFields)
+  registerGlobalExcludedFields("arbitrum-nitro-dev", arbitrumExcludeFields)
 
   debug("Initializing contract factories sequentially")
   ContractEmptyFactory = await hre.ethers.getContractFactory("ContractEmpty")
@@ -96,11 +100,26 @@ before(async () => {
   const [first] = await hre.ethers.getSigners()
   // @ts-ignore - TypeScript is not aware that NonceManager can be used as a signer, but it can, and it is useful for our tests to have a signer that automatically manage the nonce for us
   owner = new hre.ethers.NonceManager(first)
+  // NonceManager optimistically increments its nonce *before* the send and never rolls back
+  // on failure (see ethers' own "don't increment if the tx was certainly not sent" TODO).
+  // On chains that reject a transaction pre-inclusion instead of mining-then-reverting it
+  // (e.g. Arbitrum/Nitro rejecting a deliberately-low-gas tx with "intrinsic gas too low"),
+  // that leaves the nonce desynced and every later transaction fails with "nonce too high".
+  // Reset on a failed send so one rejected tx can't cascade into the rest of the suite.
+  const ownerSendTransaction = owner.sendTransaction.bind(owner)
+  owner.sendTransaction = async (tx) => {
+    try {
+      return await ownerSendTransaction(tx)
+    } catch (err) {
+      owner.reset()
+      throw err
+    }
+  }
   ownerAddress = first.address
   ownerAddressBytes = getBytes(ownerAddress)
   debug("Initialized owner")
 
-  if (isNetwork("reth-dev") || isNetwork("geth-dev")) {
+  if (isNetwork("reth-dev") || isNetwork("geth-dev") || isNetwork("arbitrum-nitro-dev")) {
     debug("Waiting for Firehose to be ready on mine-on-demand chain")
     const firehoseReadyStart = Date.now()
     await waitForFirehoseReady(() => sendImmediateEth(owner, knownExistingAddress, oneWei))
@@ -142,6 +161,14 @@ function validateFirehoseBlockVersion(block: Block) {
   const tag = globalTag.split("/")[0]
 
   switch (tag) {
+    case "fh2.3":
+      if (block.ver !== 3) {
+        throw new Error(
+          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh2.3 expect version 3, it seems your node is not running with the correct Firehose version`,
+        )
+      }
+      break
+
     case "fh3.0":
       if (block.ver !== 4 && block.ver !== 5) {
         throw new Error(

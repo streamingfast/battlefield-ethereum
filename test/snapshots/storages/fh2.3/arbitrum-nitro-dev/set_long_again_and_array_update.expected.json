@@ -1,0 +1,169 @@
+{
+  "to": "$storageContract",
+  "nonce": "$nonce",
+  "gasLimit": "100000000",
+  "input": "5ed9a383",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "852060",
+  "type": "TRX_TYPE_DYNAMIC_FEE",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "18",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$storageContract",
+      "gasLimit": "31978936",
+      "gasConsumed": "28002",
+      "returnData": "",
+      "input": "5ed9a383",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {
+        "405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace": "0000000000000000000000000000000000000000000000000000000000000002",
+        "c2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b": "0000000000000000000000000000000000000000000000000000000000000003"
+      },
+      "storageChanges": [
+        {
+          "address": "a4b05fffffffffffffffffffffffffffffffffff",
+          "key": "a9f6f085d78d1d37c5819e5c16c9e03198bd14e08cd1f6f8191bc6207b9e9706",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000164920",
+          "newValue": "0000000000000000000000000000000000000000000000000000000000165080",
+          "ordinal": "3"
+        },
+        {
+          "address": "$storageContract",
+          "key": "c2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b",
+          "oldValue": "000000000000000000000000000000000000000000000000000000000000004b",
+          "newValue": "000000000000000000000000000000000000000000000000000000000000005f",
+          "ordinal": "6"
+        },
+        {
+          "address": "$storageContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000002",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000097",
+          "newValue": "0000000000000000000000000000000000000000000000000000000000000099",
+          "ordinal": "8"
+        },
+        {
+          "address": "$storageContract",
+          "key": "405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace",
+          "oldValue": "7265616c79206c6f6e6720737472696e67206c6172676572207468616e203332",
+          "newValue": "7265616c6c79206c6f6e6720737472696e67206c6172676572207468616e2033",
+          "ordinal": "9"
+        },
+        {
+          "address": "$storageContract",
+          "key": "405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5acf",
+          "oldValue": "20627974657320746f2074657374206f757420736f6c69646974792073706c69",
+          "newValue": "3220627974657320746f2074657374206f757420736f6c69646974792073706c",
+          "ordinal": "10"
+        },
+        {
+          "address": "$storageContract",
+          "key": "405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ad0",
+          "oldValue": "7474696e67207374756666000000000000000000000000000000000000000000",
+          "newValue": "697474696e672073747566660000000000000000000000000000000000000000",
+          "ordinal": "11"
+        },
+        {
+          "address": "a4b05fffffffffffffffffffffffffffffffffff",
+          "key": "a9f6f085d78d1d37c5819e5c16c9e03198bd14e08cd1f6f8191bc6207b9e970b",
+          "oldValue": "00000000000000000000000000000000000000000000000001037064cd4fa7d0",
+          "newValue": "0000000000000000000000000000000000000000000000000103c64002443150",
+          "ordinal": "16"
+        },
+        {
+          "address": "a4b05fffffffffffffffffffffffffffffffffff",
+          "key": "e54de2a4cdacc0a0059d2b6e16348103df8c4aff409c31e40ec73d11926c8204",
+          "oldValue": "000000000000000000000000000000000000000000000000000000000b16c9be",
+          "newValue": "000000000000000000000000000000000000000000000000000000000b178968",
+          "ordinal": "17"
+        }
+      ],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "29c4050bfac000",
+          "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "13",
+          "oldValue": "",
+          "newValue": "2968ead3930300"
+        },
+        {
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "14",
+          "oldValue": "",
+          "newValue": "053f03733380"
+        },
+        {
+          "address": "a4b00000000000000000000000000000000000f6",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "15",
+          "oldValue": "",
+          "newValue": "55db34f48980"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "4"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "100000000",
+          "newValue": "99978936",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "2"
+        },
+        {
+          "oldValue": "31971530",
+          "newValue": "31971509",
+          "reason": "REASON_CODE_COPY",
+          "ordinal": "7"
+        }
+      ],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "0",
+      "endOrdinal": "12",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0701d2c1",
+  "maxFeePerGas": "08dad4d6",
+  "maxPriorityFeePerGas": "01",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}

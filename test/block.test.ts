@@ -13,7 +13,7 @@ import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
 import { BalanceChange_Reason, Block, Call } from "../pb/sf/ethereum/type/v2/type_pb"
-import { isNetwork } from "./lib/network"
+import { isArbitrum, isNetwork } from "./lib/network"
 
 describe("Blocks", function () {
   it("Header corresponds to RPC", async function () {
@@ -97,6 +97,42 @@ describe("Blocks", function () {
     })
     const block = await fetchFirehoseBlock(result.blockNumber)
     const coinbase = hexlify(block.header!.coinbase)
+
+    if (isArbitrum()) {
+      // ArbOS does not pay a block coinbase via REWARD_TRANSACTION_FEE. Its fee model is: the
+      // sender is debited up-front (REASON_GAS_BUY) and refunded the unused portion
+      // (REASON_GAS_REFUND), and the net gas fee is routed to ArbOS fee-collector accounts
+      // (addresses prefixed 0xa4b0...), while the block coinbase is the sequencer fee address.
+      // Validate that observed model: the sender's net gas payment equals the full gas fee
+      // (base + tip, nothing burned) computed from the block receipts.
+      expect(coinbase.toLowerCase().startsWith("0xa4b0")).to.equal(
+        true,
+        `Arbitrum block coinbase ${coinbase} must be an ArbOS fee address (0xa4b0...)`,
+      )
+
+      const allChanges = block.transactionTraces.flatMap((tx) => tx.calls.flatMap((call) => call.balanceChanges))
+      expect(allChanges.some((c) => c.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE)).to.equal(
+        false,
+        "ArbOS does not emit REWARD_TRANSACTION_FEE, fees go to ArbOS fee-collector accounts instead",
+      )
+
+      const sumDelta = (reason: BalanceChange_Reason) =>
+        allChanges
+          .filter((c) => c.reason === reason)
+          .reduce((sum, c) => sum + toBigInt(c.newValue) - toBigInt(c.oldValue), 0n)
+
+      // GAS_BUY is a debit (negative delta), GAS_REFUND a credit (positive delta).
+      const netGasPaid = -sumDelta(BalanceChange_Reason.GAS_BUY) - sumDelta(BalanceChange_Reason.GAS_REFUND)
+      expect(netGasPaid > 0n).to.equal(true, "sender must have paid a positive net gas fee (GAS_BUY − GAS_REFUND)")
+
+      const receipts = await mustGetRpcBlockReceipts(result.blockNumber)
+      const expectedFullFee = receipts.reduce((sum, r) => sum + BigInt(r.gasUsed) * BigInt(r.effectiveGasPrice), 0n)
+      expect(netGasPaid).to.equal(
+        expectedFullFee,
+        "sender net gas payment (GAS_BUY − GAS_REFUND) must equal the full gas fee from receipts",
+      )
+      return
+    }
 
     // On PoA/PoS chains (geth-dev, reth-dev) the tip paid by each transaction is recorded as
     // REWARD_TRANSACTION_FEE inside that transaction's call balance changes (not at block level).

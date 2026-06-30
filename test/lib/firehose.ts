@@ -313,6 +313,34 @@ function collectChangesOrdinals(ordinals: Record<number, number>, changes: { ord
   })
 }
 
+// Maps each ordinal to the list of trace locations (e.g. "call[1].accountCreation[0]") that
+// emitted it. Used by the ordinal-uniqueness assertion so it can report exactly which events
+// collide and apply targeted per-chain leniency.
+export function trxTraceOrdinalSources(trace: TransactionTrace): Record<number, string[]> {
+  const sources: Record<number, string[]> = {}
+  const add = (ord: bigint | undefined, label: string) => {
+    const k = Number(ord)
+    ;(sources[k] = sources[k] || []).push(label)
+  }
+  add(trace.beginOrdinal, "trace.begin")
+  add(trace.endOrdinal, "trace.end")
+  trace.calls.forEach((call) => {
+    const i = call.index
+    add(call.beginOrdinal, `call[${i}].begin`)
+    add(call.endOrdinal, `call[${i}].end`)
+    const addChanges = (name: string, changes: { ordinal?: bigint }[]) =>
+      changes.forEach((c, j) => add(c.ordinal, `call[${i}].${name}[${j}]`))
+    addChanges("log", call.logs)
+    addChanges("accountCreation", call.accountCreations)
+    addChanges("balanceChange", call.balanceChanges)
+    addChanges("gasChange", call.gasChanges)
+    addChanges("nonceChange", call.nonceChanges)
+    addChanges("storageChange", call.storageChanges)
+    addChanges("codeChange", call.codeChanges)
+  })
+  return sources
+}
+
 export function relativizeTrxTraceOrdinals(trace: TransactionTrace) {
   const lowestOrdinal = trxTraceLowestOrdinal(trace)
 

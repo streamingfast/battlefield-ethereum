@@ -13,7 +13,7 @@ import {
 import { getBalance, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { owner, ownerAddress } from "./global"
-import { isNetworkOneOf } from "./lib/network"
+import { isArbitrum, isNetworkOneOf } from "./lib/network"
 
 describe("Pure transfers", function () {
   it("Existing address", async function () {
@@ -24,6 +24,12 @@ describe("Pure transfers", function () {
   })
 
   it("Existing address with custom gas limit", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     await expect(
       sendEth(owner, knownExistingAddress, oneWei, {
         gasLimit: 75000,
@@ -56,6 +62,12 @@ describe("Pure transfers", function () {
   })
 
   it("Transfer to precompiled address with balance", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     await expect(sendEth(owner, precompileWithBalanceAddress, oneWei, { gasLimit: 300000 })).to.trxTraceEqualSnapshot(
       "pure_transfers/precompiled_address_with_balance.json",
       {
@@ -74,6 +86,12 @@ describe("Pure transfers", function () {
   })
 
   it("Transfer to precompiled address without balance", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet")) {
       // On Optimism devnet, the precompile at address 0x0000000000000000000000000000000000000808 have balance, so we cannot run this test,
       // there is no much we can do about it, skipping the test for this network.

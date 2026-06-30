@@ -16,6 +16,7 @@ import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../
 import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
 import { TransactionReceiptResult, waitForTransaction } from "./ethers"
 import { eth } from "./money"
+import { gasLimitOverride, gasPriceOverride } from "./network"
 
 const debug = debugFactory("battlefield:eth")
 
@@ -81,10 +82,10 @@ export async function sendEth(
   const trxRequest = {
     to,
     value,
-    gasLimit: 21000,
+    ...gasLimitOverride(21000),
     // Skip the legacy gasPrice default when the caller provides EIP-1559 fees so that
     // ethers.js doesn't receive conflicting gas fields.
-    ...("maxFeePerGas" in custom ? {} : { gasPrice: defaultGasPrice }),
+    ...("maxFeePerGas" in custom ? {} : gasPriceOverride(defaultGasPrice)),
     ...custom,
   }
   debug("Send eth call being performed %o", debuggableTrx(trxRequest))
@@ -102,8 +103,8 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   const trxCall = await call.populateTransaction(...args)
   const trxRequest = {
     ...trxCall,
-    gasLimit: 900_000,
-    gasPrice: defaultGasPrice,
+    ...gasLimitOverride(900_000),
+    ...gasPriceOverride(defaultGasPrice),
     ...customTx,
   }
 
@@ -213,7 +214,7 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
     const trx = await factory.getDeployTransaction(...constructorArgs)
     const trxRequest = {
       ...trx,
-      gasPrice: defaultGasPrice,
+      ...gasPriceOverride(defaultGasPrice),
       ...customTx,
     }
 

@@ -24,7 +24,14 @@ import {
 import hre from "hardhat"
 import { eth, oneWei } from "./lib/money"
 import { EIP } from "./lib/chain_eips"
-import { isNetwork, isNetworkOneOf, isNetworkStartsWith, networkValue } from "./lib/network"
+import {
+  isArbitrum,
+  isNetwork,
+  isNetworkOneOf,
+  isNetworkStartsWith,
+  networkValue,
+  dynamicGasLimit,
+} from "./lib/network"
 import { hexlify } from "ethers"
 import { CallType } from "../pb/sf/ethereum/type/v2/type_pb"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
@@ -49,9 +56,7 @@ describe("Suicide", function () {
   let Suicidal2: Contract<Suicidal>
   let Calls: Contract<Calls>
 
-  const callsGasLimit = networkValue({
-    "*": 3_500_000,
-  })
+  const callsGasLimit = dynamicGasLimit(3_500_000)
 
   before(async () => {
     await deployAll(
@@ -96,6 +101,12 @@ describe("Suicide", function () {
   })
 
   it("Contract hold Ether", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     await sendEth(owner, Suicidal2.address, oneWei, { gasLimit: 42000 })
 
     await expect(contractCall(owner, Suicidal2.kill, [])).to.trxTraceEqualSnapshot(
@@ -152,6 +163,12 @@ describe("Suicide", function () {
   })
 
   it("Contract and suicide beneficiary are the same", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
     const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [])
 
@@ -231,6 +248,20 @@ describe("Suicide", function () {
     const childNonceCleanup = rootCall.nonceChanges.find(
       (nc) => isSameAddress(hexlify(nc.address), childAddress) && nc.newValue === 0n,
     )
+
+    if (isArbitrum()) {
+      // ArbOS (Firehose block v3) does not emit geth-1.17 end-of-tx finalization, so there is
+      // no nonce 1→0 cleanup written to the root call. The self-destruct is instead represented
+      // by the `suicide` flag on the CREATE subcall (asserted above). Validate that observed
+      // shape: no child cleanup at the root, and the root only carries the sender's nonce bump.
+      expect(childNonceCleanup, "ArbOS must not write a child nonce cleanup to the root call").to.be.undefined
+      expect(
+        rootCall.nonceChanges.every((nc) => !isSameAddress(hexlify(nc.address), childAddress)),
+        "ArbOS root call must not record any nonce change for the suicided child",
+      ).to.equal(true)
+      return
+    }
+
     expect(childNonceCleanup, "root call must record nonce 1→0 cleanup for the suicided child").to.not.be.undefined
     expect(childNonceCleanup!.oldValue).to.equal(1n)
     expect(childNonceCleanup!.newValue).to.equal(0n)
@@ -281,6 +312,20 @@ describe("Suicide", function () {
     const codeRemovals = rootCall.codeChanges.filter(
       (cc) => cc.newCode.length === 0 && childAddrs.some((a) => isSameAddress(a, hexlify(cc.address))),
     )
+    const nonceResets = rootCall.nonceChanges.filter(
+      (nc) => nc.newValue === 0n && childAddrs.some((a) => isSameAddress(a, hexlify(nc.address))),
+    )
+
+    if (isArbitrum()) {
+      // ArbOS (Firehose block v3) does not emit geth-1.17 end-of-tx finalization, so the root
+      // call carries no code removals or nonce resets for the suicided children. The three
+      // self-destructs are represented by the `suicide` flag on the kill subcalls (asserted
+      // above). Validate that observed shape rather than the geth finalization.
+      expect(codeRemovals).to.have.length(0, "ArbOS does not write end-of-tx code removals to the root call")
+      expect(nonceResets).to.have.length(0, "ArbOS does not write end-of-tx nonce resets to the root call")
+      return
+    }
+
     expect(codeRemovals).to.have.length(3, "root call must have 3 code removals for child contracts")
 
     const codeRemovalAddrs = codeRemovals.map((cc) => hexlify(cc.address))
@@ -289,9 +334,6 @@ describe("Suicide", function () {
       "code removals must be in sorted address order",
     )
 
-    const nonceResets = rootCall.nonceChanges.filter(
-      (nc) => nc.newValue === 0n && childAddrs.some((a) => isSameAddress(a, hexlify(nc.address))),
-    )
     expect(nonceResets).to.have.length(3, "root call must have 3 nonce resets for child contracts")
 
     const nonceResetAddrs = nonceResets.map((nc) => hexlify(nc.address))

@@ -1,0 +1,138 @@
+{
+  "to": "$callsContract",
+  "nonce": "$nonce",
+  "gasLimit": "100000000",
+  "input": "69961c23",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "32944000",
+  "type": "TRX_TYPE_DYNAMIC_FEE",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "14",
+  "status": "FAILED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$callsContract",
+      "gasLimit": "31978936",
+      "gasConsumed": "31978936",
+      "returnData": "",
+      "input": "69961c23",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [
+        {
+          "address": "a4b05fffffffffffffffffffffffffffffffffff",
+          "key": "a9f6f085d78d1d37c5819e5c16c9e03198bd14e08cd1f6f8191bc6207b9e9706",
+          "oldValue": "000000000000000000000000000000000000000000000000000000000002dae0",
+          "newValue": "000000000000000000000000000000000000000000000000000000000002e240",
+          "ordinal": "3"
+        },
+        {
+          "address": "$callsContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000002",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
+          "newValue": "0000000000000000000000000000000000000000000000000000000000000001",
+          "ordinal": "6"
+        },
+        {
+          "address": "a4b05fffffffffffffffffffffffffffffffffff",
+          "key": "a9f6f085d78d1d37c5819e5c16c9e03198bd14e08cd1f6f8191bc6207b9e970b",
+          "oldValue": "00000000000000000000000000000000000000000000000000213c813ccd8000",
+          "newValue": "0000000000000000000000000000000000000000000000000021925c73450000",
+          "ordinal": "12"
+        },
+        {
+          "address": "a4b05fffffffffffffffffffffffffffffffffff",
+          "key": "e54de2a4cdacc0a0059d2b6e16348103df8c4aff409c31e40ec73d11926c8204",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000035986",
+          "newValue": "0000000000000000000000000000000000000000000000000000000001eba186",
+          "ordinal": "13"
+        }
+      ],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "2386f26fc10000",
+          "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "9",
+          "oldValue": "",
+          "newValue": "17d2b52a018000"
+        },
+        {
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "10",
+          "oldValue": "",
+          "newValue": "0b5e620f480000"
+        },
+        {
+          "address": "a4b00000000000000000000000000000000000f6",
+          "reason": "REASON_TRANSFER",
+          "ordinal": "11",
+          "oldValue": "",
+          "newValue": "55db36778000"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "4"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [
+        {
+          "oldValue": "100000000",
+          "newValue": "99978936",
+          "reason": "REASON_INTRINSIC_GAS",
+          "ordinal": "2"
+        },
+        {
+          "oldValue": "31956457",
+          "newValue": "0",
+          "reason": "REASON_FAILED_EXECUTION",
+          "ordinal": "7"
+        }
+      ],
+      "statusFailed": true,
+      "statusReverted": false,
+      "failureReason": "invalid opcode: INVALID",
+      "stateReverted": true,
+      "beginOrdinal": "0",
+      "endOrdinal": "8",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "05f5e101",
+  "maxFeePerGas": "078b30c4",
+  "maxPriorityFeePerGas": "01",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}
