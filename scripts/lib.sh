@@ -15,6 +15,7 @@ reth="${RETH_BINARY:-reth}"
 op_node="${OP_NODE_BINARY:-op-node}"
 op_geth="${OP_GETH_BINARY:-op-geth}"
 op_reth="${OP_RETH_BINARY:-op-reth}"
+world_chain="${WORLD_CHAIN_BINARY:-world-chain}"
 besu="${BESU_BINARY:-besu}"
 
 # Colors for output
@@ -383,4 +384,18 @@ lib_error() {
   fi
 
   exit 1
+}
+
+check_world_chain() {
+  if ! command -v "$world_chain" &> /dev/null; then
+    echo "The '$world_chain' binary could not be found, install required binary from our fork:"
+    echo ""
+    echo "- git clone -b release/v2.x-fh https://github.com/streamingfast/world-chain.git"
+    echo "- cd world-chain"
+    echo "- cargo build --release -p world-chain   # needs rustc 1.95.0+"
+    echo "- cp target/release/world-chain \"\`go env GOPATH\`/bin/\" # or anywhere on PATH"
+    echo ""
+    echo "You can also point the WORLD_CHAIN_BINARY environment variable to the binary."
+    exit 1
+  fi
 }

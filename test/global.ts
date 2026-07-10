@@ -95,6 +95,15 @@ before(async () => {
   TripleSuicideFactory = await hre.ethers.getContractFactory("TripleSuicide")
   debug("Initialized contract factories")
 
+  if (isNetwork("world-chain-devnet")) {
+    // World Chain activates Jovian (EIP-7825: tx gas cap = 2^24) while its devnet block gas
+    // limit is 60M. Bare eth_estimateGas uses the block gas limit as the upper bound and the
+    // node rejects it with "intrinsic gas too high", so clamp every estimation to the tx cap.
+    const provider = hre.ethers.provider
+    const originalEstimateGas = provider.estimateGas.bind(provider)
+    provider.estimateGas = (tx) => originalEstimateGas({ ...tx, gasLimit: 16_777_216 })
+  }
+
   debug("Initializing owner")
   // first and owner are the same here, but first is of type HardhatSigner and have .address already resolved
   const [first] = await hre.ethers.getSigners()

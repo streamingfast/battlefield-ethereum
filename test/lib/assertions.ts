@@ -343,7 +343,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
               return trxReceipt.cumulativeGasUsed.toString()
             case "$coinbase":
-              if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet")) {
+              if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")) {
                 // Optimism have more than one receive for the transaction fee making it hard for use to
                 // map the correct one to the correct address. The code below essentially remove validation
                 // of $coinbase value in the template.
@@ -467,7 +467,7 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
         change.oldValue = zeroWeiF
         change.newValue = oneWeiF
 
-        if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet")) {
+        if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")) {
           // Optimism have more than one receive for the transaction fee making it hard for use to
           // map the correct one to the correct address. The code below essentially remove validation
           // of $coinbase value in the template
@@ -479,7 +479,10 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
 
       // It seems gas buy changes over multiple runs and based on previous transactions sent, so
       // we just "fix" them to a static value to avoid diff on this field
-      if (change.reason === BalanceChange_Reason.GAS_BUY && isNetworkOneOf("op-geth-devnet", "op-reth-devnet")) {
+      if (
+        change.reason === BalanceChange_Reason.GAS_BUY &&
+        isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")
+      ) {
         change.oldValue = zeroWeiF
         change.newValue = oneWeiF
       }
