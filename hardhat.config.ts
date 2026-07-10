@@ -2,6 +2,8 @@ import "@nomicfoundation/hardhat-toolbox"
 import { HardhatUserConfig } from "hardhat/config"
 import { HttpNetworkUserConfig } from "hardhat/types"
 import { EIP, EIPs, newEIPsFromList } from "./test/lib/chain_eips"
+import * as fs from "fs"
+import * as path from "path"
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -36,6 +38,7 @@ const config: HardhatUserConfig = {
     "op-geth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
     "op-reth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
     "polygon-dev": firehoseNetwork([]),
+    "world-chain-devnet": { ...firehoseNetwork([]), url: worldChainDevnetUrl() },
     "reth-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:9545" },
     "reth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
   },
@@ -48,6 +51,19 @@ const config: HardhatUserConfig = {
       maxDiffSize: "100000",
     },
   },
+}
+
+// The world-chain devnet assigns its sequencer RPC port dynamically; the devnet launcher
+// (scripts/world_chain/run_world_chain_devnet.sh) writes the resolved URL to a state file.
+function worldChainDevnetUrl(): string {
+  if (process.env.WORLD_CHAIN_RPC_URL) {
+    return process.env.WORLD_CHAIN_RPC_URL
+  }
+  const stateFile = path.join(__dirname, "scripts", "world_chain", ".devnet", "rpc-url")
+  if (fs.existsSync(stateFile)) {
+    return fs.readFileSync(stateFile, "utf-8").trim()
+  }
+  return "http://127.0.0.1:8545"
 }
 
 function firehoseNetwork(enforcedEips: EIP[]): HttpNetworkUserConfig & { eips: EIPs } {

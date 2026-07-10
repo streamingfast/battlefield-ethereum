@@ -18,6 +18,7 @@
     "test:fh3.0:op-geth-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/op-geth-devnet hardhat test --network op-geth-devnet",
     "test:fh3.0:op-reth-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/op-reth-devnet hardhat test --network op-reth-devnet",
     "test:fh3.0:geth-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/v5/geth-devnet hardhat test --network geth-devnet",
+    "test:fh3.0:world-chain-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/world-chain-devnet hardhat test --network world-chain-devnet",
     "test:fh3.0:reth-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/v5/reth-devnet hardhat test --network reth-devnet",
     "test:fh3.0:besu-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/besu-devnet hardhat test --network besu-devnet",
     "test:fh3.0:amoy": "cross-env SNAPSHOTS_TAG=fh3.0/amoy hardhat test --network amoy",

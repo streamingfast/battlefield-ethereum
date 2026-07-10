@@ -92,7 +92,7 @@ describe("Pure transfers", function () {
     if (isArbitrum()) {
       this.skip()
     }
-    if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet")) {
+    if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")) {
       // On Optimism devnet, the precompile at address 0x0000000000000000000000000000000000000808 have balance, so we cannot run this test,
       // there is no much we can do about it, skipping the test for this network.
       this.skip()

@@ -85,7 +85,7 @@ describe("Blocks", function () {
 
     // Optimism has different rules of transaction fee rewards distribution as such computation
     // would need to be adjusted and a specific test created, for now simply skip the test.
-    if (isNetwork("op-geth-devnet") || isNetwork("op-reth-devnet")) {
+    if (isNetwork("op-geth-devnet") || isNetwork("op-reth-devnet") || isNetwork("world-chain-devnet")) {
       this.skip()
     }
 
