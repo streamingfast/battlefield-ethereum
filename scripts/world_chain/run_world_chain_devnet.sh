@@ -6,7 +6,7 @@
 #
 # Requirements:
 # - streamingfast/world-chain checkout (branch release/v2.x-fh) at $WORLD_CHAIN_REPO
-#   (default: $HOME/repos/world-chain), with rustc 1.95+ and `just` installed
+#   (default: ../world-chain next to this repo), with rustc 1.95+ and `just` installed
 # - docker, jq, cast (Foundry), forge on PATH (the devnet deploys its proof system with forge)
 #
 # Usage: ./run_world_chain_devnet.sh
@@ -17,7 +17,7 @@ set -e
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source "$ROOT/lib.sh"
 
-world_chain_repo="${WORLD_CHAIN_REPO:-$HOME/repos/world-chain}"
+world_chain_repo="${WORLD_CHAIN_REPO:-$ROOT/../../world-chain}"
 follower_container="battlefield-world-chain-kona"
 state_dir="$ROOT/world_chain/.devnet"
 endpoints_file="$world_chain_repo/target/devnet/endpoints.json"
