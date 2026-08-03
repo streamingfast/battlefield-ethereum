@@ -99,9 +99,54 @@ KURTOSIS_POS_REF="a76f5263dfa44ba0f936ad1d9d543368387aa4ce"
 BOR_IMAGE="0xpolygon/bor:2.8.0-beta"
 HEIMDALL_IMAGE="0xpolygon/heimdall-v2:0.7.2-beta2"
 
+# Kurtosis starts its engine in the Docker 'bridge' network, but resolves it through
+# Docker's `name=` filter, which is a *substring* match. Any other network whose name
+# contains "bridge" (typically a compose project such as `besu-bridge-poc_default`)
+# makes the lookup return two networks and the engine refuses to start with:
+#
+#   An error occurred getting the engine network
+#   Caused by: Expected exactly one network matching the name of the network that we
+#   want to start the engine in, 'bridge', but got 2
+#
+# The lookup has no exact-name filtering and no config override; it is still unfixed
+# upstream as of kurtosis 1.20.0 (GetNetworksByName in container-engine-lib). Clear the
+# conflict here so the engine can start.
+check_docker_network_conflicts() {
+    local conflicts
+    # Same filter semantics as kurtosis, minus the legitimate 'bridge' network itself.
+    conflicts=$(docker network ls --filter name=bridge --format '{{.Name}}' | grep -vx bridge || true)
+    if [[ -z "$conflicts" ]]; then
+        return 0
+    fi
+
+    local blocked=()
+    while IFS= read -r network; do
+        local attached
+        attached=$(docker network inspect "$network" --format '{{len .Containers}}' 2>/dev/null || echo 0)
+        if [[ "$attached" == "0" ]]; then
+            echo "⚠️  Removing unused Docker network '$network' (its name contains 'bridge', which breaks the Kurtosis engine lookup)."
+            echo "   Compose recreates it automatically the next time that project starts."
+            docker network rm "$network" >/dev/null
+        else
+            blocked+=("$network ($attached container(s) attached)")
+        fi
+    done <<< "$conflicts"
+
+    if [ ${#blocked[@]} -ne 0 ]; then
+        echo "❌ These in-use Docker networks have a name containing 'bridge' and will prevent the Kurtosis engine from starting:" >&2
+        printf '   - %s\n' "${blocked[@]}" >&2
+        echo "" >&2
+        echo "   Stop those containers, or rename the network so it no longer contains 'bridge'" >&2
+        echo "   (for compose: set 'networks.default.name' or rename the project directory)." >&2
+        exit 1
+    fi
+}
+
 # Function to prepare the Kurtosis environment
 prepare_kurtosis_environment() {
     echo "Preparing Kurtosis environment..."
+
+    check_docker_network_conflicts
 
     address_to_fund=0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab
 
@@ -170,7 +215,10 @@ prepare_local_node() {
     export DATADIR=$(pwd)/localdata
     export CONFIGDIR=$(pwd)/localconfig
     export CLHTTPADDR=$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator http)
-    export CLWSADDR=$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator rpc)
+    # `kurtosis port print` reports the CometBFT RPC port as http://; bor rejects that
+    # with `malformed ws or wss URL` and never subscribes to Heimdall. It wants the
+    # CometBFT websocket endpoint: ws://<host>:<port>/websocket
+    export CLWSADDR="ws://$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator rpc | sed -E 's@^[a-z]+://@@')/websocket"
     export ELP2PADDR=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator discovery)
     export ENODE=$(kurtosis service exec pos l2-el-1-bor-heimdall-v2-validator "echo admin.nodeInfo | bor attach /var/lib/bor/bor.ipc" |awk '/enode/ {print $2}' | sed 's@.*"\(enode://.*\)127.0.0.1:30303.*@\1@')$(echo $ELP2PADDR|sed 's@http://@@')
 
