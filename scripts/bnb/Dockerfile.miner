@@ -26,7 +26,13 @@ RUN echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc
 RUN cd /root/genesis && poetry install
 
 RUN  curl -L https://foundry.paradigm.xyz | bash
-RUN cd /root/genesis && foundryup && forge install --no-git foundry-rs/forge-std@$FORGE_VERSION
+# forge install --no-git broke with newer foundry ("not a git repository:
+# ../../.git/modules/lib/ds-test"); vendor forge-std (and its ds-test dep) manually.
+RUN cd /root/genesis && foundryup \
+    && rm -rf lib/forge-std \
+    && git clone --depth 1 --branch $FORGE_VERSION https://github.com/foundry-rs/forge-std lib/forge-std \
+    && git clone --depth 1 https://github.com/dapphub/ds-test lib/forge-std/lib/ds-test \
+    && rm -rf lib/forge-std/.git lib/forge-std/lib/ds-test/.git
 
 WORKDIR /root/genesis
 RUN poetry run python -m scripts.generate dev
