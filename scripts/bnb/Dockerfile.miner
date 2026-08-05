@@ -47,7 +47,7 @@ RUN uname -i |grep "aarch64" && binary="geth_linux" || binary="geth-linux-arm64"
 RUN geth init genesis.json
 RUN geth account import --password=/dev/null <(echo 9b28f36fbd67381120752d6172ecdcf10e06ab2d9a1367aac00cdcd6ac7855d3)
 
-CMD geth --mine --miner.etherbase=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --unlock=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --password=/dev/null --allow-insecure-unlock --http --http.api=eth,net,web3,debug,admin --http.addr=0.0.0.0 --port=30304
+CMD geth --mine --miner.etherbase=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --unlock=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --password=/dev/null --allow-insecure-unlock --http --http.api=eth,net,web3,debug,admin --http.addr=0.0.0.0 --port=30304 --miner.gasprice=1 --txpool.pricelimit=1
 
 EXPOSE 30304
 EXPOSE 8545

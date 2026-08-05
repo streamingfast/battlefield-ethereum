@@ -13,7 +13,7 @@
     "test:fh3.0:reth-dev": "cross-env SNAPSHOTS_TAG=fh3.0/v5/reth-dev hardhat test --network reth-dev",
     "test:fh3.0:sei-dev": "cross-env SNAPSHOTS_TAG=fh3.0/sei-dev hardhat test --network sei-dev",
     "test:fh3.0:bnb-dev": "cross-env SNAPSHOTS_TAG=fh3.0/bnb-dev hardhat test --network bnb-dev",
-    "test:fh3.0:reth-bsc-dev": "cross-env SNAPSHOTS_TAG=fh3.0/bnb-dev hardhat test --network bnb-dev",
+    "test:fh3.0:reth-bsc-dev": "cross-env SNAPSHOTS_TAG=fh3.0/v5/reth-bsc-dev hardhat test --network bnb-dev",
     "test:fh3.0:polygon-dev": "cross-env SNAPSHOTS_TAG=fh3.0/polygon-dev hardhat test --network polygon-dev",
     "test:fh3.0:op-geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0/op-geth-dev hardhat test --network op-geth-dev",
     "test:fh3.0:op-geth-devnet": "cross-env SNAPSHOTS_TAG=fh3.0/op-geth-devnet hardhat test --network op-geth-devnet",
