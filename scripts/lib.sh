@@ -12,6 +12,7 @@ nitro="${NITRO_BINARY:-nitro}"
 seid="${SEID_BINARY:-seid}"
 bor="${BOR_BINARY:-bor}"
 reth="${RETH_BINARY:-reth}"
+reth_bsc="${RETH_BSC_BINARY:-reth-bsc}"
 op_node="${OP_NODE_BINARY:-op-node}"
 op_geth="${OP_GETH_BINARY:-op-geth}"
 op_reth="${OP_RETH_BINARY:-op-reth}"
@@ -131,6 +132,15 @@ check_geth() {
           exit 1
       fi
   fi
+}
+
+check_reth_bsc() {
+    if ! command -v "$reth_bsc" &> /dev/null; then
+        echo "The 'reth-bsc' binary is required for this script. Set RETH_BSC_BINARY to the"
+        echo "path of a Firehose-instrumented reth-bsc build (streamingfast/reth-bsc, branch"
+        echo "firehose/0.1.x)."
+        exit 1
+    fi
 }
 
 check_reth_firehose_tracer() {

@@ -26,13 +26,19 @@ RUN echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc
 RUN cd /root/genesis && poetry install
 
 RUN  curl -L https://foundry.paradigm.xyz | bash
-RUN cd /root/genesis && foundryup && forge install --no-git foundry-rs/forge-std@$FORGE_VERSION
+# forge install --no-git broke with newer foundry ("not a git repository:
+# ../../.git/modules/lib/ds-test"); vendor forge-std (and its ds-test dep) manually.
+RUN cd /root/genesis && foundryup \
+    && rm -rf lib/forge-std \
+    && git clone --depth 1 --branch $FORGE_VERSION https://github.com/foundry-rs/forge-std lib/forge-std \
+    && git clone --depth 1 https://github.com/dapphub/ds-test lib/forge-std/lib/ds-test \
+    && rm -rf lib/forge-std/.git lib/forge-std/lib/ds-test/.git
 
 WORKDIR /root/genesis
 RUN poetry run python -m scripts.generate dev
 
 # activate pascal, lorentz and maxwell
-RUN jq '.config.berlinBlock = 8 | .config.hertzfixBlock = 8 | .config.londonBlock = 8 | .config.hertzBlock = 8 | .config.lorentzTime = 0 | .config.pascalTime = 0 | .config.parlia.period = 1 | .config.bohrTime = 0 | .config.haberFixTime = 0 | .config.haberTime = 0 | .config.cancunTime = 0 | .config.feynmanFixTime = 0 | .config.pragueTime = 0 | .config.MaxwellTime=0 | .config.blobSchedule = { "cancun": { "target": 3, "max": 6, "baseFeeUpdateFraction": 3338477 }, "prague": { "target": 6, "max": 9, "baseFeeUpdateFraction": 5007716 }}'  genesis.json> genesis.json.new && mv genesis.json.new genesis.json
+RUN jq '.config.berlinBlock = 8 | .config.hertzfixBlock = 8 | .config.londonBlock = 8 | .config.hertzBlock = 8 | .config.lorentzTime = 0 | .config.pascalTime = 0 | .config.parlia.period = 1 | .config.bohrTime = 0 | .config.haberFixTime = 0 | .config.haberTime = 0 | .config.cancunTime = 0 | .config.feynmanFixTime = 0 | .config.pragueTime = 0 | .config.maxwellTime = 0 | .config.blobSchedule = { "cancun": { "target": 3, "max": 6, "baseFeeUpdateFraction": 3338477 }, "prague": { "target": 6, "max": 9, "baseFeeUpdateFraction": 5007716 }}'  genesis.json> genesis.json.new && mv genesis.json.new genesis.json
 #COPY genesis.json.example genesis.json
 
 RUN uname -i |grep "aarch64" && binary="geth_linux" || binary="geth-linux-arm64"; curl -L -o /usr/local/bin/geth https://github.com/bnb-chain/bsc/releases/download/$GETH_VERSION/$binary && chmod +x /usr/local/bin/geth
@@ -41,7 +47,7 @@ RUN uname -i |grep "aarch64" && binary="geth_linux" || binary="geth-linux-arm64"
 RUN geth init genesis.json
 RUN geth account import --password=/dev/null <(echo 9b28f36fbd67381120752d6172ecdcf10e06ab2d9a1367aac00cdcd6ac7855d3)
 
-CMD geth --mine --miner.etherbase=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --unlock=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --password=/dev/null --allow-insecure-unlock --http --http.api=eth,net,web3,debug,admin --http.addr=0.0.0.0 --port=30304
+CMD geth --mine --miner.etherbase=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --unlock=0x9fB29AAc15b9A4B7F17c3385939b007540f4d791 --password=/dev/null --allow-insecure-unlock --http --http.api=eth,net,web3,debug,admin --http.addr=0.0.0.0 --port=30304 --miner.gasprice=1 --txpool.pricelimit=1
 
 EXPOSE 30304
 EXPOSE 8545

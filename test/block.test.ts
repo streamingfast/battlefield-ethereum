@@ -134,6 +134,12 @@ describe("Blocks", function () {
       return
     }
 
+    // On BSC the fee (base + tip) is credited to the Parlia system address during the
+    // transaction and only swept to the validator contract by the end-of-block deposit
+    // system transaction, so REWARD_TRANSACTION_FEE is recorded for the system address,
+    // never for the coinbase.
+    const feeRecipient = isNetwork("bnb-dev") ? "0xfffffffffffffffffffffffffffffffffffffffe" : coinbase
+
     // On PoA/PoS chains (geth-dev, reth-dev) the tip paid by each transaction is recorded as
     // REWARD_TRANSACTION_FEE inside that transaction's call balance changes (not at block level).
     const txFeeRewardChanges = block.transactionTraces.flatMap((tx) =>
@@ -141,14 +147,14 @@ describe("Blocks", function () {
         call.balanceChanges.filter(
           (change) =>
             change.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE &&
-            isSameAddress(hexlify(change.address), coinbase),
+            isSameAddress(hexlify(change.address), feeRecipient),
         ),
       ),
     )
 
     expect(txFeeRewardChanges.length).to.be.greaterThan(
       0,
-      `coinbase ${coinbase} should have at least one REWARD_TRANSACTION_FEE in transaction call balance changes`,
+      `fee recipient ${feeRecipient} should have at least one REWARD_TRANSACTION_FEE in transaction call balance changes`,
     )
 
     for (const change of txFeeRewardChanges) {
