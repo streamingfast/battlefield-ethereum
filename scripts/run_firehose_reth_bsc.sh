@@ -18,10 +18,7 @@ main() {
     echo "Running reth-bsc with Firehose tracing via 'fireeth' (BSC miner must be running)"
     echo "Working directory: '$RUNDIR'"
     "$BNB_SCRIPTS_FOLDER/get-funds.sh"
-    # The reth Firehose tracer streams from block 1 (genesis is folded into the block-1
-    # marker), same as the reth-dev harness. The geth-generated bnb-dev goldens include
-    # block 0, so the genesis test is a known difference for now.
-    run_fireeth 1 "bash" "$SCRIPTS_FOLDER/reth_bsc/wrapped_reth_bsc.sh"
+    run_fireeth 0 "bash" "$SCRIPTS_FOLDER/reth_bsc/wrapped_reth_bsc.sh"
   popd > /dev/null
 }
 

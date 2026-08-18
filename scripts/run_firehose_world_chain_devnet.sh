@@ -80,10 +80,7 @@ main() {
 
   world_chain_args="${world_chain_args_parts[*]}"
 
-  # First streamable block is 1, not 0: like op-reth, world-chain's genesis (block 0) is
-  # written by `world-chain init` and never flows through the engine API, so the Firehose
-  # stream starts at block 1. See run_firehose_op_reth_devnet.sh for the full explanation.
-  run_fireeth ${WORLD_CHAIN_FIRST_BLOCK:-1} "$world_chain" "$world_chain_args"
+  run_fireeth ${WORLD_CHAIN_FIRST_BLOCK:-0} "$world_chain" "$world_chain_args"
 }
 
 main "$@"

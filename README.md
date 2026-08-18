@@ -369,8 +369,6 @@ Both `geth-devnet` and `reth-devnet` run as a secondary execution layer client a
 
 - **Run against a fresh chain.** On a reused chain the fresh-chain-only tests fail (skip them with `SKIP_FRESH_CHAIN_ONLY_TESTS=1`) and `prague/setcode_set_delegations` shifts by one ordinal because its fixed authority EOA already exists.
 - **Separate goldens tag.** The suite uses `SNAPSHOTS_TAG=fh3.0/v5/reth-bsc-dev`, not the geth-BSC `fh3.0/bnb-dev` tag. The reth Firehose tracer (protocol version 5) does not emit gas change events, so ordinals can never line up with the geth-BSC goldens. See [`./test/snapshots/RETH_BSC_DEV.md`](./test/snapshots/RETH_BSC_DEV.md) for the full audited divergence list.
-- **Block 0.** The reth tracer streams from block 1 (genesis is folded into the block-1 marker), so the genesis test is a known difference against the geth-generated goldens.
-
 To stop everything:
 
 ```bash

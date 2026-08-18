@@ -14,8 +14,6 @@ const debug = debugFactory("battlefield:firehose")
 describe("Genesis Block", function () {
   it("Block 0 has a single genesis transaction trace with correct structure", async function () {
     // Reasons:
-    // - Reth don't record genesis yet, work in progress so reth-dev, reth-devnet and op-reth-devnet must be skipped
-    //   until it's ready.
     // - Firehose has problem return block 0 with devent env, so we disable is otherwise the test times out until first bundle ready
     //   we get error like 'Block #0 not found in Firehose within 30000ms'. Outside of this problem, those chains works if you
     //   wait long enough:
@@ -23,20 +21,7 @@ describe("Genesis Block", function () {
     //    - op-geth-devnet
     // - Arbitrum/Nitro builds its ArbOS genesis without persisting a genesis state spec, so the live firehose
     //   tracer initializes with an empty alloc: block 0 is emitted but carries no GENESIS_BALANCE changes.
-    // - bnb-dev runs reth-bsc as the Firehose follower, which has the same "no genesis
-    //   recorded yet" limitation as the other reth flavors (its stream starts at block 1).
-    if (
-      isNetworkOneOf(
-        "reth-dev",
-        "geth-devnet",
-        "reth-devnet",
-        "op-geth-devnet",
-        "op-reth-devnet",
-        "world-chain-devnet",
-        "arbitrum-nitro-dev",
-        "bnb-dev",
-      )
-    ) {
+    if (isNetworkOneOf("geth-devnet", "op-geth-devnet", "arbitrum-nitro-dev")) {
       this.skip()
     }
 

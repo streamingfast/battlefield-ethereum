@@ -10,7 +10,7 @@ main() {
   check_reth_firehose_tracer
 
   echo "Running Reth dev node with Firehose tracer activated via 'fireeth'"
-  FIREHOSE_VERSION="3.0" FORK_VERSION="prague" run_fireeth 1 "bash" "$ROOT/reth_dev/wrapped_reth_dev.sh"
+  FIREHOSE_VERSION="3.0" FORK_VERSION="prague" run_fireeth 0 "bash" "$ROOT/reth_dev/wrapped_reth_dev.sh"
 }
 
 usage() {
