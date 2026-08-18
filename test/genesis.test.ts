@@ -25,7 +25,6 @@ describe("Genesis Block", function () {
     //   tracer initializes with an empty alloc: block 0 is emitted but carries no GENESIS_BALANCE changes.
     if (
       isNetworkOneOf(
-        "reth-dev",
         "geth-devnet",
         "reth-devnet",
         "op-geth-devnet",
@@ -37,7 +36,7 @@ describe("Genesis Block", function () {
       this.skip()
     }
 
-    if (isNetworkOneOf("geth-dev")) {
+    if (isNetworkOneOf("geth-dev", "reth-dev")) {
       await waitUntilMergedBlocksAvailable()
     }
 
