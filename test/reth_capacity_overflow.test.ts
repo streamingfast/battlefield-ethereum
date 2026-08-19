@@ -29,8 +29,14 @@ import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
  */
 describe("Reth capacity overflow (Sepolia OOG replay)", function () {
   before(function () {
-    // Only meaningful against the Firehose-instrumented Reth.
-    if (!isNetworkOneOf("reth-devnet", "reth-dev")) {
+    // Only meaningful against the Firehose-instrumented Reth, and only on `reth-devnet`.
+    //
+    // `reth-dev` is excluded on purpose: it boots from the shared geth dev genesis whose gasLimit
+    // is 11,500,000, while the replayed Sepolia transaction carries a gas limit of 20,979,492. The
+    // node rejects it upfront with "exceeds block gas limit", so the out-of-gas path this test
+    // exercises is never reached. The builder-playground devnet used by `reth-devnet` has a
+    // 60,000,000 block gas limit, which holds the transaction.
+    if (!isNetworkOneOf("reth-devnet")) {
       this.skip()
     }
   })
