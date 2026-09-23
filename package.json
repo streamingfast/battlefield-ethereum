@@ -9,6 +9,7 @@
     "prepare": "husky",
     "generate": "buf generate buf.build/streamingfast/firehose-ethereum",
     "generate:local": "buf generate ../firehose-ethereum/proto",
+    "test:fh3.1:arc-dev": "cross-env SNAPSHOTS_TAG=fh3.1/v5/arc-dev hardhat test --network arc-dev",
     "test:fh3.0:geth-dev": "cross-env SNAPSHOTS_TAG=fh3.0/v5/geth-dev hardhat test --network geth-dev",
     "test:fh3.0:reth-dev": "cross-env SNAPSHOTS_TAG=fh3.0/v5/reth-dev hardhat test --network reth-dev",
     "test:fh3.0:sei-dev": "cross-env SNAPSHOTS_TAG=fh3.0/sei-dev hardhat test --network sei-dev",

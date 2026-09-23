@@ -37,6 +37,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | ------------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | Ethereum (Firehose 3.0)  | `./scripts/run_firehose_geth_dev.sh 3.0 prague`                                               | `pnpm test:fh3.0:geth-dev`                                 | None                                                                           |
 | Reth Dev (fh 3.0)        | `./scripts/run_firehose_reth_dev.sh`                                                          | `pnpm test:fh3.0:reth-dev`                                 | Requires [reth](#get-reth) and [fireeth](#get-fireeth) |
+| Arc Dev (fh 3.1, v5)     | `./scripts/run_firehose_arc_dev.sh`                                                           | `pnpm test:fh3.1:arc-dev`                                  | Requires [arc-node-execution](#get-arc-node-execution) and [fireeth](#get-fireeth). Own goldens tag |
 | Sei                      | `./scripts/run_firehose_sei.sh sequential`                                                    | `pnpm test:fh3.0:sei-dev`                                  | The `sequential` tag refers to transaction execution algorithm, test both      |
 | Sei                      | `./scripts/run_firehose_sei.sh parallel`                                                      | `pnpm test:fh3.0:sei-dev`                                  | The `parallel` tag refers to transaction execution algorithm, test both        |
 | BNB                      | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                     | `pnpm test:fh3.0:bnb-dev`                                  | None                                                                           |
@@ -187,6 +188,34 @@ Dependencies you will need to have locally to run the scripts contained in this 
 ### Get `fireeth`
 
 To install `fireeth`, you can simply do `brew install tap/streamingfast/firehose-ethereum` or follow [other installations](https://github.com/streamingfast/firehose-core/tree/develop?tab=readme-ov-file#installation) section of the project's README.
+
+### Get `arc-node-execution`
+
+Arc's execution client is reth-based and lives in the private `streamingfast/arc-node-priv`
+repository. There are no published binaries, so build it:
+
+```bash
+git clone git@github.com:streamingfast/arc-node-priv.git && cd arc-node-priv
+git checkout release/v0.x
+cargo build --release --bin arc-node-execution
+```
+
+Put `target/release/arc-node-execution` on your `PATH`, or set
+`ARC_NODE_BINARY=/path/to/arc-node-execution`.
+
+The `reth-*` crates come from the private `pinax-network/reth` fork, pinned over an HTTPS URL,
+and cargo fetches them with the git CLI. If the build stops on
+`could not read Username for 'https://github.com'`, point git at your SSH key for those URLs:
+
+```bash
+git config --global url."git@github.com:".insteadOf "https://github.com/"
+```
+
+```bash
+# Check
+arc-node-execution --version
+arc-node-execution node --help | grep -- --firehose
+```
 
 ### Get `reth`
 

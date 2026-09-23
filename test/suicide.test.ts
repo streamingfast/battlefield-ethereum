@@ -8,6 +8,7 @@ import {
   deployStableContractCreator,
   getCreate2AddressHex,
   getCreateAddressHex,
+  koContractCall,
   sendEth,
   stableDeployerFunded,
 } from "./lib/ethereum"
@@ -174,13 +175,18 @@ describe("Suicide", function () {
 
     await sendEth(owner, Contract.address, oneWei, { gasLimit: 45000 })
 
-    await expect(contractCall(owner, Contract.killSelf, [])).to.trxTraceEqualSnapshot(
-      "suicide/contract_and_suicide_beneficiary_are_the_same.json",
-      {
-        $sender: deployer.address.toLowerCase().slice(2),
-        $createdContract: Contract.addressHex,
-      },
-    )
+    // Arc rejects SELFDESTRUCT when the beneficiary is the contract itself
+    // (`check_selfdestruct_accounts` in arc-node `crates/evm/src/opcode.rs` halts with Revert
+    // on `source == target`), so the transaction is mined with status 0. The trace is still
+    // produced and asserted, it just records a reverted call.
+    const call = isNetwork("arc-dev")
+      ? koContractCall(owner, Contract.killSelf, [])
+      : contractCall(owner, Contract.killSelf, [])
+
+    await expect(call).to.trxTraceEqualSnapshot("suicide/contract_and_suicide_beneficiary_are_the_same.json", {
+      $sender: deployer.address.toLowerCase().slice(2),
+      $createdContract: Contract.addressHex,
+    })
   })
 
   it("Contract and suicide beneficiary are the same, in same trx", async function () {
@@ -189,7 +195,13 @@ describe("Suicide", function () {
     })
     const createdContract = getCreateAddressHex(Contract.address, 1)
 
-    await expect(contractCall(owner, Contract.execute, [], { value: oneWei })).to.trxTraceEqualSnapshot(
+    // See the note in the previous test: on Arc the SELFDESTRUCT reverts the transaction, so
+    // the trace is a reverted one rather than the canonical suicide trace.
+    const call = isNetwork("arc-dev")
+      ? koContractCall(owner, Contract.execute, [], { value: oneWei })
+      : contractCall(owner, Contract.execute, [], { value: oneWei })
+
+    await expect(call).to.trxTraceEqualSnapshot(
       "suicide/contract_and_suicide_beneficiary_are_the_same_in_same_trx.json",
       {
         $contract: Contract.addressHex,
