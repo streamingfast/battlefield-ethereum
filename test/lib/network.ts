@@ -29,6 +29,13 @@ export function isNetworkStartsWith(prefixes: string[]): boolean {
   return prefixes.some((prefix) => name.startsWith(prefix))
 }
 
+// Returns true on chains running in mine-on-demand mode, where a block is produced only when a
+// transaction arrives. Nothing moves forward on those chains (block production, and with it
+// Firehose readiness and finality) unless the test suite keeps sending transactions.
+export function isMineOnDemand(): boolean {
+  return isNetworkOneOf("geth-dev", "reth-dev", "arbitrum-nitro-dev")
+}
+
 // Returns true on Arbitrum/Nitro networks. These run ArbOS rather than a vanilla EVM, so
 // several Firehose trace behaviors legitimately differ from the canonical model and need
 // dedicated handling (gas model, account-creation ordinals, fee recipient, selfdestruct).

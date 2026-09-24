@@ -28,7 +28,7 @@ import { oneWei } from "./lib/money"
 import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
 import { fetchFirehoseBlock, waitForFirehoseReady } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
-import { isNetwork } from "./lib/network"
+import { isMineOnDemand, isNetwork } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
 import {
   besu_exclude_fields as besuExcludeFields,
@@ -128,7 +128,7 @@ before(async () => {
   ownerAddressBytes = getBytes(ownerAddress)
   debug("Initialized owner")
 
-  if (isNetwork("reth-dev") || isNetwork("geth-dev") || isNetwork("arbitrum-nitro-dev")) {
+  if (isMineOnDemand()) {
     debug("Waiting for Firehose to be ready on mine-on-demand chain")
     const firehoseReadyStart = Date.now()
     await waitForFirehoseReady(() => sendImmediateEth(owner, knownExistingAddress, oneWei))

@@ -1,5 +1,11 @@
 import { Code, ConnectError, createClient } from "@connectrpc/connect"
-import { Fetch, SingleBlockRequest, SingleBlockRequestSchema } from "../../pb/sf/firehose/v2/firehose_pb"
+import {
+  EndpointInfo,
+  Fetch,
+  SingleBlockRequest,
+  SingleBlockRequestSchema,
+  Stream,
+} from "../../pb/sf/firehose/v2/firehose_pb"
 import { createGrpcTransport } from "@connectrpc/connect-node"
 import {
   BalanceChange,
@@ -35,11 +41,20 @@ const debug = debugFactory("battlefield:firehose")
 
 export const emptyBytes = Uint8Array.of()
 
+// Host:port of the Firehose gRPC endpoint. Every launcher in `scripts/` binds it to
+// `localhost:8089` (see `run_fireeth` in `scripts/lib.sh`), the environment variable is
+// only an escape hatch for non-standard setups. It is deliberately prefixed: the bare
+// `FIREHOSE_ENDPOINT` is commonly exported in a developer shell for the public endpoints.
+export const firehoseEndpoint = process.env.BATTLEFIELD_FIREHOSE_ENDPOINT ?? "localhost:8089"
+
 const transport = createGrpcTransport({
-  baseUrl: "http://localhost:8089",
+  baseUrl: `http://${firehoseEndpoint}`,
 })
 
 export const firehose = createClient(Fetch, transport)
+
+const firehoseStream = createClient(Stream, transport)
+const firehoseInfo = createClient(EndpointInfo, transport)
 
 const messageRegistry = createRegistry(BlockSchema)
 
@@ -432,7 +447,7 @@ export async function waitForFirehoseReady(sendTransaction: () => Promise<unknow
         // Use the plain HTTP health endpoint rather than the gRPC `firehose` client:
         // the gRPC Block() call holds the connection open waiting for the block to appear,
         // so it hangs instead of failing fast when Firehose is not yet ready.
-        const response = await fetch("http://localhost:8089", { signal: AbortSignal.timeout(1_000) })
+        const response = await fetch(`http://${firehoseEndpoint}`, { signal: AbortSignal.timeout(1_000) })
         const body = (await response.json()) as { is_ready?: boolean }
         if (body.is_ready === true) {
           debug("Firehose ready")
@@ -451,6 +466,55 @@ export async function waitForFirehoseReady(sendTransaction: () => Promise<unknow
   } finally {
     done = true
     await pumping
+  }
+}
+
+// Returns the first block number served by the Firehose endpoint. Launchers pass it to
+// `fireeth` as `--common-first-streamable-block` and it is not always 0 (Nitro and Sei
+// start at 1), so any full-chain range must be clamped to it.
+export async function fetchFirehoseFirstStreamableBlock(): Promise<number> {
+  const info = await firehoseInfo.info({})
+  return Number(info.firstStreamableBlockNum)
+}
+
+export type FirehoseHead = { num: number; libNum: number }
+
+// Returns the Firehose head block number together with the last irreversible block (LIB) known
+// at that point, or `undefined` when Firehose did not answer within `timeoutMs`.
+//
+// The LIB is the bound that matters for anything streaming with `final_blocks_only` (which is
+// what `fireeth tools compare-blocks-rpc` does): a range extending past the LIB makes the stream
+// hang until those blocks finalize. It is read from the head block's metadata rather than probed
+// with a final-only stream, because a final-only stream starting at `-1` resolves `-1` against
+// the head and then waits for that block to finalize, which is precisely the hang we avoid.
+export async function fetchFirehoseHead(timeoutMs = 10_000): Promise<FirehoseHead | undefined> {
+  const abort = new AbortController()
+  const timer = setTimeout(() => abort.abort(), timeoutMs)
+
+  try {
+    for await (const response of firehoseStream.blocks({ startBlockNum: -1n }, { signal: abort.signal })) {
+      if (response.metadata === undefined) {
+        debug("Firehose response has no metadata, LIB is unknown")
+        return undefined
+      }
+
+      const head = { num: Number(response.metadata.num), libNum: Number(response.metadata.libNum) }
+      debug("Firehose head #%d (LIB #%d)", head.num, head.libNum)
+
+      return head
+    }
+
+    return undefined
+  } catch (err) {
+    if (abort.signal.aborted) {
+      debug("Firehose head probe timed out after %d ms", timeoutMs)
+      return undefined
+    }
+
+    throw err
+  } finally {
+    clearTimeout(timer)
+    abort.abort()
   }
 }
 
