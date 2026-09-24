@@ -339,6 +339,21 @@ kill $(ps aux | grep -E "run_firehose_reth_devnet|fireeth|reth" | grep -v grep |
 
 ---
 
+## Block Comparison
+
+There is **no `scripts/compare-blocks.sh` to run after a test cycle** — the comparison between
+Firehose blocks and the node's JSON-RPC is the `Compare blocks` test, which sorts last in the
+suite and runs on every `pnpm test:*` invocation. Do not shell out to
+`fireeth tools compare-blocks-rpc` by hand: the test resolves the RPC url from the Hardhat
+network configuration (ports differ per network, e.g. `reth-dev` is on 9545) and bounds the
+range at the last irreversible block reported by Firehose.
+
+It reports as **pending** when the chain has no final block yet, and on the public Amoy testnet.
+A missing `fireeth` binary **fails** the test. Set `SKIP_COMPARE_BLOCKS=1` to skip it while
+iterating.
+
+---
+
 ## Snapshot Behaviour
 
 Most tests use **inline assertions**. A subset uses **snapshot files** stored under `test/snapshots/<category>/fh3.0/<network>/`.

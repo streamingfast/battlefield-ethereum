@@ -49,11 +49,28 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Optimism Reth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_reth_devnet.sh`. | `pnpm test:fh3.0:op-reth-devnet`                          | Requires [op-reth](#get-reth) (firehose-instrumented Op Stack Reth on PATH as `op-reth`), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Nitro Dev (fh 2.3 because block version == 3)       | `./scripts/run_firehose_nitro_dev.sh`                                   | `pnpm test:fh2.3:nitro-dev`                               | Standalone mine-on-demand Arbitrum chain. Requires [nitro](#get-nitro) and [fireeth](#get-fireeth) |
 
-After each test, you should also run:
+### Block Comparison
 
-```
-scripts/compare-blocks.sh
-```
+Every test run ends with a `Compare blocks` test that runs `fireeth tools compare-blocks-rpc`
+between the Firehose endpoint and the node's JSON-RPC, so there is nothing extra to run by hand.
+It takes the RPC url from the Hardhat network configuration and bounds the range at the chain's
+last irreversible block (the comparison streams final blocks only, an unfinalized stop block would
+hang). Genesis is excluded on purpose, Firehose synthesizes that block and `genesis.test.ts`
+asserts its content directly.
+
+The test reports as pending when the chain has no final block to compare yet (a devnet running
+real consensus needs a few epochs before one exists) and on the public Amoy testnet. A missing
+`fireeth` binary fails the test rather than skipping it, it is a broken setup. On mine-on-demand
+chains the test first mines blocks until finality catches up with what the suite produced, and
+prints the blocks left out when it cannot get there within its budget.
+
+| Environment variable | Default | Purpose |
+| --- | --- | --- |
+| `SKIP_COMPARE_BLOCKS` | unset | Set to `1` to skip the comparison entirely |
+| `COMPARE_BLOCKS_MAX_SPAN` | `2000` | Maximum number of blocks compared in a single run |
+| `COMPARE_BLOCKS_TIMEOUT_MS` | `300000` | Hard timeout for the `fireeth` comparison process |
+| `COMPARE_BLOCKS_FINALITY_TIMEOUT_MS` | `60000` | How long to mine blocks waiting for finality to catch up |
+| `BATTLEFIELD_FIREHOSE_ENDPOINT` | `localhost:8089` | Firehose gRPC endpoint of the stack under test |
 
 ### Specific Tests
 
