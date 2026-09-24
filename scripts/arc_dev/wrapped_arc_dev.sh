@@ -7,7 +7,7 @@ source "$ROOT/lib.sh"
 
 main() {
     data_dir="$(mktemp -d)"
-    fork_version=${FORK_VERSION:-"prague"}
+    fork_version=${FORK_VERSION:-"osaka"}
 
     # Geth genesis files do not work here: Arc reads fee params and gas limits from a
     # ProtocolConfig predeploy, so without it the node never gets past genesis.

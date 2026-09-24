@@ -10,7 +10,7 @@ main() {
   check_arc_node
 
   echo "Running Arc dev node with Firehose tracer activated via 'fireeth'"
-  FIREHOSE_VERSION="3.1" FORK_VERSION="prague" run_fireeth 0 "bash" "$ROOT/arc_dev/wrapped_arc_dev.sh"
+  FIREHOSE_VERSION="3.1" FORK_VERSION="osaka" run_fireeth 0 "bash" "$ROOT/arc_dev/wrapped_arc_dev.sh"
 }
 
 usage() {

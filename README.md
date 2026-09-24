@@ -196,7 +196,7 @@ repository. There are no published binaries, so build it:
 
 ```bash
 git clone git@github.com:streamingfast/arc-node-priv.git && cd arc-node-priv
-git checkout release/v0.x
+git checkout release/0.x
 cargo build --release --bin arc-node-execution
 ```
 
