@@ -1,8 +1,8 @@
 import { spawn } from "node:child_process"
 import hre from "hardhat"
 import debugFactory from "debug"
-import { fetchFirehoseFirstStreamableBlock, fetchFirehoseHead, firehoseEndpoint } from "./firehose"
-import { isMineOnDemand } from "./network"
+import { fetchFirehoseFirstStreamableBlock, fetchFirehoseHead, FirehoseHead, firehoseEndpoint } from "./firehose"
+import { isMineOnDemand, isNetwork } from "./network"
 
 const debug = debugFactory("battlefield:compare-blocks")
 
@@ -15,6 +15,12 @@ const defaultMaxSpan = 2_000
 // blocks the test suite just produced. Those chains only finalize when new blocks arrive, so
 // without this the tail of the run (~30 blocks on geth-dev) would never be compared.
 const defaultFinalityTimeoutMs = 60_000
+
+// How long the finality wait is allowed to take, exported so the Mocha timeout can account for
+// the time spent before the comparison itself even starts.
+export function finalityTimeoutMs(): number {
+  return Number(process.env.COMPARE_BLOCKS_FINALITY_TIMEOUT_MS ?? defaultFinalityTimeoutMs)
+}
 
 // `fireeth` is the same binary the launchers in `scripts/` use, honour the same override.
 export function fireethBinary(): string {
@@ -50,6 +56,12 @@ export async function resolveCompareRange(options?: {
   finalityTimeoutMs?: number
   mineBlock?: () => Promise<unknown>
 }): Promise<ResolvedRange> {
+  // Amoy is a long-lived public testnet: comparing a full span there means thousands of receipt
+  // fetches against a shared RPC, which is both slow and pointless for tracer validation.
+  if (isNetwork("amoy")) {
+    return { skipReason: "block comparison is not run against the public Amoy testnet" }
+  }
+
   const maxSpan = options?.maxSpan ?? Number(process.env.COMPARE_BLOCKS_MAX_SPAN ?? defaultMaxSpan)
 
   let head = await fetchFirehoseHead()
@@ -80,27 +92,38 @@ export async function resolveCompareRange(options?: {
 // Mines blocks until finality reaches `target`, giving up after `timeoutMs` and returning the
 // most recent head seen. Used on mine-on-demand chains only, where finality advances solely as
 // a consequence of new blocks being produced.
+//
+// `mineBlock` must wait for its transaction to be mined: it both paces the loop and keeps the
+// signer's nonce in sync. A failed send is fatal rather than ignored, because `owner` is an
+// ethers `NonceManager` that consumes a nonce before sending and never gives it back, so every
+// later transaction would queue behind a nonce that is never used and no block would be mined.
 async function advanceFinality(
   target: number,
   mineBlock: () => Promise<unknown>,
-  timeoutMs = Number(process.env.COMPARE_BLOCKS_FINALITY_TIMEOUT_MS ?? defaultFinalityTimeoutMs),
-): Promise<{ num: number; libNum: number }> {
+  timeoutMs = finalityTimeoutMs(),
+): Promise<FirehoseHead> {
   const deadline = Date.now() + timeoutMs
   let head = await fetchFirehoseHead()
+  let lastKnownHead = head
 
   while (head !== undefined && head.libNum < target && Date.now() < deadline) {
-    await mineBlock().catch(() => {})
+    await mineBlock()
     head = await fetchFirehoseHead()
+    lastKnownHead = head ?? lastKnownHead
   }
 
-  const reached = head?.libNum ?? 0
+  const reached = lastKnownHead?.libNum ?? 0
   if (reached < target) {
-    debug("Finality only reached #%d of target #%d within %d ms", reached, target, timeoutMs)
+    // Loud on purpose: the suite's last blocks are the ones that went unchecked, and a silent
+    // debug line would leave a green test hiding a shorter comparison than the reader expects.
+    console.log(
+      `Finality only reached #${reached} of #${target} within ${timeoutMs}ms, blocks #${reached + 1} to #${target} are left out of the comparison`,
+    )
   } else {
     debug("Finality reached #%d (target #%d)", reached, target)
   }
 
-  return head ?? { num: target, libNum: 0 }
+  return lastKnownHead ?? { num: target, libNum: 0 }
 }
 
 export type CompareResult = {
@@ -126,9 +149,11 @@ export async function compareBlocksWithRpc(range: BlockRange, timeoutMs: number)
   ]
 
   debug("Running %s %o", fireethBinary(), args)
-  const { exitCode, output } = await runProcess(fireethBinary(), args, timeoutMs)
+  const { exitCode, stdout, output } = await runProcess(fireethBinary(), args, timeoutMs)
 
-  const lines = output.split("\n")
+  // Parse stdout alone: zap writes its logs to stderr and a `different ...` report carries a
+  // rendered multi-line diff, so interleaving the two streams could split a report in half.
+  const lines = stdout.split("\n")
   const identicalCount = lines.filter((line) => /^\d+ identical$/.test(line.trim())).length
   const differences = lines.filter((line) => line.trim().startsWith("different"))
 
@@ -144,14 +169,17 @@ export async function isFireethAvailable(): Promise<boolean> {
   }
 }
 
+// Runs `command`, returning its stdout on its own (what the caller parses) and both streams
+// interleaved (what the caller reports when something goes wrong).
 async function runProcess(
   command: string,
   args: string[],
   timeoutMs: number,
-): Promise<{ exitCode: number | null; output: string }> {
+): Promise<{ exitCode: number | null; stdout: string; output: string }> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { stdio: ["ignore", "pipe", "pipe"] })
 
+    let stdout = ""
     let output = ""
     let timedOut = false
 
@@ -160,7 +188,10 @@ async function runProcess(
       child.kill("SIGKILL")
     }, timeoutMs)
 
-    child.stdout.on("data", (chunk: Buffer) => (output += chunk.toString()))
+    child.stdout.on("data", (chunk: Buffer) => {
+      stdout += chunk.toString()
+      output += chunk.toString()
+    })
     child.stderr.on("data", (chunk: Buffer) => (output += chunk.toString()))
 
     child.on("error", (err) => {
@@ -175,7 +206,7 @@ async function runProcess(
         return
       }
 
-      resolve({ exitCode: code, output })
+      resolve({ exitCode: code, stdout, output })
     })
   })
 }

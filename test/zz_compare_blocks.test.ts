@@ -1,6 +1,6 @@
 import { expect } from "chai"
-import { compareBlocksWithRpc, isFireethAvailable, resolveCompareRange } from "./lib/compare_blocks"
-import { sendImmediateEth } from "./lib/ethereum"
+import { compareBlocksWithRpc, finalityTimeoutMs, isFireethAvailable, resolveCompareRange } from "./lib/compare_blocks"
+import { sendEth } from "./lib/ethereum"
 import { knownExistingAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
 import { owner } from "./global"
@@ -15,15 +15,17 @@ describe("Compare blocks", function () {
     }
 
     const timeoutMs = Number(process.env.COMPARE_BLOCKS_TIMEOUT_MS ?? 5 * 60 * 1000)
-    this.timeout(timeoutMs + 60_000)
+    // The comparison is only the last leg: waiting for finality and probing Firehose come first
+    // and have budgets of their own, so Mocha must outlast their sum or it kills the run midway
+    // and leaves the `fireeth` child running until its own kill timer fires.
+    this.timeout(timeoutMs + finalityTimeoutMs() + 60_000)
 
-    if (!(await isFireethAvailable())) {
-      console.log("Skipping block comparison, 'fireeth' binary not found on PATH")
-      return this.skip()
-    }
+    // A missing binary is a broken setup, not a reason to quietly pass: every supported chain is
+    // launched through `fireeth` in the first place, so it is always on the PATH in practice.
+    expect(await isFireethAvailable(), "'fireeth' binary not found on PATH").to.be.true
 
     const resolved = await resolveCompareRange({
-      mineBlock: () => sendImmediateEth(owner, knownExistingAddress, oneWei),
+      mineBlock: () => sendEth(owner, knownExistingAddress, oneWei),
     })
     if ("skipReason" in resolved) {
       console.log(`Skipping block comparison, ${resolved.skipReason}`)

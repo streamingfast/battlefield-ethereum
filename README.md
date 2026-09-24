@@ -58,10 +58,11 @@ last irreversible block (the comparison streams final blocks only, an unfinalize
 hang). Genesis is excluded on purpose, Firehose synthesizes that block and `genesis.test.ts`
 asserts its content directly.
 
-The test reports as pending rather than failing when `fireeth` is not on the `PATH`, or when the
-chain has no final block yet (a devnet running real consensus needs a few epochs before one
-exists). On mine-on-demand chains it first mines blocks until finality catches up with what the
-suite produced.
+The test reports as pending when the chain has no final block to compare yet (a devnet running
+real consensus needs a few epochs before one exists) and on the public Amoy testnet. A missing
+`fireeth` binary fails the test rather than skipping it, it is a broken setup. On mine-on-demand
+chains the test first mines blocks until finality catches up with what the suite produced, and
+prints the blocks left out when it cannot get there within its budget.
 
 | Environment variable | Default | Purpose |
 | --- | --- | --- |

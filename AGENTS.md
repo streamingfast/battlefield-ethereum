@@ -348,8 +348,9 @@ suite and runs on every `pnpm test:*` invocation. Do not shell out to
 network configuration (ports differ per network, e.g. `reth-dev` is on 9545) and bounds the
 range at the last irreversible block reported by Firehose.
 
-It reports as **pending** rather than failing when `fireeth` is absent from the `PATH` or when
-the chain has no final block yet. Set `SKIP_COMPARE_BLOCKS=1` to skip it while iterating.
+It reports as **pending** when the chain has no final block yet, and on the public Amoy testnet.
+A missing `fireeth` binary **fails** the test. Set `SKIP_COMPARE_BLOCKS=1` to skip it while
+iterating.
 
 ---
 
