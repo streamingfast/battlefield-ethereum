@@ -522,6 +522,12 @@ export type RpcBlock = {
 
   // EIP-7685 (Prague fork)
   requestsHash?: string
+
+  // EIP-7843 (Amsterdam fork)
+  slotNumber?: string
+
+  // EIP-7928 (Amsterdam fork)
+  blockAccessListHash?: string
 }
 
 export type RpcTransactionReceipt = {

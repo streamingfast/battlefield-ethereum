@@ -1,12 +1,12 @@
 {
   "to": "$oogStorageContract",
   "nonce": "$nonce",
-  "gasLimit": "45571",
+  "gasLimit": "219423",
   "input": "9a5a9802b2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc9df6b64338919f844529872976787ab91993cff90084b15f256646cde3532e13",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "45571",
+  "gasUsed": "219423",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$oogStorageContract",
-      "gasLimit": "23507",
-      "gasConsumed": "23507",
+      "gasLimit": "203359",
+      "gasConsumed": "203359",
       "returnData": "",
       "input": "9a5a9802b2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc9df6b64338919f844529872976787ab91993cff90084b15f256646cde3532e13",
       "executedCode": true,
@@ -46,15 +46,15 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "074918a3048600",
+          "oldValue": "231461ecacbe00",
           "newValue": ""
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "8",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [
@@ -83,7 +83,7 @@
       "callType": "STATIC",
       "caller": "$oogStorageContract",
       "address": "0000000000000000000000000000000000000002",
-      "gasLimit": "1026",
+      "gasLimit": "90636",
       "gasConsumed": "72",
       "returnData": "51b5dfc85e10ff28c83d98a481163e0a3a2e67dee0130a3ce2cd12eb7b361557",
       "input": "b2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc",

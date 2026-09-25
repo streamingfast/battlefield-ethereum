@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sf/ethereum/type/v2/type.proto.
  */
 export const file_sf_ethereum_type_v2_type: GenFile = /*@__PURE__*/
-  fileDesc("Ch5zZi9ldGhlcmV1bS90eXBlL3YyL3R5cGUucHJvdG8SE3NmLmV0aGVyZXVtLnR5cGUudjIi0QQKBUJsb2NrEgwKBGhhc2gYAiABKAwSDgoGbnVtYmVyGAMgASgEEgwKBHNpemUYBCABKAQSMAoGaGVhZGVyGAUgASgLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9ja0hlYWRlchIwCgZ1bmNsZXMYBiADKAsyIC5zZi5ldGhlcmV1bS50eXBlLnYyLkJsb2NrSGVhZGVyEkEKEnRyYW5zYWN0aW9uX3RyYWNlcxgKIAMoCzIlLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25UcmFjZRI7Cg9iYWxhbmNlX2NoYW5nZXMYCyADKAsyIi5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2USPAoMZGV0YWlsX2xldmVsGAwgASgOMiYuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9jay5EZXRhaWxMZXZlbBI1Cgxjb2RlX2NoYW5nZXMYFCADKAsyHy5zZi5ldGhlcmV1bS50eXBlLnYyLkNvZGVDaGFuZ2USLwoMc3lzdGVtX2NhbGxzGBUgAygLMhkuc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsEjQKC3dpdGhkcmF3YWxzGBYgAygLMh8uc2YuZXRoZXJldW0udHlwZS52Mi5XaXRoZHJhd2FsEgsKA3ZlchgBIAEoBSI9CgtEZXRhaWxMZXZlbBIYChRERVRBSUxMRVZFTF9FWFRFTkRFRBAAEhQKEERFVEFJTExFVkVMX0JBU0UQAkoECCgQKUoECCkQKkoECCoQKyLXBQoLQmxvY2tIZWFkZXISEwoLcGFyZW50X2hhc2gYASABKAwSEgoKdW5jbGVfaGFzaBgCIAEoDBIQCghjb2luYmFzZRgDIAEoDBISCgpzdGF0ZV9yb290GAQgASgMEhkKEXRyYW5zYWN0aW9uc19yb290GAUgASgMEhQKDHJlY2VpcHRfcm9vdBgGIAEoDBISCgpsb2dzX2Jsb29tGAcgASgMEi8KCmRpZmZpY3VsdHkYCCABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBI5ChB0b3RhbF9kaWZmaWN1bHR5GBEgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnRCAhgBEg4KBm51bWJlchgJIAEoBBIRCglnYXNfbGltaXQYCiABKAQSEAoIZ2FzX3VzZWQYCyABKAQSLQoJdGltZXN0YW1wGAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBISCgpleHRyYV9kYXRhGA0gASgMEhAKCG1peF9oYXNoGA4gASgMEg0KBW5vbmNlGA8gASgEEgwKBGhhc2gYECABKAwSNQoQYmFzZV9mZWVfcGVyX2dhcxgSIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhgKEHdpdGhkcmF3YWxzX3Jvb3QYEyABKAwSPQoNdHhfZGVwZW5kZW5jeRgUIAEoCzImLnNmLmV0aGVyZXVtLnR5cGUudjIuVWludDY0TmVzdGVkQXJyYXkSGgoNYmxvYl9nYXNfdXNlZBgWIAEoBEgAiAEBEhwKD2V4Y2Vzc19ibG9iX2dhcxgXIAEoBEgBiAEBEhoKEnBhcmVudF9iZWFjb25fcm9vdBgYIAEoDBIVCg1yZXF1ZXN0c19oYXNoGBkgASgMQhAKDl9ibG9iX2dhc191c2VkQhIKEF9leGNlc3NfYmxvYl9nYXMiQgoRVWludDY0TmVzdGVkQXJyYXkSLQoDdmFsGAEgAygLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5VaW50NjRBcnJheSIaCgtVaW50NjRBcnJheRILCgN2YWwYASADKAQiFwoGQmlnSW50Eg0KBWJ5dGVzGAEgASgMItoKChBUcmFuc2FjdGlvblRyYWNlEgoKAnRvGAEgASgMEg0KBW5vbmNlGAIgASgEEi4KCWdhc19wcmljZRgDIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhEKCWdhc19saW1pdBgEIAEoBBIqCgV2YWx1ZRgFIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50Eg0KBWlucHV0GAYgASgMEgkKAXYYByABKAwSCQoBchgIIAEoDBIJCgFzGAkgASgMEhAKCGdhc191c2VkGAogASgEEjgKBHR5cGUYDCABKA4yKi5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2UuVHlwZRI1CgthY2Nlc3NfbGlzdBgOIAMoCzIgLnNmLmV0aGVyZXVtLnR5cGUudjIuQWNjZXNzVHVwbGUSNAoPbWF4X2ZlZV9wZXJfZ2FzGAsgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSPQoYbWF4X3ByaW9yaXR5X2ZlZV9wZXJfZ2FzGA0gASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSDQoFaW5kZXgYFCABKA0SDAoEaGFzaBgVIAEoDBIMCgRmcm9tGBYgASgMEhMKC3JldHVybl9kYXRhGBcgASgMEhIKCnB1YmxpY19rZXkYGCABKAwSFQoNYmVnaW5fb3JkaW5hbBgZIAEoBBITCgtlbmRfb3JkaW5hbBgaIAEoBBI7CgZzdGF0dXMYHiABKA4yKy5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2VTdGF0dXMSOAoHcmVjZWlwdBgfIAEoCzInLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25SZWNlaXB0EigKBWNhbGxzGCAgAygLMhkuc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsEhUKCGJsb2JfZ2FzGCEgASgESACIAQESOgoQYmxvYl9nYXNfZmVlX2NhcBgiIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50SAGIAQESEwoLYmxvYl9oYXNoZXMYIyADKAwSSgoXc2V0X2NvZGVfYXV0aG9yaXphdGlvbnMYJCADKAsyKS5zZi5ldGhlcmV1bS50eXBlLnYyLlNldENvZGVBdXRob3JpemF0aW9uIpwDCgRUeXBlEhMKD1RSWF9UWVBFX0xFR0FDWRAAEhgKFFRSWF9UWVBFX0FDQ0VTU19MSVNUEAESGAoUVFJYX1RZUEVfRFlOQU1JQ19GRUUQAhIRCg1UUlhfVFlQRV9CTE9CEAMSFQoRVFJYX1RZUEVfU0VUX0NPREUQBBIdChlUUlhfVFlQRV9BUkJJVFJVTV9ERVBPU0lUEGQSHgoaVFJYX1RZUEVfQVJCSVRSVU1fVU5TSUdORUQQZRIeChpUUlhfVFlQRV9BUkJJVFJVTV9DT05UUkFDVBBmEhsKF1RSWF9UWVBFX0FSQklUUlVNX1JFVFJZEGgSJgoiVFJYX1RZUEVfQVJCSVRSVU1fU1VCTUlUX1JFVFJZQUJMRRBpEh4KGlRSWF9UWVBFX0FSQklUUlVNX0lOVEVSTkFMEGoSHAoYVFJYX1RZUEVfQVJCSVRSVU1fTEVHQUNZEHgSHQoZVFJYX1RZUEVfT1BUSU1JU01fREVQT1NJVBB+EiAKG1RSWF9UWVBFX1BPTFlHT05fU1RBVEVfU1lOQxDIAUILCglfYmxvYl9nYXNCEwoRX2Jsb2JfZ2FzX2ZlZV9jYXAiNAoLQWNjZXNzVHVwbGUSDwoHYWRkcmVzcxgBIAEoDBIUCgxzdG9yYWdlX2tleXMYAiADKAwiogEKFFNldENvZGVBdXRob3JpemF0aW9uEhEKCWRpc2NhcmRlZBgBIAEoCBIQCghjaGFpbl9pZBgCIAEoDBIPCgdhZGRyZXNzGAggASgMEg0KBW5vbmNlGAMgASgEEgkKAXYYBCABKA0SCQoBchgFIAEoDBIJCgFzGAYgASgMEhYKCWF1dGhvcml0eRgHIAEoDEgAiAEBQgwKCl9hdXRob3JpdHki/AEKElRyYW5zYWN0aW9uUmVjZWlwdBISCgpzdGF0ZV9yb290GAEgASgMEhsKE2N1bXVsYXRpdmVfZ2FzX3VzZWQYAiABKAQSEgoKbG9nc19ibG9vbRgDIAEoDBImCgRsb2dzGAQgAygLMhguc2YuZXRoZXJldW0udHlwZS52Mi5Mb2cSGgoNYmxvYl9nYXNfdXNlZBgFIAEoBEgAiAEBEjgKDmJsb2JfZ2FzX3ByaWNlGAYgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnRIAYgBAUIQCg5fYmxvYl9nYXNfdXNlZEIRCg9fYmxvYl9nYXNfcHJpY2UiaAoDTG9nEg8KB2FkZHJlc3MYASABKAwSDgoGdG9waWNzGAIgAygMEgwKBGRhdGEYAyABKAwSDQoFaW5kZXgYBCABKA0SEgoKYmxvY2tJbmRleBgGIAEoDRIPCgdvcmRpbmFsGAcgASgEIqIICgRDYWxsEg0KBWluZGV4GAEgASgNEhQKDHBhcmVudF9pbmRleBgCIAEoDRINCgVkZXB0aBgDIAEoDRIwCgljYWxsX3R5cGUYBCABKA4yHS5zZi5ldGhlcmV1bS50eXBlLnYyLkNhbGxUeXBlEg4KBmNhbGxlchgFIAEoDBIPCgdhZGRyZXNzGAYgASgMEiEKFGFkZHJlc3NfZGVsZWdhdGVzX3RvGCIgASgMSACIAQESKgoFdmFsdWUYByABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBIRCglnYXNfbGltaXQYCCABKAQSFAoMZ2FzX2NvbnN1bWVkGAkgASgEEhMKC3JldHVybl9kYXRhGA0gASgMEg0KBWlucHV0GA4gASgMEhUKDWV4ZWN1dGVkX2NvZGUYDyABKAgSDwoHc3VpY2lkZRgQIAEoCBJIChBrZWNjYWtfcHJlaW1hZ2VzGBQgAygLMi4uc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsLktlY2Nha1ByZWltYWdlc0VudHJ5EjsKD3N0b3JhZ2VfY2hhbmdlcxgVIAMoCzIiLnNmLmV0aGVyZXVtLnR5cGUudjIuU3RvcmFnZUNoYW5nZRI7Cg9iYWxhbmNlX2NoYW5nZXMYFiADKAsyIi5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2USNwoNbm9uY2VfY2hhbmdlcxgYIAMoCzIgLnNmLmV0aGVyZXVtLnR5cGUudjIuTm9uY2VDaGFuZ2USJgoEbG9ncxgZIAMoCzIYLnNmLmV0aGVyZXVtLnR5cGUudjIuTG9nEjUKDGNvZGVfY2hhbmdlcxgaIAMoCzIfLnNmLmV0aGVyZXVtLnR5cGUudjIuQ29kZUNoYW5nZRIzCgtnYXNfY2hhbmdlcxgcIAMoCzIeLnNmLmV0aGVyZXVtLnR5cGUudjIuR2FzQ2hhbmdlEhUKDXN0YXR1c19mYWlsZWQYCiABKAgSFwoPc3RhdHVzX3JldmVydGVkGAwgASgIEhYKDmZhaWx1cmVfcmVhc29uGAsgASgJEhYKDnN0YXRlX3JldmVydGVkGB4gASgIEhUKDWJlZ2luX29yZGluYWwYHyABKAQSEwoLZW5kX29yZGluYWwYICABKAQSQwoRYWNjb3VudF9jcmVhdGlvbnMYISADKAsyJC5zZi5ldGhlcmV1bS50eXBlLnYyLkFjY291bnRDcmVhdGlvbkICGAEaNgoUS2VjY2FrUHJlaW1hZ2VzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4AUIXChVfYWRkcmVzc19kZWxlZ2F0ZXNfdG9KBAgbEBxKBAgdEB5KBAgyEDNKBAgzEDRKBAg8ED0iZAoNU3RvcmFnZUNoYW5nZRIPCgdhZGRyZXNzGAEgASgMEgsKA2tleRgCIAEoDBIRCglvbGRfdmFsdWUYAyABKAwSEQoJbmV3X3ZhbHVlGAQgASgMEg8KB29yZGluYWwYBSABKAQihwYKDUJhbGFuY2VDaGFuZ2USDwoHYWRkcmVzcxgBIAEoDBIuCglvbGRfdmFsdWUYAiABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBIuCgluZXdfdmFsdWUYAyABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBI5CgZyZWFzb24YBCABKA4yKS5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2UuUmVhc29uEg8KB29yZGluYWwYBSABKAQiuAQKBlJlYXNvbhISCg5SRUFTT05fVU5LTk9XThAAEhwKGFJFQVNPTl9SRVdBUkRfTUlORV9VTkNMRRABEhwKGFJFQVNPTl9SRVdBUkRfTUlORV9CTE9DSxACEh4KGlJFQVNPTl9EQU9fUkVGVU5EX0NPTlRSQUNUEAMSHQoZUkVBU09OX0RBT19BREpVU1RfQkFMQU5DRRAEEhMKD1JFQVNPTl9UUkFOU0ZFUhAFEhoKFlJFQVNPTl9HRU5FU0lTX0JBTEFOQ0UQBhISCg5SRUFTT05fR0FTX0JVWRAHEiEKHVJFQVNPTl9SRVdBUkRfVFJBTlNBQ1RJT05fRkVFEAgSFQoRUkVBU09OX0dBU19SRUZVTkQQCRIYChRSRUFTT05fVE9VQ0hfQUNDT1VOVBAKEhkKFVJFQVNPTl9TVUlDSURFX1JFRlVORBALEiAKHFJFQVNPTl9DQUxMX0JBTEFOQ0VfT1ZFUlJJREUQDBIbChdSRUFTT05fU1VJQ0lERV9XSVRIRFJBVxANEhsKF1JFQVNPTl9SRVdBUkRfRkVFX1JFU0VUEA4SDwoLUkVBU09OX0JVUk4QDxIVChFSRUFTT05fV0lUSERSQVdBTBAQEhoKFlJFQVNPTl9SRVdBUkRfQkxPQl9GRUUQERIYChRSRUFTT05fSU5DUkVBU0VfTUlOVBASEhEKDVJFQVNPTl9SRVZFUlQQExIeChpSRUFTT05fTU9OQURfVFhfUE9TVF9TVEFURRAUIlUKC05vbmNlQ2hhbmdlEg8KB2FkZHJlc3MYASABKAwSEQoJb2xkX3ZhbHVlGAIgASgEEhEKCW5ld192YWx1ZRgDIAEoBBIPCgdvcmRpbmFsGAQgASgEIjMKD0FjY291bnRDcmVhdGlvbhIPCgdhY2NvdW50GAEgASgMEg8KB29yZGluYWwYAiABKAQidgoKQ29kZUNoYW5nZRIPCgdhZGRyZXNzGAEgASgMEhAKCG9sZF9oYXNoGAIgASgMEhAKCG9sZF9jb2RlGAMgASgMEhAKCG5ld19oYXNoGAQgASgMEhAKCG5ld19jb2RlGAUgASgMEg8KB29yZGluYWwYBiABKAQi6QcKCUdhc0NoYW5nZRIRCglvbGRfdmFsdWUYASABKAQSEQoJbmV3X3ZhbHVlGAIgASgEEjUKBnJlYXNvbhgDIAEoDjIlLnNmLmV0aGVyZXVtLnR5cGUudjIuR2FzQ2hhbmdlLlJlYXNvbhIPCgdvcmRpbmFsGAQgASgEIu0GCgZSZWFzb24SEgoOUkVBU09OX1VOS05PV04QABIPCgtSRUFTT05fQ0FMTBABEhQKEFJFQVNPTl9DQUxMX0NPREUQAhIZChVSRUFTT05fQ0FMTF9EQVRBX0NPUFkQAxIUChBSRUFTT05fQ09ERV9DT1BZEAQSFwoTUkVBU09OX0NPREVfU1RPUkFHRRAFEhwKGFJFQVNPTl9DT05UUkFDVF9DUkVBVElPThAGEh0KGVJFQVNPTl9DT05UUkFDVF9DUkVBVElPTjIQBxIYChRSRUFTT05fREVMRUdBVEVfQ0FMTBAIEhQKEFJFQVNPTl9FVkVOVF9MT0cQCRIYChRSRUFTT05fRVhUX0NPREVfQ09QWRAKEhsKF1JFQVNPTl9GQUlMRURfRVhFQ1VUSU9OEAsSGAoUUkVBU09OX0lOVFJJTlNJQ19HQVMQDBIfChtSRUFTT05fUFJFQ09NUElMRURfQ09OVFJBQ1QQDRIhCh1SRUFTT05fUkVGVU5EX0FGVEVSX0VYRUNVVElPThAOEhEKDVJFQVNPTl9SRVRVUk4QDxIbChdSRUFTT05fUkVUVVJOX0RBVEFfQ09QWRAQEhEKDVJFQVNPTl9SRVZFUlQQERIYChRSRUFTT05fU0VMRl9ERVNUUlVDVBASEhYKElJFQVNPTl9TVEFUSUNfQ0FMTBATEhwKGFJFQVNPTl9TVEFURV9DT0xEX0FDQ0VTUxAUEh0KGVJFQVNPTl9UWF9JTklUSUFMX0JBTEFOQ0UQFRIVChFSRUFTT05fVFhfUkVGVU5EUxAWEiAKHFJFQVNPTl9UWF9MRUZUX09WRVJfUkVUVVJORUQQFxIfChtSRUFTT05fQ0FMTF9JTklUSUFMX0JBTEFOQ0UQGBIiCh5SRUFTT05fQ0FMTF9MRUZUX09WRVJfUkVUVVJORUQQGRIgChxSRUFTT05fV0lUTkVTU19DT05UUkFDVF9JTklUEBoSJAogUkVBU09OX1dJVE5FU1NfQ09OVFJBQ1RfQ1JFQVRJT04QGxIdChlSRUFTT05fV0lUTkVTU19DT0RFX0NIVU5LEBwSKwonUkVBU09OX1dJVE5FU1NfQ09OVFJBQ1RfQ09MTElTSU9OX0NIRUNLEB0SGAoUUkVBU09OX1RYX0RBVEFfRkxPT1IQHiJDCg9IZWFkZXJPbmx5QmxvY2sSMAoGaGVhZGVyGAUgASgLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9ja0hlYWRlciKiAQoNQmxvY2tXaXRoUmVmcxIKCgJpZBgBIAEoCRIpCgVibG9jaxgCIAEoCzIaLnNmLmV0aGVyZXVtLnR5cGUudjIuQmxvY2sSRAoWdHJhbnNhY3Rpb25fdHJhY2VfcmVmcxgDIAEoCzIkLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25SZWZzEhQKDGlycmV2ZXJzaWJsZRgEIAEoCCKGAQocVHJhbnNhY3Rpb25UcmFjZVdpdGhCbG9ja1JlZhI0CgV0cmFjZRgBIAEoCzIlLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25UcmFjZRIwCglibG9ja19yZWYYAiABKAsyHS5zZi5ldGhlcmV1bS50eXBlLnYyLkJsb2NrUmVmIiEKD1RyYW5zYWN0aW9uUmVmcxIOCgZoYXNoZXMYASADKAwiKAoIQmxvY2tSZWYSDAoEaGFzaBgBIAEoDBIOCgZudW1iZXIYAiABKAQiVQoKV2l0aGRyYXdhbBINCgVpbmRleBgBIAEoBBIXCg92YWxpZGF0b3JfaW5kZXgYAiABKAQSDwoHYWRkcmVzcxgDIAEoDBIOCgZhbW91bnQYBCABKAQqTgoWVHJhbnNhY3Rpb25UcmFjZVN0YXR1cxILCgdVTktOT1dOEAASDQoJU1VDQ0VFREVEEAESCgoGRkFJTEVEEAISDAoIUkVWRVJURUQQAypZCghDYWxsVHlwZRIPCgtVTlNQRUNJRklFRBAAEggKBENBTEwQARIMCghDQUxMQ09ERRACEgwKCERFTEVHQVRFEAMSCgoGU1RBVElDEAQSCgoGQ1JFQVRFEAVCT1pNZ2l0aHViLmNvbS9zdHJlYW1pbmdmYXN0L2ZpcmVob3NlLWV0aGVyZXVtL3R5cGVzL3BiL3NmL2V0aGVyZXVtL3R5cGUvdjI7cGJldGhiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("Ch5zZi9ldGhlcmV1bS90eXBlL3YyL3R5cGUucHJvdG8SE3NmLmV0aGVyZXVtLnR5cGUudjIi0QQKBUJsb2NrEgwKBGhhc2gYAiABKAwSDgoGbnVtYmVyGAMgASgEEgwKBHNpemUYBCABKAQSMAoGaGVhZGVyGAUgASgLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9ja0hlYWRlchIwCgZ1bmNsZXMYBiADKAsyIC5zZi5ldGhlcmV1bS50eXBlLnYyLkJsb2NrSGVhZGVyEkEKEnRyYW5zYWN0aW9uX3RyYWNlcxgKIAMoCzIlLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25UcmFjZRI7Cg9iYWxhbmNlX2NoYW5nZXMYCyADKAsyIi5zZi5ldGhlcmV1bS50eXBlLnYyLkJhbGFuY2VDaGFuZ2USPAoMZGV0YWlsX2xldmVsGAwgASgOMiYuc2YuZXRoZXJldW0udHlwZS52Mi5CbG9jay5EZXRhaWxMZXZlbBI1Cgxjb2RlX2NoYW5nZXMYFCADKAsyHy5zZi5ldGhlcmV1bS50eXBlLnYyLkNvZGVDaGFuZ2USLwoMc3lzdGVtX2NhbGxzGBUgAygLMhkuc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsEjQKC3dpdGhkcmF3YWxzGBYgAygLMh8uc2YuZXRoZXJldW0udHlwZS52Mi5XaXRoZHJhd2FsEgsKA3ZlchgBIAEoBSI9CgtEZXRhaWxMZXZlbBIYChRERVRBSUxMRVZFTF9FWFRFTkRFRBAAEhQKEERFVEFJTExFVkVMX0JBU0UQAkoECCgQKUoECCkQKkoECCoQKyL0BwoLQmxvY2tIZWFkZXISEwoLcGFyZW50X2hhc2gYASABKAwSEgoKdW5jbGVfaGFzaBgCIAEoDBIQCghjb2luYmFzZRgDIAEoDBISCgpzdGF0ZV9yb290GAQgASgMEhkKEXRyYW5zYWN0aW9uc19yb290GAUgASgMEhQKDHJlY2VpcHRfcm9vdBgGIAEoDBISCgpsb2dzX2Jsb29tGAcgASgMEi8KCmRpZmZpY3VsdHkYCCABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBI5ChB0b3RhbF9kaWZmaWN1bHR5GBEgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnRCAhgBEg4KBm51bWJlchgJIAEoBBIRCglnYXNfbGltaXQYCiABKAQSEAoIZ2FzX3VzZWQYCyABKAQSLQoJdGltZXN0YW1wGAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBISCgpleHRyYV9kYXRhGA0gASgMEhAKCG1peF9oYXNoGA4gASgMEg0KBW5vbmNlGA8gASgEEgwKBGhhc2gYECABKAwSNQoQYmFzZV9mZWVfcGVyX2dhcxgSIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhgKEHdpdGhkcmF3YWxzX3Jvb3QYEyABKAwSPQoNdHhfZGVwZW5kZW5jeRgUIAEoCzImLnNmLmV0aGVyZXVtLnR5cGUudjIuVWludDY0TmVzdGVkQXJyYXkSGgoNYmxvYl9nYXNfdXNlZBgWIAEoBEgAiAEBEhwKD2V4Y2Vzc19ibG9iX2dhcxgXIAEoBEgBiAEBEh8KEnBhcmVudF9iZWFjb25fcm9vdBgYIAEoDEgCiAEBEhoKDXJlcXVlc3RzX2hhc2gYGSABKAxIA4gBARIYCgtzbG90X251bWJlchgaIAEoBEgEiAEBEiQKF21vcnBoX25leHRfbDFfbXNnX2luZGV4GBsgASgESAWIAQESIwoWYmxvY2tfYWNjZXNzX2xpc3RfaGFzaBgcIAEoDEgGiAEBEiIKFWJsb2NrX2FjY2Vzc19saXN0X3JscBgdIAEoDEgHiAEBQhAKDl9ibG9iX2dhc191c2VkQhIKEF9leGNlc3NfYmxvYl9nYXNCFQoTX3BhcmVudF9iZWFjb25fcm9vdEIQCg5fcmVxdWVzdHNfaGFzaEIOCgxfc2xvdF9udW1iZXJCGgoYX21vcnBoX25leHRfbDFfbXNnX2luZGV4QhkKF19ibG9ja19hY2Nlc3NfbGlzdF9oYXNoQhgKFl9ibG9ja19hY2Nlc3NfbGlzdF9ybHAiQgoRVWludDY0TmVzdGVkQXJyYXkSLQoDdmFsGAEgAygLMiAuc2YuZXRoZXJldW0udHlwZS52Mi5VaW50NjRBcnJheSIaCgtVaW50NjRBcnJheRILCgN2YWwYASADKAQiFwoGQmlnSW50Eg0KBWJ5dGVzGAEgASgMItIMChBUcmFuc2FjdGlvblRyYWNlEgoKAnRvGAEgASgMEg0KBW5vbmNlGAIgASgEEi4KCWdhc19wcmljZRgDIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50EhEKCWdhc19saW1pdBgEIAEoBBIqCgV2YWx1ZRgFIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50Eg0KBWlucHV0GAYgASgMEgkKAXYYByABKAwSCQoBchgIIAEoDBIJCgFzGAkgASgMEhAKCGdhc191c2VkGAogASgEEjgKBHR5cGUYDCABKA4yKi5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2UuVHlwZRI1CgthY2Nlc3NfbGlzdBgOIAMoCzIgLnNmLmV0aGVyZXVtLnR5cGUudjIuQWNjZXNzVHVwbGUSNAoPbWF4X2ZlZV9wZXJfZ2FzGAsgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSPQoYbWF4X3ByaW9yaXR5X2ZlZV9wZXJfZ2FzGA0gASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSDQoFaW5kZXgYFCABKA0SDAoEaGFzaBgVIAEoDBIMCgRmcm9tGBYgASgMEhMKC3JldHVybl9kYXRhGBcgASgMEhIKCnB1YmxpY19rZXkYGCABKAwSFQoNYmVnaW5fb3JkaW5hbBgZIAEoBBITCgtlbmRfb3JkaW5hbBgaIAEoBBI7CgZzdGF0dXMYHiABKA4yKy5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2VTdGF0dXMSOAoHcmVjZWlwdBgfIAEoCzInLnNmLmV0aGVyZXVtLnR5cGUudjIuVHJhbnNhY3Rpb25SZWNlaXB0EigKBWNhbGxzGCAgAygLMhkuc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsEhUKCGJsb2JfZ2FzGCEgASgESACIAQESOgoQYmxvYl9nYXNfZmVlX2NhcBgiIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50SAGIAQESEwoLYmxvYl9oYXNoZXMYIyADKAwSSgoXc2V0X2NvZGVfYXV0aG9yaXphdGlvbnMYJCADKAsyKS5zZi5ldGhlcmV1bS50eXBlLnYyLlNldENvZGVBdXRob3JpemF0aW9uEkAKD21vcnBoX3R4X2NvbmZpZxglIAEoCzIiLnNmLmV0aGVyZXVtLnR5cGUudjIuTW9ycGhUeENvbmZpZ0gCiAEBEk8KF21vcnBoX2wxX21lc3NhZ2VfY29uZmlnGCYgASgLMikuc2YuZXRoZXJldW0udHlwZS52Mi5Nb3JwaEwxTWVzc2FnZUNvbmZpZ0gDiAEBItEDCgRUeXBlEhMKD1RSWF9UWVBFX0xFR0FDWRAAEhgKFFRSWF9UWVBFX0FDQ0VTU19MSVNUEAESGAoUVFJYX1RZUEVfRFlOQU1JQ19GRUUQAhIRCg1UUlhfVFlQRV9CTE9CEAMSFQoRVFJYX1RZUEVfU0VUX0NPREUQBBIdChlUUlhfVFlQRV9BUkJJVFJVTV9ERVBPU0lUEGQSHgoaVFJYX1RZUEVfQVJCSVRSVU1fVU5TSUdORUQQZRIeChpUUlhfVFlQRV9BUkJJVFJVTV9DT05UUkFDVBBmEhsKF1RSWF9UWVBFX0FSQklUUlVNX1JFVFJZEGgSJgoiVFJYX1RZUEVfQVJCSVRSVU1fU1VCTUlUX1JFVFJZQUJMRRBpEh4KGlRSWF9UWVBFX0FSQklUUlVNX0lOVEVSTkFMEGoSHAoYVFJYX1RZUEVfQVJCSVRSVU1fTEVHQUNZEHgSHQoZVFJYX1RZUEVfT1BUSU1JU01fREVQT1NJVBB+EiAKG1RSWF9UWVBFX1BPTFlHT05fU1RBVEVfU1lOQxDIARITCg5UUlhfVFlQRV9NT1JQSBCsAhIeChlUUlhfVFlQRV9NT1JQSF9MMV9NRVNTQUdFEK0CQgsKCV9ibG9iX2dhc0ITChFfYmxvYl9nYXNfZmVlX2NhcEISChBfbW9ycGhfdHhfY29uZmlnQhoKGF9tb3JwaF9sMV9tZXNzYWdlX2NvbmZpZyKHAQoNTW9ycGhUeENvbmZpZxIPCgd2ZXJzaW9uGAEgASgNEhQKDGZlZV90b2tlbl9pZBgCIAEoDRIuCglmZWVfbGltaXQYAyABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBIRCglyZWZlcmVuY2UYBCABKAwSDAoEbWVtbxgFIAEoDCIrChRNb3JwaEwxTWVzc2FnZUNvbmZpZxITCgtxdWV1ZV9pbmRleBgBIAEoBCI0CgtBY2Nlc3NUdXBsZRIPCgdhZGRyZXNzGAEgASgMEhQKDHN0b3JhZ2Vfa2V5cxgCIAMoDCKiAQoUU2V0Q29kZUF1dGhvcml6YXRpb24SEQoJZGlzY2FyZGVkGAEgASgIEhAKCGNoYWluX2lkGAIgASgMEg8KB2FkZHJlc3MYCCABKAwSDQoFbm9uY2UYAyABKAQSCQoBdhgEIAEoDRIJCgFyGAUgASgMEgkKAXMYBiABKAwSFgoJYXV0aG9yaXR5GAcgASgMSACIAQFCDAoKX2F1dGhvcml0eSLhAgoSVHJhbnNhY3Rpb25SZWNlaXB0EhIKCnN0YXRlX3Jvb3QYASABKAwSGwoTY3VtdWxhdGl2ZV9nYXNfdXNlZBgCIAEoBBISCgpsb2dzX2Jsb29tGAMgASgMEiYKBGxvZ3MYBCADKAsyGC5zZi5ldGhlcmV1bS50eXBlLnYyLkxvZxIaCg1ibG9iX2dhc191c2VkGAUgASgESACIAQESOAoOYmxvYl9nYXNfcHJpY2UYBiABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludEgBiAEBEkoKFG1vcnBoX3JlY2VpcHRfY29uZmlnGAcgASgLMicuc2YuZXRoZXJldW0udHlwZS52Mi5Nb3JwaFJlY2VpcHRDb25maWdIAogBAUIQCg5fYmxvYl9nYXNfdXNlZEIRCg9fYmxvYl9nYXNfcHJpY2VCFwoVX21vcnBoX3JlY2VpcHRfY29uZmlnIqIBChJNb3JwaFJlY2VpcHRDb25maWcSKwoGbDFfZmVlGAEgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSLQoIZmVlX3JhdGUYAiABKAsyGy5zZi5ldGhlcmV1bS50eXBlLnYyLkJpZ0ludBIwCgt0b2tlbl9zY2FsZRgDIAEoCzIbLnNmLmV0aGVyZXVtLnR5cGUudjIuQmlnSW50ImgKA0xvZxIPCgdhZGRyZXNzGAEgASgMEg4KBnRvcGljcxgCIAMoDBIMCgRkYXRhGAMgASgMEg0KBWluZGV4GAQgASgNEhIKCmJsb2NrSW5kZXgYBiABKA0SDwoHb3JkaW5hbBgHIAEoBCKiCAoEQ2FsbBINCgVpbmRleBgBIAEoDRIUCgxwYXJlbnRfaW5kZXgYAiABKA0SDQoFZGVwdGgYAyABKA0SMAoJY2FsbF90eXBlGAQgASgOMh0uc2YuZXRoZXJldW0udHlwZS52Mi5DYWxsVHlwZRIOCgZjYWxsZXIYBSABKAwSDwoHYWRkcmVzcxgGIAEoDBIhChRhZGRyZXNzX2RlbGVnYXRlc190bxgiIAEoDEgAiAEBEioKBXZhbHVlGAcgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSEQoJZ2FzX2xpbWl0GAggASgEEhQKDGdhc19jb25zdW1lZBgJIAEoBBITCgtyZXR1cm5fZGF0YRgNIAEoDBINCgVpbnB1dBgOIAEoDBIVCg1leGVjdXRlZF9jb2RlGA8gASgIEg8KB3N1aWNpZGUYECABKAgSSAoQa2VjY2FrX3ByZWltYWdlcxgUIAMoCzIuLnNmLmV0aGVyZXVtLnR5cGUudjIuQ2FsbC5LZWNjYWtQcmVpbWFnZXNFbnRyeRI7Cg9zdG9yYWdlX2NoYW5nZXMYFSADKAsyIi5zZi5ldGhlcmV1bS50eXBlLnYyLlN0b3JhZ2VDaGFuZ2USOwoPYmFsYW5jZV9jaGFuZ2VzGBYgAygLMiIuc2YuZXRoZXJldW0udHlwZS52Mi5CYWxhbmNlQ2hhbmdlEjcKDW5vbmNlX2NoYW5nZXMYGCADKAsyIC5zZi5ldGhlcmV1bS50eXBlLnYyLk5vbmNlQ2hhbmdlEiYKBGxvZ3MYGSADKAsyGC5zZi5ldGhlcmV1bS50eXBlLnYyLkxvZxI1Cgxjb2RlX2NoYW5nZXMYGiADKAsyHy5zZi5ldGhlcmV1bS50eXBlLnYyLkNvZGVDaGFuZ2USMwoLZ2FzX2NoYW5nZXMYHCADKAsyHi5zZi5ldGhlcmV1bS50eXBlLnYyLkdhc0NoYW5nZRIVCg1zdGF0dXNfZmFpbGVkGAogASgIEhcKD3N0YXR1c19yZXZlcnRlZBgMIAEoCBIWCg5mYWlsdXJlX3JlYXNvbhgLIAEoCRIWCg5zdGF0ZV9yZXZlcnRlZBgeIAEoCBIVCg1iZWdpbl9vcmRpbmFsGB8gASgEEhMKC2VuZF9vcmRpbmFsGCAgASgEEkMKEWFjY291bnRfY3JlYXRpb25zGCEgAygLMiQuc2YuZXRoZXJldW0udHlwZS52Mi5BY2NvdW50Q3JlYXRpb25CAhgBGjYKFEtlY2Nha1ByZWltYWdlc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAFCFwoVX2FkZHJlc3NfZGVsZWdhdGVzX3RvSgQIGxAcSgQIHRAeSgQIMhAzSgQIMxA0SgQIPBA9ImQKDVN0b3JhZ2VDaGFuZ2USDwoHYWRkcmVzcxgBIAEoDBILCgNrZXkYAiABKAwSEQoJb2xkX3ZhbHVlGAMgASgMEhEKCW5ld192YWx1ZRgEIAEoDBIPCgdvcmRpbmFsGAUgASgEIocGCg1CYWxhbmNlQ2hhbmdlEg8KB2FkZHJlc3MYASABKAwSLgoJb2xkX3ZhbHVlGAIgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSLgoJbmV3X3ZhbHVlGAMgASgLMhsuc2YuZXRoZXJldW0udHlwZS52Mi5CaWdJbnQSOQoGcmVhc29uGAQgASgOMikuc2YuZXRoZXJldW0udHlwZS52Mi5CYWxhbmNlQ2hhbmdlLlJlYXNvbhIPCgdvcmRpbmFsGAUgASgEIrgECgZSZWFzb24SEgoOUkVBU09OX1VOS05PV04QABIcChhSRUFTT05fUkVXQVJEX01JTkVfVU5DTEUQARIcChhSRUFTT05fUkVXQVJEX01JTkVfQkxPQ0sQAhIeChpSRUFTT05fREFPX1JFRlVORF9DT05UUkFDVBADEh0KGVJFQVNPTl9EQU9fQURKVVNUX0JBTEFOQ0UQBBITCg9SRUFTT05fVFJBTlNGRVIQBRIaChZSRUFTT05fR0VORVNJU19CQUxBTkNFEAYSEgoOUkVBU09OX0dBU19CVVkQBxIhCh1SRUFTT05fUkVXQVJEX1RSQU5TQUNUSU9OX0ZFRRAIEhUKEVJFQVNPTl9HQVNfUkVGVU5EEAkSGAoUUkVBU09OX1RPVUNIX0FDQ09VTlQQChIZChVSRUFTT05fU1VJQ0lERV9SRUZVTkQQCxIgChxSRUFTT05fQ0FMTF9CQUxBTkNFX09WRVJSSURFEAwSGwoXUkVBU09OX1NVSUNJREVfV0lUSERSQVcQDRIbChdSRUFTT05fUkVXQVJEX0ZFRV9SRVNFVBAOEg8KC1JFQVNPTl9CVVJOEA8SFQoRUkVBU09OX1dJVEhEUkFXQUwQEBIaChZSRUFTT05fUkVXQVJEX0JMT0JfRkVFEBESGAoUUkVBU09OX0lOQ1JFQVNFX01JTlQQEhIRCg1SRUFTT05fUkVWRVJUEBMSHgoaUkVBU09OX01PTkFEX1RYX1BPU1RfU1RBVEUQFCJVCgtOb25jZUNoYW5nZRIPCgdhZGRyZXNzGAEgASgMEhEKCW9sZF92YWx1ZRgCIAEoBBIRCgluZXdfdmFsdWUYAyABKAQSDwoHb3JkaW5hbBgEIAEoBCIzCg9BY2NvdW50Q3JlYXRpb24SDwoHYWNjb3VudBgBIAEoDBIPCgdvcmRpbmFsGAIgASgEInYKCkNvZGVDaGFuZ2USDwoHYWRkcmVzcxgBIAEoDBIQCghvbGRfaGFzaBgCIAEoDBIQCghvbGRfY29kZRgDIAEoDBIQCghuZXdfaGFzaBgEIAEoDBIQCghuZXdfY29kZRgFIAEoDBIPCgdvcmRpbmFsGAYgASgEIukHCglHYXNDaGFuZ2USEQoJb2xkX3ZhbHVlGAEgASgEEhEKCW5ld192YWx1ZRgCIAEoBBI1CgZyZWFzb24YAyABKA4yJS5zZi5ldGhlcmV1bS50eXBlLnYyLkdhc0NoYW5nZS5SZWFzb24SDwoHb3JkaW5hbBgEIAEoBCLtBgoGUmVhc29uEhIKDlJFQVNPTl9VTktOT1dOEAASDwoLUkVBU09OX0NBTEwQARIUChBSRUFTT05fQ0FMTF9DT0RFEAISGQoVUkVBU09OX0NBTExfREFUQV9DT1BZEAMSFAoQUkVBU09OX0NPREVfQ09QWRAEEhcKE1JFQVNPTl9DT0RFX1NUT1JBR0UQBRIcChhSRUFTT05fQ09OVFJBQ1RfQ1JFQVRJT04QBhIdChlSRUFTT05fQ09OVFJBQ1RfQ1JFQVRJT04yEAcSGAoUUkVBU09OX0RFTEVHQVRFX0NBTEwQCBIUChBSRUFTT05fRVZFTlRfTE9HEAkSGAoUUkVBU09OX0VYVF9DT0RFX0NPUFkQChIbChdSRUFTT05fRkFJTEVEX0VYRUNVVElPThALEhgKFFJFQVNPTl9JTlRSSU5TSUNfR0FTEAwSHwobUkVBU09OX1BSRUNPTVBJTEVEX0NPTlRSQUNUEA0SIQodUkVBU09OX1JFRlVORF9BRlRFUl9FWEVDVVRJT04QDhIRCg1SRUFTT05fUkVUVVJOEA8SGwoXUkVBU09OX1JFVFVSTl9EQVRBX0NPUFkQEBIRCg1SRUFTT05fUkVWRVJUEBESGAoUUkVBU09OX1NFTEZfREVTVFJVQ1QQEhIWChJSRUFTT05fU1RBVElDX0NBTEwQExIcChhSRUFTT05fU1RBVEVfQ09MRF9BQ0NFU1MQFBIdChlSRUFTT05fVFhfSU5JVElBTF9CQUxBTkNFEBUSFQoRUkVBU09OX1RYX1JFRlVORFMQFhIgChxSRUFTT05fVFhfTEVGVF9PVkVSX1JFVFVSTkVEEBcSHwobUkVBU09OX0NBTExfSU5JVElBTF9CQUxBTkNFEBgSIgoeUkVBU09OX0NBTExfTEVGVF9PVkVSX1JFVFVSTkVEEBkSIAocUkVBU09OX1dJVE5FU1NfQ09OVFJBQ1RfSU5JVBAaEiQKIFJFQVNPTl9XSVRORVNTX0NPTlRSQUNUX0NSRUFUSU9OEBsSHQoZUkVBU09OX1dJVE5FU1NfQ09ERV9DSFVOSxAcEisKJ1JFQVNPTl9XSVRORVNTX0NPTlRSQUNUX0NPTExJU0lPTl9DSEVDSxAdEhgKFFJFQVNPTl9UWF9EQVRBX0ZMT09SEB4iQwoPSGVhZGVyT25seUJsb2NrEjAKBmhlYWRlchgFIAEoCzIgLnNmLmV0aGVyZXVtLnR5cGUudjIuQmxvY2tIZWFkZXIiogEKDUJsb2NrV2l0aFJlZnMSCgoCaWQYASABKAkSKQoFYmxvY2sYAiABKAsyGi5zZi5ldGhlcmV1bS50eXBlLnYyLkJsb2NrEkQKFnRyYW5zYWN0aW9uX3RyYWNlX3JlZnMYAyABKAsyJC5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uUmVmcxIUCgxpcnJldmVyc2libGUYBCABKAgihgEKHFRyYW5zYWN0aW9uVHJhY2VXaXRoQmxvY2tSZWYSNAoFdHJhY2UYASABKAsyJS5zZi5ldGhlcmV1bS50eXBlLnYyLlRyYW5zYWN0aW9uVHJhY2USMAoJYmxvY2tfcmVmGAIgASgLMh0uc2YuZXRoZXJldW0udHlwZS52Mi5CbG9ja1JlZiIhCg9UcmFuc2FjdGlvblJlZnMSDgoGaGFzaGVzGAEgAygMIigKCEJsb2NrUmVmEgwKBGhhc2gYASABKAwSDgoGbnVtYmVyGAIgASgEIlUKCldpdGhkcmF3YWwSDQoFaW5kZXgYASABKAQSFwoPdmFsaWRhdG9yX2luZGV4GAIgASgEEg8KB2FkZHJlc3MYAyABKAwSDgoGYW1vdW50GAQgASgEIiwKDEJvb2xPcHRpb25hbBISCgVzdGF0ZRgBIAEoCEgAiAEBQggKBl9zdGF0ZSIdCgxCb29sUmVxdWlyZWQSDQoFc3RhdGUYASABKAgqTgoWVHJhbnNhY3Rpb25UcmFjZVN0YXR1cxILCgdVTktOT1dOEAASDQoJU1VDQ0VFREVEEAESCgoGRkFJTEVEEAISDAoIUkVWRVJURUQQAypZCghDYWxsVHlwZRIPCgtVTlNQRUNJRklFRBAAEggKBENBTEwQARIMCghDQUxMQ09ERRACEgwKCERFTEVHQVRFEAMSCgoGU1RBVElDEAQSCgoGQ1JFQVRFEAVCT1pNZ2l0aHViLmNvbS9zdHJlYW1pbmdmYXN0L2ZpcmVob3NlLWV0aGVyZXVtL3R5cGVzL3BiL3NmL2V0aGVyZXVtL3R5cGUvdjI7cGJldGhiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * Block is the representation of the tracing of a block in the Ethereum
@@ -441,25 +441,69 @@ export type BlockHeader = Message<"sf.ethereum.type.v2.BlockHeader"> & {
   blobGasUsed?: bigint;
 
   /**
-   * ExcessBlobGas was added by EIP-4844 and is ignored in legacy headers.
+   * ExcessBlobGas was added by EIP-4844 and is ignored in legacy headers, this has been added
+   * in Cancun hard fork.
    *
    * @generated from field: optional uint64 excess_blob_gas = 23;
    */
   excessBlobGas?: bigint;
 
   /**
-   * ParentBeaconRoot was added by EIP-4788 and is ignored in legacy headers.
+   * ParentBeaconRoot was added by EIP-4788 and is ignored in legacy headers, this has been added
+   * in Cancun hard fork.
    *
-   * @generated from field: bytes parent_beacon_root = 24;
+   * @generated from field: optional bytes parent_beacon_root = 24;
    */
-  parentBeaconRoot: Uint8Array;
+  parentBeaconRoot?: Uint8Array;
 
   /**
-   * RequestsHash was added by EIP-7685 and is ignored in legacy headers.
+   * RequestsHash was added by EIP-7685 and is ignored in legacy headers, this has been added in
+   * Prague hard fork.
    *
-   * @generated from field: bytes requests_hash = 25;
+   * @generated from field: optional bytes requests_hash = 25;
    */
-  requestsHash: Uint8Array;
+  requestsHash?: Uint8Array;
+
+  /**
+   * SlotNumber was added by EIP-7843 and is ignored in legacy headers, it is scheduled to
+   * be added in Amsterdam hard fork.
+   *
+   * @generated from field: optional uint64 slot_number = 26;
+   */
+  slotNumber?: bigint;
+
+  /**
+   * MorphNextL1MsgIndex is the index in Morph's L1 message queue at which the next block must
+   * start processing L1 messages. Since Morph's Jade upgrade, it is the queue index of the last L1
+   * message included in this block plus one, or the parent's value if the block includes none.
+   * Before Jade, the sequencer could skip queue indices, so the value can be higher than that.
+   *
+   * Morph specific, unset on all other chains.
+   *
+   * @generated from field: optional uint64 morph_next_l1_msg_index = 27;
+   */
+  morphNextL1MsgIndex?: bigint;
+
+  /**
+   * BlockAccessListHash was added by EIP-7928 and is ignored in legacy headers, it is scheduled
+   * to be added in Amsterdam hard fork. This is the field the block header itself commits to.
+   *
+   * @generated from field: optional bytes block_access_list_hash = 28;
+   */
+  blockAccessListHash?: Uint8Array;
+
+  /**
+   * BlockAccessList is the RLP-encoded EIP-7928 block access list for this block, added in the
+   * Amsterdam hard fork. Unlike `block_access_list_hash`, the header does not commit to this
+   * field directly.
+   *
+   * EXPERIMENTAL: this field is populated for measurement purposes only and must **not** be
+   * depended on. It is not yet officially supported for consumption and may be dropped or
+   * change shape without notice until StreamingFast declares it stable.
+   *
+   * @generated from field: optional bytes block_access_list_rlp = 29;
+   */
+  blockAccessListRlp?: Uint8Array;
 };
 
 /**
@@ -818,11 +862,30 @@ export type TransactionTrace = Message<"sf.ethereum.type.v2.TransactionTrace"> &
    * This is specified by https://eips.ethereum.org/EIPS/eip-7702
    *
    * This will is populated only if `TransactionTrace.Type == TRX_TYPE_SET_CODE` which is possible only
-   * if Prague fork is active on the chain.
+   * if Prague fork is active on the chain, or on Morph if `TransactionTrace.Type == TRX_TYPE_MORPH`
+   * and [MorphTxConfig.version] is 2.
    *
    * @generated from field: repeated sf.ethereum.type.v2.SetCodeAuthorization set_code_authorizations = 36;
    */
   setCodeAuthorizations: SetCodeAuthorization[];
+
+  /**
+   * MorphTxConfig holds the Morph specific fields carried by a MorphTx transaction.
+   *
+   * This will is populated only if `TransactionTrace.Type == TRX_TYPE_MORPH`.
+   *
+   * @generated from field: optional sf.ethereum.type.v2.MorphTxConfig morph_tx_config = 37;
+   */
+  morphTxConfig?: MorphTxConfig;
+
+  /**
+   * MorphL1MessageConfig holds the Morph specific fields carried by an L1 message transaction.
+   *
+   * This will is populated only if `TransactionTrace.Type == TRX_TYPE_MORPH_L1_MESSAGE`.
+   *
+   * @generated from field: optional sf.ethereum.type.v2.MorphL1MessageConfig morph_l1_message_config = 38;
+   */
+  morphL1MessageConfig?: MorphL1MessageConfig;
 };
 
 /**
@@ -935,6 +998,30 @@ export enum TransactionTrace_Type {
    * @generated from enum value: TRX_TYPE_POLYGON_STATE_SYNC = 200;
    */
   TRX_TYPE_POLYGON_STATE_SYNC = 200,
+
+  /**
+   * MorphTx (type byte 0x7f on chain), a transaction that can pay for its gas with a registered
+   * ERC-20 token instead of the native token and that can carry an indexable reference and a memo.
+   * Those extra fields are recorded in [TransactionTrace.morph_tx_config].
+   *
+   * Specified by https://docs.morph.network/docs/about-morph/morphtx
+   *
+   * @generated from enum value: TRX_TYPE_MORPH = 300;
+   */
+  TRX_TYPE_MORPH = 300,
+
+  /**
+   * Morph's L1 message transaction (type byte 0x7e on chain), a transaction queued on the L1
+   * chain and later included by the sequencer in an L2 block. It carries no signature, its
+   * 'from' is the L1 sender and its queue index is recorded in
+   * [TransactionTrace.morph_l1_message_config].
+   *
+   * It shares its type byte with Optimism's deposit transaction (TRX_TYPE_OPTIMISM_DEPOSIT) but
+   * has different semantics, hence the distinct value here.
+   *
+   * @generated from enum value: TRX_TYPE_MORPH_L1_MESSAGE = 301;
+   */
+  TRX_TYPE_MORPH_L1_MESSAGE = 301,
 }
 
 /**
@@ -942,6 +1029,98 @@ export enum TransactionTrace_Type {
  */
 export const TransactionTrace_TypeSchema: GenEnum<TransactionTrace_Type> = /*@__PURE__*/
   enumDesc(file_sf_ethereum_type_v2_type, 5, 0);
+
+/**
+ * MorphTxConfig represents the extra fields of a Morph MorphTx transaction, a transaction type
+ * that enables paying the gas fees with a registered ERC-20 token instead of the native token.
+ *
+ * Specified by https://docs.morph.network/docs/about-morph/morphtx
+ *
+ * @generated from message sf.ethereum.type.v2.MorphTxConfig
+ */
+export type MorphTxConfig = Message<"sf.ethereum.type.v2.MorphTxConfig"> & {
+  /**
+   * Version of the MorphTx payload, 0 for the initial encoding, 1 for the encoding that added
+   * the 'reference' and 'memo' fields as well as support for paying the fees with the native token,
+   * and 2 for the encoding that adds an EIP-7702 authorization list, recorded in
+   * [TransactionTrace.set_code_authorizations].
+   *
+   * The on chain type is a 'uint8'.
+   *
+   * @generated from field: uint32 version = 1;
+   */
+  version: number;
+
+  /**
+   * FeeTokenID is the identifier, in Morph's L2 token registry, of the ERC-20 token used to pay
+   * for the gas of this transaction. A value of 0 means the native token is used to pay the fees,
+   * which is possible only since version 1.
+   *
+   * The on chain type is a 'uint16'.
+   *
+   * @generated from field: uint32 fee_token_id = 2;
+   */
+  feeTokenId: number;
+
+  /**
+   * FeeLimit is the maximum amount of 'fee_token_id' token the sender authorizes to be spent on
+   * the fees of this transaction, L2 gas plus the L1 data fee. A value of 0 means no explicit limit,
+   * the sender's whole token balance is available. It must be 0 when 'fee_token_id' is 0.
+   *
+   * @generated from field: sf.ethereum.type.v2.BigInt fee_limit = 3;
+   */
+  feeLimit?: BigInt;
+
+  /**
+   * Reference is an arbitrary 32 bytes value attached to the transaction and meant to be indexed
+   * by consumers.
+   *
+   * Available since version 1 only and optional, will be empty when unset.
+   *
+   * @generated from field: bytes reference = 4;
+   */
+  reference: Uint8Array;
+
+  /**
+   * Memo is an arbitrary value of at most 64 bytes attached to the transaction.
+   *
+   * Available since version 1 only and optional, will be empty when unset.
+   *
+   * @generated from field: bytes memo = 5;
+   */
+  memo: Uint8Array;
+};
+
+/**
+ * Describes the message sf.ethereum.type.v2.MorphTxConfig.
+ * Use `create(MorphTxConfigSchema)` to create a new message.
+ */
+export const MorphTxConfigSchema: GenMessage<MorphTxConfig> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_type_v2_type, 6);
+
+/**
+ * MorphL1MessageConfig represents the extra fields of a Morph L1 message transaction, a transaction
+ * queued on the L1 chain and later included by the sequencer in an L2 block.
+ *
+ * @generated from message sf.ethereum.type.v2.MorphL1MessageConfig
+ */
+export type MorphL1MessageConfig = Message<"sf.ethereum.type.v2.MorphL1MessageConfig"> & {
+  /**
+   * QueueIndex is the position of this message in Morph's L1 message queue. The chain requires
+   * L1 messages to be included in strictly increasing queue index order, refer to
+   * [BlockHeader.morph_next_l1_msg_index] to know at which index the next block resumes.
+   *
+   * @generated from field: uint64 queue_index = 1;
+   */
+  queueIndex: bigint;
+};
+
+/**
+ * Describes the message sf.ethereum.type.v2.MorphL1MessageConfig.
+ * Use `create(MorphL1MessageConfigSchema)` to create a new message.
+ */
+export const MorphL1MessageConfigSchema: GenMessage<MorphL1MessageConfig> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_type_v2_type, 7);
 
 /**
  * AccessTuple represents a list of storage keys for a given contract's address and is used
@@ -966,7 +1145,7 @@ export type AccessTuple = Message<"sf.ethereum.type.v2.AccessTuple"> & {
  * Use `create(AccessTupleSchema)` to create a new message.
  */
 export const AccessTupleSchema: GenMessage<AccessTuple> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 6);
+  messageDesc(file_sf_ethereum_type_v2_type, 8);
 
 /**
  * SetCodeAuthorization represents the authorization of a transaction to set code of an EOA (Externally Owned Account)
@@ -1069,7 +1248,7 @@ export type SetCodeAuthorization = Message<"sf.ethereum.type.v2.SetCodeAuthoriza
  * Use `create(SetCodeAuthorizationSchema)` to create a new message.
  */
 export const SetCodeAuthorizationSchema: GenMessage<SetCodeAuthorization> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 7);
+  messageDesc(file_sf_ethereum_type_v2_type, 9);
 
 /**
  * @generated from message sf.ethereum.type.v2.TransactionReceipt
@@ -1131,6 +1310,16 @@ export type TransactionReceipt = Message<"sf.ethereum.type.v2.TransactionReceipt
    * @generated from field: optional sf.ethereum.type.v2.BigInt blob_gas_price = 6;
    */
   blobGasPrice?: BigInt;
+
+  /**
+   * MorphReceiptConfig holds the Morph specific values that were resolved while executing the
+   * transaction, mainly the L1 data fee and the oracle values used to charge the fee token.
+   *
+   * Morph specific, unset on all other chains.
+   *
+   * @generated from field: optional sf.ethereum.type.v2.MorphReceiptConfig morph_receipt_config = 7;
+   */
+  morphReceiptConfig?: MorphReceiptConfig;
 };
 
 /**
@@ -1138,7 +1327,56 @@ export type TransactionReceipt = Message<"sf.ethereum.type.v2.TransactionReceipt
  * Use `create(TransactionReceiptSchema)` to create a new message.
  */
 export const TransactionReceiptSchema: GenMessage<TransactionReceipt> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 8);
+  messageDesc(file_sf_ethereum_type_v2_type, 10);
+
+/**
+ * MorphReceiptConfig represents the Morph specific fields recorded on the receipt of a transaction.
+ *
+ * @generated from message sf.ethereum.type.v2.MorphReceiptConfig
+ */
+export type MorphReceiptConfig = Message<"sf.ethereum.type.v2.MorphReceiptConfig"> & {
+  /**
+   * L1Fee is the fee, in the native token, paid to cover the cost of posting this transaction's
+   * data to the L1 chain. It is populated for every Morph transaction except L1 messages, which
+   * are prepaid on L1. For a MorphTx paying with a fee token, it is included in the token debit.
+   *
+   * @generated from field: sf.ethereum.type.v2.BigInt l1_fee = 1;
+   */
+  l1Fee?: BigInt;
+
+  /**
+   * FeeRate is the oracle rate used to convert the gas cost expressed in the native token into
+   * units of the transaction's fee token.
+   *
+   * This will is populated only if `TransactionTrace.Type == TRX_TYPE_MORPH` and
+   * [MorphTxConfig.fee_token_id] is not 0.
+   *
+   * @generated from field: sf.ethereum.type.v2.BigInt fee_rate = 2;
+   */
+  feeRate?: BigInt;
+
+  /**
+   * TokenScale is the scaling factor of the transaction's fee token. Together with 'fee_rate', a
+   * native amount converts to `ceil(native_amount * token_scale / fee_rate)` token units. The fee is
+   * debited upfront for the gas limit plus the L1 fee, and the unused part is refunded through a
+   * separate conversion, which rounds down with a carried rounding credit once the upgrade that
+   * activates MorphTx version 2 is live. The net amount charged is therefore not a single
+   * conversion of the gas used.
+   *
+   * This will is populated only if `TransactionTrace.Type == TRX_TYPE_MORPH` and
+   * [MorphTxConfig.fee_token_id] is not 0.
+   *
+   * @generated from field: sf.ethereum.type.v2.BigInt token_scale = 3;
+   */
+  tokenScale?: BigInt;
+};
+
+/**
+ * Describes the message sf.ethereum.type.v2.MorphReceiptConfig.
+ * Use `create(MorphReceiptConfigSchema)` to create a new message.
+ */
+export const MorphReceiptConfigSchema: GenMessage<MorphReceiptConfig> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_type_v2_type, 11);
 
 /**
  * @generated from message sf.ethereum.type.v2.Log
@@ -1205,7 +1443,7 @@ export type Log = Message<"sf.ethereum.type.v2.Log"> & {
  * Use `create(LogSchema)` to create a new message.
  */
 export const LogSchema: GenMessage<Log> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 9);
+  messageDesc(file_sf_ethereum_type_v2_type, 12);
 
 /**
  * @generated from message sf.ethereum.type.v2.Call
@@ -1319,7 +1557,24 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
   suicide: boolean;
 
   /**
-   * hex representation of the hash -> preimage 
+   * Keccak preimages produced by the KECCAK256 opcode during this call, as a map of the
+   * hex representation of the hash -> hex representation of the preimage. Neither side
+   * carries a `0x` prefix.
+   *
+   * The map exists so a consumer can walk a storage slot back to the expression that
+   * produced it, and only preimages of 256 bytes or less are recorded. Solidity's slot
+   * derivations are all small:
+   *
+   * - 32 bytes for a dynamic array, or for a `bytes`/`string` longer than 31 bytes
+   * - 64 bytes for a mapping with a value-type key, one hash per level of nesting
+   * - 32 bytes plus the key for a `mapping(string => V)` or `mapping(bytes => V)`
+   *
+   * 256 bytes covers all of those, with room for a 224-byte dynamic key. A preimage
+   * larger than that comes from a contract hashing its own data rather than deriving a
+   * slot, and is left out of the map entirely rather than truncated: a truncated
+   * preimage does not hash back to its key, which is worse for a consumer than no entry.
+   *
+   * Note: not populated by the Monad tracer, the Monad execution layer does not emit keccak preimage events
    *
    * @generated from field: map<string, string> keccak_preimages = 20;
    */
@@ -1476,7 +1731,7 @@ export type Call = Message<"sf.ethereum.type.v2.Call"> & {
  * Use `create(CallSchema)` to create a new message.
  */
 export const CallSchema: GenMessage<Call> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 10);
+  messageDesc(file_sf_ethereum_type_v2_type, 13);
 
 /**
  * @generated from message sf.ethereum.type.v2.StorageChange
@@ -1516,7 +1771,7 @@ export type StorageChange = Message<"sf.ethereum.type.v2.StorageChange"> & {
  * Use `create(StorageChangeSchema)` to create a new message.
  */
 export const StorageChangeSchema: GenMessage<StorageChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 11);
+  messageDesc(file_sf_ethereum_type_v2_type, 14);
 
 /**
  * Note: Balance changes may occur even for failed transactions in certain cases (see Block documentation for details).
@@ -1584,7 +1839,7 @@ export type BalanceChange = Message<"sf.ethereum.type.v2.BalanceChange"> & {
  * Use `create(BalanceChangeSchema)` to create a new message.
  */
 export const BalanceChangeSchema: GenMessage<BalanceChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 12);
+  messageDesc(file_sf_ethereum_type_v2_type, 15);
 
 /**
  * @generated from enum sf.ethereum.type.v2.BalanceChange.Reason
@@ -1783,7 +2038,7 @@ export enum BalanceChange_Reason {
  * Describes the enum sf.ethereum.type.v2.BalanceChange.Reason.
  */
 export const BalanceChange_ReasonSchema: GenEnum<BalanceChange_Reason> = /*@__PURE__*/
-  enumDesc(file_sf_ethereum_type_v2_type, 12, 0);
+  enumDesc(file_sf_ethereum_type_v2_type, 15, 0);
 
 /**
  * Note: Nonce changes typically persist even for failed transactions (see Block documentation for details).
@@ -1820,7 +2075,7 @@ export type NonceChange = Message<"sf.ethereum.type.v2.NonceChange"> & {
  * Use `create(NonceChangeSchema)` to create a new message.
  */
 export const NonceChangeSchema: GenMessage<NonceChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 13);
+  messageDesc(file_sf_ethereum_type_v2_type, 16);
 
 /**
  * @generated from message sf.ethereum.type.v2.AccountCreation
@@ -1845,7 +2100,7 @@ export type AccountCreation = Message<"sf.ethereum.type.v2.AccountCreation"> & {
  * Use `create(AccountCreationSchema)` to create a new message.
  */
 export const AccountCreationSchema: GenMessage<AccountCreation> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 14);
+  messageDesc(file_sf_ethereum_type_v2_type, 17);
 
 /**
  * Note: Code changes may have special handling for failed transactions (see Block documentation for details).
@@ -1892,7 +2147,7 @@ export type CodeChange = Message<"sf.ethereum.type.v2.CodeChange"> & {
  * Use `create(CodeChangeSchema)` to create a new message.
  */
 export const CodeChangeSchema: GenMessage<CodeChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 15);
+  messageDesc(file_sf_ethereum_type_v2_type, 18);
 
 /**
  * The gas change model represents the reason why some gas cost has occurred.
@@ -1934,7 +2189,7 @@ export type GasChange = Message<"sf.ethereum.type.v2.GasChange"> & {
  * Use `create(GasChangeSchema)` to create a new message.
  */
 export const GasChangeSchema: GenMessage<GasChange> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 16);
+  messageDesc(file_sf_ethereum_type_v2_type, 19);
 
 /**
  * @generated from enum sf.ethereum.type.v2.GasChange.Reason
@@ -2236,7 +2491,7 @@ export enum GasChange_Reason {
  * Describes the enum sf.ethereum.type.v2.GasChange.Reason.
  */
 export const GasChange_ReasonSchema: GenEnum<GasChange_Reason> = /*@__PURE__*/
-  enumDesc(file_sf_ethereum_type_v2_type, 16, 0);
+  enumDesc(file_sf_ethereum_type_v2_type, 19, 0);
 
 /**
  * HeaderOnlyBlock is used to optimally unpack the [Block] structure (note the
@@ -2260,7 +2515,7 @@ export type HeaderOnlyBlock = Message<"sf.ethereum.type.v2.HeaderOnlyBlock"> & {
  * Use `create(HeaderOnlyBlockSchema)` to create a new message.
  */
 export const HeaderOnlyBlockSchema: GenMessage<HeaderOnlyBlock> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 17);
+  messageDesc(file_sf_ethereum_type_v2_type, 20);
 
 /**
  * BlockWithRefs is a lightweight block, with traces and transactions
@@ -2296,7 +2551,7 @@ export type BlockWithRefs = Message<"sf.ethereum.type.v2.BlockWithRefs"> & {
  * Use `create(BlockWithRefsSchema)` to create a new message.
  */
 export const BlockWithRefsSchema: GenMessage<BlockWithRefs> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 18);
+  messageDesc(file_sf_ethereum_type_v2_type, 21);
 
 /**
  * @generated from message sf.ethereum.type.v2.TransactionTraceWithBlockRef
@@ -2318,7 +2573,7 @@ export type TransactionTraceWithBlockRef = Message<"sf.ethereum.type.v2.Transact
  * Use `create(TransactionTraceWithBlockRefSchema)` to create a new message.
  */
 export const TransactionTraceWithBlockRefSchema: GenMessage<TransactionTraceWithBlockRef> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 19);
+  messageDesc(file_sf_ethereum_type_v2_type, 22);
 
 /**
  * @generated from message sf.ethereum.type.v2.TransactionRefs
@@ -2335,7 +2590,7 @@ export type TransactionRefs = Message<"sf.ethereum.type.v2.TransactionRefs"> & {
  * Use `create(TransactionRefsSchema)` to create a new message.
  */
 export const TransactionRefsSchema: GenMessage<TransactionRefs> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 20);
+  messageDesc(file_sf_ethereum_type_v2_type, 23);
 
 /**
  * @generated from message sf.ethereum.type.v2.BlockRef
@@ -2357,7 +2612,7 @@ export type BlockRef = Message<"sf.ethereum.type.v2.BlockRef"> & {
  * Use `create(BlockRefSchema)` to create a new message.
  */
 export const BlockRefSchema: GenMessage<BlockRef> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 21);
+  messageDesc(file_sf_ethereum_type_v2_type, 24);
 
 /**
  * Withdrawal represents a validator withdrawal from the beacon chain to the EVM.
@@ -2400,7 +2655,44 @@ export type Withdrawal = Message<"sf.ethereum.type.v2.Withdrawal"> & {
  * Use `create(WithdrawalSchema)` to create a new message.
  */
 export const WithdrawalSchema: GenMessage<Withdrawal> = /*@__PURE__*/
-  messageDesc(file_sf_ethereum_type_v2_type, 22);
+  messageDesc(file_sf_ethereum_type_v2_type, 25);
+
+/**
+ * BoolOptional and BoolRequired are test messages used to verify the wire-encoding
+ * difference between optional bool (state: true / false / nil) and plain bool
+ *
+ * @generated from message sf.ethereum.type.v2.BoolOptional
+ */
+export type BoolOptional = Message<"sf.ethereum.type.v2.BoolOptional"> & {
+  /**
+   * @generated from field: optional bool state = 1;
+   */
+  state?: boolean;
+};
+
+/**
+ * Describes the message sf.ethereum.type.v2.BoolOptional.
+ * Use `create(BoolOptionalSchema)` to create a new message.
+ */
+export const BoolOptionalSchema: GenMessage<BoolOptional> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_type_v2_type, 26);
+
+/**
+ * @generated from message sf.ethereum.type.v2.BoolRequired
+ */
+export type BoolRequired = Message<"sf.ethereum.type.v2.BoolRequired"> & {
+  /**
+   * @generated from field: bool state = 1;
+   */
+  state: boolean;
+};
+
+/**
+ * Describes the message sf.ethereum.type.v2.BoolRequired.
+ * Use `create(BoolRequiredSchema)` to create a new message.
+ */
+export const BoolRequiredSchema: GenMessage<BoolRequired> = /*@__PURE__*/
+  messageDesc(file_sf_ethereum_type_v2_type, 27);
 
 /**
  * @generated from enum sf.ethereum.type.v2.TransactionTraceStatus

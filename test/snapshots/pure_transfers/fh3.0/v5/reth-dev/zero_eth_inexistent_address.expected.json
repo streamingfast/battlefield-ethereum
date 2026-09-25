@@ -1,12 +1,12 @@
 {
   "to": "$randomAddress2",
   "nonce": "$nonce",
-  "gasLimit": "21000",
+  "gasLimit": "250000",
   "input": "",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "21000",
+  "gasUsed": "15000",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "6",
+  "endOrdinal": "7",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -25,7 +25,7 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$randomAddress2",
-      "gasLimit": "0",
+      "gasLimit": "235000",
       "gasConsumed": "0",
       "returnData": "",
       "input": "",
@@ -38,15 +38,22 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "035b78f5501000",
+          "oldValue": "27f7d0bdb92000",
           "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "5",
+          "oldValue": "",
+          "newValue": "2591e80e7ff000"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "5",
-          "oldValue": "",
-          "newValue": "01"
+          "ordinal": "6",
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [

@@ -1,12 +1,12 @@
 {
   "to": "$logsContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5400000",
   "input": "75466a4e",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "23307",
+  "gasUsed": "17307",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,7 +25,7 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$logsContract",
-      "gasLimit": "878936",
+      "gasLimit": "5384936",
       "gasConsumed": "2243",
       "returnData": "",
       "input": "75466a4e",
@@ -40,7 +40,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "8fe28911674000",
+          "oldValue": "035f4f36686b8000",
           "newValue": ""
         },
         {
@@ -48,14 +48,14 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "6",
           "oldValue": "",
-          "newValue": "8c28a4cbe4aa00"
+          "newValue": "035c8ae268ffca00"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "7",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [
@@ -72,7 +72,7 @@
           "topics": [
             "f61dd7fbbfc9a40514b6d982b860aa3a2783d6f1751c369597d5b15100f3c094",
             "ef538a371d7ee3afe691b29b7d30ac3fee1adf8450dd29671caddfead2c4fcf3",
-            "00000000000000000000000000000000000000000000000000000000000d6886",
+            "0000000000000000000000000000000000000000000000000000000000522a16",
             "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
           ],
           "data": "",
@@ -104,7 +104,7 @@
         "topics": [
           "f61dd7fbbfc9a40514b6d982b860aa3a2783d6f1751c369597d5b15100f3c094",
           "ef538a371d7ee3afe691b29b7d30ac3fee1adf8450dd29671caddfead2c4fcf3",
-          "00000000000000000000000000000000000000000000000000000000000d6886",
+          "0000000000000000000000000000000000000000000000000000000000522a16",
           "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
         ],
         "data": "",

@@ -1,4 +1,5 @@
 import hre from "hardhat"
+import { chainStaticInfo } from "./chain"
 
 // Returns the current network name configured in Hardhat Runtime Environment. To look
 // for a list of supported network names, see `hardhat.config.ts` file in the `config.networks`
@@ -52,6 +53,35 @@ export function isArbitrum(): boolean {
 // per-tx fee cap. Only gasUsed is billed, so over-provisioning the limit is free.
 const ARBITRUM_GAS_LIMIT = 100_000_000
 
+// Returns true when the chain is running past the Amsterdam activation (EIP-8037 state gas
+// active). Backed by the same synchronously-available chainStaticInfo the snapshot
+// EIP-override machinery already relies on.
+export function isAmsterdamActive(): boolean {
+  return chainStaticInfo.eips.eip7708 === true
+}
+
+// EIP-8037 charges state gas (CPSB = 1530 gas per state byte) on top of the pre-Amsterdam
+// regular-gas cost for anything that grows state: a fresh SSTORE, a new account, a code
+// deposit. A plain transfer to a brand new address alone needs roughly NEW_ACCOUNT_BYTES (120)
+// * CPSB ≈ 183,600 extra gas that didn't exist before. Canonical-EVM-tuned fixed gas limits
+// throughout this suite (21000 for a transfer, 3,500,000 to deploy Calls.sol, etc.) are sized
+// for the pre-Amsterdam cost model and fall short once state gas is added on top.
+//
+// AMSTERDAM_GAS_MULTIPLIER scales a caller-supplied limit up generously (6x comfortably covers
+// every case measured so far, including Calls.sol's ~13KB deployment) and
+// AMSTERDAM_NEW_ACCOUNT_GAS_FLOOR guarantees even a bare 21000 floors at something that can
+// absorb a single new-account charge. Only gasUsed is billed, so over-provisioning the limit is
+// free; it is bounded well below this repo's Amsterdam genesis block gas limit (33,554,432, see
+// scripts/geth_dev/genesis.amsterdam.json) for every fixed limit currently used in the suite.
+const AMSTERDAM_GAS_MULTIPLIER = 6
+const AMSTERDAM_NEW_ACCOUNT_GAS_FLOOR = 250_000
+
+function amsterdamGasLimit(value: number | bigint): bigint {
+  const bumped = BigInt(value) * BigInt(AMSTERDAM_GAS_MULTIPLIER)
+  const floor = BigInt(AMSTERDAM_NEW_ACCOUNT_GAS_FLOOR)
+  return bumped > floor ? bumped : floor
+}
+
 // Produces a transaction `gasPrice` override. On normal networks it returns the provided default;
 // on Arbitrum/Nitro it returns an empty object so the node fills its own gas price. Forcing a high
 // gas price (e.g. 45 gwei) there combines with the large gas limit to exceed the node's per-tx fee
@@ -60,18 +90,24 @@ export function gasPriceOverride(value: number): { gasPrice?: number } {
   return isArbitrum() ? {} : { gasPrice: value }
 }
 
-// Returns the given fixed gas limit on normal networks, or the large Arbitrum substitute on
-// Arbitrum/Nitro. Use where a gas limit is consumed as a bare value (e.g. assigned to a shared
-// `gasLimit:` field) rather than spread.
+// Returns the given fixed gas limit on normal networks, the large Arbitrum substitute on
+// Arbitrum/Nitro, or the Amsterdam-scaled value on Amsterdam (see amsterdamGasLimit above). Use
+// where a gas limit is consumed as a bare value (e.g. assigned to a shared `gasLimit:` field)
+// rather than spread.
 export function dynamicGasLimit(value: number): number {
-  return isArbitrum() ? ARBITRUM_GAS_LIMIT : value
+  if (isArbitrum()) return ARBITRUM_GAS_LIMIT
+  if (isAmsterdamActive()) return Number(amsterdamGasLimit(value))
+  return value
 }
 
 // Produces a transaction `gasLimit` override. On normal networks it returns the provided default;
-// on Arbitrum/Nitro it returns the large substitute limit. A caller-supplied gasLimit spread after
+// on Arbitrum/Nitro it returns the large substitute limit; on Amsterdam it returns the
+// Amsterdam-scaled value (see amsterdamGasLimit above). A caller-supplied gasLimit spread after
 // this still wins, so tests that deliberately set an exact limit keep their value.
 export function gasLimitOverride(value: number | bigint): { gasLimit: number | bigint } {
-  return { gasLimit: isArbitrum() ? ARBITRUM_GAS_LIMIT : value }
+  if (isArbitrum()) return { gasLimit: ARBITRUM_GAS_LIMIT }
+  if (isAmsterdamActive()) return { gasLimit: amsterdamGasLimit(value) }
+  return { gasLimit: value }
 }
 
 // Returns a value from a mapping based on the current network name. If no value

@@ -35,13 +35,18 @@ import { dynamicGasLimit } from "./lib/network"
 //
 // See https://github.com/streamingfast/go-ethereum/blob/3b1a1dc9b92d5fd13b36b0030f744b547cf4e6cc/eth/tracers/firehose.go#L658-L665
 
-const callsGasLimit = dynamicGasLimit(3_500_000)
+let callsGasLimit: number
 
 describe("Calls", function () {
   let Calls: Contract<Calls>
   let Child: Contract<Child>
 
   before(async () => {
+    // Computed here rather than at module scope: dynamicGasLimit's Amsterdam-awareness reads
+    // chainStaticInfo, which is only populated once the global before() hook (in global.ts) has
+    // run, and module-level code executes before any hook does.
+    callsGasLimit = dynamicGasLimit(3_500_000)
+
     await deployAll(
       async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })),
       async () => (Child = await deployContract(owner, ChildFactory, [])),

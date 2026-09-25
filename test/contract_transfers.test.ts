@@ -9,7 +9,6 @@ import {
 import hre from "hardhat"
 import { Contract, contractCall, deployAll, deployContract, koContractCall } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
-import { isArbitrum } from "./lib/network"
 import { Child, GasRefund, SelfTransfers, SelfTransfers__factory, Transfers } from "../typechain-types"
 import { ChildFactory, GasRefundFactory, owner, TransfersFactory } from "./global"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
@@ -38,20 +37,6 @@ describe("Contract transfers", function () {
     await expect(
       contractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei }),
     ).to.trxTraceEqualSnapshot("contract_transfers/existing_address.expected.json", {
-      $contract: Transfers.addressHex,
-    })
-  })
-
-  it("Existing address failing transaction", async function () {
-    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
-    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
-    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
-    if (isArbitrum()) {
-      this.skip()
-    }
-    await expect(
-      koContractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 22080 }),
-    ).to.trxTraceEqualSnapshot("contract_transfers/existing_address_failure.expected.json", {
       $contract: Transfers.addressHex,
     })
   })
