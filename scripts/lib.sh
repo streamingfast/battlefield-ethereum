@@ -18,6 +18,7 @@ op_geth="${OP_GETH_BINARY:-op-geth}"
 op_reth="${OP_RETH_BINARY:-op-reth}"
 world_chain="${WORLD_CHAIN_BINARY:-world-chain}"
 besu="${BESU_BINARY:-besu}"
+arc_node="${ARC_NODE_BINARY:-arc-node-execution}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -141,6 +142,22 @@ check_reth_bsc() {
         echo "firehose/0.1.x)."
         exit 1
     fi
+}
+
+check_arc_node() {
+  if ! command -v "$arc_node" &> /dev/null; then
+    echo "The '$arc_node' binary could not be found, you can install it with:"
+    echo ""
+    echo "- cargo build --release --bin arc-node-execution, from streamingfast/arc-node-priv 'release/v0.x'"
+    echo ""
+    echo "> *Note* The private reth fork is fetched over SSH, so you may need"
+    echo "> 'git config --global url.\"git@github.com:\".insteadOf \"https://github.com/\"'"
+    exit 1
+  fi
+  if ! "$arc_node" node --help | grep -q -- "--firehose"; then
+    echo "Your '$arc_node' binary has no '--firehose' flag, it is not a Firehose-instrumented build"
+    exit 1
+  fi
 }
 
 check_reth_firehose_tracer() {

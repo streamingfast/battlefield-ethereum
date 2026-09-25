@@ -1,15 +1,7 @@
 import { expect } from "chai"
-import hre from "hardhat"
 import { fetchFirehoseBlock } from "./lib/firehose"
 import { BalanceChange_Reason, TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
-import { isNetwork, isNetworkOneOf } from "./lib/network"
-import { sendImmediateEth } from "./lib/ethereum"
-import { owner } from "./global"
-import { knownExistingAddress } from "./lib/addresses"
-import { oneWei } from "./lib/money"
-import debugFactory from "debug"
-
-const debug = debugFactory("battlefield:firehose")
+import { isNetworkOneOf } from "./lib/network"
 
 describe("Genesis Block", function () {
   it("Block 0 has a single genesis transaction trace with correct structure", async function () {
@@ -23,10 +15,6 @@ describe("Genesis Block", function () {
     //   tracer initializes with an empty alloc: block 0 is emitted but carries no GENESIS_BALANCE changes.
     if (isNetworkOneOf("geth-devnet", "op-geth-devnet", "arbitrum-nitro-dev")) {
       this.skip()
-    }
-
-    if (isNetworkOneOf("geth-dev")) {
-      await waitUntilMergedBlocksAvailable()
     }
 
     const block = await fetchFirehoseBlock(0, { timeoutMs: 30_000 })
@@ -53,21 +41,3 @@ describe("Genesis Block", function () {
     await expect([trace, block]).to.trxTraceEqualSnapshot("genesis/genesis_block_trx")
   })
 })
-
-async function waitUntilMergedBlocksAvailable() {
-  // Mine-on-demand chains only produce blocks when transactions arrive.
-  // Pump ETH transfers until the chain has at least 130 blocks so that
-  // Firehose has had time to fully merge the first bundle (blocks 0-99)
-  // before we request block 0.
-  const toReach = 130
-  const current = await hre.ethers.provider.getBlockNumber()
-  if (current >= toReach) {
-    return
-  }
-
-  const count = toReach - current
-  debug(`Current block number is ${current}, waiting until it reaches ${toReach} by sending ${count} transactions...`)
-  for (let i = 0; i < count; i++) {
-    await sendImmediateEth(owner, knownExistingAddress, oneWei)
-  }
-}

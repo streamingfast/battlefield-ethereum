@@ -29,6 +29,7 @@ const config: HardhatUserConfig = {
 
   networks: {
     "arbitrum-geth-dev": firehoseNetwork([]),
+    "arc-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:9545" },
     "arbitrum-nitro-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
     "besu-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
     "bnb-dev": firehoseNetwork([]),

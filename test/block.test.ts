@@ -91,8 +91,12 @@ describe("Blocks", function () {
 
     // Send a dynamic-fee transaction with an explicit tip so that a REWARD_TRANSACTION_FEE
     // balance change is guaranteed to be emitted (tip = 0 produces no reward entry).
+    //
+    // Arc pins its base fee to the ProtocolConfig `minBaseFee` (20 gwei on the dev chain), so
+    // the 10 gwei cap below is unpayable there.
+    const maxFeePerGas = isNetwork("arc-dev") ? 50_000_000_000n : 10_000_000_000n
     const result = await sendEth(owner, knownExistingAddress, oneWei, {
-      maxFeePerGas: 10_000_000_000n,
+      maxFeePerGas,
       maxPriorityFeePerGas: 1_000_000_000n,
     })
     const block = await fetchFirehoseBlock(result.blockNumber)
@@ -169,14 +173,21 @@ describe("Blocks", function () {
     const rpcBlock = await mustGetRpcBlock(result.blockNumber)
     const baseFeePerGas = BigInt(rpcBlock.baseFeePerGas ?? 0)
     const receipts = await mustGetRpcBlockReceipts(result.blockNumber)
+
+    // Arc credits the beneficiary the full effective gas price rather than burning the base
+    // fee (`reward_beneficiary` in arc-node `crates/evm/src/handler.rs`), so the reward is
+    // gasUsed × effectiveGasPrice with nothing subtracted.
+    const burnsBaseFee = !isNetwork("arc-dev")
     const expectedReward = receipts.reduce(
-      (sum, r) => sum + BigInt(r.gasUsed) * (BigInt(r.effectiveGasPrice) - baseFeePerGas),
+      (sum, r) => sum + BigInt(r.gasUsed) * (BigInt(r.effectiveGasPrice) - (burnsBaseFee ? baseFeePerGas : 0n)),
       0n,
     )
 
     expect(totalReward).to.be.equal(
       expectedReward,
-      "total fee reward should equal sum of gasUsed × effectiveTip across all block transactions",
+      burnsBaseFee
+        ? "total fee reward should equal sum of gasUsed × effectiveTip across all block transactions"
+        : "total fee reward should equal sum of gasUsed × effectiveGasPrice across all block transactions (base fee is not burned)",
     )
   })
 
@@ -196,7 +207,16 @@ describe("Blocks", function () {
 
     expect(hexlify(header.parentBeaconRoot)).to.be.equal(rpcBlock.parentBeaconBlockRoot)
 
+    // Arc advertises a non-zero parentBeaconBlockRoot in every header but never runs the
+    // EIP-4788 update: the contract is absent from mainnet state entirely and, where it is
+    // deployed (dev genesis), its ring buffer stays zero. Assert that absence rather than
+    // skipping, so the day Arc starts writing beacon roots this test says so.
     const beaconRootCall = firehoseBlock.systemCalls.find(isUpdateBeaconRootCall(rpcBlock.parentBeaconBlockRoot))
+    if (isNetwork("arc-dev")) {
+      expect(beaconRootCall, "Arc is not expected to emit an EIP-4788 beacon root system call").to.be.undefined
+      return
+    }
+
     expect(beaconRootCall).to.not.be.undefined
 
     // A storage change could exist but not in `geth --dev` mode, at least not consistently because

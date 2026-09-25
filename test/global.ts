@@ -186,6 +186,14 @@ function validateFirehoseBlockVersion(block: Block) {
       }
       break
 
+    case "fh3.1":
+      if (block.ver !== 5) {
+        throw new Error(
+          `You specified testing with ${tag} but Firehose block version is ${block.ver} while fh3.1 expect version 5, it seems your node is not running with the correct Firehose version`,
+        )
+      }
+      break
+
     default:
       throw new Error(`Unhandled snapshots tag value ${tag}`)
   }
