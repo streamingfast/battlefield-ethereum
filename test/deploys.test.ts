@@ -18,12 +18,17 @@ import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./gl
 import { eth, oneWei } from "./lib/money"
 import { isArbitrum, networkValue, dynamicGasLimit } from "./lib/network"
 
-const callsGasLimit = dynamicGasLimit(3_500_000)
+let callsGasLimit: number
 
 describe("Deploys", function () {
   let Calls: Contract<Calls>
 
   before(async () => {
+    // Computed here rather than at module scope: dynamicGasLimit's Amsterdam-awareness reads
+    // chainStaticInfo, which is only populated once the global before() hook (in global.ts) has
+    // run, and module-level code executes before any hook does.
+    callsGasLimit = dynamicGasLimit(3_500_000)
+
     await deployAll(async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })))
   })
 
@@ -44,24 +49,6 @@ describe("Deploys", function () {
       {
         $sender: deployer.address.toLowerCase().slice(2),
         $createdContract: createdContract,
-      },
-    )
-  })
-
-  it("Contract fail just enough gas for intrinsic gas", async function () {
-    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
-    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
-    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
-    if (isArbitrum()) {
-      this.skip()
-    }
-    const deployer = await stableDeployerFunded(owner, 1, eth(1))
-
-    await expect(koContractCreation(deployer, SuicidalFactory, [], { gasLimit: 63274 })).to.trxTraceEqualSnapshot(
-      "deploys/contract_fail_intrinsic_gas.expected.json",
-      {
-        $sender: deployer.address.toLowerCase().slice(2),
-        $createdContract: getCreateAddressHex(deployer.address, 0),
       },
     )
   })

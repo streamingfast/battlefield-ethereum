@@ -163,7 +163,7 @@ export const CallToFilterSchema: GenMessage<CallToFilter> = /*@__PURE__*/
  *
  * The structure that would will have access to after:
  *
- * ```
+ * ```ignore
  * Block {
  *  int32 ver = 1;
  *  bytes hash = 2;

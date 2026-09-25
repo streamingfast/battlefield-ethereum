@@ -8,6 +8,7 @@ import { isSameAddress } from "./lib/addresses"
 import { waitForTransaction } from "./lib/ethers"
 import { Wallet, concat, getBytes, hexlify } from "ethers"
 import { eth } from "./lib/money"
+import { dynamicGasLimit } from "./lib/network"
 import hre from "hardhat"
 import { SetCode7702Caller__factory } from "../typechain-types"
 
@@ -55,8 +56,8 @@ describe("Prague", function () {
     // same chain, wallet2 may still carry delegation code from a previous run (we only reset
     // wallet1 in TX3).  If delegation code is present the plain ETH transfer executes the
     // delegated contract, which requires more gas (e.g. SetterBB does an SSTORE).
-    await sendEth(owner, wallet1.address, eth(1), { gasLimit: 100_000 })
-    await sendEth(owner, wallet2.address, eth(1), { gasLimit: 100_000 })
+    await sendEth(owner, wallet1.address, eth(1), { gasLimit: dynamicGasLimit(100_000) })
+    await sendEth(owner, wallet2.address, eth(1), { gasLimit: dynamicGasLimit(100_000) })
 
     // Deploy the Caller and two Setter instances (CC and BB are identical code, different addresses)
     const CallerFactory = await hre.ethers.getContractFactory("SetCode7702Caller")

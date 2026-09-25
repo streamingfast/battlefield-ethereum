@@ -1,12 +1,12 @@
 {
   "to": "$suicidal2Contract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5400000",
   "input": "41c0e1b5",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "28484",
+  "gasUsed": "23384",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "9",
+  "endOrdinal": "10",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$suicidal2Contract",
-      "gasLimit": "878936",
-      "gasConsumed": "7420",
+      "gasLimit": "5384936",
+      "gasConsumed": "8320",
       "returnData": "",
       "input": "41c0e1b5",
       "executedCode": true,
@@ -38,36 +38,36 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "8fe28911674000",
+          "oldValue": "035f4f36686b8000",
           "newValue": ""
         },
         {
           "address": "$suicidal2Contract",
           "reason": "REASON_SUICIDE_WITHDRAW",
-          "ordinal": "4",
+          "ordinal": "5",
           "oldValue": "01",
           "newValue": ""
         },
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_SUICIDE_REFUND",
-          "ordinal": "5",
+          "ordinal": "6",
           "oldValue": "",
           "newValue": "01"
         },
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "7",
+          "ordinal": "8",
           "oldValue": "",
-          "newValue": "8b54c367d2b800"
+          "newValue": "035b922b60d0d000"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "8",
-          "oldValue": "",
-          "newValue": "01"
+          "ordinal": "9",
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [
@@ -78,7 +78,20 @@
           "ordinal": "2"
         }
       ],
-      "logs": [],
+      "logs": [
+        {
+          "address": "fffffffffffffffffffffffffffffffffffffffe",
+          "topics": [
+            "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "000000000000000000000000$suicidal2Contract",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
+          ],
+          "data": "0000000000000000000000000000000000000000000000000000000000000001",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "4"
+        }
+      ],
       "codeChanges": [],
       "gasChanges": [],
       "statusFailed": false,
@@ -86,7 +99,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "3",
-      "endOrdinal": "6",
+      "endOrdinal": "7",
       "accountCreations": []
     }
   ],
@@ -96,6 +109,19 @@
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",
     "logsBloom": "$logsBloom",
-    "logs": []
+    "logs": [
+      {
+        "address": "fffffffffffffffffffffffffffffffffffffffe",
+        "topics": [
+          "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+          "000000000000000000000000$suicidal2Contract",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
+        ],
+        "data": "0000000000000000000000000000000000000000000000000000000000000001",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "4"
+      }
+    ]
   }
 }
