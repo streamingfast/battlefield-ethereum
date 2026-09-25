@@ -1,12 +1,12 @@
 {
   "to": "$callsContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5400000",
   "input": "3be7f7b1",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "34077",
+  "gasUsed": "28977",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
-      "gasLimit": "878936",
-      "gasConsumed": "13013",
+      "gasLimit": "5384936",
+      "gasConsumed": "13913",
       "returnData": "",
       "input": "3be7f7b1",
       "executedCode": true,
@@ -38,7 +38,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "8fe28911674000",
+          "oldValue": "035f4f36686b8000",
           "newValue": ""
         },
         {
@@ -46,14 +46,14 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "11",
           "oldValue": "",
-          "newValue": "8a6fdb6ccd8600"
+          "newValue": "035aad4365cb9e00"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "12",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [
@@ -82,7 +82,7 @@
       "callType": "STATIC",
       "caller": "$callsContract",
       "address": "0000000000000000000000000000000000000001",
-      "gasLimit": "864710",
+      "gasLimit": "5300304",
       "gasConsumed": "3000",
       "returnData": "",
       "input": "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53000000000000000000000000000000000000000000000000000000000000002528ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa63627667cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83",
@@ -110,7 +110,7 @@
       "callType": "STATIC",
       "caller": "$callsContract",
       "address": "0000000000000000000000000000000000000002",
-      "gasLimit": "859035",
+      "gasLimit": "5293743",
       "gasConsumed": "72",
       "returnData": "26e558930355cf286f8490c10b7f7ac03699ec3daf50479ff39e279d72a4ba57",
       "input": "5cd7142d",

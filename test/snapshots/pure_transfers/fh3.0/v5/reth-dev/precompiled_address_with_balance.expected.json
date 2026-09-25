@@ -15,7 +15,7 @@
   "returnData": "0000000000000000000000009c1185a5c5e9fc54612808977ee8f548b2258d31",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "9",
+  "endOrdinal": "10",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -58,16 +58,16 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "7",
+          "ordinal": "8",
           "oldValue": "",
           "newValue": "2c82264dbf0000"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "8",
-          "oldValue": "",
-          "newValue": "01"
+          "ordinal": "9",
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [
@@ -78,7 +78,20 @@
           "ordinal": "2"
         }
       ],
-      "logs": [],
+      "logs": [
+        {
+          "address": "fffffffffffffffffffffffffffffffffffffffe",
+          "topics": [
+            "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "000000000000000000000000$precompileAddress"
+          ],
+          "data": "0000000000000000000000000000000000000000000000000000000000000001",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "6"
+        }
+      ],
       "codeChanges": [],
       "gasChanges": [],
       "statusFailed": false,
@@ -86,7 +99,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "3",
-      "endOrdinal": "6",
+      "endOrdinal": "7",
       "accountCreations": [],
       "value": "01"
     }
@@ -98,6 +111,19 @@
     "stateRoot": "",
     "cumulativeGasUsed": "$cumulativeGasUsed",
     "logsBloom": "$logsBloom",
-    "logs": []
+    "logs": [
+      {
+        "address": "fffffffffffffffffffffffffffffffffffffffe",
+        "topics": [
+          "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "000000000000000000000000$precompileAddress"
+        ],
+        "data": "0000000000000000000000000000000000000000000000000000000000000001",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "6"
+      }
+    ]
   }
 }

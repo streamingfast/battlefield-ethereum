@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "67060",
+  "gasUsed": "120862",
   "type": "TRX_TYPE_DYNAMIC_FEE",
   "accessList": [],
   "index": "$index",
@@ -25,8 +25,8 @@
       "callType": "CREATE",
       "caller": "$sender",
       "address": "$createdContract",
-      "gasLimit": "445606",
-      "gasConsumed": "12666",
+      "gasLimit": "475606",
+      "gasConsumed": "96468",
       "returnData": "",
       "input": "6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212209cd6a6851cb6439ef3009ed902d5ec5ff9bdb7a3428995f1f0ec1542b5ec423964736f6c634300060c0033",
       "executedCode": true,
@@ -46,14 +46,14 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "7",
           "oldValue": "",
-          "newValue": "45370c72e85800"
+          "newValue": "3c9d14817d0400"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "8",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [

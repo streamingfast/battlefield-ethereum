@@ -1,12 +1,12 @@
 {
   "to": "$createdContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5400000",
   "input": "1bb943fd",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "26870",
+  "gasUsed": "20870",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -25,7 +25,7 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$createdContract",
-      "gasLimit": "878936",
+      "gasLimit": "5384936",
       "gasConsumed": "5806",
       "returnData": "",
       "input": "1bb943fd",
@@ -38,7 +38,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "8fe28911674000",
+          "oldValue": "035f4f36686b8000",
           "newValue": ""
         },
         {
@@ -46,14 +46,14 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "7",
           "oldValue": "",
-          "newValue": "8b96d1e52c5400"
+          "newValue": "035bf90f82477400"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "8",
-          "oldValue": "",
-          "newValue": "01"
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [
@@ -82,7 +82,7 @@
       "callType": "CALL",
       "caller": "$createdContract",
       "address": "$createdContract",
-      "gasLimit": "864630",
+      "gasLimit": "5300224",
       "gasConsumed": "5143",
       "returnData": "",
       "input": "41c0e1b5",

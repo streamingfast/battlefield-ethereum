@@ -8,7 +8,7 @@ source "$ROOT/lib.sh"
 main() {
     data_dir="$(mktemp -d)"
     firehose_version=${FIREHOSE_VERSION:-"3.0"}
-    fork_version=${FORK_VERSION:-"prague"}
+    fork_version=${FORK_VERSION:-"amsterdam"}
 
     # Yes we re-use Geth genesis files as they work as-is with Reth too
     genesis_file="$ROOT/geth_dev/genesis.$fork_version.json"

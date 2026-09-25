@@ -1,12 +1,12 @@
 {
   "to": "$callsContract",
   "nonce": "$nonce",
-  "gasLimit": "900000",
+  "gasLimit": "5400000",
   "input": "01358fb1000000000000000000000000$childContract",
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "30051",
+  "gasUsed": "31351",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "12",
+  "endOrdinal": "13",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -25,8 +25,8 @@
       "callType": "CALL",
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
-      "gasLimit": "878568",
-      "gasConsumed": "8619",
+      "gasLimit": "5378568",
+      "gasConsumed": "9919",
       "returnData": "",
       "input": "01358fb1000000000000000000000000$childContract",
       "executedCode": true,
@@ -38,7 +38,7 @@
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_BUY",
           "ordinal": "1",
-          "oldValue": "8fe28911674000",
+          "oldValue": "035f4f36686b8000",
           "newValue": ""
         },
         {
@@ -58,16 +58,16 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "10",
+          "ordinal": "11",
           "oldValue": "",
-          "newValue": "8b14a15a4bfa00"
+          "newValue": "035a4c1a19981200"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "11",
-          "oldValue": "",
-          "newValue": "01"
+          "ordinal": "12",
+          "newValue": "01",
+          "oldValue": ""
         }
       ],
       "nonceChanges": [
@@ -78,7 +78,20 @@
           "ordinal": "2"
         }
       ],
-      "logs": [],
+      "logs": [
+        {
+          "address": "fffffffffffffffffffffffffffffffffffffffe",
+          "topics": [
+            "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "000000000000000000000000$callsContract"
+          ],
+          "data": "0000000000000000000000000000000000000000000000000000000000000003",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "6"
+        }
+      ],
       "codeChanges": [],
       "gasChanges": [],
       "statusFailed": false,
@@ -86,7 +99,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "3",
-      "endOrdinal": "9",
+      "endOrdinal": "10",
       "accountCreations": [],
       "value": "03"
     },
@@ -97,8 +110,8 @@
       "callType": "DELEGATE",
       "caller": "$callsContract",
       "address": "$childContract",
-      "gasLimit": "861701",
-      "gasConsumed": "5346",
+      "gasLimit": "5290994",
+      "gasConsumed": "6246",
       "returnData": "",
       "input": "017f425a",
       "executedCode": true,
@@ -117,9 +130,9 @@
             "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
           ],
           "data": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000004017f425a00000000000000000000000000000000000000000000000000000000",
-          "index": 0,
-          "blockIndex": 0,
-          "ordinal": "7"
+          "index": 1,
+          "blockIndex": 1,
+          "ordinal": "8"
         }
       ],
       "codeChanges": [],
@@ -128,8 +141,8 @@
       "statusReverted": false,
       "failureReason": "",
       "stateReverted": false,
-      "beginOrdinal": "6",
-      "endOrdinal": "8",
+      "beginOrdinal": "7",
+      "endOrdinal": "9",
       "accountCreations": [],
       "value": "03"
     }
@@ -143,6 +156,18 @@
     "logsBloom": "$logsBloom",
     "logs": [
       {
+        "address": "fffffffffffffffffffffffffffffffffffffffe",
+        "topics": [
+          "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "000000000000000000000000$callsContract"
+        ],
+        "data": "0000000000000000000000000000000000000000000000000000000000000003",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "6"
+      },
+      {
         "address": "$callsContract",
         "topics": [
           "47fa945ba6bb98f9176503492bc053ac8973b431c209242d7212e4e1d29636b3",
@@ -151,9 +176,9 @@
           "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
         ],
         "data": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000004017f425a00000000000000000000000000000000000000000000000000000000",
-        "index": 0,
-        "blockIndex": 0,
-        "ordinal": "7"
+        "index": 1,
+        "blockIndex": 1,
+        "ordinal": "8"
       }
     ]
   }

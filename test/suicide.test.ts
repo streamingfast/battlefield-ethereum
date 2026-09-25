@@ -9,6 +9,7 @@ import {
   getCreate2AddressHex,
   getCreateAddressHex,
   koContractCall,
+  mustGetRpcBlock,
   sendEth,
   stableDeployerFunded,
 } from "./lib/ethereum"
@@ -24,8 +25,9 @@ import {
 } from "./global"
 import hre from "hardhat"
 import { eth, oneWei } from "./lib/money"
-import { EIP } from "./lib/chain_eips"
+import { EIP, isBlockOnAmsterdamOrLater } from "./lib/chain_eips"
 import {
+  isAmsterdamActive,
   isArbitrum,
   isNetwork,
   isNetworkOneOf,
@@ -57,9 +59,14 @@ describe("Suicide", function () {
   let Suicidal2: Contract<Suicidal>
   let Calls: Contract<Calls>
 
-  const callsGasLimit = dynamicGasLimit(3_500_000)
+  let callsGasLimit: number
 
   before(async () => {
+    // Computed here rather than at describe scope: dynamicGasLimit's Amsterdam-awareness reads
+    // chainStaticInfo, which is only populated once the global before() hook (in global.ts) has
+    // run, and describe-body code executes during mocha's collection phase, before any hook does.
+    callsGasLimit = dynamicGasLimit(3_500_000)
+
     await deployAll(
       async () => (Suicidal1 = await deployContract(owner, SuicidalFactory, [])),
       async () => (Suicidal2 = await deployContract(owner, SuicidalFactory, [])),
@@ -152,7 +159,10 @@ describe("Suicide", function () {
   })
 
   it("Contract created in trx and suicides in constructor", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
+    // On Amsterdam, gas estimation searches up to what the deployer can afford at the going
+    // gas price; 0.01 ETH isn't enough headroom once EIP-8037 state gas inflates deployment
+    // cost, so fund more generously there.
+    const deployer = await stableDeployerFunded(owner, 1, isAmsterdamActive() ? eth(1) : eth(0.01))
 
     await expect(contractCreation(deployer, SuicideOnConstructorFactory, [])).to.trxTraceEqualSnapshot(
       "suicide/create_contract_suicide_in_constructor.json",
@@ -170,7 +180,10 @@ describe("Suicide", function () {
     if (isArbitrum()) {
       this.skip()
     }
-    const deployer = await stableDeployerFunded(owner, 1, eth(0.01))
+    // On Amsterdam, gas estimation searches up to what the deployer can afford at the going
+    // gas price; 0.01 ETH isn't enough headroom once EIP-8037 state gas inflates deployment
+    // cost, so fund more generously there.
+    const deployer = await stableDeployerFunded(owner, 1, isAmsterdamActive() ? eth(1) : eth(0.01))
     const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [])
 
     await sendEth(owner, Contract.address, oneWei, { gasLimit: 45000 })
@@ -350,5 +363,50 @@ describe("Suicide", function () {
 
     const nonceResetAddrs = nonceResets.map((nc) => hexlify(nc.address))
     expect(nonceResetAddrs).to.deep.equal([...nonceResetAddrs].sort(), "nonce resets must be in sorted address order")
+  })
+})
+
+// Deliberately its own top-level describe (not nested in "Suicide" above): the EIP-8037 state
+// gas cost applied to contract deployment on Amsterdam makes the "Suicide" suite's shared
+// Calls.sol fixture (deployed with a fixed 3.5M gas limit in its before-hook) prohibitively
+// expensive there, and this test doesn't need that fixture anyway.
+describe("Suicide - EIP-8246", function () {
+  it("self-beneficiary SELFDESTRUCT no longer burns the balance on Amsterdam", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
+
+    // EIP-8246's delayed clearing (nonce/code/storage cleared at finalization, balance kept)
+    // only applies when the account was created in the *same* transaction as the SELFDESTRUCT
+    // (see EIP-6780: post-Cancun, a SELFDESTRUCT against an account created in an earlier
+    // transaction is a balance-only no-op for code/storage/nonce, Amsterdam or not). Use the
+    // wrapper that creates and kills the beneficiary in one transaction, same as the existing
+    // "Contract and suicide beneficiary are the same, in same trx" test above.
+    const Contract = await deployStableContractCreator(owner, SuicideContractAsBeneficiarySameTrx, [], 1, 1, {
+      gasLimit: dynamicGasLimit(3_500_000),
+    })
+    const createdContract = "0x" + getCreateAddressHex(Contract.address, 1)
+
+    // EIP-8037 state gas for the freshly created child's code deposit and new-account charge
+    // pushes this well past the default 900,000 gasLimit, so raise it explicitly.
+    await contractCall(owner, Contract.execute, [], { value: oneWei, gasLimit: 5_000_000 })
+
+    const balanceAfter = await hre.ethers.provider.getBalance(createdContract)
+    const codeAfter = await hre.ethers.provider.getCode(createdContract)
+
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (isBlockOnAmsterdamOrLater(rpcBlock)) {
+      // EIP-8246: balance kept, only nonce/code/storage clear at finalization. The storage
+      // wipe itself is not observable in the Firehose trace by design (no protocol event
+      // carries it), so only balance and code are checked here.
+      expect(codeAfter).to.equal("0x", "code must still be cleared at finalization")
+      expect(balanceAfter).to.equal(1n, "EIP-8246: self-beneficiary SELFDESTRUCT must not burn the balance")
+    } else {
+      expect(codeAfter).to.equal("0x", "code must still be cleared at finalization")
+      expect(balanceAfter).to.equal(0n, "pre-Amsterdam: self-beneficiary SELFDESTRUCT must burn the balance")
+    }
   })
 })

@@ -91,6 +91,12 @@ Download the binary, rename it to `reth`, make it executable, and place it on yo
 export RETH_BINARY=/path/to/your/reth-binary
 ```
 
+**Amsterdam fork support:** the pre-built binaries above may lag Amsterdam support. If you need it, build `reth` locally from the `release/reth-2.x` branch of `streamingfast/reth`:
+
+```bash
+RUSTUP_TOOLCHAIN=stable cargo build --release --bin reth
+```
+
 ### Build tools for native addons (`c-kzg`)
 
 The blob transaction tests (`cancun.test.ts`) use the `c-kzg` package which requires a C++ compiler. Without it, the package silently falls back and blob tests fail.
@@ -227,23 +233,28 @@ Strategies:
 
 ## Test Cycle — `reth-dev`
 
-Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Always runs with the Prague fork. The test script and snapshots mirror `geth-dev`. Same mine-on-demand behaviour applies — see the section above.
+Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Defaults to the Amsterdam fork; pass `prague` to test Prague instead. The test script and snapshots mirror `geth-dev`. Same mine-on-demand behaviour applies — see the section above.
 
 ### Step 1 — Start the chain
 
 ```bash
+# Amsterdam fork (default)
 ./scripts/run_firehose_reth_dev.sh
+
+# Prague fork
+./scripts/run_firehose_reth_dev.sh prague
 ```
 
 Wait only until the node's JSON-RPC is accepting connections on port 8545 (same check as geth-dev above). Do not wait for port 8089.
 
 ### Step 2 — Run the tests
 
-Same guidance as `geth-dev`: **always use `--grep` during development**, full suite only for final validation.
+Same guidance as `geth-dev`: **always use `--grep` during development**, full suite only for final validation. `test:fh3.0:reth-dev` is reused regardless of which fork the chain was started with — fork-gated suites (e.g. `test/amsterdam.test.ts`) auto-skip if the chain isn't on that fork.
 
 ```bash
 pnpm test:fh3.0:reth-dev --grep "Berlin"
 pnpm test:fh3.0:reth-dev --grep "Cancun"
+pnpm test:fh3.0:reth-dev --grep "Amsterdam"
 
 # Full suite (final validation only, against a fresh chain)
 pnpm test:fh3.0:reth-dev
@@ -339,6 +350,25 @@ kill $(ps aux | grep -E "run_firehose_reth_devnet|fireeth|reth" | grep -v grep |
 
 ---
 
+## Block Comparison
+
+There is **no `scripts/compare-blocks.sh` to run after a test cycle** — the comparison between
+Firehose blocks and the node's JSON-RPC is the `Compare blocks` test, which sorts last in the
+suite and runs on every `pnpm test:*` invocation. Do not shell out to
+`fireeth tools compare-blocks-rpc` by hand: the test resolves the RPC url from the Hardhat
+network configuration (ports differ per network, e.g. `reth-dev` is on 9545) and bounds the
+range at the last irreversible block reported by Firehose.
+
+It reports as **pending** when the chain has no final block yet, and on the public Amoy testnet.
+A missing `fireeth` binary **fails** the test. Set `SKIP_COMPARE_BLOCKS=1` to skip it while
+iterating.
+
+**Amsterdam:** `fireeth tools compare-blocks-rpc` currently crashes with a nil-pointer panic on
+Amsterdam blocks (a gap in `firehose-ethereum`, not this repo). Always set
+`SKIP_COMPARE_BLOCKS=1` on `reth-dev` until that's fixed upstream.
+
+---
+
 ## Snapshot Behaviour
 
 Most tests use **inline assertions**. A subset uses **snapshot files** stored under `test/snapshots/<category>/fh3.0/<network>/`.
@@ -365,6 +395,7 @@ Some test suites are gated on a specific fork being active. If the fork is not a
 |------|-----------|--------------|
 | `test/prague.test.ts` | Prague (`requestsHash` in block header) | `run_firehose_geth_dev.sh 3.0 prague` |
 | `test/cancun.test.ts` | Cancun (`blobGasUsed` in block header) | Any Cancun or Prague chain |
+| `test/amsterdam.test.ts` | Amsterdam (`slotNumber` in block header) | `run_firehose_reth_dev.sh` (default) |
 | `test/berlin.test.ts` | None (Berlin is universal on all supported chains) | Always runs |
 
 ---
