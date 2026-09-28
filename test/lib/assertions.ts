@@ -27,6 +27,7 @@ import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
 import { isArbitrum, isNetwork, isNetworkOneOf, networkName } from "./network"
 import { excludeFieldsFromObject, getGlobalExcludedFields } from "./field-exclusion"
+import { retainStorageSlotPreimages, tracerFiltersKeccakPreimages } from "./keccak-filter"
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { structuredPatch } = require("diff") as {
@@ -378,6 +379,11 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       if (fieldsToExclude.length > 0) {
         filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)
         filteredExpected = excludeFieldsFromObject(expected, fieldsToExclude)
+      }
+
+      if (tracerFiltersKeccakPreimages()) {
+        filteredActual = retainStorageSlotPreimages(filteredActual)
+        filteredExpected = retainStorageSlotPreimages(filteredExpected)
       }
 
       snapshot.writeSnapshotDebugFiles(
