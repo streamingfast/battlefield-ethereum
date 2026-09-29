@@ -25,7 +25,13 @@ describe("PrecompileValue", function () {
     const result = await waitForTransaction(resp, false)
     const { trace } = await fetchFirehoseTransactionAndBlock(result)
 
-    const transfers = trace.calls[0].balanceChanges.filter((b) => b.reason === REASON_TRANSFER)
+    // Arbitrum also records its fee payouts (network fee account, L1 pricer pool) as TRANSFER,
+    // so only the transfers touching the sender or the precompile are checked.
+    const transfers = trace.calls[0].balanceChanges.filter(
+      (b) =>
+        b.reason === REASON_TRANSFER &&
+        (isSameAddress(hexlify(b.address), ownerAddress) || isSameAddress(hexlify(b.address), precompile)),
+    )
     expect(transfers).to.have.length(2, "expected sender-debit + precompile-credit transfers")
     expect(isSameAddress(hexlify(transfers[0].address), ownerAddress)).to.equal(true)
     expect(isSameAddress(hexlify(transfers[1].address), precompile)).to.equal(true)
