@@ -6,7 +6,7 @@
   "v": "",
   "r": "",
   "s": "",
-  "gasUsed": "5318085",
+  "gasUsed": "5318071",
   "type": "TRX_TYPE_LEGACY",
   "accessList": [],
   "index": "$index",
@@ -26,7 +26,7 @@
       "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
       "address": "$callsContract",
       "gasLimit": "5384568",
-      "gasConsumed": "5302653",
+      "gasConsumed": "5302639",
       "returnData": "",
       "input": "bf2ff239000000000000000000000000$childContract",
       "executedCode": true,
@@ -54,7 +54,7 @@
           "reason": "REASON_GAS_REFUND",
           "ordinal": "9",
           "oldValue": "",
-          "newValue": "0d188e7f747600"
+          "newValue": "0d19212e619200"
         },
         {
           "address": "$coinbase",
@@ -90,8 +90,8 @@
       "callType": "CALL",
       "caller": "$callsContract",
       "address": "$childContract",
-      "gasLimit": "5187455",
-      "gasConsumed": "5187455",
+      "gasLimit": "5188341",
+      "gasConsumed": "5188341",
       "returnData": "",
       "input": "69961c23",
       "executedCode": true,
