@@ -106,8 +106,8 @@ export function retainStorageSlotPreimages<T extends NormalizedTrace>(trace: T):
         }),
       )
 
-      const { keccakPreimages, ...rest } = call
-      return Object.keys(retained).length > 0 ? { ...rest, keccakPreimages: retained } : rest
+      // Keep the field even when empty: decoded traces always carry `keccakPreimages: {}`.
+      return { ...call, keccakPreimages: retained }
     }),
   }
 }
