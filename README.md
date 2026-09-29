@@ -144,6 +144,10 @@ Field paths support:
 - Array notation: `calls[].gasConsumed` (applies to all array elements)
 - Indexed access: `calls[0].gasConsumed` (applies to specific element)
 
+#### Keccak Preimage Filtering
+
+The Firehose tracers built on evm-firehose-tracer-rs (reth, op-reth, reth-bsc, world-chain, arc) and Nitro keep only the `keccakPreimages` entries that explain a storage change key of the transaction. On those networks, both the actual and the expected traces go through the same filter before comparison ([./test/lib/keccak-filter.ts](./test/lib/keccak-filter.ts)), so the shared snapshots, which hold every preimage, still apply. Filtering an already filtered trace changes nothing, so nodes running a tracer from before the filter pass too. The list of networks is `tracerFiltersKeccakPreimages()` in the same file.
+
 ## Development
 
 A bunch of unit tests uses "snapshot" testing to avoid writing lengthy assertions. The test suite manages, uses and updates snapshots using a few environment variables. If you are adding new tests and the snapshot doesn't exist, the first test run will update the snapshot on disk. You should review the taken snapshot to ensure it fits the desired model state.

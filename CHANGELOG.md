@@ -9,6 +9,7 @@
 
 ### Changed
 
+- Snapshots on tracers that keep only storage slot keccak preimages (reth, op-reth, reth-bsc, world-chain, arc, Nitro) are compared after running both sides through the same filter (`test/lib/keccak-filter.ts`), so the shared snapshots still apply.
 - `test/lib/network.ts`'s `gasLimitOverride`/`dynamicGasLimit` now scale up on Amsterdam, mirroring the existing Arbitrum special-case: EIP-8037 state gas (CPSB = 1530 gas/byte) inflates the cost of anything that grows state (a fresh SSTORE, a new account, a code deposit) well past the canonical-EVM-tuned fixed gas limits used throughout the suite. All `reth-dev` snapshots have been regenerated against an Amsterdam chain to match.
 
 ### Removed
