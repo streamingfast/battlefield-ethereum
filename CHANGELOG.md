@@ -5,6 +5,7 @@
 ### Added
 
 - Full Amsterdam (Glamsterdam) fork coverage on `reth-dev`: `test/amsterdam.test.ts` exercises EIP-7708 (ETH transfer logs), EIP-7843 (`SLOTNUM`/`slot_number`), EIP-7928 (block access lists), EIP-8037 (state gas), and EIP-8282 (builder execution requests); EIP-8246 (no-burn SELFDESTRUCT) is covered in its own `describe` in `test/suicide.test.ts`, contrasted against pre-Amsterdam burn behaviour on the same test. Amsterdam is now the default fork for `reth-dev` (`./scripts/run_firehose_reth_dev.sh`, optionally `... prague`), backed by a new `scripts/geth_dev/genesis.amsterdam.json`.
+- Amsterdam test landing 48 transactions in a single block on `reth-dev`, past reth's 30 transactions threshold where a block carrying a BAL has its transactions streamed out of order for parallel execution; asserts the Firehose block traces them in block order. A failure stops the whole run, since the node then stops producing blocks and every following test would only time out.
 - Block comparison between Firehose and the node's JSON-RPC now runs as the last test of every `pnpm test:*` run, resolving the RPC endpoint from the Hardhat network configuration and bounding the range at the chain's last irreversible block.
 
 ### Changed

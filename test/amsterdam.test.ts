@@ -1,12 +1,21 @@
 import { expect } from "chai"
-import { mustGetRpcBlock, sendEth, contractCall, deployContract, getStableCreate2Data } from "./lib/ethereum"
+import {
+  mustGetRpcBlock,
+  sendEth,
+  contractCall,
+  deployContract,
+  getStableCreate2Data,
+  defaultGasPrice,
+} from "./lib/ethereum"
 import { fetchFirehoseBlock, fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import { isBlockOnAmsterdamOrLater } from "./lib/chain_eips"
-import { Log, TransactionTrace } from "../pb/sf/ethereum/type/v2/type_pb"
+import { waitForTransaction } from "./lib/ethers"
+import { stopRunOnFailure } from "./lib/mocha"
+import { Log, TransactionTrace, TransactionTraceStatus } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner, ownerAddress, ContractEmptyFactory, SuicidalFactory, TransfersFactory } from "./global"
-import { oneWei } from "./lib/money"
+import { eth, oneWei } from "./lib/money"
 import { systemAddress, isSameAddress, knownExistingAddress } from "./lib/addresses"
-import { hexlify, toBigInt } from "ethers"
+import { TransactionResponse, Wallet, hexlify, toBigInt } from "ethers"
 import hre from "hardhat"
 
 /**
@@ -37,6 +46,10 @@ const TX_GAS_LIMIT_CAP = 16_777_216
 const CPSB = 1530n
 const SSTORE_SET_BYTES = 64n
 const STATE_GAS_FOR_FRESH_SSTORE = SSTORE_SET_BYTES * CPSB // 97,920
+
+// Comfortably above reth's 30 transactions threshold (`SMALL_BLOCK_TX_THRESHOLD`) past which a
+// block carrying a BAL has its transactions streamed out of order to the parallel BAL executor.
+const BAL_PARALLEL_BLOCK_TX_COUNT = 48
 
 describe("Amsterdam", function () {
   before(async function () {
@@ -160,6 +173,90 @@ describe("Amsterdam", function () {
         "blockAccessListRlp must be non-empty: the block touches at least the sender, recipient, and coinbase",
       )
     })
+
+    it(
+      "block with more transactions than the BAL parallel execution threshold is traced in order",
+      stopRunOnFailure(async function () {
+        // Reth streams a block's transactions to execution out of order once the block carries a
+        // BAL and has at least 30 transactions (`SMALL_BLOCK_TX_THRESHOLD`), because its BAL
+        // executor runs them in parallel. Firehose tracing is sequential and must still see, and
+        // emit, the transactions in block order.
+        //
+        // reth-dev mines a block as soon as one transaction is pending. To land all of them in a
+        // single block, nonces 1..N are submitted first (queued behind the nonce gap) and nonce 0
+        // last, which promotes the whole batch to pending at once.
+        //
+        // A node that rejects this block stops producing blocks altogether, so a failure here
+        // stops the whole run instead of letting every following test time out.
+        const sender = Wallet.createRandom(hre.ethers.provider)
+        await sendEth(owner, sender.address, eth(1))
+
+        const { chainId } = await hre.ethers.provider.getNetwork()
+        const signed = await Promise.all(
+          Array.from({ length: BAL_PARALLEL_BLOCK_TX_COUNT }, (_, nonce) =>
+            sender.signTransaction({
+              to: knownExistingAddress,
+              value: oneWei,
+              nonce,
+              chainId,
+              gasLimit: 21_000,
+              gasPrice: defaultGasPrice,
+            }),
+          ),
+        )
+
+        const responses: TransactionResponse[] = []
+        for (const raw of [...signed.slice(1), signed[0]]) {
+          responses.push(await hre.ethers.provider.broadcastTransaction(raw))
+        }
+
+        // When the node executes the batch out of order, it rejects its own block (e.g. "nonce N too
+        // high") and the batch is never mined.
+        const receipts = await Promise.all(responses.map((response) => waitForTransaction(response, false))).catch(
+          (error) => {
+            throw new Error(
+              `batch of ${BAL_PARALLEL_BLOCK_TX_COUNT} transactions was never mined, the node most likely rejected the block (look for "Invalid block" in its logs): ${error}`,
+            )
+          },
+        )
+
+        const blockNumber = receipts[0].blockNumber
+        expect(
+          receipts.every((receipt) => receipt.blockNumber === blockNumber),
+          `test assumption broken: all transactions must be mined in the same block, got blocks ${[...new Set(receipts.map((r) => r.blockNumber))]}`,
+        ).to.be.true
+
+        const rpcBlock = await hre.ethers.provider.getBlock(blockNumber)
+        expect(rpcBlock!.transactions).to.have.length.at.least(
+          BAL_PARALLEL_BLOCK_TX_COUNT,
+          "test assumption broken: block must hold every transaction of the batch",
+        )
+
+        const block = await fetchFirehoseBlock({ hash: receipts[0].blockHash, num: blockNumber }, { timeoutMs: 30_000 })
+        expect(block.transactionTraces.map((trace) => hexlify(trace.hash))).to.deep.equal(
+          rpcBlock!.transactions,
+          "Firehose transaction traces must match the block's transactions, in block order",
+        )
+
+        for (const [i, trace] of block.transactionTraces.entries()) {
+          const receipt = receipts.find((r) => r.hash === hexlify(trace.hash))!
+          expect(trace.index).to.equal(i, `transaction ${receipt.hash} index`)
+          expect(trace.status).to.equal(TransactionTraceStatus.SUCCEEDED, `transaction ${receipt.hash} status`)
+          expect(trace.gasUsed).to.equal(receipt.gasUsed, `transaction ${receipt.hash} gas used`)
+          expect(trace.receipt!.cumulativeGasUsed).to.equal(
+            receipt.cumulativeGasUsed,
+            `transaction ${receipt.hash} cumulative gas used`,
+          )
+
+          if (i > 0) {
+            expect(trace.beginOrdinal).to.be.above(
+              block.transactionTraces[i - 1].endOrdinal,
+              `transaction ${receipt.hash} ordinals must follow the previous transaction's`,
+            )
+          }
+        }
+      }),
+    )
   })
 
   describe("EIP-8037 - state gas", function () {
