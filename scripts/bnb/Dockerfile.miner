@@ -26,6 +26,8 @@ RUN echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc
 RUN cd /root/genesis && poetry install
 
 RUN  curl -L https://foundry.paradigm.xyz | bash
+# The installer only appends to ~/.bashrc; later RUN layers need foundryup and forge on PATH.
+ENV PATH="/root/.foundry/bin:${PATH}"
 # forge install --no-git broke with newer foundry ("not a git repository:
 # ../../.git/modules/lib/ds-test"); vendor forge-std (and its ds-test dep) manually.
 RUN cd /root/genesis && foundryup \
