@@ -43,6 +43,25 @@ RUN poetry run python -m scripts.generate dev
 RUN jq '.config.berlinBlock = 8 | .config.hertzfixBlock = 8 | .config.londonBlock = 8 | .config.hertzBlock = 8 | .config.lorentzTime = 0 | .config.pascalTime = 0 | .config.parlia.period = 1 | .config.bohrTime = 0 | .config.haberFixTime = 0 | .config.haberTime = 0 | .config.cancunTime = 0 | .config.feynmanFixTime = 0 | .config.pragueTime = 0 | .config.maxwellTime = 0 | .config.blobSchedule = { "cancun": { "target": 3, "max": 6, "baseFeeUpdateFraction": 3338477 }, "prague": { "target": 6, "max": 9, "baseFeeUpdateFraction": 5007716 }}'  genesis.json> genesis.json.new && mv genesis.json.new genesis.json
 #COPY genesis.json.example genesis.json
 
+# JENNER=true (needs GETH_VERSION >= v1.8.1) also activates Fermi through Jenner. BSC gates
+# timestamp forks on London, so block 8 is the Jenner transition block that plants the CAS20
+# registry sentinels. The dev chain is not Rialto, so no system-contract upgrade installs the
+# PaymentLane contract: the genesis carries Rialto's bytecode instead (empty storage is its default
+# configuration). CAS20_ADMIN is written as the ActivationRegistry admin so tests can open features.
+ARG JENNER=false
+ARG CAS20_ADMIN=0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab
+RUN if [ "$JENNER" = "true" ]; then \
+      curl -sSfL -o /tmp/payment-lane https://raw.githubusercontent.com/bnb-chain/bsc/$GETH_VERSION/core/systemcontracts/jenner/rialto/PaymentLaneContract \
+      && jq --arg lane "0x$(tr -d '\n' < /tmp/payment-lane)" \
+            --arg admin "0x000000000000000000000000${CAS20_ADMIN#0x}" \
+            '.config.fermiTime = 0 | .config.osakaTime = 0 | .config.mendelTime = 0 | .config.pasteurTime = 0 | .config.jennerTime = 0 \
+             | .config.blobSchedule.osaka = .config.blobSchedule.prague \
+             | .alloc["0x0000000000000000000000000000000000002007"] = { "balance": "0x0", "code": $lane } \
+             | .alloc["0x7020000000000000000000000000000000000001"] = { "balance": "0x0", "storage": { "0xa8970030726ea4c1e5fe64bf3ba11683da0b59f818265a7369e5570e9fc0bd01": $admin } }' \
+            genesis.json > genesis.json.new \
+      && mv genesis.json.new genesis.json; \
+    fi
+
 RUN uname -i |grep "aarch64" && binary="geth_linux" || binary="geth-linux-arm64"; curl -L -o /usr/local/bin/geth https://github.com/bnb-chain/bsc/releases/download/$GETH_VERSION/$binary && chmod +x /usr/local/bin/geth
 
 
