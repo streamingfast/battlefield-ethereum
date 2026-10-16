@@ -4,6 +4,7 @@ import { sendEth } from "./lib/ethereum"
 import { knownExistingAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
 import { owner } from "./global"
+import { isNetwork } from "./lib/network"
 
 // Deliberately named so it sorts last: the comparison is most useful once the suite has
 // produced all its blocks. It replaces the former `scripts/compare-blocks.sh`, which had to
@@ -37,7 +38,7 @@ describe("Compare blocks", function () {
 
     expect(result.exitCode, `'fireeth tools compare-blocks-rpc' failed, output:\n${result.output}`).to.equal(0)
     expect(
-      result.differences,
+      result.differences.filter((difference) => !isAcceptedDifference(difference)),
       `Firehose blocks differ from RPC blocks in range #${start}-#${stop}, output:\n${result.output}`,
     ).to.deep.equal([])
     expect(
@@ -46,3 +47,10 @@ describe("Compare blocks", function () {
     ).to.be.greaterThan(0)
   })
 })
+
+// BSC Firehose blocks, from geth-BSC and reth-bsc alike, treat the zero base fee as absent, so a
+// dynamic-fee transaction's gas price is its fee cap where RPC reports the effective price. The
+// per-transaction snapshots pin the Firehose value.
+function isAcceptedDifference(difference: string): boolean {
+  return isNetwork("bnb-dev") && /^different \[@ \["transaction_traces",\d+,"gas_price"\]$/.test(difference.trim())
+}
