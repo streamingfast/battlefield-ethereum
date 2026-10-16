@@ -41,7 +41,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Sei                      | `./scripts/run_firehose_sei.sh sequential`                                                    | `pnpm test:fh3.0:sei-dev`                                  | The `sequential` tag refers to transaction execution algorithm, test both      |
 | Sei                      | `./scripts/run_firehose_sei.sh parallel`                                                      | `pnpm test:fh3.0:sei-dev`                                  | The `parallel` tag refers to transaction execution algorithm, test both        |
 | BNB                      | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                     | `pnpm test:fh3.0:bnb-dev`                                  | None                                                                           |
-| BNB Reth (fh 3.0, v5)    | Docker miner: `./scripts/bnb/up.sh -c`, then `./scripts/run_firehose_reth_bsc.sh`             | `pnpm test:fh3.0:reth-bsc-dev`                             | Requires [reth-bsc](#get-reth-bsc). Own goldens tag, see [BNB Reth](#bnb-reth-reth-bsc) |
+| BNB Reth (fh 3.0, v5)    | Docker miner: `./scripts/bnb/up.sh -c -j`, then `./scripts/run_firehose_reth_bsc.sh`          | `pnpm test:fh3.0:reth-bsc-dev`                             | Requires [reth-bsc](#get-reth-bsc). Own goldens tag, see [BNB Reth](#bnb-reth-reth-bsc) |
 | Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, bats...)                       |
 | Geth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_geth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:geth-devnet` | Requires [geth](#build-firehose-geth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Reth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_reth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:reth-devnet` | Requires [reth](#get-reth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
@@ -393,10 +393,10 @@ Both `geth-devnet` and `reth-devnet` run as a secondary execution layer client a
 
 #### Setup
 
-1. **Terminal 1 — Start the BSC miner** (keep it running throughout). Use `-c` to remove any existing container so the chain is fresh:
+1. **Terminal 1 — Start the BSC miner** (keep it running throughout). Use `-c` to remove any existing container so the chain is fresh, and `-j` to run bsc v1.8.1 with every fork through Jenner active:
 
    ```bash
-   ./scripts/bnb/up.sh -c
+   ./scripts/bnb/up.sh -c -j
    ```
 
    Wait until the miner's JSON-RPC answers on `http://localhost:8545`.
@@ -419,6 +419,8 @@ Both `geth-devnet` and `reth-devnet` run as a secondary execution layer client a
 
 - **Run against a fresh chain.** On a reused chain the fresh-chain-only tests fail (skip them with `SKIP_FRESH_CHAIN_ONLY_TESTS=1`) and `prague/setcode_set_delegations` shifts by one ordinal because its fixed authority EOA already exists.
 - **Separate goldens tag.** The suite uses `SNAPSHOTS_TAG=fh3.0/v5/reth-bsc-dev`, not the geth-BSC `fh3.0/bnb-dev` tag. The reth Firehose tracer (protocol version 5) does not emit gas change events, so ordinals can never line up with the geth-BSC goldens. See [`./test/snapshots/RETH_BSC_DEV.md`](./test/snapshots/RETH_BSC_DEV.md) for the full audited divergence list.
+- **Jenner miner.** The `reth-bsc-dev` goldens, including the genesis one, come from the `-j` miner. Its genesis carries the PaymentLane contract and makes the test owner the CAS20 ActivationRegistry admin, which `test/jenner.test.ts` needs. Without `-j` the Jenner tests skip and the genesis snapshot does not match. The geth-BSC `bnb-dev` flavor keeps the default miner until the Firehose geth-BSC fork supports Jenner.
+
 To stop everything:
 
 ```bash

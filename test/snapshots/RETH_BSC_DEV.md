@@ -8,10 +8,11 @@ miner, see `scripts/run_firehose_reth_bsc.sh`). Run with:
 pnpm test:fh3.0:reth-bsc-dev
 ```
 
-The suite must run against a **fresh chain** (`scripts/bnb/up.sh -c` + a fresh
-follower). On a reused chain the fresh-chain-only tests fail (skippable with
-`SKIP_FRESH_CHAIN_ONLY_TESTS=1`) and `prague/setcode_set_delegations` shifts by
-one ordinal because its fixed authority EOA already exists.
+The suite must run against a **fresh chain** of the Jenner miner
+(`scripts/bnb/up.sh -c -j` + a fresh follower). On a reused chain the
+fresh-chain-only tests fail (skippable with `SKIP_FRESH_CHAIN_ONLY_TESTS=1`) and
+`prague/setcode_set_delegations` shifts by one ordinal because its fixed
+authority EOA already exists.
 
 ## Why a separate tag from `fh3.0/bnb-dev`
 
@@ -49,3 +50,13 @@ golden run, so there is nothing to compare against.
 In short, consumer-visible divergence from geth-BSC Firehose blocks is: no gas
 changes, shifted ordinals, plus the three classes above — the same contract as
 the Ethereum reth Firehose tracer.
+
+## Jenner goldens (`jenner/*`)
+
+`test/jenner.test.ts` covers the CAS20 stateful precompiles. They have no
+`fh3.0/bnb-dev` counterpart yet: the Firehose geth-BSC fork does not support
+Jenner. The goldens were checked against geth's hooked-state behavior: each
+storage write, code install and log comes out in write order, a slot written
+twice shows its intermediate value, and a reverted creation keeps its writes in
+the reverted call, with transaction-local log `index` values and `blockIndex`
+0.
