@@ -60,3 +60,10 @@ storage write, code install and log comes out in write order, a slot written
 twice shows its intermediate value, and a reverted creation keeps its writes in
 the reverted call, with transaction-local log `index` values and `blockIndex`
 0.
+
+The `cas20_contract_*` goldens call a token from `CAS20Caller`, so the token
+call sits at depth 1. Its storage changes and logs interleave with the caller's
+logs in execution order, a token call whose caller reverts keeps its writes
+with `stateReverted`, and a transfer that runs out of gas on the credit of a
+new holder reports only the debit, because geth charges a write before making
+it.

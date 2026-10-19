@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { AbiCoder, Interface, hexlify, id, toBigInt } from "ethers"
+import { AbiCoder, Interface, hexlify, id, keccak256, toBigInt } from "ethers"
 import hre from "hardhat"
 import { owner, ownerAddress } from "./global"
 import { defaultGasPrice } from "./lib/ethereum"
@@ -34,6 +34,16 @@ const token = new Interface([
   "function mint(address to, uint256 amount)",
   "function transfer(address to, uint256 amount)",
 ])
+const caller = new Interface([
+  "function transferTwice(address token, address to, uint256 first, uint256 second)",
+  "function transferThenRevert(address token, address to, uint256 amount)",
+  "function transferWithGas(address token, address to, uint256 amount, uint256 callGas)",
+])
+
+// Holders that never receive tokens before their test, so crediting them is a zero to non-zero
+// write (20,000 gas). Each run creates a new token, so they start empty every run.
+const FRESH_HOLDER_1 = "0x1111111111111111111111111111111111111111"
+const FRESH_HOLDER_2 = "0x2222222222222222222222222222222222222222"
 
 describe("Jenner", function () {
   before(async function () {
@@ -83,6 +93,79 @@ describe("Jenner", function () {
         sendData(`0x${tokenAddressHex}`, token.encodeFunctionData("transfer", [knownExistingAddress, 100n]), false),
       ).to.trxTraceEqualSnapshot("jenner/cas20_token_transfer", {
         $token: tokenAddressHex,
+      })
+    })
+
+    describe("called from a contract", function () {
+      let callerAddressHex: string
+      let callerAddress: string
+      let vars: Record<string, string>
+
+      before(async function () {
+        const factory = await hre.ethers.getContractFactory("CAS20Caller")
+        const contract = await factory.connect(owner).deploy()
+        await contract.waitForDeployment()
+        callerAddress = await contract.getAddress()
+        callerAddressHex = callerAddress.toLowerCase().slice(2)
+        vars = {
+          $token: tokenAddressHex,
+          $caller: callerAddressHex,
+          $balanceSlotOfCaller: balanceSlot(callerAddress).slice(2),
+        }
+
+        await sendData(`0x${tokenAddressHex}`, token.encodeFunctionData("transfer", [callerAddress, 1000n]), false)
+      })
+
+      it("Two transfers interleave with the caller's logs", async function () {
+        await expect(
+          sendData(
+            callerAddress,
+            caller.encodeFunctionData("transferTwice", [`0x${tokenAddressHex}`, knownExistingAddress, 10n, 20n]),
+            false,
+          ),
+        ).to.trxTraceEqualSnapshot("jenner/cas20_contract_transfer_twice", vars)
+      })
+
+      it("A transfer whose caller reverts keeps its writes in the trace", async function () {
+        await expect(
+          sendData(
+            callerAddress,
+            caller.encodeFunctionData("transferThenRevert", [`0x${tokenAddressHex}`, knownExistingAddress, 30n]),
+            true,
+          ),
+        ).to.trxTraceEqualSnapshot("jenner/cas20_contract_transfer_then_revert", vars)
+      })
+
+      it("A transfer that runs out of gas on a write does not report that write", async function () {
+        // The same transfer with ample gas first, to learn what it costs.
+        const paid = await sendData(
+          callerAddress,
+          caller.encodeFunctionData("transferWithGas", [`0x${tokenAddressHex}`, FRESH_HOLDER_1, 40n, 1_000_000n]),
+          false,
+        )
+        await expect(paid).to.trxTraceEqualSnapshot("jenner/cas20_contract_transfer_with_gas", vars)
+        const { trace: paidTrace } = await fetchFirehoseTransactionAndBlock(paid)
+        const transferGas = BigInt(paidTrace.calls[1].gasConsumed)
+
+        // 10,000 gas short: the debit of the caller is paid, the credit of the fresh holder is
+        // not, and enough gas is left to pass the 2,300-gas guard before it.
+        const result = await sendData(
+          callerAddress,
+          caller.encodeFunctionData("transferWithGas", [
+            `0x${tokenAddressHex}`,
+            FRESH_HOLDER_2,
+            40n,
+            transferGas - 10_000n,
+          ]),
+          false,
+        )
+        const { trace, block } = await fetchFirehoseTransactionAndBlock(result)
+
+        const transfer = trace.calls[1]
+        expect(transfer.statusFailed).to.equal(true)
+        expect(transfer.storageChanges).to.have.length(1, "only the debit of the caller is paid for")
+
+        await expect([result, trace, block]).to.trxTraceEqualSnapshot("jenner/cas20_contract_transfer_oog", vars)
       })
     })
 
@@ -142,6 +225,14 @@ function createCAS20Data(initCalls: string[]): { data: string; salt: string } {
 
 function mint(to: string, amount: bigint): string {
   return token.encodeFunctionData("mint", [to, amount])
+}
+
+/** A token's balance slot for `holder`: the `balances` mapping of the `bsc.cas20` ERC-7201 namespace. */
+function balanceSlot(holder: string): string {
+  const coder = AbiCoder.defaultAbiCoder()
+  const root = toBigInt(keccak256(coder.encode(["uint256"], [toBigInt(id("bsc.cas20")) - 1n]))) & ~0xffn
+  const SLOT_BALANCES = 4n
+  return keccak256(coder.encode(["address", "uint256"], [holder, root + SLOT_BALANCES]))
 }
 
 /** The factory returns the new token address, so a simulated call predicts it. */
