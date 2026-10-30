@@ -21,6 +21,7 @@ node_modules
 ignition/deployments/chain-31337
 
 scripts/.firehose-data
+scripts/.perf-*.log
 scripts/ethereum_devnet/.playground
 scripts/optimism/op-chain
 scripts/optimism/op-node-db

@@ -93,6 +93,25 @@ As the file as a single `describe("Calls", ...)` definition. And to run specific
 pnpm test:<id> --grep "Calls Delegate with value"
 ```
 
+### Reth Parallel Tracing Performance
+
+`pnpm perf:reth-dev` measures how long the Firehose-instrumented `reth` dev node takes to execute
+blocks of many transactions, with the parallel block access list path enabled (the default) and
+disabled (`--engine.disable-bal-parallel-execution`, serial execution). Unlike the test suite, the
+node mines on a timer (`--dev.block-time=1s`) so each round of `scripts/perf/load.ts` lands 160
+calls from 20 senders in one or two blocks. It runs once with cheap calls and once with calls that
+hash 300 times (`PERF_WORKLOADS`), and prints the execution time of all blocks of each run, read
+from the node's `sync.execution.execution_histogram` metric.
+
+```bash
+RETH_BINARY=/path/to/reth pnpm perf:reth-dev
+# or, for other block sizes and costs
+PERF_SENDERS=20 PERF_CALLS_PER_SENDER=8 PERF_ROUNDS=10 PERF_WORKLOADS="0 300 1000" pnpm perf:reth-dev
+```
+
+The script starts and stops the node itself, like `./scripts/run_firehose_reth_dev.sh`, and needs
+the same `reth` and `fireeth` binaries.
+
 ### Snapshot Tags
 
 The test suite has different snapshot tags that can exercises different different tracer behavior. The snapshots tag to use when running tests is controlled by the environment variable `SNAPSHOTS_TAG`. Here the list of snapshot tags we currently support.
