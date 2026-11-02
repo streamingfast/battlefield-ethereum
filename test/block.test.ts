@@ -86,10 +86,7 @@ describe("Blocks", function () {
 
       const sender = changes.find((c) => isSameAddress(hexlify(c.address), hexlify(trace.from)))
       expect(sender, "sender post-state balance change must be present").to.not.be.undefined
-      expect(
-        toBigInt(sender!.oldValue) - toBigInt(sender!.newValue),
-        `gasUsed=${gasUsed} gasPrice=${gasPrice}`,
-      ).to.equal(gasUsed * gasPrice + oneWei)
+      expect(toBigInt(sender!.oldValue) - toBigInt(sender!.newValue)).to.equal(gasUsed * gasPrice + toBigInt(oneWei))
 
       const coinbase = changes.find((c) => isSameAddress(hexlify(c.address), hexlify(block.header!.coinbase)))
       expect(coinbase, "coinbase post-state balance change must be present").to.not.be.undefined
