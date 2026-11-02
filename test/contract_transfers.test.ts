@@ -1,5 +1,6 @@
 import { expect } from "chai"
 import {
+  isSameAddress,
   knownExistingAddress,
   randomAddress3,
   randomAddress3Hex,
@@ -14,6 +15,8 @@ import { ChildFactory, GasRefundFactory, owner, TransfersFactory } from "./globa
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import { BalanceChange_Reason } from "../pb/sf/ethereum/type/v2/type_pb"
 import { toBigInt } from "./lib/numbers"
+import { isNetwork } from "./lib/network"
+import { hexlify } from "ethers"
 
 describe("Contract transfers", function () {
   let Child: Contract<Child>
@@ -37,6 +40,18 @@ describe("Contract transfers", function () {
     await expect(
       contractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei }),
     ).to.trxTraceEqualSnapshot("contract_transfers/existing_address.expected.json", {
+      $contract: Transfers.addressHex,
+    })
+  })
+
+  it("Existing address failing transaction", async function () {
+    if (!isNetwork("monad-dev")) {
+      this.skip()
+    }
+
+    await expect(
+      koContractCall(owner, Transfers.nativeTransfer, [knownExistingAddress], { value: oneWei, gasLimit: 22080 }),
+    ).to.trxTraceEqualSnapshot("contract_transfers/existing_address_failure.expected.json", {
       $contract: Transfers.addressHex,
     })
   })
@@ -103,6 +118,19 @@ describe("Contract transfers", function () {
 
     const { trace } = await fetchFirehoseTransactionAndBlock(response)
     const rootCall = trace.calls[0]
+
+    if (isNetwork("monad-dev")) {
+      const sender = rootCall.balanceChanges.find(
+        (bc) =>
+          bc.reason === BalanceChange_Reason.MONAD_TX_POST_STATE &&
+          isSameAddress(hexlify(bc.address), hexlify(trace.from)),
+      )
+      expect(sender, "sender post-state balance change must be present").to.not.be.undefined
+      expect(toBigInt(sender!.oldValue) - toBigInt(sender!.newValue)).to.equal(
+        BigInt(trace.gasUsed) * toBigInt(trace.gasPrice),
+      )
+      return
+    }
 
     const gasBuyChanges = rootCall.balanceChanges.filter((bc) => bc.reason === BalanceChange_Reason.GAS_BUY)
     const gasRefundChanges = rootCall.balanceChanges.filter((bc) => bc.reason === BalanceChange_Reason.GAS_REFUND)

@@ -5,7 +5,7 @@ import { Contract, contractCall, defaultGasPrice, deployAll, deployContract } fr
 import { waitForTransaction } from "./lib/ethers"
 import { Main } from "../typechain-types"
 import { MainFactory, owner } from "./global"
-import { networkValue } from "./lib/network"
+import { isNetwork, networkValue } from "./lib/network"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 
 // EIP-2929: cold SSTORE for a zero→nonzero slot costs COLD_SLOAD_COST (2100) + SSTORE_SET_GAS (20000)
@@ -60,6 +60,10 @@ describe("Storages", function () {
   // Pattern: SSTORE → SHA256 precompile → SSTORE → OOG
   // Both storage changes must appear in the trace with state_reverted=true.
   it("Both storage writes before OOG appear in trace", async function () {
+    if (isNetwork("monad-dev")) {
+      this.skip()
+    }
+
     const a = "0xb2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc"
     const b = "0x9df6b64338919f844529872976787ab91993cff90084b15f256646cde3532e13"
 

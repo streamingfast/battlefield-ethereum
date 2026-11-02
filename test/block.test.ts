@@ -76,6 +76,24 @@ describe("Blocks", function () {
   })
 
   it("Transaction fee reward (REWARD_TRANSACTION_FEE) recorded for coinbase", async function () {
+    if (isNetwork("monad-dev")) {
+      const result = await sendEth(owner, knownExistingAddress, oneWei)
+      const { block, trace } = await fetchFirehoseTransactionAndBlock(result)
+      const changes = trace.calls[0].balanceChanges.filter((c) => c.reason === BalanceChange_Reason.MONAD_TX_POST_STATE)
+      const gasUsed = BigInt(trace.gasUsed)
+      const gasPrice = toBigInt(trace.gasPrice)
+      const baseFee = toBigInt(block.header!.baseFeePerGas)
+
+      const sender = changes.find((c) => isSameAddress(hexlify(c.address), hexlify(trace.from)))
+      expect(sender, "sender post-state balance change must be present").to.not.be.undefined
+      expect(toBigInt(sender!.oldValue) - toBigInt(sender!.newValue)).to.equal(gasUsed * gasPrice + oneWei)
+
+      const coinbase = changes.find((c) => isSameAddress(hexlify(c.address), hexlify(block.header!.coinbase)))
+      expect(coinbase, "coinbase post-state balance change must be present").to.not.be.undefined
+      expect(toBigInt(coinbase!.newValue) - toBigInt(coinbase!.oldValue)).to.equal(gasUsed * (gasPrice - baseFee))
+      return
+    }
+
     // Polygon Bor leaves block.coinbase as the zero address and routes tips through the
     // 0x...01010 MATIC system contract instead of paying the block proposer directly, so
     // this test's coinbase-based assertion does not apply.

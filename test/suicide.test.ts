@@ -253,6 +253,17 @@ describe("Suicide", function () {
     const response = await contractCall(owner, Wrapper.execute, [], { gasLimit: callsGasLimit })
     const { trace } = await fetchFirehoseTransactionAndBlock(response)
 
+    if (isNetwork("monad-dev")) {
+      expect(trace.calls).to.have.length(3, "must have 3 calls: root + CREATE child + SELFDESTRUCT frame")
+      const create = trace.calls[1]
+      expect(create.callType).to.equal(CallType.CREATE)
+      expect(isSameAddress(hexlify(create.address), childAddress)).to.be.true
+      const destruct = trace.calls.filter((c) => c.suicide)
+      expect(destruct).to.have.length(1, "must have exactly 1 SELFDESTRUCT frame")
+      expect(isSameAddress(hexlify(destruct[0].caller), childAddress)).to.be.true
+      return
+    }
+
     // Root + wrapper.execute() + CREATE child
     expect(trace.calls).to.have.length(2, "must have 2 calls: root wrapper call + CREATE child")
 
@@ -316,6 +327,17 @@ describe("Suicide", function () {
 
     const response = await contractCall(owner, Factory.createAndDestroyThree, [], { gasLimit: callsGasLimit })
     const { trace } = await fetchFirehoseTransactionAndBlock(response)
+
+    if (isNetwork("monad-dev")) {
+      expect(trace.calls).to.have.length(10, "must have 10 calls: root + 3 CREATE + 3 kill + 3 SELFDESTRUCT frames")
+      expect(trace.calls.filter((c) => c.callType === CallType.CREATE)).to.have.length(3)
+      const destructs = trace.calls.filter((c) => c.suicide)
+      expect(destructs).to.have.length(3, "must have exactly 3 SELFDESTRUCT frames")
+      for (const call of destructs) {
+        expect(childAddrs.some((a) => isSameAddress(a, hexlify(call.caller)))).to.be.true
+      }
+      return
+    }
 
     // root + 3 CREATEs + 3 kill() calls
     expect(trace.calls).to.have.length(7, "must have 7 calls: root + 3 CREATE + 3 kill")

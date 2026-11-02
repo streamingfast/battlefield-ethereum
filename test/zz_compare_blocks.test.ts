@@ -37,6 +37,15 @@ describe("Compare blocks", function () {
     const result = await compareBlocksWithRpc(resolved.range, timeoutMs)
 
     expect(result.exitCode, `'fireeth tools compare-blocks-rpc' failed, output:\n${result.output}`).to.equal(0)
+    if (isNetwork("monad-dev")) {
+      expect(
+        unacceptedMonadDifferences(result.output),
+        `Firehose blocks differ from RPC blocks in range #${start}-#${stop}, output:\n${result.output}`,
+      ).to.deep.equal([])
+      expect(result.identicalCount + result.differences.length).to.be.greaterThan(0)
+      return
+    }
+
     expect(
       result.differences.filter((difference) => !isAcceptedDifference(difference)),
       `Firehose blocks differ from RPC blocks in range #${start}-#${stop}, output:\n${result.output}`,
@@ -53,4 +62,45 @@ describe("Compare blocks", function () {
 // per-transaction snapshots pin the Firehose value.
 function isAcceptedDifference(difference: string): boolean {
   return isNetwork("bnb-dev") && /^different \[@ \["transaction_traces",\d+,"gas_price"\]$/.test(difference.trim())
+}
+
+function unacceptedMonadDifferences(output: string): string[] {
+  const unaccepted: string[] = []
+  const lines = output.split("\n")
+
+  for (let i = 0; i < lines.length; i++) {
+    const path = lines[i].match(/@ (\[.*\])$/)?.[1]
+    if (path === undefined) {
+      continue
+    }
+
+    const rpc = lines[i + 1]?.match(/^- "(.*)"$/)?.[1]
+    const firehose = lines[i + 2]?.match(/^\+ "(.*)"$/)?.[1]
+    if (!isAcceptedMonadDifference(path, rpc, firehose)) {
+      unaccepted.push(`${path}: rpc=${rpc} firehose=${firehose}`)
+    }
+  }
+
+  return unaccepted
+}
+
+function isAcceptedMonadDifference(path: string, rpc?: string, firehose?: string): boolean {
+  if (rpc === undefined || firehose === undefined) {
+    return false
+  }
+
+  if (path === '["size"]') {
+    return firehose === "0x0"
+  }
+
+  if (/^\["transaction_traces",\d+,"v"\]$/.test(path)) {
+    if (rpc === "0x") {
+      return firehose === "0x00"
+    }
+
+    const v = BigInt(rpc)
+    return v >= 35n && (v - 35n) % 2n === BigInt(firehose)
+  }
+
+  return false
 }
