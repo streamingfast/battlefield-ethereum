@@ -1,7 +1,7 @@
 services:
   build_triedb:
     image: monad-execution-builder:latest
-    command: monad-mpt --storage /monad/triedb/test.db --create
+    command: monad-mpt --storage /monad/triedb/test.db --create --state-machine monad
     volumes:
       - /dev/hugepages/monad-localnet:/monad/event-ring
       - ./node:/monad
@@ -18,8 +18,7 @@ services:
       - ./node:/monad
     security_opt:
       - "seccomp:./node/config/profile.json"
-    command:
-      monad
+    command: monad
       --chain monad_devnet
       --db /monad/triedb/test.db
       --block_db /monad/ledger
@@ -80,7 +79,7 @@ services:
       --mempool-ipc-path /monad/mempool.sock
       --control-panel-ipc-path /monad/controlpanel.sock
       --ledger-path /monad/ledger
-      --triedb-path /monad/triedb
+      --triedb-path /monad/triedb/test.db
       --persisted-peers-path /monad/peers
     ulimits:
       memlock:
@@ -102,7 +101,7 @@ services:
     command: |
       monad-rpc
       --ipc-path /monad/mempool.sock
-      --triedb-path /monad/triedb
+      --triedb-path /monad/triedb/test.db
       --node-config /monad/config/node.toml
     ulimits:
       memlock:
