@@ -1,5 +1,11 @@
 import { Code, ConnectError, createClient } from "@connectrpc/connect"
-import { Fetch, SingleBlockRequest, SingleBlockRequestSchema } from "../../pb/sf/firehose/v2/firehose_pb"
+import {
+  EndpointInfo,
+  Fetch,
+  SingleBlockRequest,
+  SingleBlockRequestSchema,
+  Stream,
+} from "../../pb/sf/firehose/v2/firehose_pb"
 import { createGrpcTransport } from "@connectrpc/connect-node"
 import {
   BalanceChange,
@@ -35,11 +41,20 @@ const debug = debugFactory("battlefield:firehose")
 
 export const emptyBytes = Uint8Array.of()
 
+// Host:port of the Firehose gRPC endpoint. Every launcher in `scripts/` binds it to
+// `localhost:8089` (see `run_fireeth` in `scripts/lib.sh`), the environment variable is
+// only an escape hatch for non-standard setups. It is deliberately prefixed: the bare
+// `FIREHOSE_ENDPOINT` is commonly exported in a developer shell for the public endpoints.
+export const firehoseEndpoint = process.env.BATTLEFIELD_FIREHOSE_ENDPOINT ?? "localhost:8089"
+
 const transport = createGrpcTransport({
-  baseUrl: process.env.FIREHOSE_GRPC_ENDPOINT || "http://localhost:8089",
+  baseUrl: `http://${firehoseEndpoint}`,
 })
 
 export const firehose = createClient(Fetch, transport)
+
+const firehoseStream = createClient(Stream, transport)
+const firehoseInfo = createClient(EndpointInfo, transport)
 
 const messageRegistry = createRegistry(BlockSchema)
 
@@ -50,8 +65,9 @@ export async function fetchFirehoseTransaction(receipt: TransactionReceipt): Pro
 
 export async function fetchFirehoseBlock(
   tag: number | bigint | string | { hash: string; num: number | bigint },
+  options?: { timeoutMs?: number },
 ): Promise<Block> {
-  const block = await fetchFirehoseBlockNoLogging(tag)
+  const block = await fetchFirehoseBlockNoLogging(tag, options?.timeoutMs)
   if (block) {
     debug(`Found Firehose block #${block.number} (${block.hash}) %O`, toProtoJsonObject(block))
   }
@@ -61,21 +77,36 @@ export async function fetchFirehoseBlock(
 
 async function fetchFirehoseBlockNoLogging(
   tag: number | bigint | string | { hash: string; num: number | bigint },
+  timeoutMs?: number,
 ): Promise<Block> {
+  const deadline = timeoutMs !== undefined ? Date.now() + timeoutMs : Infinity
   let attempts = 0
-  let lastError: unknown
+  let lastErrors: unknown[] = []
 
   while (attempts <= 10) {
+    const remaining = deadline - Date.now()
+    if (remaining <= 0) {
+      throw new ConnectError(
+        `Block ${firehoseBlockTagToString(tag)} not found in Firehose within ${timeoutMs}ms, last errors: ${lastErrors}`,
+      )
+    }
+
     attempts += 1
 
     try {
-      const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) })
-      return anyUnpack(response.block!, messageRegistry) as Block
+      const abort = new AbortController()
+      const timer = setTimeout(() => abort.abort(), Math.min(10_000, remaining))
+      try {
+        const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) }, { signal: abort.signal })
+        return anyUnpack(response.block!, messageRegistry) as Block
+      } finally {
+        clearTimeout(timer)
+      }
     } catch (error) {
-      lastError = error
+      lastErrors.push(error)
 
       if (isConnectError(error) && error.code !== Code.InvalidArgument) {
-        let retryIn = 125 + 250 * (attempts - 1)
+        const retryIn = Math.max(0, Math.min(125 + 250 * (attempts - 1), deadline - Date.now()))
         debug(`Block ${firehoseBlockTagToString(tag)} not found in Firehose yet, retrying in ${retryIn}ms`)
         await new Promise((resolve) => setTimeout(resolve, retryIn))
 
@@ -86,7 +117,7 @@ async function fetchFirehoseBlockNoLogging(
     }
   }
 
-  throw new ConnectError(`Block not found in Firehose after 3 attempts, last error: ${lastError}`)
+  throw new ConnectError(`Block not found in Firehose after ${attempts} attempts, last errors: ${lastErrors}`)
 }
 
 export async function fetchFirehoseTransactionAndBlock(
@@ -297,6 +328,34 @@ function collectChangesOrdinals(ordinals: Record<number, number>, changes: { ord
   })
 }
 
+// Maps each ordinal to the list of trace locations (e.g. "call[1].accountCreation[0]") that
+// emitted it. Used by the ordinal-uniqueness assertion so it can report exactly which events
+// collide and apply targeted per-chain leniency.
+export function trxTraceOrdinalSources(trace: TransactionTrace): Record<number, string[]> {
+  const sources: Record<number, string[]> = {}
+  const add = (ord: bigint | undefined, label: string) => {
+    const k = Number(ord)
+    ;(sources[k] = sources[k] || []).push(label)
+  }
+  add(trace.beginOrdinal, "trace.begin")
+  add(trace.endOrdinal, "trace.end")
+  trace.calls.forEach((call) => {
+    const i = call.index
+    add(call.beginOrdinal, `call[${i}].begin`)
+    add(call.endOrdinal, `call[${i}].end`)
+    const addChanges = (name: string, changes: { ordinal?: bigint }[]) =>
+      changes.forEach((c, j) => add(c.ordinal, `call[${i}].${name}[${j}]`))
+    addChanges("log", call.logs)
+    addChanges("accountCreation", call.accountCreations)
+    addChanges("balanceChange", call.balanceChanges)
+    addChanges("gasChange", call.gasChanges)
+    addChanges("nonceChange", call.nonceChanges)
+    addChanges("storageChange", call.storageChanges)
+    addChanges("codeChange", call.codeChanges)
+  })
+  return sources
+}
+
 export function relativizeTrxTraceOrdinals(trace: TransactionTrace) {
   const lowestOrdinal = trxTraceLowestOrdinal(trace)
 
@@ -342,6 +401,121 @@ function normalizeCallFailureReason(reason: string): string {
   }
 
   return reason
+}
+
+/**
+ * Waits for Firehose to become ready on mine-on-demand chains (e.g. reth-dev, geth --dev).
+ *
+ * On these chains the node only mines a block when there is a pending transaction. Firehose
+ * will not mark itself as ready until it has processed at least one live block. This creates
+ * a chicken-and-egg situation at startup: Firehose is waiting for blocks, but no blocks are
+ * produced until someone sends a transaction.
+ *
+ * This function breaks the deadlock by:
+ *   1. Continuously sending transactions (via `sendTransaction`) so the chain keeps mining.
+ *   2. Polling the Firehose HTTP health endpoint (`/` on the gRPC port, returns
+ *      `{"is_ready":true}`) until it reports ready.
+ *
+ * Why HTTP and not gRPC `Block(1)`? The gRPC block-fetch call holds the connection open
+ * and waits for the requested block to appear (Firehose server-side streaming behaviour).
+ * This makes it unsuitable as a readiness probe — it hangs indefinitely if block 1 has not
+ * been produced yet, and AbortController interactions with the ConnectRPC Node transport
+ * are unreliable. The plain HTTP health endpoint responds immediately and is safe to poll.
+ *
+ * Throws if Firehose does not become ready within `timeoutMs` milliseconds.
+ */
+export async function waitForFirehoseReady(sendTransaction: () => Promise<unknown>, timeoutMs = 30_000): Promise<void> {
+  let done = false
+
+  // Continuously pump transactions so the chain keeps mining while we wait.
+  // Fire-and-forget each send so the 200 ms timer drives the pace regardless
+  // of how long the node takes to acknowledge each submission.
+  const pump = async () => {
+    while (!done) {
+      sendTransaction().catch(() => {})
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    }
+  }
+
+  const pumping = pump()
+
+  try {
+    const deadline = Date.now() + timeoutMs
+
+    while (true) {
+      try {
+        // Use the plain HTTP health endpoint rather than the gRPC `firehose` client:
+        // the gRPC Block() call holds the connection open waiting for the block to appear,
+        // so it hangs instead of failing fast when Firehose is not yet ready.
+        const response = await fetch(`http://${firehoseEndpoint}`, { signal: AbortSignal.timeout(1_000) })
+        const body = (await response.json()) as { is_ready?: boolean }
+        if (body.is_ready === true) {
+          debug("Firehose ready")
+          return
+        }
+      } catch {
+        // not ready yet
+      }
+
+      if (Date.now() >= deadline) {
+        throw new Error(`Firehose did not become ready within ${timeoutMs}ms`)
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 500))
+    }
+  } finally {
+    done = true
+    await pumping
+  }
+}
+
+// Returns the first block number served by the Firehose endpoint. Launchers pass it to
+// `fireeth` as `--common-first-streamable-block` and it is not always 0 (Nitro and Sei
+// start at 1), so any full-chain range must be clamped to it.
+export async function fetchFirehoseFirstStreamableBlock(): Promise<number> {
+  const info = await firehoseInfo.info({})
+  return Number(info.firstStreamableBlockNum)
+}
+
+export type FirehoseHead = { num: number; libNum: number }
+
+// Returns the Firehose head block number together with the last irreversible block (LIB) known
+// at that point, or `undefined` when Firehose did not answer within `timeoutMs`.
+//
+// The LIB is the bound that matters for anything streaming with `final_blocks_only` (which is
+// what `fireeth tools compare-blocks-rpc` does): a range extending past the LIB makes the stream
+// hang until those blocks finalize. It is read from the head block's metadata rather than probed
+// with a final-only stream, because a final-only stream starting at `-1` resolves `-1` against
+// the head and then waits for that block to finalize, which is precisely the hang we avoid.
+export async function fetchFirehoseHead(timeoutMs = 10_000): Promise<FirehoseHead | undefined> {
+  const abort = new AbortController()
+  const timer = setTimeout(() => abort.abort(), timeoutMs)
+
+  try {
+    for await (const response of firehoseStream.blocks({ startBlockNum: -1n }, { signal: abort.signal })) {
+      if (response.metadata === undefined) {
+        debug("Firehose response has no metadata, LIB is unknown")
+        return undefined
+      }
+
+      const head = { num: Number(response.metadata.num), libNum: Number(response.metadata.libNum) }
+      debug("Firehose head #%d (LIB #%d)", head.num, head.libNum)
+
+      return head
+    }
+
+    return undefined
+  } catch (err) {
+    if (abort.signal.aborted) {
+      debug("Firehose head probe timed out after %d ms", timeoutMs)
+      return undefined
+    }
+
+    throw err
+  } finally {
+    clearTimeout(timer)
+    abort.abort()
+  }
 }
 
 type FirehoseBlockTag = string | number | bigint | { hash: string; num: number | bigint }

@@ -1,0 +1,143 @@
+{
+  "to": "$caller",
+  "nonce": "$nonce",
+  "gasLimit": "2000000",
+  "input": "1f84b2b7000000000000000000000000$token000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd000000000000000000000000000000000000000000000000000000000000001e",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "42451",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e6166746572207472616e73666572000000000000000000000000000000000000",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "12",
+  "status": "REVERTED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$caller",
+      "gasLimit": "1978168",
+      "gasConsumed": "20619",
+      "returnData": "08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e6166746572207472616e73666572000000000000000000000000000000000000",
+      "input": "1f84b2b7000000000000000000000000$token000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd000000000000000000000000000000000000000000000000000000000000001e",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "013fbe85edc90000",
+          "newValue": ""
+        },
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_REFUND",
+          "ordinal": "10",
+          "oldValue": "",
+          "newValue": "0138f51eb6e4da00"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "11",
+          "newValue": "01",
+          "oldValue": ""
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "2"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": true,
+      "statusReverted": true,
+      "failureReason": "execution reverted",
+      "stateReverted": true,
+      "beginOrdinal": "3",
+      "endOrdinal": "9",
+      "accountCreations": []
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "CALL",
+      "caller": "$caller",
+      "address": "$token",
+      "gasLimit": "1943480",
+      "gasConsumed": "16158",
+      "returnData": "0000000000000000000000000000000000000000000000000000000000000001",
+      "input": "a9059cbb000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd000000000000000000000000000000000000000000000000000000000000001e",
+      "executedCode": false,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [
+        {
+          "address": "$token",
+          "key": "$balanceSlotOfCaller",
+          "oldValue": "00000000000000000000000000000000000000000000000000000000000003ca",
+          "newValue": "00000000000000000000000000000000000000000000000000000000000003ac",
+          "ordinal": "5"
+        },
+        {
+          "address": "$token",
+          "key": "df4dd640c1b065024563119857eedcc82e780f0b59f4226849b45e44436a8ed6",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000082",
+          "newValue": "00000000000000000000000000000000000000000000000000000000000000a0",
+          "ordinal": "6"
+        }
+      ],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [
+        {
+          "address": "$token",
+          "topics": [
+            "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "000000000000000000000000$caller",
+            "000000000000000000000000d549d2fd4b177767b84ab2fd17423cee1cf1d7bd"
+          ],
+          "data": "000000000000000000000000000000000000000000000000000000000000001e",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "7"
+        }
+      ],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": true,
+      "beginOrdinal": "4",
+      "endOrdinal": "8",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0a7a358200",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}

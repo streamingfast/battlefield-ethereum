@@ -16,7 +16,7 @@ import { ContractMethodArgs, StateMutability, TypedContractMethod } from "../../
 import { addressHasZeroBytes, bytes, randomHex } from "./addresses"
 import { TransactionReceiptResult, waitForTransaction } from "./ethers"
 import { eth } from "./money"
-import { isNetwork, networkValue } from "./network"
+import { gasLimitOverride, gasPriceOverride, isNetwork, networkValue } from "./network"
 
 const debug = debugFactory("battlefield:eth")
 
@@ -87,8 +87,10 @@ export async function sendEth(
   const trxRequest = {
     to,
     value,
-    gasLimit: 21000,
-    gasPrice: defaultGasPrice,
+    ...gasLimitOverride(21000),
+    // Skip the legacy gasPrice default when the caller provides EIP-1559 fees so that
+    // ethers.js doesn't receive conflicting gas fields.
+    ...("maxFeePerGas" in custom ? {} : gasPriceOverride(defaultGasPrice)),
     ...custom,
   }
   debug("Send eth call being performed %o", debuggableTrx(trxRequest))
@@ -106,8 +108,8 @@ export async function contractCall<A extends Array<any> = Array<any>, R = any, S
   const trxCall = await call.populateTransaction(...args)
   const trxRequest = {
     ...trxCall,
-    gasLimit: defaultGasLimit,
-    gasPrice: defaultGasPrice,
+    ...gasLimitOverride(defaultGasLimit),
+    ...gasPriceOverride(defaultGasPrice),
     ...customTx,
   }
 
@@ -217,8 +219,8 @@ async function _deployContract<F extends ContractFactory, C extends BaseContract
     const trx = await factory.getDeployTransaction(...constructorArgs)
     const trxRequest = {
       ...trx,
-      gasLimit: defaultGasLimit,
-      gasPrice: defaultGasPrice,
+      ...(isNetwork("monad-dev") ? { gasLimit: defaultGasLimit } : {}),
+      ...gasPriceOverride(defaultGasPrice),
       ...customTx,
     }
 
@@ -457,6 +459,36 @@ export async function mustGetRpcBlock(tag: number | bigint | "latest"): Promise<
   throw new Error("Unable to extract block from response: " + JSON.stringify(response))
 }
 
+/**
+ * Fetches all transaction receipts for a block in a single `eth_getBlockReceipts` RPC call.
+ * Each receipt includes `gasUsed` and `effectiveGasPrice`, which is what we need to compute
+ * the total fee reward paid to the coinbase.
+ */
+export async function mustGetRpcBlockReceipts(blockNumber: number | bigint): Promise<RpcTransactionReceipt[]> {
+  let rpcUrl = "http://localhost:8545"
+  if ("url" in hre.network.config && hre.network.config.url) {
+    rpcUrl = hre.network.config.url
+  }
+
+  const result = await fetch(rpcUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_getBlockReceipts",
+      params: ["0x" + blockNumber.toString(16)],
+    }),
+  })
+
+  const response = await result.json()
+  if (response["result"] != null) {
+    return response.result
+  }
+
+  throw new Error("Unable to extract block receipts from response: " + JSON.stringify(response))
+}
+
 // It seems the Block provided by ethers is not the same as the one provided by the RPC,
 // some fields like `stateRoot` or `transactionsRoot` are not undefined when fetching the block
 // using Ethers.
@@ -484,7 +516,7 @@ export type RpcBlock = {
   baseFeePerGas?: string
 
   // EIP-4895 (Shangai Fork)
-  withdrawals?: Array<any>
+  withdrawals?: Array<RpcWithdrawal>
   withdrawalsRoot?: string
 
   // EIP-4844 (Cancun fork)
@@ -496,6 +528,26 @@ export type RpcBlock = {
 
   // EIP-7685 (Prague fork)
   requestsHash?: string
+
+  // EIP-7843 (Amsterdam fork)
+  slotNumber?: string
+
+  // EIP-7928 (Amsterdam fork)
+  blockAccessListHash?: string
+}
+
+export type RpcTransactionReceipt = {
+  transactionHash: string
+  gasUsed: string
+  effectiveGasPrice: string
+}
+
+// All numeric fields are hex-encoded strings as returned by eth_getBlockByNumber.
+export type RpcWithdrawal = {
+  index: string
+  validatorIndex: string
+  address: string
+  amount: string // in Gwei (hex)
 }
 
 export function getBalance(address: string): Promise<BigInt> {

@@ -8,6 +8,7 @@ source "$ROOT/lib.sh"
 
 main() {
   check_fireeth
+  check_nitro
 
   # Check required environment variables
   if [[ -z "$NITRO_NOVA_PARENT_CHAIN_URL" ]]; then

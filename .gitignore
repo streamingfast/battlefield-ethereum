@@ -31,3 +31,6 @@ polygon-e2e-tests/
 
 # Misc
 .DS_Store
+/.worktrees
+scripts/world_chain/.devnet
+scripts/world_chain/data

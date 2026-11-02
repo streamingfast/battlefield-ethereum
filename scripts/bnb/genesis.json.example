@@ -36,7 +36,7 @@
     "PascalTime": 0,
     "PragueTime": 0,
     "LorentzTime": 0,
-    "MaxwellTime": 0,
+    "maxwellTime": 0,
     "parlia": {
       "period": 3,
       "epoch": 200

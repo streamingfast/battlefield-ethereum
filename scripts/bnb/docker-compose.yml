@@ -3,6 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.miner
+      args:
+        GETH_VERSION: ${BSC_GETH_VERSION:-v1.7.1}
+        JENNER: ${BSC_JENNER:-false}
     ports:
       - "30304:30304"
       - "8545:8545"

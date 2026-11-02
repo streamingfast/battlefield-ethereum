@@ -52,8 +52,8 @@
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "12",
-          "newValue": "01",
-          "oldValue": ""
+          "oldValue": "",
+          "newValue": "01"
         }
       ],
       "nonceChanges": [

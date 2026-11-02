@@ -10,6 +10,8 @@ import {
   deployStableContractCreator,
   getCreate2AddressHex,
   getCreateAddressHex,
+  koContractCall,
+  mustGetRpcBlock,
   sendEth,
   stableDeployerFunded,
 } from "./lib/ethereum"
@@ -21,10 +23,24 @@ import {
   SuicideOnConstructorFactory,
   SuicideContractAsBeneficiary,
   SuicideContractAsBeneficiarySameTrx,
+  TripleSuicideFactory,
 } from "./global"
+import hre from "hardhat"
 import { eth, oneWei } from "./lib/money"
-import { EIP } from "./lib/chain_eips"
-import { isNetwork, networkValue } from "./lib/network"
+import { EIP, isBlockOnAmsterdamOrLater } from "./lib/chain_eips"
+import {
+  isAmsterdamActive,
+  isArbitrum,
+  isNetwork,
+  isNetworkOneOf,
+  isNetworkStartsWith,
+  networkValue,
+  dynamicGasLimit,
+} from "./lib/network"
+import { hexlify } from "ethers"
+import { CallType } from "../pb/sf/ethereum/type/v2/type_pb"
+import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
+import { isSameAddress } from "./lib/addresses"
 
 // Arbitrum Geth Dev Suicide Note (comment ref id 5564fd945748)
 //
@@ -45,12 +61,14 @@ describe("Suicide", function () {
   let Suicidal2: Contract<Suicidal>
   let Calls: Contract<Calls>
 
-  const callsGasLimit = networkValue({
-    "*": 3_500_000,
-    "monad-dev": 30_000_000,
-  })
+  let callsGasLimit: number
 
   before(async () => {
+    // Computed here rather than at describe scope: dynamicGasLimit's Amsterdam-awareness reads
+    // chainStaticInfo, which is only populated once the global before() hook (in global.ts) has
+    // run, and describe-body code executes during mocha's collection phase, before any hook does.
+    callsGasLimit = dynamicGasLimit(isNetwork("monad-dev") ? 30_000_000 : 3_500_000)
+
     await deployAll(
       async () => (Suicidal1 = await deployContract(owner, SuicidalFactory, [])),
       async () => (Suicidal2 = await deployContract(owner, SuicidalFactory, [])),
@@ -93,6 +111,12 @@ describe("Suicide", function () {
   })
 
   it("Contract hold Ether", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
     await sendEth(owner, Suicidal2.address, oneWei, { gasLimit: 42000 })
 
     await expect(contractCall(owner, Suicidal2.kill, [])).to.trxTraceEqualSnapshot(
@@ -137,7 +161,10 @@ describe("Suicide", function () {
   })
 
   it("Contract created in trx and suicides in constructor", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
+    // On Amsterdam, gas estimation searches up to what the deployer can afford at the going
+    // gas price; 0.01 ETH isn't enough headroom once EIP-8037 state gas inflates deployment
+    // cost, so fund more generously there.
+    const deployer = await stableDeployerFunded(owner, 1, isAmsterdamActive() ? eth(1) : defaultDeployerBalance)
 
     await expect(
       contractCreation(deployer, SuicideOnConstructorFactory, [], { gasLimit: defaultGasLimit }),
@@ -148,18 +175,32 @@ describe("Suicide", function () {
   })
 
   it("Contract and suicide beneficiary are the same", async function () {
-    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
-    const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [], { gasLimit: defaultGasLimit })
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
+    // On Amsterdam, gas estimation searches up to what the deployer can afford at the going
+    // gas price; 0.01 ETH isn't enough headroom once EIP-8037 state gas inflates deployment
+    // cost, so fund more generously there.
+    const deployer = await stableDeployerFunded(owner, 1, isAmsterdamActive() ? eth(1) : defaultDeployerBalance)
+    const Contract = await deployContract(deployer, SuicideContractAsBeneficiary, [])
 
     await sendEth(owner, Contract.address, oneWei, { gasLimit: 45000 })
 
-    await expect(contractCall(owner, Contract.killSelf, [])).to.trxTraceEqualSnapshot(
-      "suicide/contract_and_suicide_beneficiary_are_the_same.json",
-      {
-        $sender: deployer.address.toLowerCase().slice(2),
-        $createdContract: Contract.addressHex,
-      },
-    )
+    // Arc rejects SELFDESTRUCT when the beneficiary is the contract itself
+    // (`check_selfdestruct_accounts` in arc-node `crates/evm/src/opcode.rs` halts with Revert
+    // on `source == target`), so the transaction is mined with status 0. The trace is still
+    // produced and asserted, it just records a reverted call.
+    const call = isNetwork("arc-dev")
+      ? koContractCall(owner, Contract.killSelf, [])
+      : contractCall(owner, Contract.killSelf, [])
+
+    await expect(call).to.trxTraceEqualSnapshot("suicide/contract_and_suicide_beneficiary_are_the_same.json", {
+      $sender: deployer.address.toLowerCase().slice(2),
+      $createdContract: Contract.addressHex,
+    })
   })
 
   it("Contract and suicide beneficiary are the same, in same trx", async function () {
@@ -168,12 +209,205 @@ describe("Suicide", function () {
     })
     const createdContract = getCreateAddressHex(Contract.address, 1)
 
-    await expect(contractCall(owner, Contract.execute, [], { value: oneWei })).to.trxTraceEqualSnapshot(
+    // See the note in the previous test: on Arc the SELFDESTRUCT reverts the transaction, so
+    // the trace is a reverted one rather than the canonical suicide trace.
+    const call = isNetwork("arc-dev")
+      ? koContractCall(owner, Contract.execute, [], { value: oneWei })
+      : contractCall(owner, Contract.execute, [], { value: oneWei })
+
+    await expect(call).to.trxTraceEqualSnapshot(
       "suicide/contract_and_suicide_beneficiary_are_the_same_in_same_trx.json",
       {
         $contract: Contract.addressHex,
         $createdContract: createdContract,
       },
     )
+  })
+
+  it("Contract created in subcall suicides in its constructor", async function () {
+    // Bor 2.8.0-beta and latest Optimism Geth has not yet rebased onto geth 1.17, so the
+    // end-of-tx finalization hooks (code removals and nonce resets written to the root call
+    // in sorted address order) that this test asserts on are not produced by the tracer yet.
+    //
+    // op-reth-devnet is intentionally NOT skipped here: Reth emits block v5 which differs a bit
+    // and is expected to produce the end-of-tx finalization correctly, so this test is likely to
+    // pass on op-reth-devnet. To be revisited once validated against a live op-reth devnet.
+    if (isNetworkOneOf("polygon-dev", "op-geth-devnet")) {
+      this.skip()
+    }
+
+    // Reproduces the pattern observed in Optimism trx 1be5b6c3...:
+    //   root tx → wrapper.execute() (depth 0)
+    //                → CREATE child (depth 1) — child constructor selfdestructs
+    //
+    // Because the create and the suicide happen in the same transaction, the child
+    // is fully removed at end-of-tx (true on every fork: pre-Cancun by default,
+    // post-Cancun via the EIP-6780 same-tx exception). Finalization writes the
+    // nonce 1→0 reset to the root call.
+    const CreateSuicideInSubcallFactory = await hre.ethers.getContractFactory("CreateSuicideInSubcall")
+    const Wrapper = await deployStableContractCreator(owner, CreateSuicideInSubcallFactory, [], 1, 1, {
+      gasLimit: callsGasLimit,
+    })
+    const childAddress = getCreateAddressHex(Wrapper.address, 1)
+
+    const response = await contractCall(owner, Wrapper.execute, [], { gasLimit: callsGasLimit })
+    const { trace } = await fetchFirehoseTransactionAndBlock(response)
+
+    // Root + wrapper.execute() + CREATE child
+    expect(trace.calls).to.have.length(2, "must have 2 calls: root wrapper call + CREATE child")
+
+    const rootCall = trace.calls[0]
+    expect(rootCall.depth).to.equal(0, "first call must be the root call")
+
+    const createCall = trace.calls[1]
+    expect(createCall.callType).to.equal(CallType.CREATE, "second call must be a CREATE")
+    expect(isSameAddress(hexlify(createCall.address), childAddress)).to.be.true
+    expect(createCall.suicide).to.be.true
+
+    // CREATE subcall: nonce 0→1 for the freshly created child
+    const childNonceCreate = createCall.nonceChanges.find((nc) => isSameAddress(hexlify(nc.address), childAddress))
+    expect(childNonceCreate, "CREATE subcall must record a nonce change for the child contract").to.not.be.undefined
+    expect(childNonceCreate!.oldValue).to.equal(0n, "child nonce in CREATE subcall must start at 0")
+    expect(childNonceCreate!.newValue).to.equal(1n, "child nonce in CREATE subcall must end at 1")
+
+    // Root call: nonce 1→0 cleanup written during end-of-tx finalization
+    const childNonceCleanup = rootCall.nonceChanges.find(
+      (nc) => isSameAddress(hexlify(nc.address), childAddress) && nc.newValue === 0n,
+    )
+
+    if (isArbitrum()) {
+      // ArbOS (Firehose block v3) does not emit geth-1.17 end-of-tx finalization, so there is
+      // no nonce 1→0 cleanup written to the root call. The self-destruct is instead represented
+      // by the `suicide` flag on the CREATE subcall (asserted above). Validate that observed
+      // shape: no child cleanup at the root, and the root only carries the sender's nonce bump.
+      expect(childNonceCleanup, "ArbOS must not write a child nonce cleanup to the root call").to.be.undefined
+      expect(
+        rootCall.nonceChanges.every((nc) => !isSameAddress(hexlify(nc.address), childAddress)),
+        "ArbOS root call must not record any nonce change for the suicided child",
+      ).to.equal(true)
+      return
+    }
+
+    expect(childNonceCleanup, "root call must record nonce 1→0 cleanup for the suicided child").to.not.be.undefined
+    expect(childNonceCleanup!.oldValue).to.equal(1n)
+    expect(childNonceCleanup!.newValue).to.equal(0n)
+  })
+
+  it("Create 3 contracts and suicide all in same transaction", async function () {
+    // Bor 2.8.0-beta and latest Optimism Geth has not yet rebased onto geth 1.17, so the
+    // end-of-tx finalization hooks (code removals and nonce resets written to the root call
+    // in sorted address order) that this test asserts on are not produced by the tracer yet.
+    //
+    // op-reth-devnet is intentionally NOT skipped here: Reth emits block v5 which differs a bit
+    // and is expected to produce the end-of-tx finalization correctly, so this test is likely to
+    // pass on op-reth-devnet. To be revisited once validated against a live op-reth devnet.
+    if (isNetworkOneOf("polygon-dev", "op-geth-devnet")) {
+      this.skip()
+    }
+
+    const Factory = await deployStableContractCreator(owner, TripleSuicideFactory, [], 3, 1, {
+      gasLimit: callsGasLimit,
+    })
+    const childAddrs = [
+      getCreateAddressHex(Factory.address, 1),
+      getCreateAddressHex(Factory.address, 2),
+      getCreateAddressHex(Factory.address, 3),
+    ]
+
+    const response = await contractCall(owner, Factory.createAndDestroyThree, [], { gasLimit: callsGasLimit })
+    const { trace } = await fetchFirehoseTransactionAndBlock(response)
+
+    // root + 3 CREATEs + 3 kill() calls
+    expect(trace.calls).to.have.length(7, "must have 7 calls: root + 3 CREATE + 3 kill")
+
+    const createCalls = trace.calls.filter((c) => c.callType === CallType.CREATE)
+    expect(createCalls).to.have.length(3, "must have exactly 3 CREATE calls")
+
+    const suicideCalls = trace.calls.filter((c) => c.suicide)
+    expect(suicideCalls).to.have.length(3, "must have exactly 3 suicide calls")
+
+    for (const call of suicideCalls) {
+      const addr = hexlify(call.address)
+      expect(childAddrs.some((a) => isSameAddress(a, addr))).to.be.true
+    }
+
+    // selfdestruct finalization writes code removals and nonce resets to the root call; verify
+    // they are sorted by address (exercises statedb_hooked finalization sorting).
+    const rootCall = trace.calls[0]
+
+    const codeRemovals = rootCall.codeChanges.filter(
+      (cc) => cc.newCode.length === 0 && childAddrs.some((a) => isSameAddress(a, hexlify(cc.address))),
+    )
+    const nonceResets = rootCall.nonceChanges.filter(
+      (nc) => nc.newValue === 0n && childAddrs.some((a) => isSameAddress(a, hexlify(nc.address))),
+    )
+
+    if (isArbitrum()) {
+      // ArbOS (Firehose block v3) does not emit geth-1.17 end-of-tx finalization, so the root
+      // call carries no code removals or nonce resets for the suicided children. The three
+      // self-destructs are represented by the `suicide` flag on the kill subcalls (asserted
+      // above). Validate that observed shape rather than the geth finalization.
+      expect(codeRemovals).to.have.length(0, "ArbOS does not write end-of-tx code removals to the root call")
+      expect(nonceResets).to.have.length(0, "ArbOS does not write end-of-tx nonce resets to the root call")
+      return
+    }
+
+    expect(codeRemovals).to.have.length(3, "root call must have 3 code removals for child contracts")
+
+    const codeRemovalAddrs = codeRemovals.map((cc) => hexlify(cc.address))
+    expect(codeRemovalAddrs).to.deep.equal(
+      [...codeRemovalAddrs].sort(),
+      "code removals must be in sorted address order",
+    )
+
+    expect(nonceResets).to.have.length(3, "root call must have 3 nonce resets for child contracts")
+
+    const nonceResetAddrs = nonceResets.map((nc) => hexlify(nc.address))
+    expect(nonceResetAddrs).to.deep.equal([...nonceResetAddrs].sort(), "nonce resets must be in sorted address order")
+  })
+})
+
+// Deliberately its own top-level describe (not nested in "Suicide" above): the EIP-8037 state
+// gas cost applied to contract deployment on Amsterdam makes the "Suicide" suite's shared
+// Calls.sol fixture (deployed with a fixed 3.5M gas limit in its before-hook) prohibitively
+// expensive there, and this test doesn't need that fixture anyway.
+describe("Suicide - EIP-8246", function () {
+  it("self-beneficiary SELFDESTRUCT no longer burns the balance on Amsterdam", async function () {
+    // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
+    // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
+    // rejected pre-inclusion rather than mined-then-reverted. Skip on Arbitrum until block v5.
+    if (isArbitrum()) {
+      this.skip()
+    }
+
+    // EIP-8246's delayed clearing (nonce/code/storage cleared at finalization, balance kept)
+    // only applies when the account was created in the *same* transaction as the SELFDESTRUCT
+    // (see EIP-6780: post-Cancun, a SELFDESTRUCT against an account created in an earlier
+    // transaction is a balance-only no-op for code/storage/nonce, Amsterdam or not). Use the
+    // wrapper that creates and kills the beneficiary in one transaction, same as the existing
+    // "Contract and suicide beneficiary are the same, in same trx" test above.
+    const Contract = await deployStableContractCreator(owner, SuicideContractAsBeneficiarySameTrx, [], 1, 1, {
+      gasLimit: dynamicGasLimit(3_500_000),
+    })
+    const createdContract = "0x" + getCreateAddressHex(Contract.address, 1)
+
+    // EIP-8037 state gas for the freshly created child's code deposit and new-account charge
+    // pushes this well past the default 900,000 gasLimit, so raise it explicitly.
+    await contractCall(owner, Contract.execute, [], { value: oneWei, gasLimit: 5_000_000 })
+
+    const balanceAfter = await hre.ethers.provider.getBalance(createdContract)
+    const codeAfter = await hre.ethers.provider.getCode(createdContract)
+
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (isBlockOnAmsterdamOrLater(rpcBlock)) {
+      // EIP-8246: balance kept, only nonce/code/storage clear at finalization. The storage
+      // wipe itself is not observable in the Firehose trace by design (no protocol event
+      // carries it), so only balance and code are checked here.
+      expect(codeAfter).to.equal("0x", "code must still be cleared at finalization")
+      expect(balanceAfter).to.equal(1n, "EIP-8246: self-beneficiary SELFDESTRUCT must not burn the balance")
+    } else {
+      expect(codeAfter).to.equal("0x", "code must still be cleared at finalization")
+      expect(balanceAfter).to.equal(0n, "pre-Amsterdam: self-beneficiary SELFDESTRUCT must burn the balance")
+    }
   })
 })

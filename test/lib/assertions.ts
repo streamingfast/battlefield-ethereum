@@ -14,7 +14,7 @@ import {
   fetchFirehoseTransactionAndBlock,
   normalizeTrxCallFailureReasons,
   relativizeTrxTraceOrdinals,
-  trxTraceOrdinals,
+  trxTraceOrdinalSources,
 } from "./firehose"
 import { oneWeiF, weiF, zeroWeiF } from "./money"
 import { readFileSync } from "fs"
@@ -25,8 +25,9 @@ import { getReceiptForTransactionTrace, TransactionReceiptResult } from "./ether
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
-import { isNetwork, networkName } from "./network"
+import { isArbitrum, isNetwork, isNetworkOneOf, networkName } from "./network"
 import { excludeFieldsFromObject, getGlobalExcludedFields } from "./field-exclusion"
+import { retainStorageSlotPreimages, tracerFiltersKeccakPreimages } from "./keccak-filter"
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { structuredPatch } = require("diff") as {
@@ -94,7 +95,12 @@ function formatSnapshotDiff(
         out.push(`${ANSI_GREEN}+${pad(newLine)} | ${content}${ANSI_RESET}`)
         newLine++
       } else {
-        out.push(`${ANSI_DIM} ${pad(oldLine)} |${ANSI_RESET} ${content}`)
+        const maxLen = 120
+        const displayContent =
+          content.length > maxLen
+            ? `${content.slice(0, maxLen)}${ANSI_DIM}..(+${content.length - maxLen} chars)${ANSI_RESET}`
+            : content
+        out.push(`${ANSI_DIM} ${pad(oldLine)} |${ANSI_RESET} ${displayContent}`)
         oldLine++
         newLine++
       }
@@ -112,6 +118,17 @@ const debug = debugFactory("battlefield:assertions")
 type Chai = typeof chai
 
 type TrxTracerEqualSnapshotOptions = {
+  /**
+   * Per-snapshot field exclusions. Each entry is a field path (see
+   * [./field-exclusion.ts](./field-exclusion.ts) for the supported syntax) that will be
+   * stripped from both the actual normalized trace and the expected resolved trace before
+   * comparison. Useful to ignore fields whose value is non-deterministic across runs (e.g.
+   * `gasPrice` when the basefee floats with chain history).
+   *
+   * Merged with the network-wide exclusions registered via `registerGlobalExcludedFields`.
+   */
+  excludeFields?: string[]
+
   /**
    * This option list EIPs for which specific snapshots should be used. Certain EIP
    * like EIP6780 changed the overall behavior of a transaction creating differences on the
@@ -288,9 +305,8 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
         })
       }
       // Check on original trace for correctness of ordinal handling
-      const ordinals = trxTraceOrdinals(actualTrace)
       const skipOrdinalCheck = options && (options as any).skipOrdinalCheck
-      assertTrxOrdinals(chai, ordinals, actualTrace, trxReceipt.blockNumber, { skipOrdinalCheck })
+      assertTrxOrdinals(chai, actualTrace, trxReceipt.blockNumber, { skipOrdinalCheck })
 
       const actualNormalized = normalizeTrace(clone(TransactionTraceSchema, actualTrace))
       const actualNormalizedJson = toProtoJsonString(actualNormalized)
@@ -328,7 +344,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
               return trxReceipt.cumulativeGasUsed.toString()
             case "$coinbase":
-              if (isNetwork("optimism-devnet")) {
+              if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")) {
                 // Optimism have more than one receive for the transaction fee making it hard for use to
                 // map the correct one to the correct address. The code below essentially remove validation
                 // of $coinbase value in the template.
@@ -358,11 +374,16 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       // Merge global excluded fields with test-specific excluded fields
       let filteredActual = actual
       let filteredExpected = expected
-      const fieldsToExclude = getGlobalExcludedFields(networkName())
+      const fieldsToExclude = [...getGlobalExcludedFields(networkName()), ...(options?.excludeFields ?? [])]
 
       if (fieldsToExclude.length > 0) {
         filteredActual = excludeFieldsFromObject(actual, fieldsToExclude)
         filteredExpected = excludeFieldsFromObject(expected, fieldsToExclude)
+      }
+
+      if (tracerFiltersKeccakPreimages()) {
+        filteredActual = retainStorageSlotPreimages(filteredActual)
+        filteredExpected = retainStorageSlotPreimages(filteredExpected)
       }
 
       snapshot.writeSnapshotDebugFiles(
@@ -374,8 +395,8 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
       if (!deepEqual(filteredActual, filteredExpected)) {
         const expectedLabel = snapshot.toSnapshotPath(SnapshotKind.ExpectedResolved, true)
         const actualLabel = snapshot.toSnapshotPath(SnapshotKind.ActualNormalized, true)
-        const expectedStr = JSON.stringify(filteredExpected, null, 2)
-        const actualStr = JSON.stringify(filteredActual, null, 2)
+        const expectedStr = JSON.stringify(sortKeysDeep(filteredExpected), null, 2)
+        const actualStr = JSON.stringify(sortKeysDeep(filteredActual), null, 2)
 
         const diffEditorHint = `${process.env.DIFF_EDITOR || "diff -u"} ${expectedLabel} ${actualLabel}`
         const message =
@@ -391,7 +412,6 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
 function assertTrxOrdinals(
   chai: Chai,
-  ordinalsMap: Record<number, number>,
   trace: TransactionTrace,
   blockNumber: number,
   options?: { skipOrdinalCheck?: boolean },
@@ -399,28 +419,30 @@ function assertTrxOrdinals(
   if (options?.skipOrdinalCheck) {
     return
   }
-  const ordinals = Object.entries(ordinalsMap)
+  // We validate ordinal uniqueness from the per-ordinal source locations rather than from a
+  // bare count, so we can apply targeted leniency for known chain quirks while still catching
+  // every other collision.
+  const sources = trxTraceOrdinalSources(trace)
+  const ordinals = Object.entries(sources)
   ordinals.sort(([a], [b]) => parseInt(a) - parseInt(b))
 
   new chai.Assertion(ordinals.length).to.be.greaterThan(0)
 
-  let previous: number | undefined = undefined
-  ordinals.forEach(([ordinal, count]) => {
-    new chai.Assertion(
-      count,
-      `Ordinal ${ordinal} has been seen ${count} times throughout transaction ${trace.hash} at block ${blockNumber}, that is invalid`,
-    ).to.equal(1)
-
-    if (previous) {
-      // FIXME: It seems Firehose 3.0 in backward compatibility mode is skipping one ordinal, need to investigate, allow it for now
-      // new chai.Assertion(
-      //   previous + 1,
-      //   `Ordinal ${ordinal} should have strictly follow ${previous}, so that ${previous} + 1 == ${ordinal} which was not the case here\n\n` +
-      //     toProtoJsonString(trace)
-      // ).to.be.equal(parseInt(ordinal))
+  ordinals.forEach(([ordinal, locations]) => {
+    // Arbitrum/Nitro (Firehose block v3) emits the two account-creation records of a single
+    // CREATE/CREATE2 sharing the same ordinal. This is a known and stable divergence we keep
+    // until those chains move to block v5. Tolerate exactly that shape — every other ordinal,
+    // including any collision involving a non-account-creation event, must still be unique.
+    const isArbitrumAccountCreationPair =
+      isArbitrum() && locations.length === 2 && locations.every((l) => l.includes(".accountCreation["))
+    if (isArbitrumAccountCreationPair) {
+      return
     }
 
-    previous = parseInt(ordinal)
+    new chai.Assertion(
+      locations.length,
+      `Ordinal ${ordinal} has been seen ${locations.length} times throughout transaction ${hexlify(trace.hash)} at block ${blockNumber}, that is invalid (sources: ${locations.join(", ")})`,
+    ).to.equal(1)
   })
 }
 
@@ -451,7 +473,7 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
         change.oldValue = zeroWeiF
         change.newValue = oneWeiF
 
-        if (isNetwork("optimism-devnet")) {
+        if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")) {
           // Optimism have more than one receive for the transaction fee making it hard for use to
           // map the correct one to the correct address. The code below essentially remove validation
           // of $coinbase value in the template
@@ -463,7 +485,10 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
 
       // It seems gas buy changes over multiple runs and based on previous transactions sent, so
       // we just "fix" them to a static value to avoid diff on this field
-      if (change.reason === BalanceChange_Reason.GAS_BUY && isNetwork("optimism-devnet")) {
+      if (
+        change.reason === BalanceChange_Reason.GAS_BUY &&
+        isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")
+      ) {
         change.oldValue = zeroWeiF
         change.newValue = oneWeiF
       }
@@ -602,4 +627,18 @@ function findBlockMiner(block: Block): string {
   }
 
   return hexlify(block.header!.coinbase).slice(2)
+}
+
+function sortKeysDeep(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(sortKeysDeep)
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value as object)
+        .sort()
+        .map((k) => [k, sortKeysDeep((value as Record<string, unknown>)[k])]),
+    )
+  }
+  return value
 }

@@ -20,7 +20,7 @@ import {
 } from "./global"
 import { wei } from "./lib/money"
 import { randomAddress5, randomAddress5Hex } from "./lib/addresses"
-import { isNetwork } from "./lib/network"
+import { dynamicGasLimit, isNetwork } from "./lib/network"
 
 // Optimism Geth Dev Failed vs Revert Note (comment ref id 1be64cf0820f)
 //
@@ -35,13 +35,18 @@ import { isNetwork } from "./lib/network"
 //
 // See https://github.com/streamingfast/go-ethereum/blob/3b1a1dc9b92d5fd13b36b0030f744b547cf4e6cc/eth/tracers/firehose.go#L658-L665
 
-const callsGasLimit = isNetwork("monad-dev") ? 30_000_000 : 3_500_000
+let callsGasLimit: number
 
 describe("Calls", function () {
   let Calls: Contract<Calls>
   let Child: Contract<Child>
 
   before(async () => {
+    // Computed here rather than at module scope: dynamicGasLimit's Amsterdam-awareness reads
+    // chainStaticInfo, which is only populated once the global before() hook (in global.ts) has
+    // run, and module-level code executes before any hook does.
+    callsGasLimit = dynamicGasLimit(isNetwork("monad-dev") ? 30_000_000 : 3_500_000)
+
     await deployAll(
       async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })),
       async () => (Child = await deployContract(owner, ChildFactory, [])),

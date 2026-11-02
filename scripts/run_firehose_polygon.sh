@@ -91,23 +91,97 @@ check_dependencies() {
     echo ""
 }
 
+# Pinned versions. Bump these to roll the kurtosis-deployed validators forward.
+# - KURTOSIS_POS_REF: pinned commit of streamingfast/kurtosis-pos for reproducibility.
+# - BOR_IMAGE / HEIMDALL_IMAGE: must be compatible with the locally-built `bor` binary
+#   that fireeth peers with. Mismatched bor versions will fail to peer.
+KURTOSIS_POS_REF="a76f5263dfa44ba0f936ad1d9d543368387aa4ce"
+BOR_IMAGE="0xpolygon/bor:2.8.0-beta"
+HEIMDALL_IMAGE="0xpolygon/heimdall-v2:0.7.2-beta2"
+
+# Kurtosis starts its engine in the Docker 'bridge' network, but resolves it through
+# Docker's `name=` filter, which is a *substring* match. Any other network whose name
+# contains "bridge" (typically a compose project such as `besu-bridge-poc_default`)
+# makes the lookup return two networks and the engine refuses to start with:
+#
+#   An error occurred getting the engine network
+#   Caused by: Expected exactly one network matching the name of the network that we
+#   want to start the engine in, 'bridge', but got 2
+#
+# The lookup has no exact-name filtering and no config override; it is still unfixed
+# upstream as of kurtosis 1.20.0 (GetNetworksByName in container-engine-lib). Clear the
+# conflict here so the engine can start.
+check_docker_network_conflicts() {
+    local conflicts
+    # Same filter semantics as kurtosis, minus the legitimate 'bridge' network itself.
+    conflicts=$(docker network ls --filter name=bridge --format '{{.Name}}' | grep -vx bridge || true)
+    if [[ -z "$conflicts" ]]; then
+        return 0
+    fi
+
+    local blocked=()
+    while IFS= read -r network; do
+        local attached
+        attached=$(docker network inspect "$network" --format '{{len .Containers}}' 2>/dev/null || echo 0)
+        if [[ "$attached" == "0" ]]; then
+            echo "⚠️  Removing unused Docker network '$network' (its name contains 'bridge', which breaks the Kurtosis engine lookup)."
+            echo "   Compose recreates it automatically the next time that project starts."
+            docker network rm "$network" >/dev/null
+        else
+            blocked+=("$network ($attached container(s) attached)")
+        fi
+    done <<< "$conflicts"
+
+    if [ ${#blocked[@]} -ne 0 ]; then
+        echo "❌ These in-use Docker networks have a name containing 'bridge' and will prevent the Kurtosis engine from starting:" >&2
+        printf '   - %s\n' "${blocked[@]}" >&2
+        echo "" >&2
+        echo "   Stop those containers, or rename the network so it no longer contains 'bridge'" >&2
+        echo "   (for compose: set 'networks.default.name' or rename the project directory)." >&2
+        exit 1
+    fi
+}
+
 # Function to prepare the Kurtosis environment
 prepare_kurtosis_environment() {
     echo "Preparing Kurtosis environment..."
 
+    check_docker_network_conflicts
+
     address_to_fund=0x821b55d8abe79bc98f05eb675fdc50dfe796b7ab
 
-    # Pull the required Docker image
-    echo "Pulling Docker image..."
-    docker pull --platform=linux/amd64 ghcr.io/agglayer/e2e:9fd2d09
+    # By default, wipe any existing 'pos' enclave so we start from a clean chain.
+    # Pass --keep-data to opt out (warns and bails out if a 'pos' enclave already exists,
+    # since `kurtosis run --enclave pos` cannot reuse a running one).
+    if kurtosis enclave inspect pos >/dev/null 2>&1; then
+        if [[ "$KEEP_DATA" == "1" ]]; then
+            echo "❌ A 'pos' Kurtosis enclave already exists and --keep-data was passed." >&2
+            echo "   Drop --keep-data to delete and recreate it, or stop manually first." >&2
+            exit 1
+        else
+            echo "Removing existing 'pos' enclave (default; pass --keep-data to opt out)..."
+            kurtosis enclave rm pos --force
+        fi
+    fi
 
-    ## Clean up any existing enclave before starting fresh
-    #echo "Cleaning up any existing 'pos' enclave..."
-    #kurtosis enclave rm --force pos 2>/dev/null || true
+    # Write a kurtosis args file overriding the bor/heimdall images so the
+    # kurtosis-deployed validators run versions compatible with the local
+    # fireeth-driven bor binary.
+    KURTOSIS_ARGS_FILE=$(mktemp -t kurtosis-pos-args.XXXXXX.yaml)
+    cat > "$KURTOSIS_ARGS_FILE" <<EOF
+polygon_pos_package:
+  participants:
+    - el_type: bor
+      el_image: $BOR_IMAGE
+      cl_type: heimdall-v2
+      cl_image: $HEIMDALL_IMAGE
+EOF
 
-    # Run Kurtosis
-    echo "Starting Kurtosis POS environment..."
-    kurtosis run --enclave pos github.com/streamingfast/kurtosis-pos
+    # Run Kurtosis (pinned to a specific kurtosis-pos commit for reproducibility)
+    echo "Starting Kurtosis POS environment (kurtosis-pos@$KURTOSIS_POS_REF, $BOR_IMAGE, $HEIMDALL_IMAGE)..."
+    kurtosis run --enclave pos \
+        "github.com/streamingfast/kurtosis-pos@$KURTOSIS_POS_REF" \
+        --args-file "$KURTOSIS_ARGS_FILE"
 
     export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
     pk="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea"
@@ -141,7 +215,10 @@ prepare_local_node() {
     export DATADIR=$(pwd)/localdata
     export CONFIGDIR=$(pwd)/localconfig
     export CLHTTPADDR=$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator http)
-    export CLWSADDR=$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator rpc)
+    # `kurtosis port print` reports the CometBFT RPC port as http://; bor rejects that
+    # with `malformed ws or wss URL` and never subscribes to Heimdall. It wants the
+    # CometBFT websocket endpoint: ws://<host>:<port>/websocket
+    export CLWSADDR="ws://$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator rpc | sed -E 's@^[a-z]+://@@')/websocket"
     export ELP2PADDR=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator discovery)
     export ENODE=$(kurtosis service exec pos l2-el-1-bor-heimdall-v2-validator "echo admin.nodeInfo | bor attach /var/lib/bor/bor.ipc" |awk '/enode/ {print $2}' | sed 's@.*"\(enode://.*\)127.0.0.1:30303.*@\1@')$(echo $ELP2PADDR|sed 's@http://@@')
 
@@ -203,7 +280,7 @@ main() {
 
 # Show usage information
 usage() {
-    echo "Usage: $0"
+    echo "Usage: $0 [--keep-data]"
     echo ""
     echo "This script sets up a complete Polygon development environment including:"
     echo "1. Dependency checking and installation instructions"
@@ -212,17 +289,37 @@ usage() {
     echo "4. Instructions for running bridge tests"
     echo "5. Running local Bor node with Firehose tracing"
     echo ""
+    echo "Options:"
+    echo "  --keep-data   Do not delete an existing 'pos' Kurtosis enclave on startup."
+    echo "                Default behavior wipes it via 'kurtosis enclave rm pos --force'"
+    echo "                so the chain starts fresh."
+    echo ""
     echo "Requirements:"
     echo "- macOS (installation instructions are Mac-specific)"
     echo "- Internet connection for downloading dependencies and Docker images"
     echo ""
 }
 
-# Handle help flags
-if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-    usage
-    exit 0
-fi
+# Parse options
+KEEP_DATA=0
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --keep-data)
+            KEEP_DATA=1
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+export KEEP_DATA
 
 # Run main function
-main "$@"
+main

@@ -74,21 +74,27 @@ codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,ru
 
 ### Firehose-instrumented `reth` (for `reth-dev`)
 
-The Firehose-instrumented Reth binary must be on your `PATH` as `reth-firehose-tracer`.
+The Firehose-instrumented Reth binary must be on your `PATH` as `reth`.
 
 ```bash
 # Check
-reth-firehose-tracer --version
+reth --version
 ```
 
 Find the correct pre-built binary for your chain and architecture on the Firehose chains overview page:
 
 **https://firehose.streamingfast.io/firehose/overview/chains**
 
-Download the binary, rename it to `reth-firehose-tracer`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
+Download the binary, rename it to `reth`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
 
 ```bash
 export RETH_BINARY=/path/to/your/reth-binary
+```
+
+**Amsterdam fork support:** the pre-built binaries above may lag Amsterdam support. If you need it, build `reth` locally from the `release/reth-2.x` branch of `streamingfast/reth`:
+
+```bash
+RUSTUP_TOOLCHAIN=stable cargo build --release --bin reth
 ```
 
 ### Build tools for native addons (`c-kzg`)
@@ -107,6 +113,12 @@ xcode-select --install
 ```
 
 The `postinstall` script in `package.json` automatically rebuilds `c-kzg` after every `pnpm install`. If the build fails, it means the C++ compiler is missing — install it first, then re-run `pnpm install`.
+
+**Rebuilding after OS change:** If the addon was compiled on a different OS (e.g. the workspace was set up on macOS but is now mounted in a Linux container), it will fail with `invalid ELF header` or a similar binary-format error. Fix it by running `pnpm install` from the repo root — the postinstall script will recompile it for the current platform. If `pnpm install` itself fails due to store path permission issues (common in containers), fall back to invoking `node-gyp` directly:
+
+```bash
+cd node_modules/.pnpm/c-kzg@4.1.0/node_modules/c-kzg && node-gyp rebuild
+```
 
 ---
 
@@ -134,6 +146,27 @@ Set this in your shell before running any `./scripts/run_firehose_*.sh` command.
 
 ---
 
+## Mine-on-Demand Networks — `geth-dev` and `reth-dev`
+
+Both `geth-dev` and `reth-dev` use **mine-on-demand** mode: the node produces a new block only when a pending transaction arrives. No transaction → no block → no mining.
+
+This creates a chicken-and-egg situation at startup: Firehose cannot become ready until it has processed at least one merged bundle of blocks (100 blocks), but blocks are only mined when transactions are submitted.
+
+**The test suite handles this automatically.** The global setup (`test/global.ts`) runs `waitForFirehoseReady()` which simultaneously:
+1. Pumps lightweight ETH transfer transactions every 200 ms so the chain keeps mining.
+2. Polls the Firehose HTTP health endpoint (`http://localhost:8089`) until it returns `{"is_ready":true}`.
+
+The `waitForFirehoseReady` timeout is 30 seconds. If Firehose is not ready within that window the whole test run aborts with an error.
+
+**Consequences for agents:**
+
+- **Do NOT wait for `http://localhost:8089` to return `is_ready` before launching the tests.** On a cold chain it will never become ready on its own — only the test run's transaction pump can bootstrap it.
+- **Do NOT send transactions manually** to try to pre-warm the chain; the test suite handles it.
+- The only readiness check you need before running tests is that the node's JSON-RPC is accepting connections on port 8545.
+- Keep the chain running between `--grep` runs. There is no need to restart between individual test invocations.
+
+---
+
 ## Test Cycle — `geth-dev`
 
 This is the primary and simplest chain to test against. Uses the StreamingFast Firehose-instrumented `geth` in `--dev` mode.
@@ -150,25 +183,16 @@ In one terminal (or background), start `geth` and the full Firehose stack:
 ./scripts/run_firehose_geth_dev.sh 3.0 cancun
 ```
 
-Wait until you see the gRPC server become ready. Verify with:
+Wait only until the node's JSON-RPC is accepting connections — **do not wait for Firehose to be ready**:
 
 ```bash
+# Retry until you get a valid JSON response (a hex block number)
 curl -s http://localhost:8545 -X POST -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
-# Expected: a JSON response with a hex block number
-
-curl -s http://localhost:8089
-# Expected: {"is_ready":true}
+# Expected: {"jsonrpc":"2.0","id":1,"result":"0x0"}
 ```
 
-Also verify blocks are advancing (run twice, 2 seconds apart — the block number must increase):
-
-```bash
-curl -s http://localhost:8545 -X POST -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
-```
-
-If the block number is stuck, the `geth` process is stalled. Kill all related processes and restart.
+Once you see that response, the chain is ready to receive transactions and you can proceed to run the tests. The test suite's global setup will bootstrap Firehose on its own.
 
 ### Step 2 — Run the tests
 
@@ -209,23 +233,28 @@ Strategies:
 
 ## Test Cycle — `reth-dev`
 
-Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Always runs with the Prague fork. The test script and snapshots mirror `geth-dev`.
+Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Defaults to the Amsterdam fork; pass `prague` to test Prague instead. The test script and snapshots mirror `geth-dev`. Same mine-on-demand behaviour applies — see the section above.
 
 ### Step 1 — Start the chain
 
 ```bash
+# Amsterdam fork (default)
 ./scripts/run_firehose_reth_dev.sh
+
+# Prague fork
+./scripts/run_firehose_reth_dev.sh prague
 ```
 
-Verify the same way as geth-dev (ports `8545` for RPC, `8089` for Firehose gRPC).
+Wait only until the node's JSON-RPC is accepting connections on port 8545 (same check as geth-dev above). Do not wait for port 8089.
 
 ### Step 2 — Run the tests
 
-Same guidance as `geth-dev`: **always use `--grep` during development**, full suite only for final validation.
+Same guidance as `geth-dev`: **always use `--grep` during development**, full suite only for final validation. `test:fh3.0:reth-dev` is reused regardless of which fork the chain was started with — fork-gated suites (e.g. `test/amsterdam.test.ts`) auto-skip if the chain isn't on that fork.
 
 ```bash
 pnpm test:fh3.0:reth-dev --grep "Berlin"
 pnpm test:fh3.0:reth-dev --grep "Cancun"
+pnpm test:fh3.0:reth-dev --grep "Amsterdam"
 
 # Full suite (final validation only, against a fresh chain)
 pnpm test:fh3.0:reth-dev
@@ -236,8 +265,107 @@ pnpm test:fh3.0:reth-dev
 Stop the chain as soon as you no longer need it.
 
 ```bash
-kill $(ps aux | grep -E "run_firehose_reth_dev|fireeth|reth-firehose-tracer" | grep -v grep | awk '{print $2}') 2>/dev/null
+kill $(ps aux | grep -E "run_firehose_reth_dev|fireeth|reth" | grep -v grep | awk '{print $2}') 2>/dev/null
 ```
+
+---
+
+## Test Cycle — `geth-devnet`
+
+Uses the StreamingFast Firehose-instrumented `geth` as a secondary execution-layer client on top of a [builder-playground](https://github.com/flashbots/builder-playground) devnet. Always runs with the Prague fork.
+
+### Step 1 — Start the playground devnet
+
+In a separate terminal (keep it running throughout the test cycle):
+
+```bash
+./scripts/ethereum_devnet/run_playground_devnet.sh
+```
+
+### Step 2 — Start the Firehose-instrumented geth
+
+In another terminal:
+
+```bash
+./scripts/run_firehose_geth_devnet.sh
+```
+
+Wait only until the node's JSON-RPC is accepting connections on port 8545 (same `eth_blockNumber` check as `geth-dev`). Do not wait for port 8089.
+
+### Step 3 — Run the tests
+
+```bash
+pnpm test:fh3.0:geth-devnet --grep "Berlin"
+pnpm test:fh3.0:geth-devnet --grep "Cancun"
+
+# Full suite (final validation only, against a fresh chain)
+pnpm test:fh3.0:geth-devnet
+```
+
+### Step 4 — Stop the chain
+
+```bash
+kill $(ps aux | grep -E "run_firehose_geth_devnet|fireeth| geth " | grep -v grep | awk '{print $2}') 2>/dev/null
+```
+
+---
+
+## Test Cycle — `reth-devnet`
+
+Uses the StreamingFast Firehose-instrumented Reth (`reth`) as a secondary execution-layer client on top of a [builder-playground](https://github.com/flashbots/builder-playground) devnet. Always runs with the Prague fork.
+
+### Step 1 — Start the playground devnet
+
+In a separate terminal (keep it running throughout the test cycle):
+
+```bash
+./scripts/ethereum_devnet/run_playground_devnet.sh
+```
+
+### Step 2 — Start the Firehose-instrumented reth
+
+In another terminal:
+
+```bash
+./scripts/run_firehose_reth_devnet.sh
+```
+
+Wait only until the node's JSON-RPC is accepting connections on port 8545. Do not wait for port 8089.
+
+### Step 3 — Run the tests
+
+```bash
+pnpm test:fh3.0:reth-devnet --grep "Berlin"
+pnpm test:fh3.0:reth-devnet --grep "Cancun"
+
+# Full suite (final validation only, against a fresh chain)
+pnpm test:fh3.0:reth-devnet
+```
+
+### Step 4 — Stop the chain
+
+```bash
+kill $(ps aux | grep -E "run_firehose_reth_devnet|fireeth|reth" | grep -v grep | awk '{print $2}') 2>/dev/null
+```
+
+---
+
+## Block Comparison
+
+There is **no `scripts/compare-blocks.sh` to run after a test cycle** — the comparison between
+Firehose blocks and the node's JSON-RPC is the `Compare blocks` test, which sorts last in the
+suite and runs on every `pnpm test:*` invocation. Do not shell out to
+`fireeth tools compare-blocks-rpc` by hand: the test resolves the RPC url from the Hardhat
+network configuration (ports differ per network, e.g. `reth-dev` is on 9545) and bounds the
+range at the last irreversible block reported by Firehose.
+
+It reports as **pending** when the chain has no final block yet, and on the public Amoy testnet.
+A missing `fireeth` binary **fails** the test. Set `SKIP_COMPARE_BLOCKS=1` to skip it while
+iterating.
+
+**Amsterdam:** `fireeth tools compare-blocks-rpc` currently crashes with a nil-pointer panic on
+Amsterdam blocks (a gap in `firehose-ethereum`, not this repo). Always set
+`SKIP_COMPARE_BLOCKS=1` on `reth-dev` until that's fixed upstream.
 
 ---
 
@@ -267,6 +395,7 @@ Some test suites are gated on a specific fork being active. If the fork is not a
 |------|-----------|--------------|
 | `test/prague.test.ts` | Prague (`requestsHash` in block header) | `run_firehose_geth_dev.sh 3.0 prague` |
 | `test/cancun.test.ts` | Cancun (`blobGasUsed` in block header) | Any Cancun or Prague chain |
+| `test/amsterdam.test.ts` | Amsterdam (`slotNumber` in block header) | `run_firehose_reth_dev.sh` (default) |
 | `test/berlin.test.ts` | None (Berlin is universal on all supported chains) | Always runs |
 
 ---

@@ -18,6 +18,7 @@ main() {
 
     export FIREHOSE_ENDPOINT=localhost:20028
     export FIREHOSE_GRPC_ENDPOINT=http://localhost:20028
+    export BATTLEFIELD_FIREHOSE_ENDPOINT=localhost:20028
 
     if [[ "${LOOP_MODE:-false}" == "true" ]]; then
         local iteration=1

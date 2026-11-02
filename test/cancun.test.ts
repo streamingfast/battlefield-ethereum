@@ -8,11 +8,11 @@ import { TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner } from "./global"
 import { waitForTransaction } from "./lib/ethers"
 import { isBlockOnCancunOrLater } from "./lib/chain_eips"
-import { isNetwork } from "./lib/network"
 import { toBigInt } from "./lib/numbers"
 import { eth } from "./lib/money"
 import hre from "hardhat"
 import * as kzg from "c-kzg"
+import { isNetworkOneOf } from "./lib/network"
 
 /**
  * Cancun (EIP-4844) Blob transaction tests.
@@ -46,6 +46,34 @@ const ZERO_BLOB = new Uint8Array(131072)
 // This is deterministic given the fixed trusted setup and fixed blob content.
 const ZERO_BLOB_VERSIONED_HASH = "0x010657f37554c781402a22917dee2f75def7ab966d7b770905398eba3c444014"
 
+// Resolve blob receipt fields using the raw RPC receipt when available, with fallbacks
+// for clients (e.g. reth) that omit blobGasUsed/blobGasPrice from eth_getTransactionReceipt.
+//   blobGasUsed  → receipt field, or GAS_PER_BLOB * numBlobs (EIP-4844 protocol constant)
+//   blobGasPrice → receipt field, or block's blobBaseFee from eth_getBlockByHash
+async function resolveReceiptBlobGas(
+  txHash: string,
+  blockHash: string,
+  numBlobs: bigint,
+): Promise<{ blobGasUsed: bigint; blobGasPrice: bigint }> {
+  const rawReceipt = await hre.ethers.provider.send("eth_getTransactionReceipt", [txHash])
+
+  const blobGasUsed: bigint = rawReceipt?.blobGasUsed ? BigInt(rawReceipt.blobGasUsed) : GAS_PER_BLOB * numBlobs
+
+  let blobGasPrice: bigint | undefined = rawReceipt?.blobGasPrice ? BigInt(rawReceipt.blobGasPrice) : undefined
+  if (blobGasPrice === undefined) {
+    const rawBlock = await hre.ethers.provider.send("eth_getBlockByHash", [blockHash, false])
+    if (rawBlock?.blobBaseFee) {
+      blobGasPrice = BigInt(rawBlock.blobBaseFee)
+    }
+  }
+
+  if (blobGasPrice === undefined) {
+    throw new Error(`Could not resolve blobGasPrice for tx ${txHash}: absent from receipt and block`)
+  }
+
+  return { blobGasUsed, blobGasPrice }
+}
+
 describe("Cancun", function () {
   // Hardhat's NonceManager strips blob-specific fields (blobs, kzg, maxFeePerBlobGas)
   // when sending transactions, so we use a dedicated ethers Wallet connected directly
@@ -57,7 +85,6 @@ describe("Cancun", function () {
     const rpcBlock = await mustGetRpcBlock("latest")
     if (!isBlockOnCancunOrLater(rpcBlock)) {
       this.skip()
-      return
     }
 
     // Load the mainnet KZG trusted setup (preset 0).
@@ -71,69 +98,118 @@ describe("Cancun", function () {
     await sendEth(owner, blobWallet.address, eth(1))
   })
 
-  if (!isNetwork("monad-dev"))
-    it("Blob transaction with single blob", async function () {
-      const maxFeePerBlobGas = 1_000_000_000n // 1 gwei per blob gas unit
+  it("Blob transaction with single blob", async function () {
+    // Unable to make it work on Optimism devnet, we get "failed to decode signed transaction" which is unclear
+    // where it fails, could be that L2 itself don't accept blob transactions, skipping for now.
+    if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet", "arc-dev", "monad-dev")) {
+      this.skip()
+    }
 
-      const response = await blobWallet.sendTransaction({
-        to: knownExistingAddress,
-        value: oneWei,
-        maxFeePerGas: defaultGasPrice,
-        maxPriorityFeePerGas: 25_000n,
-        type: 3,
-        maxFeePerBlobGas,
-        blobs: [ZERO_BLOB],
-        kzg: kzg as any,
-      })
-      const result = await waitForTransaction(response, false)
-      const { trace } = await fetchFirehoseTransactionAndBlock(result)
+    const maxFeePerBlobGas = 1_000_000_000n // 1 gwei per blob gas unit
 
-      expect(hexlify(trace.hash)).to.equal(result.hash)
-      expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_BLOB, "transaction must be TRX_TYPE_BLOB")
+    const response = await blobWallet.sendTransaction({
+      to: knownExistingAddress,
+      value: oneWei,
+      maxFeePerGas: defaultGasPrice,
+      maxPriorityFeePerGas: 25_000n,
+      type: 3,
+      maxFeePerBlobGas,
+      blobs: [ZERO_BLOB],
+      kzg: kzg as any,
+    })
+    const result = await waitForTransaction(response, false)
+    const { trace } = await fetchFirehoseTransactionAndBlock(result)
 
-      expect(trace.blobHashes).to.have.length(1, "must have exactly one blob hash")
-      expect(hexlify(trace.blobHashes[0])).to.equal(
-        ZERO_BLOB_VERSIONED_HASH,
-        "blob versioned hash must match: 0x01 || sha256(commitment)[1:]",
+    expect(hexlify(trace.hash)).to.equal(result.hash)
+    expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_BLOB, "transaction must be TRX_TYPE_BLOB")
+
+    expect(trace.blobHashes).to.have.length(1, "must have exactly one blob hash")
+    expect(hexlify(trace.blobHashes[0])).to.equal(
+      ZERO_BLOB_VERSIONED_HASH,
+      "blob versioned hash must match: 0x01 || sha256(commitment)[1:]",
+    )
+
+    expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
+
+    // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
+    expect(trace.blobGas).to.not.be.undefined
+    expect(trace.blobGas).to.equal(GAS_PER_BLOB * 1n, "blob gas must be GAS_PER_BLOB * numBlobs")
+
+    const { blobGasUsed: rpcBlobGasUsed1, blobGasPrice: rpcBlobGasPrice1 } = await resolveReceiptBlobGas(
+      result.hash,
+      result.blockHash,
+      1n,
+    )
+
+    // Receipt blob gas fields — validated against resolved values (with fallbacks for clients
+    // like reth that omit blobGasUsed/blobGasPrice from eth_getTransactionReceipt and the
+    // Firehose trace). Only assert when the trace receipt field is actually present.
+    expect(trace.receipt, "trace must have a receipt").to.not.be.undefined
+    if (trace.receipt!.blobGasUsed !== undefined) {
+      expect(trace.receipt!.blobGasUsed).to.equal(rpcBlobGasUsed1, "receipt blob gas used must match resolved value")
+    }
+    if (trace.receipt!.blobGasPrice !== undefined) {
+      expect(toBigInt(trace.receipt!.blobGasPrice)).to.equal(
+        rpcBlobGasPrice1,
+        "receipt blob gas price must match resolved value",
       )
+    }
+  })
 
-      expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
+  it("Blob transaction with multiple blobs", async function () {
+    // Unable to make it work on Optimism devnet, we get "failed to decode signed transaction" which is unclear
+    // where it fails, could be that L2 itself don't accept blob transactions, skipping for now.
+    if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet", "arc-dev", "monad-dev")) {
+      this.skip()
+    }
 
-      // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
-      expect(trace.blobGas).to.equal(GAS_PER_BLOB * 1n, "blob gas must be GAS_PER_BLOB * numBlobs")
+    const maxFeePerBlobGas = 1_000_000_000n // 1 gwei per blob gas unit
+
+    const response = await blobWallet.sendTransaction({
+      to: knownExistingAddress,
+      value: oneWei,
+      maxFeePerGas: defaultGasPrice,
+      maxPriorityFeePerGas: 25_000n,
+      type: 3,
+      maxFeePerBlobGas,
+      blobs: [ZERO_BLOB, ZERO_BLOB, ZERO_BLOB],
+      kzg: kzg as any,
     })
+    const result = await waitForTransaction(response, false)
+    const { trace } = await fetchFirehoseTransactionAndBlock(result)
 
-  if (!isNetwork("monad-dev"))
-    it("Blob transaction with multiple blobs", async function () {
-      const maxFeePerBlobGas = 1_000_000_000n // 1 gwei per blob gas unit
+    expect(hexlify(trace.hash)).to.equal(result.hash)
+    expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_BLOB, "transaction must be TRX_TYPE_BLOB")
 
-      const response = await blobWallet.sendTransaction({
-        to: knownExistingAddress,
-        value: oneWei,
-        maxFeePerGas: defaultGasPrice,
-        maxPriorityFeePerGas: 25_000n,
-        type: 3,
-        maxFeePerBlobGas,
-        blobs: [ZERO_BLOB, ZERO_BLOB, ZERO_BLOB],
-        kzg: kzg as any,
-      })
-      const result = await waitForTransaction(response, false)
-      const { trace } = await fetchFirehoseTransactionAndBlock(result)
+    expect(trace.blobHashes).to.have.length(3, "must have exactly three blob hashes")
+    for (const hash of trace.blobHashes) {
+      expect(hexlify(hash)).to.equal(ZERO_BLOB_VERSIONED_HASH, "each blob versioned hash must match the zero blob hash")
+    }
 
-      expect(hexlify(trace.hash)).to.equal(result.hash)
-      expect(trace.type).to.equal(TransactionTrace_Type.TRX_TYPE_BLOB, "transaction must be TRX_TYPE_BLOB")
+    expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
 
-      expect(trace.blobHashes).to.have.length(3, "must have exactly three blob hashes")
-      for (const hash of trace.blobHashes) {
-        expect(hexlify(hash)).to.equal(
-          ZERO_BLOB_VERSIONED_HASH,
-          "each blob versioned hash must match the zero blob hash",
-        )
-      }
+    // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
+    expect(trace.blobGas).to.not.be.undefined
+    expect(trace.blobGas).to.equal(GAS_PER_BLOB * 3n, "blob gas must be GAS_PER_BLOB * numBlobs")
 
-      expect(toBigInt(trace.blobGasFeeCap)).to.equal(maxFeePerBlobGas, "blob gas fee cap must match maxFeePerBlobGas")
+    const { blobGasUsed: rpcBlobGasUsed2, blobGasPrice: rpcBlobGasPrice2 } = await resolveReceiptBlobGas(
+      result.hash,
+      result.blockHash,
+      3n,
+    )
 
-      // blobGas = GAS_PER_BLOB × numBlobs (2^17 = 131072 per blob, EIP-4844 constant)
-      expect(trace.blobGas).to.equal(GAS_PER_BLOB * 3n, "blob gas must be GAS_PER_BLOB * numBlobs")
-    })
+    // Receipt blob gas fields — validated against resolved values (with fallbacks for clients
+    // like reth that omit blobGasUsed/blobGasPrice from eth_getTransactionReceipt and the
+    // Firehose trace). Only assert when the trace receipt field is actually present.
+    expect(trace.receipt, "trace must have a receipt").to.not.be.undefined
+    if (trace.receipt!.blobGasUsed !== undefined) {
+      expect(trace.receipt!.blobGasUsed).to.equal(rpcBlobGasUsed2, "receipt blob gas used must match resolved value")
+    }
+    if (trace.receipt!.blobGasPrice !== undefined) {
+      expect(toBigInt(trace.receipt!.blobGasPrice)).to.equal(
+        rpcBlobGasPrice2,
+        "receipt blob gas price must match resolved value",
+      )
+    }
+  })
 })

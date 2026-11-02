@@ -8,15 +8,13 @@ playground_pid=""
 
 db_path="$ROOT/op-node-db"
 op_stack_path="$ROOT/op-chain"
-docker_op_node_name="`basename "$op_stack_path"`-op-node-1"
-docker_op_geth_name="`basename "$op_stack_path"`-op-geth-1"
 
 # This is el `http` port (container named `op-chain-el-1`)
 l1_rpc_url="http://localhost:8545"
 # This is beacon 'http' port (container named `op-chain-beacon-1`)
 l1_beacon_rpc_url="http://localhost:3500"
 # This is rollup-boost `authrpc` port (container named `op-chain-rollup-boost-1`)
-l2_sequencer_rpc_url="http://localhost:8554"
+l2_sequencer_rpc_url="http://localhost:8548" #8554
 # This is op-geth `http` port (container named `op-chain-op-geth-1`)
 l2_geth_rpc_url="http://localhost:8547"
 # This is op-geth address that will be started by the `./scripts/run_firehose_optimism_devnet.sh` script
@@ -43,10 +41,29 @@ main() {
   playground_pid=$!
   echo ""
 
-  wait_for_chain_op_node
+  # Two notes:
+  # - We need to sleep a bit otherwise find by name found nothing, it's probably worse if there is image pulling to be done ...
+  # - Find by ends with is picky because it's pass to grep, so a leading - must not be put otherwise grep complains
+  echo "Waiting for OP node container to be created..."
+  while [[ "$(find_docker_by_name_ends_with "op-node-1")" == "" ]]; do
+    sleep 1
+  done
+
+  docker_op_node_name="$(find_docker_by_name_ends_with "op-node-1")"
+  docker_op_geth_name="$(find_docker_by_name_ends_with "op-geth-1")"
+
+  # An extra blank line is required it seems otherwise there no separation between builder-playground output and ours
+  echo ""
+  echo "Container op-node started, waiting for it to be ready..."
+  echo " DB path: $db_path"
+  echo " Docker OP node name: $docker_op_node_name"
+  echo " Docker OP geth name: $docker_op_geth_name"
   echo ""
 
-  wait_for_chain_op_geth
+  wait_for_chain_op_node "$docker_op_node_name"
+  echo ""
+
+  wait_for_chain_op_geth "$docker_op_geth_name"
   echo ""
 
   # The op-stack above always starts from scratch, so we need to do the same here
@@ -59,21 +76,20 @@ main() {
   mkdir -p "$db_path/peers"
   mkdir -p "$db_path/discovery"
 
-  op_node_peer_id="$(extract_chain_op_node_peer_id)"
+  op_node_peer_id="$(extract_chain_op_node_peer_id "$docker_op_node_name")"
   op_node_peer="/ip4/127.0.0.1/tcp/9003/p2p/$op_node_peer_id"
 
-  fund_l2_address &
-
-  echo "Starting op-node"
-  echo " DB path: $db_path"
+  echo "Container op-node is ready, launching local op-node waiting on op-geth..."
   echo " OP node peer: $op_node_peer"
   echo ""
+
+  fund_l2_address &
 
   op-node \
     --l1="$l1_rpc_url" \
     --l1.beacon="$l1_beacon_rpc_url" \
     --l2="$local_op_geth_authrpc_url"  \
-    --l2.engine-rpc-timeout=60s \
+    --l2.engine-rpc-timeout=900s \
     --l2.jwt-secret="$op_stack_path/jwtsecret" \
     --log.level=error \
     --rollup.config="$op_stack_path/rollup.json" \
@@ -120,8 +136,8 @@ cleanup_on_exit() {
 }
 
 wait_for_chain_op_node() {
-  wait_for_chain_op_node_rpc
-  wait_for_chain_op_node_peer_id
+  wait_for_chain_op_node_rpc "$@"
+  wait_for_chain_op_node_peer_id "$@"
 }
 
 wait_for_chain_op_node_rpc() {
@@ -139,12 +155,14 @@ wait_for_chain_op_node_rpc() {
 }
 
 wait_for_chain_op_node_peer_id() {
-  echo "Waiting for OP node peer ID..."
+  docker_op_node_name="$1"
+
+  echo "Waiting for OP node peer ID from ($docker_op_node_name)..."
   local attempts=0
   local max_attempts=30
 
   while [ $attempts -lt $max_attempts ]; do
-    op_node_peer_id="$(extract_chain_op_node_peer_id)"
+    op_node_peer_id="$(extract_chain_op_node_peer_id "$docker_op_node_name")"
 
     if [ -n "$op_node_peer_id" ]; then
       echo "Found OP node peer ID: $op_node_peer_id"
@@ -160,7 +178,9 @@ wait_for_chain_op_node_peer_id() {
 }
 
 wait_for_chain_op_geth() {
-  echo "Waiting for OP geth..."
+  docker_op_geth_name="$1"
+
+  echo "Waiting for OP geth from ($docker_op_geth_name)..."
   local attempts=0
   local max_attempts=30
 
@@ -183,7 +203,7 @@ wait_for_chain_op_geth() {
 }
 
 extract_chain_op_node_peer_id() {
-  echo "$(docker logs "$docker_op_node_name" 2>&1 | grep "started p2p host" | cut -d ' ' -f 8- | sd 'peerID=' '')"
+  echo "$(docker logs "$1" 2>&1 | grep "started p2p host" | cut -d ' ' -f 8- | sd 'peerID=' '')"
 }
 
 fund_l2_address() {
@@ -223,16 +243,26 @@ fund_l2_address() {
   # project. So run it from ROOT folder which is outside of root.
   pushd "$ROOT" &> /dev/null
 
+  jwt="$(cat "$op_stack_path/jwtsecret")"
+  l2_geth_auth_header="Authorization: Bearer $jwt"
+
   echo "Funding the default address with 1,000,000 ETH on L2 (background)..."
-  cast send --async --rpc-url="$l2_sequencer_rpc_url" --private-key "$pk" --value 1000000ether "$address_to_fund" --priority-gas-price=25000000000 --gas-price=250000000000 > /dev/null
+  cast send --async --rpc-url="$l2_sequencer_rpc_url" --rpc-headers "$l2_geth_auth_header" --private-key "$pk" --value 1000000ether "$address_to_fund" --priority-gas-price=25000000000 --gas-price=250000000000 > /dev/null
 
   echo "Waiting for fund to arrive"
   local attempts=0
   local max_attempts=15
   while [ $attempts -lt $max_attempts ]; do
-    balance=`cast balance --rpc-url "$l2_geth_rpc_url" "$address_to_fund"`
+    balance=`cast balance --rpc-url "$l2_geth_rpc_url" --rpc-headers "$l2_geth_auth_header" "$address_to_fund"`
     if [[ $? -eq 0 && $balance != "0" ]]; then
+      # Blank line needed due to builder-playground output that happened before use.
       echo "L2 address properly funded"
+
+      # We wait a bit to ensure builder-playground output "stopped"
+      sleep 2
+      echo ""
+      echo "*Time Sensitive* You have roughly 60 seconds to perform the action due to op-node"
+      echo "In another terminal launch ./scripts/run_firehose_op_geth_devnet.sh".
       return 0
     fi
 

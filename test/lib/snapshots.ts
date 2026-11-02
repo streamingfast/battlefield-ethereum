@@ -127,21 +127,12 @@ export class Snapshot {
     const snapshotsTag = getGlobalSnapshotsTag()
     const snapshotsTagParts = snapshotsTag.split("/")
 
-    let globalNetworkOverride: string | undefined
-    if (snapshotsTagParts.length > 1) {
-      globalNetworkOverride = snapshotsTagParts[1]
-    }
-
     const group = path.dirname(this.id)
     const lastSegment = this.id.replace(group, "").replace(/^(\/|\\)/, "")
 
-    const segments = [snapshotsUrl, group, snapshotsTagParts[0]]
+    const segments = [snapshotsUrl, group, ...snapshotsTagParts]
     if (this.eipOverride) {
       segments.push(this.eipOverride)
-    }
-
-    if (globalNetworkOverride) {
-      segments.push(globalNetworkOverride)
     }
 
     segments.push(lastSegment)

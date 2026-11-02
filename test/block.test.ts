@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { mustGetRpcBlock, sendEth } from "./lib/ethereum"
+import { mustGetRpcBlock, mustGetRpcBlockReceipts, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { fetchFirehoseBlock, fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import {
@@ -12,9 +12,8 @@ import {
 import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
-import { Call } from "../pb/sf/ethereum/type/v2/type_pb"
-import { getGlobalSnapshotsTag } from "./lib/snapshots"
-import { isNetwork } from "./lib/network"
+import { BalanceChange_Reason, Block, Call } from "../pb/sf/ethereum/type/v2/type_pb"
+import { isArbitrum, isNetwork } from "./lib/network"
 
 describe("Blocks", function () {
   it("Header corresponds to RPC", async function () {
@@ -76,70 +75,305 @@ describe("Blocks", function () {
     }
   })
 
-  // bnb-dev in dev mode does not seem to update any parentBeaconRoot. being set to 00000000000 makes it skip that, so I skipped the test
-  // monad-dev does not run deploy_beacon_root_contract as it writes extra state not present on the network, causing state_root mismatch
-  if (!isNetwork("bnb-dev") && !isNetwork("monad-dev")) {
-    it("System call ProcessBeaconRoot recorded correctly", async function () {
-      const rpcBlock = await mustGetRpcBlock("latest")
-      if (!rpcBlock.parentBeaconBlockRoot) {
-        // Test do not apply to this network
-        return
+  it("Transaction fee reward (REWARD_TRANSACTION_FEE) recorded for coinbase", async function () {
+    // Polygon Bor leaves block.coinbase as the zero address and routes tips through the
+    // 0x...01010 MATIC system contract instead of paying the block proposer directly, so
+    // this test's coinbase-based assertion does not apply.
+    if (isNetwork("polygon-dev")) {
+      this.skip()
+    }
+
+    // Optimism has different rules of transaction fee rewards distribution as such computation
+    // would need to be adjusted and a specific test created, for now simply skip the test.
+    if (isNetwork("op-geth-devnet") || isNetwork("op-reth-devnet") || isNetwork("world-chain-devnet")) {
+      this.skip()
+    }
+
+    // Send a dynamic-fee transaction with an explicit tip so that a REWARD_TRANSACTION_FEE
+    // balance change is guaranteed to be emitted (tip = 0 produces no reward entry).
+    //
+    // Arc pins its base fee to the ProtocolConfig `minBaseFee` (20 gwei on the dev chain), so
+    // the 10 gwei cap below is unpayable there.
+    const maxFeePerGas = isNetwork("arc-dev") ? 50_000_000_000n : 10_000_000_000n
+    const result = await sendEth(owner, knownExistingAddress, oneWei, {
+      maxFeePerGas,
+      maxPriorityFeePerGas: 1_000_000_000n,
+    })
+    const block = await fetchFirehoseBlock(result.blockNumber)
+    const coinbase = hexlify(block.header!.coinbase)
+
+    if (isArbitrum()) {
+      // ArbOS does not pay a block coinbase via REWARD_TRANSACTION_FEE. Its fee model is: the
+      // sender is debited up-front (REASON_GAS_BUY) and refunded the unused portion
+      // (REASON_GAS_REFUND), and the net gas fee is routed to ArbOS fee-collector accounts
+      // (addresses prefixed 0xa4b0...), while the block coinbase is the sequencer fee address.
+      // Validate that observed model: the sender's net gas payment equals the full gas fee
+      // (base + tip, nothing burned) computed from the block receipts.
+      expect(coinbase.toLowerCase().startsWith("0xa4b0")).to.equal(
+        true,
+        `Arbitrum block coinbase ${coinbase} must be an ArbOS fee address (0xa4b0...)`,
+      )
+
+      const allChanges = block.transactionTraces.flatMap((tx) => tx.calls.flatMap((call) => call.balanceChanges))
+      expect(allChanges.some((c) => c.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE)).to.equal(
+        false,
+        "ArbOS does not emit REWARD_TRANSACTION_FEE, fees go to ArbOS fee-collector accounts instead",
+      )
+
+      const sumDelta = (reason: BalanceChange_Reason) =>
+        allChanges
+          .filter((c) => c.reason === reason)
+          .reduce((sum, c) => sum + toBigInt(c.newValue) - toBigInt(c.oldValue), 0n)
+
+      // GAS_BUY is a debit (negative delta), GAS_REFUND a credit (positive delta).
+      const netGasPaid = -sumDelta(BalanceChange_Reason.GAS_BUY) - sumDelta(BalanceChange_Reason.GAS_REFUND)
+      expect(netGasPaid > 0n).to.equal(true, "sender must have paid a positive net gas fee (GAS_BUY − GAS_REFUND)")
+
+      const receipts = await mustGetRpcBlockReceipts(result.blockNumber)
+      const expectedFullFee = receipts.reduce((sum, r) => sum + BigInt(r.gasUsed) * BigInt(r.effectiveGasPrice), 0n)
+      expect(netGasPaid).to.equal(
+        expectedFullFee,
+        "sender net gas payment (GAS_BUY − GAS_REFUND) must equal the full gas fee from receipts",
+      )
+      return
+    }
+
+    // On BSC the fee (base + tip) is credited to the Parlia system address during the
+    // transaction and only swept to the validator contract by the end-of-block deposit
+    // system transaction, so REWARD_TRANSACTION_FEE is recorded for the system address,
+    // never for the coinbase.
+    const feeRecipient = isNetwork("bnb-dev") ? "0xfffffffffffffffffffffffffffffffffffffffe" : coinbase
+
+    // On PoA/PoS chains (geth-dev, reth-dev) the tip paid by each transaction is recorded as
+    // REWARD_TRANSACTION_FEE inside that transaction's call balance changes (not at block level).
+    const txFeeRewardChanges = block.transactionTraces.flatMap((tx) =>
+      tx.calls.flatMap((call) =>
+        call.balanceChanges.filter(
+          (change) =>
+            change.reason === BalanceChange_Reason.REWARD_TRANSACTION_FEE &&
+            isSameAddress(hexlify(change.address), feeRecipient),
+        ),
+      ),
+    )
+
+    expect(txFeeRewardChanges.length).to.be.greaterThan(
+      0,
+      `fee recipient ${feeRecipient} should have at least one REWARD_TRANSACTION_FEE in transaction call balance changes`,
+    )
+
+    for (const change of txFeeRewardChanges) {
+      expect(change.reason).to.equal(BalanceChange_Reason.REWARD_TRANSACTION_FEE)
+    }
+
+    const totalReward = txFeeRewardChanges.reduce(
+      (sum, change) => sum + toBigInt(change.newValue) - toBigInt(change.oldValue),
+      0n,
+    )
+
+    const rpcBlock = await mustGetRpcBlock(result.blockNumber)
+    const baseFeePerGas = BigInt(rpcBlock.baseFeePerGas ?? 0)
+    const receipts = await mustGetRpcBlockReceipts(result.blockNumber)
+
+    // Arc credits the beneficiary the full effective gas price rather than burning the base
+    // fee (`reward_beneficiary` in arc-node `crates/evm/src/handler.rs`), so the reward is
+    // gasUsed × effectiveGasPrice with nothing subtracted.
+    const burnsBaseFee = !isNetwork("arc-dev")
+    const expectedReward = receipts.reduce(
+      (sum, r) => sum + BigInt(r.gasUsed) * (BigInt(r.effectiveGasPrice) - (burnsBaseFee ? baseFeePerGas : 0n)),
+      0n,
+    )
+
+    expect(totalReward).to.be.equal(
+      expectedReward,
+      burnsBaseFee
+        ? "total fee reward should equal sum of gasUsed × effectiveTip across all block transactions"
+        : "total fee reward should equal sum of gasUsed × effectiveGasPrice across all block transactions (base fee is not burned)",
+    )
+  })
+
+  it("System call ProcessBeaconRoot recorded correctly", async function () {
+    if (isNetwork("bnb-dev")) {
+      // bnb-dev in dev mode does not seem to update any parentBeaconRoot, so skip the test in that case.
+      this.skip()
+    }
+
+    // monad-dev does not run deploy_beacon_root_contract as it writes extra state not present on the network.
+    if (isNetwork("monad-dev")) {
+      this.skip()
+    }
+
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (!rpcBlock.parentBeaconBlockRoot) {
+      this.skip()
+    }
+
+    const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
+    const header = firehoseBlock.header!
+
+    expect(hexlify(header.parentBeaconRoot)).to.be.equal(rpcBlock.parentBeaconBlockRoot)
+
+    // Arc advertises a non-zero parentBeaconBlockRoot in every header but never runs the
+    // EIP-4788 update: the contract is absent from mainnet state entirely and, where it is
+    // deployed (dev genesis), its ring buffer stays zero. Assert that absence rather than
+    // skipping, so the day Arc starts writing beacon roots this test says so.
+    const beaconRootCall = firehoseBlock.systemCalls.find(isUpdateBeaconRootCall(rpcBlock.parentBeaconBlockRoot))
+    if (isNetwork("arc-dev")) {
+      expect(beaconRootCall, "Arc is not expected to emit an EIP-4788 beacon root system call").to.be.undefined
+      return
+    }
+
+    expect(beaconRootCall).to.not.be.undefined
+
+    // A storage change could exist but not in `geth --dev` mode, at least not consistently because
+    // in dev mode, the beacon root is also sets to 0x0 and in the tracer, storage changes
+    // with `prev == new` are ignored hence the storage change is not recorded in that case. So
+    // we cannot reliably test for storage changes here.
+    //
+    // We should once we have a way to check for which "network" the test suite is running
+  })
+
+  it("System call ProcessParentBlockHash recorded correctly", async function () {
+    if (isNetwork("monad-dev")) {
+      this.skip()
+    }
+
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (!rpcBlock.requestsHash) {
+      // Test do not apply to this network
+      return
+    }
+
+    const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
+    const header = firehoseBlock.header!
+
+    expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
+
+    const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
+    expect(updateParentBlockHashCall).to.not.be.undefined
+
+    // Only verify the storage write when the contract was actually executed. On some networks
+    // (e.g. geth-devnet running a playground genesis) the EIP-2935 history-storage contract
+    // is not pre-deployed, so the system call succeeds with executedCode:false and writes
+    // nothing to storage.
+    if (updateParentBlockHashCall?.executedCode) {
+      expect(updateParentBlockHashCall.storageChanges).to.be.lengthOf(1)
+      expect(updateParentBlockHashCall.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
+    }
+  })
+
+  if (isNetwork("geth-devnet") || isNetwork("reth-devnet")) {
+    it("Beacon withdrawals recorded correctly in block", async function () {
+      // builder-playground validators are created with 0x01 (execution-layer) withdrawal credentials.
+      // Partial withdrawals are swept automatically when a validator balance exceeds 32 ETH.
+      // With 1-second slots the devnet accumulates rewards quickly, so a block with withdrawals
+      // should appear well within the 2-minute test timeout.
+      const { firehoseBlock } = await waitForBlockWithWithdrawals(90_000)
+
+      // Navigate to the correct beacon slot via parentBeaconRoot rather than assuming
+      // EL block number == CL slot (they diverge when the secondary joins after the
+      // playground has been running for a while).
+      // parentBeaconRoot = root of beacon block B-1 → resolve its slot → B = B-1.slot + 1.
+      const parentBeaconRoot = hexlify(firehoseBlock.header!.parentBeaconRoot)
+      const beaconWithdrawals = await fetchBeaconBlockWithdrawals(parentBeaconRoot)
+
+      expect(firehoseBlock.withdrawals.length).to.be.greaterThan(
+        0,
+        `expected at least one withdrawal in block #${firehoseBlock.number}`,
+      )
+      expect(firehoseBlock.withdrawals.length).to.equal(
+        beaconWithdrawals.length,
+        "Firehose and beacon block withdrawal count must match",
+      )
+
+      // Collect block-level WITHDRAWAL balance changes once for reuse below.
+      const withdrawalBalanceChanges = firehoseBlock.balanceChanges.filter(
+        (bc) => bc.reason === BalanceChange_Reason.WITHDRAWAL,
+      )
+      expect(withdrawalBalanceChanges.length).to.equal(
+        firehoseBlock.withdrawals.length,
+        "number of WITHDRAWAL balance changes must match withdrawal count",
+      )
+
+      for (let i = 0; i < firehoseBlock.withdrawals.length; i++) {
+        const fw = firehoseBlock.withdrawals[i]
+        const bw = beaconWithdrawals[i]
+        const fwAddress = hexlify(fw.address).toLowerCase()
+
+        // Cross-check withdrawal fields against the beacon block (authoritative CL source).
+        // Beacon API uses decimal strings; Firehose uses uint64 (bigint). Amounts are in Gwei.
+        expect(fw.index).to.equal(BigInt(bw.index), `withdrawal[${i}].index`)
+        expect(fw.validatorIndex).to.equal(BigInt(bw.validator_index), `withdrawal[${i}].validatorIndex`)
+        expect(fwAddress).to.equal(bw.address.toLowerCase(), `withdrawal[${i}].address`)
+        expect(fw.amount).to.equal(BigInt(bw.amount), `withdrawal[${i}].amount (Gwei)`)
+
+        // Verify the corresponding WITHDRAWAL balance change at block level.
+        // The delta in wei must equal the withdrawal amount converted from Gwei.
+        const bc = withdrawalBalanceChanges.find((c) => hexlify(c.address).toLowerCase() === fwAddress)
+        ;(expect(bc).to.not.be.undefined, `no WITHDRAWAL balance change found for address ${fwAddress}`)
+        expect(bc!.reason).to.equal(BalanceChange_Reason.WITHDRAWAL, `withdrawal[${i}] balance change reason`)
+        const delta = toBigInt(bc!.newValue) - toBigInt(bc!.oldValue)
+        expect(delta).to.equal(
+          fw.amount * 1_000_000_000n,
+          `withdrawal[${i}] balance change delta (wei) must equal amount_gwei × 1e9`,
+        )
       }
-
-      const firehoseBlock = await fetchFirehoseBlock(rpcBlock.number)
-      const header = firehoseBlock.header!
-
-      expect(hexlify(header.parentBeaconRoot)).to.be.equal(rpcBlock.parentBeaconBlockRoot)
-
-      const beaconRootCall = firehoseBlock.systemCalls.find(isUpdateBeaconRootCall(rpcBlock.parentBeaconBlockRoot))
-      expect(beaconRootCall).to.not.be.undefined
-
-      // A storage change could exist but not in `geth --dev` mode, at least not consistently because
-      // in dev mode, the beacon root is also sets to 0x0 and in the tracer, storage changes
-      // with `prev == new` are ignored hence the storage change is not recorded in that case. So
-      // we cannot reliably test for storage changes here.
-      //
-      // We should once we have a way to check for which "network" the test suite is running
     })
   }
-
-  if (!isNetwork("monad-dev"))
-    it("System call ProcessParentBlockHash recorded correctly", async function () {
-      const rpcBlock = await mustGetRpcBlock("latest")
-      if (!rpcBlock.requestsHash) {
-        return
-      }
-
-      const firehoseBlock = await fetchFirehoseBlock({ hash: rpcBlock.hash, num: rpcBlock.number })
-      const header = firehoseBlock.header!
-
-      expect(hexlify(header.requestsHash)).to.be.equal(rpcBlock.requestsHash)
-
-      const debugInfo = {
-        rpcBlockNumber: rpcBlock.number,
-        rpcBlockHash: rpcBlock.hash,
-        rpcParentHash: rpcBlock.parentHash,
-        firehoseBlockHash: hexlify(header.hash),
-        firehoseParentHash: hexlify(header.parentHash),
-        hashesMatch: rpcBlock.hash === hexlify(header.hash),
-        parentHashesMatch: rpcBlock.parentHash === hexlify(header.parentHash),
-        systemCallsLength: firehoseBlock.systemCalls?.length,
-        systemCalls: firehoseBlock.systemCalls?.map((c) => ({
-          caller: hexlify(c.caller),
-          address: hexlify(c.address),
-          input: hexlify(c.input),
-        })),
-        lookingForParentHash: rpcBlock.parentHash,
-      }
-
-      const updateParentBlockHashCall = firehoseBlock.systemCalls.find(isUpdateParentBlockHash(rpcBlock.parentHash))
-      expect(updateParentBlockHashCall, `System call not found. Debug: ${JSON.stringify(debugInfo, null, 2)}`).to.not.be
-        .undefined
-
-      expect(updateParentBlockHashCall?.storageChanges).to.be.lengthOf(1)
-      expect(updateParentBlockHashCall?.storageChanges[0].newValue).to.not.equal(rpcBlock.parentHash)
-    })
 })
+
+async function waitForBlockWithWithdrawals(timeoutMs: number): Promise<{ firehoseBlock: Block }> {
+  const deadline = Date.now() + timeoutMs
+
+  while (Date.now() < deadline) {
+    const rpcBlock = await mustGetRpcBlock("latest")
+    if (rpcBlock.withdrawals && rpcBlock.withdrawals.length > 0) {
+      const blockNumber = BigInt(parseInt(rpcBlock.number, 16))
+      const firehoseBlock = await fetchFirehoseBlock(blockNumber)
+      return { firehoseBlock }
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+  }
+
+  throw new Error(`No block with withdrawals found within ${timeoutMs}ms`)
+}
+
+// Beacon API fields use snake_case and decimal strings (per the CL REST API spec).
+type BeaconWithdrawal = {
+  index: string
+  validator_index: string
+  address: string
+  amount: string // Gwei, decimal
+}
+
+// Fetches the withdrawals from the beacon block that wraps the given EL block.
+// Takes the EL block's parentBeaconRoot (root of beacon block B-1) to resolve the correct
+// CL slot, avoiding the assumption that EL block number == CL slot number.
+// Uses the Lighthouse beacon REST API at the playground's default port (3500).
+async function fetchBeaconBlockWithdrawals(parentBeaconRoot: string): Promise<BeaconWithdrawal[]> {
+  // Step 1: resolve the parent beacon block's slot from its root.
+  const headerResp = await fetch(`http://localhost:3500/eth/v1/beacon/headers/${parentBeaconRoot}`, {
+    headers: { Accept: "application/json" },
+  })
+  if (!headerResp.ok) {
+    throw new Error(`Beacon headers API returned ${headerResp.status} for root ${parentBeaconRoot}`)
+  }
+  const headerBody = (await headerResp.json()) as { data: { header: { message: { slot: string } } } }
+  const parentSlot = BigInt(headerBody.data.header.message.slot)
+
+  // Step 2: fetch the beacon block at parentSlot + 1 (the block that contains our EL block).
+  const slot = parentSlot + 1n
+  const blockResp = await fetch(`http://localhost:3500/eth/v2/beacon/blocks/${slot}`, {
+    headers: { Accept: "application/json" },
+  })
+  if (!blockResp.ok) {
+    throw new Error(`Beacon blocks API returned ${blockResp.status} for slot ${slot}`)
+  }
+  const blockBody = (await blockResp.json()) as {
+    data: { message: { body: { execution_payload: { withdrawals: BeaconWithdrawal[] } } } }
+  }
+
+  return blockBody.data.message.body.execution_payload.withdrawals
+}
 
 function isUpdateBeaconRootCall(beaconRoot: string): (call: Call) => boolean {
   return (call: Call) =>

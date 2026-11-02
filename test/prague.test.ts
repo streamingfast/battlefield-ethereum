@@ -9,6 +9,7 @@ import { isSameAddress } from "./lib/addresses"
 import { waitForTransaction } from "./lib/ethers"
 import { Wallet, concat, getBytes, hexlify } from "ethers"
 import { eth } from "./lib/money"
+import { dynamicGasLimit } from "./lib/network"
 import hre from "hardhat"
 import { SetCode7702Caller__factory } from "../typechain-types"
 
@@ -46,7 +47,6 @@ describe("Prague", function () {
     const rpcBlock = await mustGetRpcBlock("latest")
     if (!isBlockOnPragueOrLater(rpcBlock)) {
       this.skip()
-      return
     }
 
     wallet1 = new Wallet(key1, hre.ethers.provider)
@@ -59,8 +59,8 @@ describe("Prague", function () {
     // delegated contract, which requires more gas (e.g. SetterBB does an SSTORE).
     // On Monad, delegated EOAs cannot dip below their reserve balance (10 MON)
     const fundAmount = isNetwork("monad-dev") ? eth(11) : eth(1)
-    await sendEth(owner, wallet1.address, fundAmount, { gasLimit: 100_000 })
-    await sendEth(owner, wallet2.address, fundAmount, { gasLimit: 100_000 })
+    await sendEth(owner, wallet1.address, fundAmount, { gasLimit: dynamicGasLimit(100_000) })
+    await sendEth(owner, wallet2.address, fundAmount, { gasLimit: dynamicGasLimit(100_000) })
 
     // Deploy the Caller and two Setter instances (CC and BB are identical code, different addresses)
     const CallerFactory = await hre.ethers.getContractFactory("SetCode7702Caller")
@@ -216,13 +216,45 @@ describe("Prague", function () {
     expect(a4.nonce).to.equal(BigInt(wallet2Nonce + 1), "auth4 nonce must be wallet2Nonce+1")
 
     // auth[4] = auth5: wallet2, same nonce as auth4 (wallet2Nonce+1), nonce change already consumed → discarded
-    // On monad-dev the txpool caps auth lists at 4 entries, so auth5 is never submitted
+    // On monad-dev the txpool caps auth lists at 4 entries, so auth5 is never submitted, and
+    // this snapshot has not been validated against Monad execution events.
     if (!isNetwork("monad-dev")) {
       const a5 = trace1.setCodeAuthorizations[4]
       expect(a5.discarded).to.equal(true, "auth5 (stale nonce) must be discarded")
       expect(hexlify(a5.authority!)).to.equal(
         wallet2.address.toLowerCase(),
         "auth5 authority must be wallet2 (valid sig)",
+      )
+
+      // Commenting out the snapshot comparisons as there is still plenty of things still varying
+      // like signatures, gas price and others. We will to revisit that, either we trimmed down the
+      // trx and make templated what is needed or we move to an assertion based approach fully. I
+      // would create a unique new test just for this I think
+      await expect(tx1Result).to.trxTraceEqualSnapshot(
+        "prague/setcode_set_delegations.expected.json",
+        {
+          $wallet1: wallet1.address.toLowerCase().slice(2),
+          $wallet2: wallet2.address.toLowerCase().slice(2),
+          $callerContract: callerAddress.toLowerCase().slice(2),
+          $setterCC: setterCCAddress.toLowerCase().slice(2),
+          $setterBB: setterBBAddress.toLowerCase().slice(2),
+        },
+        {
+          // gasPrice (and the gas-buy / gas-refund balance change values that derive from it)
+          // float with the chain's basefee, which is non-deterministic across runs. We assert
+          // the structure of the trace via the snapshot and rely on inline assertions above for
+          // the semantic checks that matter for EIP-7702.
+          excludeFields: [
+            "gasPrice",
+            "calls[0].balanceChanges[0].oldValue",
+            "calls[0].balanceChanges[1].newValue",
+            "calls[0].codeChanges[].newHash",
+            "calls[0].codeChanges[].oldHash",
+            "setCodeAuthorizations[].r",
+            "setCodeAuthorizations[].s",
+            "setCodeAuthorizations[].v",
+          ],
+        },
       )
     }
   })

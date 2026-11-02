@@ -36,19 +36,43 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Chain                    | Firehose Launcher                                                                             | Tests Launcher                                             | Notes                                                                          |
 | ------------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | Ethereum (Firehose 3.0)  | `./scripts/run_firehose_geth_dev.sh 3.0 prague`                                               | `pnpm test:fh3.0:geth-dev`                                 | None                                                                           |
+| Reth Dev (fh 3.0)        | `./scripts/run_firehose_reth_dev.sh` (Amsterdam fork by default, or `... prague`)              | `pnpm test:fh3.0:reth-dev`                                 | Requires [reth](#get-reth) and [fireeth](#get-fireeth) |
+| Arc Dev (fh 3.1, v5)     | `./scripts/run_firehose_arc_dev.sh`                                                           | `pnpm test:fh3.1:arc-dev`                                  | Requires [arc-node-execution](#get-arc-node-execution) and [fireeth](#get-fireeth). Own goldens tag |
 | Sei                      | `./scripts/run_firehose_sei.sh sequential`                                                    | `pnpm test:fh3.0:sei-dev`                                  | The `sequential` tag refers to transaction execution algorithm, test both      |
 | Sei                      | `./scripts/run_firehose_sei.sh parallel`                                                      | `pnpm test:fh3.0:sei-dev`                                  | The `parallel` tag refers to transaction execution algorithm, test both        |
 | BNB                      | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                     | `pnpm test:fh3.0:bnb-dev`                                  | None                                                                           |
+| BNB Reth (fh 3.0, v5)    | Docker miner: `./scripts/bnb/up.sh -c -j`, then `./scripts/run_firehose_reth_bsc.sh`          | `pnpm test:fh3.0:reth-bsc-dev`                             | Requires [reth-bsc](#get-reth-bsc). Own goldens tag, see [BNB Reth](#bnb-reth-reth-bsc) |
 | Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, bats...)                       |
+| Geth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_geth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:geth-devnet` | Requires [geth](#build-firehose-geth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
+| Reth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_reth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:reth-devnet` | Requires [reth](#get-reth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
-| Optimism Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_optimism_devnet.sh`. | `pnpm test:fh3.0:optimism-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
+| Optimism Geth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_geth_devnet.sh`. | `pnpm test:fh3.0:op-geth-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
+| Optimism Reth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_reth_devnet.sh`. | `pnpm test:fh3.0:op-reth-devnet`                          | Requires [op-reth](#get-reth) (firehose-instrumented Op Stack Reth on PATH as `op-reth`), and [builder-playground](https://github.com/flashbots/builder-playground) |
+| Nitro Dev (fh 2.3 because block version == 3)       | `./scripts/run_firehose_nitro_dev.sh`                                   | `pnpm test:fh2.3:nitro-dev`                               | Standalone mine-on-demand Arbitrum chain. Requires [nitro](#get-nitro) and [fireeth](#get-fireeth) |
 | Monad (fh 3.0)           | `./scripts/run_monad_devnet.sh`                                                               | `pnpm test:fh3.0:monad-dev`                                | Requires Monad node with event ring enabled                                  |
 
-After each test, you should also run:
+### Block Comparison
 
-```
-scripts/compare-blocks.sh
-```
+Every test run ends with a `Compare blocks` test that runs `fireeth tools compare-blocks-rpc`
+between the Firehose endpoint and the node's JSON-RPC, so there is nothing extra to run by hand.
+It takes the RPC url from the Hardhat network configuration and bounds the range at the chain's
+last irreversible block (the comparison streams final blocks only, an unfinalized stop block would
+hang). Genesis is excluded on purpose, Firehose synthesizes that block and `genesis.test.ts`
+asserts its content directly.
+
+The test reports as pending when the chain has no final block to compare yet (a devnet running
+real consensus needs a few epochs before one exists) and on the public Amoy testnet. A missing
+`fireeth` binary fails the test rather than skipping it, it is a broken setup. On mine-on-demand
+chains the test first mines blocks until finality catches up with what the suite produced, and
+prints the blocks left out when it cannot get there within its budget.
+
+| Environment variable | Default | Purpose |
+| --- | --- | --- |
+| `SKIP_COMPARE_BLOCKS` | unset | Set to `1` to skip the comparison entirely |
+| `COMPARE_BLOCKS_MAX_SPAN` | `2000` | Maximum number of blocks compared in a single run |
+| `COMPARE_BLOCKS_TIMEOUT_MS` | `300000` | Hard timeout for the `fireeth` comparison process |
+| `COMPARE_BLOCKS_FINALITY_TIMEOUT_MS` | `60000` | How long to mine blocks waiting for finality to catch up |
+| `BATTLEFIELD_FIREHOSE_ENDPOINT` | `localhost:8089` | Firehose gRPC endpoint of the stack under test |
 
 ### Specific Tests
 
@@ -121,6 +145,10 @@ Field paths support:
 - Array notation: `calls[].gasConsumed` (applies to all array elements)
 - Indexed access: `calls[0].gasConsumed` (applies to specific element)
 
+#### Keccak Preimage Filtering
+
+The Firehose tracers built on evm-firehose-tracer-rs (reth, op-reth, reth-bsc, world-chain, arc) and Nitro keep only the `keccakPreimages` entries that explain a storage change key of the transaction. On those networks, both the actual and the expected traces go through the same filter before comparison ([./test/lib/keccak-filter.ts](./test/lib/keccak-filter.ts)), so the shared snapshots, which hold every preimage, still apply. Filtering an already filtered trace changes nothing, so nodes running a tracer from before the filter pass too. The list of networks is `tracerFiltersKeccakPreimages()` in the same file.
+
 ## Development
 
 A bunch of unit tests uses "snapshot" testing to avoid writing lengthy assertions. The test suite manages, uses and updates snapshots using a few environment variables. If you are adding new tests and the snapshot doesn't exist, the first test run will update the snapshot on disk. You should review the taken snapshot to ensure it fits the desired model state.
@@ -183,6 +211,93 @@ Dependencies you will need to have locally to run the scripts contained in this 
 
 To install `fireeth`, you can simply do `brew install tap/streamingfast/firehose-ethereum` or follow [other installations](https://github.com/streamingfast/firehose-core/tree/develop?tab=readme-ov-file#installation) section of the project's README.
 
+### Get `arc-node-execution`
+
+Arc's execution client is reth-based and lives in the private `streamingfast/arc-node-priv`
+repository. There are no published binaries, so build it:
+
+```bash
+git clone git@github.com:streamingfast/arc-node-priv.git && cd arc-node-priv
+git checkout release/0.x
+cargo build --release --bin arc-node-execution
+```
+
+Put `target/release/arc-node-execution` on your `PATH`, or set
+`ARC_NODE_BINARY=/path/to/arc-node-execution`.
+
+The `reth-*` crates come from the private `pinax-network/reth` fork, pinned over an HTTPS URL,
+and cargo fetches them with the git CLI. If the build stops on
+`could not read Username for 'https://github.com'`, point git at your SSH key for those URLs:
+
+```bash
+git config --global url."git@github.com:".insteadOf "https://github.com/"
+```
+
+```bash
+# Check
+arc-node-execution --version
+arc-node-execution node --help | grep -- --firehose
+```
+
+### Get `reth`
+
+The Firehose-instrumented Reth binary must be on your `PATH` as `reth`.
+
+```bash
+# Check
+reth --version
+```
+
+Find the correct pre-built binary for your chain and architecture on the Firehose chains overview page:
+
+**https://firehose.streamingfast.io/firehose/overview/chains**
+
+Download the binary, rename it to `reth`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
+
+```bash
+export RETH_BINARY=/path/to/your/reth-binary
+```
+
+### Get `reth-bsc`
+
+The Firehose-instrumented BSC Reth binary (StreamingFast `reth-bsc` fork) must be on your `PATH` as `reth-bsc`.
+
+```bash
+# Check
+reth-bsc --version
+```
+
+Find the correct pre-built binary for your architecture on the Firehose chains overview page:
+
+**https://firehose.streamingfast.io/firehose/overview/chains**
+
+Download the binary, rename it to `reth-bsc`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
+
+```bash
+export RETH_BSC_BINARY=/path/to/your/reth-bsc-binary
+```
+
+### Get `nitro`
+
+The Firehose-instrumented Arbitrum Nitro binary must be on your `PATH` as `nitro`.
+
+```bash
+# Check
+nitro --version
+```
+
+Find the correct pre-built binary for your architecture on the Firehose chains overview page:
+
+**https://firehose.streamingfast.io/firehose/overview/chains**
+
+Download the binary, rename it to `nitro`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
+
+```bash
+export NITRO_BINARY../nitro/target/bin/nitro
+```
+
+`run_firehose_nitro_dev.sh` launches a standalone mine-on-demand Nitro chain (`--dev`) with the Firehose tracer (`--node.firehose`) wrapped by `fireeth`. Like `geth-dev`/`reth-dev`, it only mines when a transaction arrives — the test suite bootstraps Firehose readiness on its own, so launch the chain then run `pnpm test:fh2.3:nitro-dev` (wait only for JSON-RPC on `http://127.0.0.1:8547`, do not wait for port 8089).
+
 ### Build Firehose `geth`
 
 - Clone https://github.com/streamingfast/go-ethereum/tree/firehose-fh3.0
@@ -214,6 +329,104 @@ rm -rf node_modules && pnpm install
 # Option 2, via apt
 sudo apt-get install -y node-gyp
 cd node_modules/.pnpm/c-kzg@4.1.0/node_modules/c-kzg && npx node-gyp rebuild
+```
+
+### Geth Devnet and Reth Devnet
+
+Both `geth-devnet` and `reth-devnet` run as a secondary execution layer client alongside an existing devnet spun up by [builder-playground](https://github.com/flashbots/builder-playground). The Firehose tracer is injected via `fireeth`.
+
+#### Prerequisites
+
+- [builder-playground](https://github.com/flashbots/builder-playground) installed and available on `PATH`
+- Firehose-instrumented `geth` binary (for `geth-devnet`) — see [Build Firehose geth](#build-firehose-geth)
+- `reth` binary on `PATH` (for `reth-devnet`) — see [Get reth](#get-reth)
+- `fireeth` binary — see [Get fireeth](#get-fireeth)
+
+#### Setup for `geth-devnet`
+
+1. **Terminal 1 — Start the playground devnet** (keep it running throughout):
+
+   ```bash
+   ./scripts/ethereum_devnet/run_playground_devnet.sh
+   ```
+
+2. **Terminal 2 — Run Geth as a secondary EL client with the Firehose tracer**:
+
+   ```bash
+   ./scripts/run_firehose_geth_devnet.sh
+   ```
+
+3. **Terminal 3 — Run the tests**:
+
+   ```bash
+   pnpm test:fh3.0:geth-devnet
+   ```
+
+#### Setup for `reth-devnet`
+
+1. **Terminal 1 — Start the playground devnet** (keep it running throughout):
+
+   ```bash
+   ./scripts/ethereum_devnet/run_playground_devnet.sh
+   ```
+
+2. **Terminal 2 — Run Reth as a secondary EL client with the Firehose tracer**:
+
+   ```bash
+   ./scripts/run_firehose_reth_devnet.sh
+   ```
+
+3. **Terminal 3 — Run the tests**:
+
+   ```bash
+   pnpm test:fh3.0:reth-devnet
+   ```
+
+### BNB Reth (`reth-bsc`)
+
+`reth-bsc` does not produce blocks itself in this setup. It runs as a **Firehose-instrumented follower** of the same dockerized geth-BSC miner used by the `bnb-dev` chain, peering with it over devp2p. The miner produces the blocks, `reth-bsc` re-executes them with the Firehose tracer, and `fireeth` wraps `reth-bsc` as its reader node.
+
+#### Prerequisites
+
+- Docker (for the BSC miner) — see [`./scripts/bnb`](./scripts/bnb)
+- `reth-bsc` binary on `PATH` — see [Get reth-bsc](#get-reth-bsc)
+- `fireeth` binary — see [Get fireeth](#get-fireeth)
+
+#### Setup
+
+1. **Terminal 1 — Start the BSC miner** (keep it running throughout). Use `-c` to remove any existing container so the chain is fresh, and `-j` to run bsc v1.8.1 with every fork through Jenner active:
+
+   ```bash
+   ./scripts/bnb/up.sh -c -j
+   ```
+
+   Wait until the miner's JSON-RPC answers on `http://localhost:8545`.
+
+2. **Terminal 2 — Run `reth-bsc` as a Firehose follower**:
+
+   ```bash
+   ./scripts/run_firehose_reth_bsc.sh
+   ```
+
+   The script pulls the genesis and enode from the running miner container, funds the test accounts, and starts `reth-bsc` on non-default ports (HTTP `9545`, authrpc `9551`, p2p `30404`) so it does not conflict with the miner or any other local node.
+
+3. **Terminal 3 — Run the tests**:
+
+   ```bash
+   pnpm test:fh3.0:reth-bsc-dev
+   ```
+
+#### Notes
+
+- **Run against a fresh chain.** On a reused chain the fresh-chain-only tests fail (skip them with `SKIP_FRESH_CHAIN_ONLY_TESTS=1`) and `prague/setcode_set_delegations` shifts by one ordinal because its fixed authority EOA already exists.
+- **Separate goldens tag.** The suite uses `SNAPSHOTS_TAG=fh3.0/v5/reth-bsc-dev`, not the geth-BSC `fh3.0/bnb-dev` tag. The reth Firehose tracer (protocol version 5) does not emit gas change events, so ordinals can never line up with the geth-BSC goldens. See [`./test/snapshots/RETH_BSC_DEV.md`](./test/snapshots/RETH_BSC_DEV.md) for the full audited divergence list.
+- **Jenner miner.** The `reth-bsc-dev` goldens, including the genesis one, come from the `-j` miner. Its genesis carries the PaymentLane contract and makes the test owner the CAS20 ActivationRegistry admin, which `test/jenner.test.ts` needs. Without `-j` the Jenner tests skip and the genesis snapshot does not match. The geth-BSC `bnb-dev` flavor keeps the default miner until the Firehose geth-BSC fork supports Jenner.
+
+To stop everything:
+
+```bash
+kill $(ps aux | grep -E "run_firehose_reth_bsc|fireeth|reth-bsc" | grep -v grep | awk '{print $2}') 2>/dev/null
+./scripts/bnb/down.sh
 ```
 
 ### Alternative: Use Besu

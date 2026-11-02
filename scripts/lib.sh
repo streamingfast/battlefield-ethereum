@@ -13,10 +13,14 @@ geth="${GETH_BINARY:-geth}"
 nitro="${NITRO_BINARY:-nitro}"
 seid="${SEID_BINARY:-seid}"
 bor="${BOR_BINARY:-bor}"
-reth="${RETH_BINARY:-reth-firehose-tracer}"
+reth="${RETH_BINARY:-reth}"
+reth_bsc="${RETH_BSC_BINARY:-reth-bsc}"
 op_node="${OP_NODE_BINARY:-op-node}"
 op_geth="${OP_GETH_BINARY:-op-geth}"
+op_reth="${OP_RETH_BINARY:-op-reth}"
+world_chain="${WORLD_CHAIN_BINARY:-world-chain}"
 besu="${BESU_BINARY:-besu}"
+arc_node="${ARC_NODE_BINARY:-arc-node-execution}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -49,7 +53,8 @@ run_fireeth() {
     --common-first-streamable-block=${first_streamable_block} \
     --reader-node-path="$node_binary" \
     --reader-node-arguments="$node_args" \
-    --firehose-grpc-listen-addr="localhost:8089" $@
+    --firehose-grpc-listen-addr="localhost:8089" \
+    --substreams-tier1-block-type="sf.ethereum.type.v2.Block" $@
 }
 
 check_docker() {
@@ -59,12 +64,23 @@ check_docker() {
         exit 1
     fi
     if [[ -n "$1" ]]; then
-        if ! docker ps --format '{{.Names}}' | grep -q "^$1$"; then
+        container_name="$1"
+        found_container="$(find_docker_by_name_ends_with "$container_name")"
+
+        if [[ "$found_container" == "" ]]; then
             ERR="You should run the appropriate docker-compose recipe first"
             [[ -n "$2" ]] && ERR="$2"
-            echo "Docker container '$1' is not running. $ERR"
+            echo "Docker container '$container_name' is not running. $ERR"
             exit 1
         fi
+    fi
+}
+
+find_docker_by_name_ends_with() {
+    if [[ -n "$1" ]]; then
+        echo "$(docker ps --format '{{.Names}}' | grep "$1$" | head -n1)"
+    else
+        lib_error "Wrong method call 'find_docker_by_name_ends_with \"<name_suffix>\"'"
     fi
 }
 
@@ -121,11 +137,36 @@ check_geth() {
   fi
 }
 
+check_reth_bsc() {
+    if ! command -v "$reth_bsc" &> /dev/null; then
+        echo "The 'reth-bsc' binary is required for this script. Set RETH_BSC_BINARY to the"
+        echo "path of a Firehose-instrumented reth-bsc build (streamingfast/reth-bsc, branch"
+        echo "firehose/0.1.x)."
+        exit 1
+    fi
+}
+
+check_arc_node() {
+  if ! command -v "$arc_node" &> /dev/null; then
+    echo "The '$arc_node' binary could not be found, you can install it with:"
+    echo ""
+    echo "- cargo build --release --bin arc-node-execution, from streamingfast/arc-node-priv 'release/v0.x'"
+    echo ""
+    echo "> *Note* The private reth fork is fetched over SSH, so you may need"
+    echo "> 'git config --global url.\"git@github.com:\".insteadOf \"https://github.com/\"'"
+    exit 1
+  fi
+  if ! "$arc_node" node --help | grep -q -- "--firehose"; then
+    echo "Your '$arc_node' binary has no '--firehose' flag, it is not a Firehose-instrumented build"
+    exit 1
+  fi
+}
+
 check_reth_firehose_tracer() {
   if ! command -v "$reth" &> /dev/null; then
     echo "The '$reth' binary could not be found, you can install it with:"
     echo ""
-    echo "- cargo install reth-firehose-tracer --git"
+    echo "- Download from https://firehose.streamingfast.io/firehose/overview/chains and place as 'reth' on PATH"
     echo ""
     echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
     exit 1
@@ -170,6 +211,32 @@ check_op_geth() {
     echo "- git clone https://github.com/streamingfast/go-ethereum.git"
     echo "- cd go-ethereum"
     echo "- go build -o \`go env GOPATH\`/bin/op-geth ./cmd/geth"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
+  fi
+}
+
+check_op_reth() {
+  if ! command -v "$op_reth" &> /dev/null; then
+    echo "The '$op_reth' binary could not be found, install the firehose-enabled"
+    echo "Op Stack Reth execution client."
+    echo ""
+    echo "- Download the Firehose-instrumented op-reth from https://firehose.streamingfast.io/firehose/overview/chains"
+    echo "  and place it as 'op-reth' on your PATH (or set OP_RETH_BINARY=/path/to/op-reth)"
+    echo ""
+    echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
+    exit 1
+  fi
+}
+
+check_nitro() {
+  if ! command -v "$nitro" &> /dev/null; then
+    echo "The '$nitro' binary could not be found, install the firehose-enabled"
+    echo "Arbitrum Nitro execution client from our fork."
+    echo ""
+    echo "- Download the Firehose-instrumented nitro from https://firehose.streamingfast.io/firehose/overview/chains"
+    echo "  and place it as 'nitro' on your PATH (or set NITRO_BINARY=/path/to/nitro)"
     echo ""
     echo "> *Note* Install the correct version for the chain you want to test against, see the README for more information"
     exit 1
@@ -355,4 +422,18 @@ lib_error() {
   fi
 
   exit 1
+}
+
+check_world_chain() {
+  if ! command -v "$world_chain" &> /dev/null; then
+    echo "The '$world_chain' binary could not be found, install required binary from our fork:"
+    echo ""
+    echo "- git clone -b release/v2.x-fh https://github.com/streamingfast/world-chain.git"
+    echo "- cd world-chain"
+    echo "- cargo build --release -p world-chain   # needs rustc 1.95.0+"
+    echo "- cp target/release/world-chain \"\`go env GOPATH\`/bin/\" # or anywhere on PATH"
+    echo ""
+    echo "You can also point the WORLD_CHAIN_BINARY environment variable to the binary."
+    exit 1
+  fi
 }
