@@ -26,7 +26,7 @@ import { executeTransactions, sendImmediateEth } from "./lib/ethereum"
 import { knownExistingAddress, precompileWithBalanceAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
 import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
-import { fetchFirehoseBlock, waitForFirehoseReady } from "./lib/firehose"
+import { fetchFirehoseBlock, fetchFirehoseFirstStreamableBlock, waitForFirehoseReady } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isMineOnDemand, isNetwork } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
@@ -158,7 +158,8 @@ before(async () => {
   // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall
   // setup faster and more reliable
   try {
-    const block = await fetchFirehoseBlock(2, { timeoutMs: 30_000 })
+    const blockNum = isNetwork("monad-dev") ? await fetchFirehoseFirstStreamableBlock() : 2
+    const block = await fetchFirehoseBlock(blockNum, { timeoutMs: 30_000 })
     validateFirehoseBlockVersion(block)
   } catch (err) {
     abortTagged("Validating Firehose block version")(err)
