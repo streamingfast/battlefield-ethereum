@@ -49,6 +49,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Optimism Geth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_geth_devnet.sh`. | `pnpm test:fh3.0:op-geth-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Reth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_reth_devnet.sh`. | `pnpm test:fh3.0:op-reth-devnet`                          | Requires [op-reth](#get-reth) (firehose-instrumented Op Stack Reth on PATH as `op-reth`), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Nitro Dev (fh 2.3 because block version == 3)       | `./scripts/run_firehose_nitro_dev.sh`                                   | `pnpm test:fh2.3:nitro-dev`                               | Standalone mine-on-demand Arbitrum chain. Requires [nitro](#get-nitro) and [fireeth](#get-fireeth) |
+| Monad (fh 3.0)           | `./scripts/run_monad_devnet.sh`                                                               | `pnpm test:fh3.0:monad-dev`                                | Requires Monad node with event ring enabled                                  |
 
 ### Block Comparison
 

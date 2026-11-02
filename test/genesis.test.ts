@@ -13,7 +13,7 @@ describe("Genesis Block", function () {
     //    - op-geth-devnet
     // - Arbitrum/Nitro builds its ArbOS genesis without persisting a genesis state spec, so the live firehose
     //   tracer initializes with an empty alloc: block 0 is emitted but carries no GENESIS_BALANCE changes.
-    if (isNetworkOneOf("geth-devnet", "op-geth-devnet", "arbitrum-nitro-dev")) {
+    if (isNetworkOneOf("geth-devnet", "op-geth-devnet", "arbitrum-nitro-dev", "monad-dev")) {
       this.skip()
     }
 

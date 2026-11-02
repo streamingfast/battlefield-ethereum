@@ -1,0 +1,82 @@
+{
+  "to": "$ownerAddress",
+  "nonce": "$nonce",
+  "gasLimit": "21000",
+  "input": "",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "21000",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "$ownerAddress",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "6",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "$ownerAddress",
+      "address": "$ownerAddress",
+      "gasLimit": "21000",
+      "gasConsumed": "21000",
+      "returnData": "",
+      "input": "",
+      "executedCode": false,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "$ownerAddress",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "3",
+          "oldValue": "0834eec96e6000",
+          "newValue": ""
+        },
+        {
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "5",
+          "oldValue": "",
+          "newValue": "befe6f672000"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "$ownerAddress",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "4"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "1",
+      "endOrdinal": "2",
+      "accountCreations": [],
+      "value": "01"
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "199c82cc00",
+  "value": "01",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}

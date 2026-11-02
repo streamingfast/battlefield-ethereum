@@ -1,0 +1,144 @@
+{
+  "to": "$callsContract",
+  "nonce": "$nonce",
+  "gasLimit": "5000000",
+  "input": "01358fb1000000000000000000000000$childContract",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "5000000",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "10",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$callsContract",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
+      "returnData": "",
+      "input": "01358fb1000000000000000000000000$childContract",
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "6",
+          "oldValue": "07a1fe1602770003",
+          "newValue": ""
+        },
+        {
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "8",
+          "oldValue": "",
+          "newValue": "b1a2bc2ec50000"
+        },
+        {
+          "address": "$callsContract",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "9",
+          "newValue": "03",
+          "oldValue": ""
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "7"
+        }
+      ],
+      "logs": [
+        {
+          "address": "$callsContract",
+          "topics": [
+            "47fa945ba6bb98f9176503492bc053ac8973b431c209242d7212e4e1d29636b3",
+            "0000000000000000000000000000000000000000000000000000000000000003",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+            "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
+          ],
+          "data": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000004017f425a00000000000000000000000000000000000000000000000000000000",
+          "index": 0,
+          "blockIndex": 0,
+          "ordinal": "1"
+        }
+      ],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "2",
+      "endOrdinal": "5",
+      "accountCreations": [],
+      "value": "03"
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "DELEGATE",
+      "caller": "$callsContract",
+      "address": "$childContract",
+      "gasLimit": "4890273",
+      "gasConsumed": "11323",
+      "returnData": "",
+      "input": "017f425a",
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "3",
+      "endOrdinal": "4",
+      "accountCreations": [],
+      "value": "03"
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "199c82cc00",
+  "value": "03",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": [
+      {
+        "address": "$callsContract",
+        "topics": [
+          "47fa945ba6bb98f9176503492bc053ac8973b431c209242d7212e4e1d29636b3",
+          "0000000000000000000000000000000000000000000000000000000000000003",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "000000000000000000000000821b55d8abe79bc98f05eb675fdc50dfe796b7ab"
+        ],
+        "data": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000004017f425a00000000000000000000000000000000000000000000000000000000",
+        "index": 0,
+        "blockIndex": 0,
+        "ordinal": "1"
+      }
+    ]
+  }
+}

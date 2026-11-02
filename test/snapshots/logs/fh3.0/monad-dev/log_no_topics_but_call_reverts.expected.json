@@ -1,0 +1,79 @@
+{
+  "to": "$logsContract",
+  "nonce": "$nonce",
+  "gasLimit": "5000000",
+  "input": "d129a4b8",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "5000000",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b6661696c65642063616c6c000000000000000000000000000000000000000000",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "6",
+  "status": "REVERTED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$logsContract",
+      "gasLimit": "5000000",
+      "gasConsumed": "5000000",
+      "returnData": "08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b6661696c65642063616c6c000000000000000000000000000000000000000000",
+      "input": "d129a4b8",
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "3",
+          "oldValue": "07a1fe1602770000",
+          "newValue": ""
+        },
+        {
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "5",
+          "oldValue": "",
+          "newValue": "b1a2bc2ec50000"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "4"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": true,
+      "statusReverted": true,
+      "failureReason": "execution reverted",
+      "stateReverted": true,
+      "beginOrdinal": "1",
+      "endOrdinal": "2",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "199c82cc00",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}

@@ -2,6 +2,7 @@ import { expect } from "chai"
 import { mustGetRpcBlock, sendEth, defaultGasPrice, deployContract } from "./lib/ethereum"
 import { fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import { isBlockOnPragueOrLater } from "./lib/chain_eips"
+import { isNetwork } from "./lib/network"
 import { CodeChange, TransactionTrace, TransactionTrace_Type } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner } from "./global"
 import { isSameAddress } from "./lib/addresses"
@@ -56,8 +57,10 @@ describe("Prague", function () {
     // same chain, wallet2 may still carry delegation code from a previous run (we only reset
     // wallet1 in TX3).  If delegation code is present the plain ETH transfer executes the
     // delegated contract, which requires more gas (e.g. SetterBB does an SSTORE).
-    await sendEth(owner, wallet1.address, eth(1), { gasLimit: dynamicGasLimit(100_000) })
-    await sendEth(owner, wallet2.address, eth(1), { gasLimit: dynamicGasLimit(100_000) })
+    // On Monad, delegated EOAs cannot dip below their reserve balance (10 MON)
+    const fundAmount = isNetwork("monad-dev") ? eth(11) : eth(1)
+    await sendEth(owner, wallet1.address, fundAmount, { gasLimit: dynamicGasLimit(100_000) })
+    await sendEth(owner, wallet2.address, fundAmount, { gasLimit: dynamicGasLimit(100_000) })
 
     // Deploy the Caller and two Setter instances (CC and BB are identical code, different addresses)
     const CallerFactory = await hre.ethers.getContractFactory("SetCode7702Caller")
@@ -131,6 +134,11 @@ describe("Prague", function () {
     const callerIface = SetCode7702Caller__factory.createInterface()
     const calldata = callerIface.encodeFunctionData("callTarget", [wallet2.address])
 
+    // Monad's txpool caps EIP-7702 auth lists at 4 entries (to bound ECRECOVER costs at admission).
+    const authorizationList = isNetwork("monad-dev")
+      ? [auth1, auth2, auth3InvalidAuthority, auth4]
+      : [auth1, auth2, auth3InvalidAuthority, auth4, auth5InvalidNonce]
+
     // TX1: type-4 SetCode transaction
     const tx1Response = await wallet1.sendTransaction({
       to: wallet1.address,
@@ -140,7 +148,7 @@ describe("Prague", function () {
       maxFeePerGas: BigInt(defaultGasPrice),
       maxPriorityFeePerGas: 25_000n,
       type: 4,
-      authorizationList: [auth1, auth2, auth3InvalidAuthority, auth4, auth5InvalidNonce],
+      authorizationList: authorizationList,
     })
     const tx1Result = await waitForTransaction(tx1Response, false)
     const { trace: trace1 } = await fetchFirehoseTransactionAndBlock(tx1Result)
@@ -171,8 +179,10 @@ describe("Prague", function () {
     )
 
     // TX1 authorization list: 5 entries mirroring the Go test
+    // On monad-dev the txpool caps auth lists at 4 entries:
+    const expectedAuthCount = isNetwork("monad-dev") ? 4 : 5
     expect(trace1.setCodeAuthorizations).to.have.length(
-      5,
+      expectedAuthCount,
       "TX1 must record all 5 authorizations in setCodeAuthorizations",
     )
 
@@ -206,43 +216,47 @@ describe("Prague", function () {
     expect(a4.nonce).to.equal(BigInt(wallet2Nonce + 1), "auth4 nonce must be wallet2Nonce+1")
 
     // auth[4] = auth5: wallet2, same nonce as auth4 (wallet2Nonce+1), nonce change already consumed → discarded
-    const a5 = trace1.setCodeAuthorizations[4]
-    expect(a5.discarded).to.equal(true, "auth5 (stale nonce) must be discarded")
-    expect(hexlify(a5.authority!)).to.equal(
-      wallet2.address.toLowerCase(),
-      "auth5 authority must be wallet2 (valid sig)",
-    )
+    // On monad-dev the txpool caps auth lists at 4 entries, so auth5 is never submitted, and
+    // this snapshot has not been validated against Monad execution events.
+    if (!isNetwork("monad-dev")) {
+      const a5 = trace1.setCodeAuthorizations[4]
+      expect(a5.discarded).to.equal(true, "auth5 (stale nonce) must be discarded")
+      expect(hexlify(a5.authority!)).to.equal(
+        wallet2.address.toLowerCase(),
+        "auth5 authority must be wallet2 (valid sig)",
+      )
 
-    // Commenting out the snapshot comparisons as there is still plenty of things still varying
-    // like signatures, gas price and others. We will to revisit that, either we trimmed down the
-    // trx and make templated what is needed or we move to an assertion based approach fully. I
-    // would create a unique new test just for this I think
-    await expect(tx1Result).to.trxTraceEqualSnapshot(
-      "prague/setcode_set_delegations.expected.json",
-      {
-        $wallet1: wallet1.address.toLowerCase().slice(2),
-        $wallet2: wallet2.address.toLowerCase().slice(2),
-        $callerContract: callerAddress.toLowerCase().slice(2),
-        $setterCC: setterCCAddress.toLowerCase().slice(2),
-        $setterBB: setterBBAddress.toLowerCase().slice(2),
-      },
-      {
-        // gasPrice (and the gas-buy / gas-refund balance change values that derive from it)
-        // float with the chain's basefee, which is non-deterministic across runs. We assert
-        // the structure of the trace via the snapshot and rely on inline assertions above for
-        // the semantic checks that matter for EIP-7702.
-        excludeFields: [
-          "gasPrice",
-          "calls[0].balanceChanges[0].oldValue",
-          "calls[0].balanceChanges[1].newValue",
-          "calls[0].codeChanges[].newHash",
-          "calls[0].codeChanges[].oldHash",
-          "setCodeAuthorizations[].r",
-          "setCodeAuthorizations[].s",
-          "setCodeAuthorizations[].v",
-        ],
-      },
-    )
+      // Commenting out the snapshot comparisons as there is still plenty of things still varying
+      // like signatures, gas price and others. We will to revisit that, either we trimmed down the
+      // trx and make templated what is needed or we move to an assertion based approach fully. I
+      // would create a unique new test just for this I think
+      await expect(tx1Result).to.trxTraceEqualSnapshot(
+        "prague/setcode_set_delegations.expected.json",
+        {
+          $wallet1: wallet1.address.toLowerCase().slice(2),
+          $wallet2: wallet2.address.toLowerCase().slice(2),
+          $callerContract: callerAddress.toLowerCase().slice(2),
+          $setterCC: setterCCAddress.toLowerCase().slice(2),
+          $setterBB: setterBBAddress.toLowerCase().slice(2),
+        },
+        {
+          // gasPrice (and the gas-buy / gas-refund balance change values that derive from it)
+          // float with the chain's basefee, which is non-deterministic across runs. We assert
+          // the structure of the trace via the snapshot and rely on inline assertions above for
+          // the semantic checks that matter for EIP-7702.
+          excludeFields: [
+            "gasPrice",
+            "calls[0].balanceChanges[0].oldValue",
+            "calls[0].balanceChanges[1].newValue",
+            "calls[0].codeChanges[].newHash",
+            "calls[0].codeChanges[].oldHash",
+            "setCodeAuthorizations[].r",
+            "setCodeAuthorizations[].s",
+            "setCodeAuthorizations[].v",
+          ],
+        },
+      )
+    }
   })
 
   it("Delegated EOA executes delegation code on subsequent legacy call", async function () {

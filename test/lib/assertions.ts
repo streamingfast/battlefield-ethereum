@@ -386,6 +386,10 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
         filteredExpected = retainStorageSlotPreimages(filteredExpected)
       }
 
+      if (isNetwork("monad-dev")) {
+        filteredExpected = sortStorageChangesByAddressAndKey(filteredExpected)
+      }
+
       snapshot.writeSnapshotDebugFiles(
         toProtoJsonString(actualTrace),
         JSON.stringify(filteredActual, null, 2),
@@ -641,4 +645,24 @@ function sortKeysDeep(value: unknown): unknown {
     )
   }
   return value
+}
+
+function sortStorageChangesByAddressAndKey(trace: any): any {
+  return {
+    ...trace,
+    calls: trace.calls?.map((call: any) => {
+      if (!call.storageChanges?.length) {
+        return call
+      }
+
+      const ordinals = call.storageChanges
+        .map((change: any) => change.ordinal)
+        .sort((a: string, b: string) => Number(a) - Number(b))
+      const sorted = [...call.storageChanges].sort((a: any, b: any) =>
+        `${a.address}${a.key}`.localeCompare(`${b.address}${b.key}`),
+      )
+
+      return { ...call, storageChanges: sorted.map((change: any, i: number) => ({ ...change, ordinal: ordinals[i] })) }
+    }),
+  }
 }

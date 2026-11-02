@@ -20,7 +20,7 @@ import {
 } from "./global"
 import { wei } from "./lib/money"
 import { randomAddress5, randomAddress5Hex } from "./lib/addresses"
-import { dynamicGasLimit } from "./lib/network"
+import { dynamicGasLimit, isNetwork } from "./lib/network"
 
 // Optimism Geth Dev Failed vs Revert Note (comment ref id 1be64cf0820f)
 //
@@ -45,7 +45,7 @@ describe("Calls", function () {
     // Computed here rather than at module scope: dynamicGasLimit's Amsterdam-awareness reads
     // chainStaticInfo, which is only populated once the global before() hook (in global.ts) has
     // run, and module-level code executes before any hook does.
-    callsGasLimit = dynamicGasLimit(3_500_000)
+    callsGasLimit = dynamicGasLimit(isNetwork("monad-dev") ? 30_000_000 : 3_500_000)
 
     await deployAll(
       async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })),

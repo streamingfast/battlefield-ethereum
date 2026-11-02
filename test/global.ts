@@ -33,6 +33,7 @@ import { registerGlobalExcludedFields } from "./lib/field-exclusion"
 import {
   besu_exclude_fields as besuExcludeFields,
   arbitrum_exclude_fields as arbitrumExcludeFields,
+  monad_exclude_fields as monadExcludeFields,
 } from "./lib/constants"
 
 export let owner: NonceManager
@@ -74,6 +75,7 @@ before(async () => {
 
   // Register global excluded fields for specific networks
   registerGlobalExcludedFields("besu-devnet", besuExcludeFields)
+  registerGlobalExcludedFields("monad-dev", monadExcludeFields)
   registerGlobalExcludedFields("arbitrum-nitro-dev", arbitrumExcludeFields)
 
   debug("Initializing contract factories sequentially")
@@ -150,13 +152,16 @@ before(async () => {
       .then(debugLogTimeTakenOnCompletion(executeTransactionsStart, "Executed initialization transaction(s)"))
       .catch(abortTagged("Executing initialization transactions"))
   } else {
-    debug("Skipping initial funding transactions on Amoy testnet")
+    debug("Skipping initial funding transactions on %s", hre.network.name)
   }
 
   // FIXME: Fix Firehose service to allow querying the head block of the chain and use it here, it will make the overall
   // setup faster and more reliable
   try {
-    const block = await fetchFirehoseBlock(2, { timeoutMs: 30_000 })
+    const latest = isNetwork("monad-dev") ? await hre.ethers.provider.getBlock("latest") : null
+    const block = await fetchFirehoseBlock(latest ? { hash: latest.hash!, num: latest.number } : 2, {
+      timeoutMs: 30_000,
+    })
     validateFirehoseBlockVersion(block)
   } catch (err) {
     abortTagged("Validating Firehose block version")(err)

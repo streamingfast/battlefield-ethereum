@@ -1,0 +1,11 @@
+services:
+  build_triedb:
+    image: ghcr.io/streamingfast/monad-execution:v0.16.5-fh3.1
+  build_genesis:
+    image: ghcr.io/streamingfast/monad-execution:v0.16.5-fh3.1
+  monad_execution:
+    image: ghcr.io/streamingfast/monad-execution:v0.16.5-fh3.1
+  monad_node:
+    image: ghcr.io/streamingfast/monad-node:v0.16.5-fh3.1
+  monad_rpc:
+    image: ghcr.io/streamingfast/monad-rpc:v0.16.5-fh3.1

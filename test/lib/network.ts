@@ -123,13 +123,13 @@ export function networkValue<T>(mapping: { [name: string]: T }, defaultValue?: T
   }
 
   // Find default ("*", or "default" or "") value and use it if
-  if (mapping["*"] !== undefined) {
+  if ("*" in mapping) {
     return mapping["*"]
   }
-  if (mapping["default"] !== undefined) {
+  if ("default" in mapping) {
     return mapping["default"]
   }
-  if (mapping[""] !== undefined) {
+  if ("" in mapping) {
     return mapping[""]
   }
 

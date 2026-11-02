@@ -3,6 +3,7 @@ import {
   Contract,
   contractCall,
   contractCreation,
+  defaultDeployerBalance,
   deployAll,
   deployContract,
   deployStableContractCreator,
@@ -16,7 +17,7 @@ import {
 import { Calls, Calls__factory } from "../typechain-types"
 import { CallsFactory, ContractEmptyFactory, owner, SuicidalFactory } from "./global"
 import { eth, oneWei } from "./lib/money"
-import { isArbitrum, networkValue, dynamicGasLimit } from "./lib/network"
+import { isArbitrum, isNetwork, networkValue, dynamicGasLimit } from "./lib/network"
 
 let callsGasLimit: number
 
@@ -27,7 +28,7 @@ describe("Deploys", function () {
     // Computed here rather than at module scope: dynamicGasLimit's Amsterdam-awareness reads
     // chainStaticInfo, which is only populated once the global before() hook (in global.ts) has
     // run, and module-level code executes before any hook does.
-    callsGasLimit = dynamicGasLimit(3_500_000)
+    callsGasLimit = dynamicGasLimit(isNetwork("monad-dev") ? 30_000_000 : 3_500_000)
 
     await deployAll(async () => (Calls = await deployContract(owner, CallsFactory, [], { gasLimit: callsGasLimit })))
   })
@@ -53,6 +54,22 @@ describe("Deploys", function () {
     )
   })
 
+  it("Contract fail just enough gas for intrinsic gas", async function () {
+    // Removed from the shared suite on master; only Monad still has a snapshot for it.
+    if (!isNetwork("monad-dev")) {
+      this.skip()
+    }
+    const deployer = await stableDeployerFunded(owner, 1, defaultDeployerBalance)
+
+    await expect(koContractCreation(deployer, SuicidalFactory, [], { gasLimit: 63274 })).to.trxTraceEqualSnapshot(
+      "deploys/contract_fail_intrinsic_gas.expected.json",
+      {
+        $sender: deployer.address.toLowerCase().slice(2),
+        $createdContract: getCreateAddressHex(deployer.address, 0),
+      },
+    )
+  })
+
   it("Contract fail not enough gas after code_copy", async function () {
     // Deliberate EVM gas-boundary test: it sets a fixed gas limit tuned to canonical EVM
     // intrinsic-gas accounting. ArbOS redefines intrinsic gas (L1-data component), so the tx is
@@ -60,7 +77,7 @@ describe("Deploys", function () {
     if (isArbitrum()) {
       this.skip()
     }
-    const deployer = await stableDeployerFunded(owner, 1, eth(1))
+    const deployer = await stableDeployerFunded(owner, 1, isNetwork("monad-dev") ? defaultDeployerBalance : eth(1))
 
     await expect(
       koContractCreation(deployer, SuicidalFactory, [], {

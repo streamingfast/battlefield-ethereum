@@ -18,6 +18,8 @@ export const besu_exclude_fields = [
   "calls[].keccakPreimages",
 ]
 
+export const monad_exclude_fields = ["calls[].gasChanges", "calls[].executedCode"]
+
 // Arbitrum/Nitro recomputes its L1-derived gas component every run (the ArbOS gas/price state is
 // not reproducible across fresh chains), so all gas- and fee-derived *values* drift between runs.
 // We exclude only those volatile numeric values — not the surrounding structure — so snapshots

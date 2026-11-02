@@ -32,6 +32,14 @@ const config: HardhatUserConfig = {
     "arc-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:9545" },
     "arbitrum-nitro-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
     "besu-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
+    "monad-dev": {
+      ...firehoseNetwork([]),
+      url: "http://127.0.0.1:18080",
+      //   accounts: [
+      //     // Foundry pre-funded account with massive balance on localnet
+      //     "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+      //   ],
+    },
     "bnb-dev": firehoseNetwork([]),
     "geth-dev": firehoseNetwork([]),
     "geth-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },

@@ -4,7 +4,9 @@ import { owner, ownerAddress } from "./global"
 import { waitForTransaction } from "./lib/ethers"
 import { hexlify } from "ethers"
 import { isSameAddress } from "./lib/addresses"
-import { dynamicGasLimit } from "./lib/network"
+import { dynamicGasLimit, isNetwork } from "./lib/network"
+import { toBigInt } from "./lib/numbers"
+import { BalanceChange_Reason } from "../pb/sf/ethereum/type/v2/type_pb"
 
 /**
  * A top-level transaction sending value directly to a precompile records both TRANSFER (reason
@@ -24,6 +26,21 @@ describe("PrecompileValue", function () {
     const resp = await owner.sendTransaction({ to: precompile, value: 12345n, gasLimit: dynamicGasLimit(100_000) })
     const result = await waitForTransaction(resp, false)
     const { trace } = await fetchFirehoseTransactionAndBlock(result)
+
+    if (isNetwork("monad-dev")) {
+      const postState = trace.calls[0].balanceChanges.filter(
+        (b) => b.reason === BalanceChange_Reason.MONAD_TX_POST_STATE,
+      )
+      const credited = postState.find((b) => isSameAddress(hexlify(b.address), precompile))
+      expect(credited, "precompile post-state balance change must be present").to.not.be.undefined
+      expect(toBigInt(credited!.newValue) - toBigInt(credited!.oldValue)).to.equal(12345n)
+      const debited = postState.find((b) => isSameAddress(hexlify(b.address), ownerAddress))
+      expect(debited, "sender post-state balance change must be present").to.not.be.undefined
+      expect(toBigInt(debited!.oldValue) - toBigInt(debited!.newValue)).to.equal(
+        BigInt(trace.gasUsed) * toBigInt(trace.gasPrice) + 12345n,
+      )
+      return
+    }
 
     // Arbitrum also records its fee payouts (network fee account, L1 pricer pool) as TRANSFER,
     // so only the transfers touching the sender or the precompile are checked.

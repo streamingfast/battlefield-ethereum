@@ -1,0 +1,96 @@
+{
+  "to": "$createdContract",
+  "nonce": "$nonce",
+  "gasLimit": "500000",
+  "input": "6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212209cd6a6851cb6439ef3009ed902d5ec5ff9bdb7a3428995f1f0ec1542b5ec423964736f6c634300060c0033",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "500000",
+  "type": "TRX_TYPE_DYNAMIC_FEE",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "$sender",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "8",
+  "status": "SUCCEEDED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CREATE",
+      "caller": "$sender",
+      "address": "$createdContract",
+      "gasLimit": "500000",
+      "gasConsumed": "500000",
+      "returnData": "",
+      "input": "6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212209cd6a6851cb6439ef3009ed902d5ec5ff9bdb7a3428995f1f0ec1542b5ec423964736f6c634300060c0033",
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [
+        {
+          "address": "$sender",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "4",
+          "oldValue": "c3663566a58000",
+          "newValue": ""
+        },
+        {
+          "address": "0000000000000000000000000000000000000000",
+          "reason": "REASON_MONAD_TX_POST_STATE",
+          "ordinal": "6",
+          "oldValue": "",
+          "newValue": "11c37937e08000"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "$sender",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "5"
+        },
+        {
+          "address": "$createdContract",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "7"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [
+        {
+          "address": "$createdContract",
+          "oldHash": "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+          "oldCode": "",
+          "newHash": "4aa628c7b0af8704c9166b097d8df626b6a523903b838cb3555edfe36026fc47",
+          "newCode": "6080604052600080fdfea26469706673582212209cd6a6851cb6439ef3009ed902d5ec5ff9bdb7a3428995f1f0ec1542b5ec423964736f6c634300060c0033",
+          "ordinal": "2"
+        }
+      ],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": false,
+      "beginOrdinal": "1",
+      "endOrdinal": "3",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "199c82cc00",
+  "maxFeePerGas": "199c82cc00",
+  "maxPriorityFeePerGas": "199c82cc00",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}
