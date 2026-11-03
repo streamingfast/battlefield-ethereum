@@ -17,16 +17,19 @@ main() {
 
     # Use non-default ports so this battlefield instance does not conflict with any other
     # reth node the developer may be running locally (which would use the defaults below).
+    # RETH_DEV_MINING_ARGS selects how the dev node mines, one transaction per block by default.
+    # RETH_EXTRA_ARGS appends node flags, e.g. for the performance script.
     reth_extra_args=(
         "node"
         "--datadir=$data_dir"
         "--dev"
-        "--dev.block-max-transactions=1"
+        ${RETH_DEV_MINING_ARGS:---dev.block-max-transactions=1}
         "--chain=$genesis_file"
         "--http.port=9545"
         "--ws.port=9546"
         "--authrpc.port=9551"
         "--port=30403"
+        ${RETH_EXTRA_ARGS:-}
     )
 
     echo "Running local Reth --dev chain"
