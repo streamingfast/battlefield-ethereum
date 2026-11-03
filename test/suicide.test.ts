@@ -167,7 +167,12 @@ describe("Suicide", function () {
     const deployer = await stableDeployerFunded(owner, 1, isAmsterdamActive() ? eth(1) : defaultDeployerBalance)
 
     await expect(
-      contractCreation(deployer, SuicideOnConstructorFactory, [], { gasLimit: defaultGasLimit }),
+      contractCreation(
+        deployer,
+        SuicideOnConstructorFactory,
+        [],
+        isNetwork("monad-dev") ? { gasLimit: defaultGasLimit } : {},
+      ),
     ).to.trxTraceEqualSnapshot("suicide/create_contract_suicide_in_constructor.json", {
       $sender: deployer.address.toLowerCase().slice(2),
       $createdContract: getCreateAddressHex(deployer.address, 0),
