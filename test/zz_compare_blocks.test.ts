@@ -1,10 +1,18 @@
 import { expect } from "chai"
-import { compareBlocksWithRpc, finalityTimeoutMs, isFireethAvailable, resolveCompareRange } from "./lib/compare_blocks"
+import {
+  compareBlocksWithRpc,
+  Difference,
+  finalityTimeoutMs,
+  formatDifference,
+  isFireethAvailable,
+  parseDifferences,
+  resolveCompareRange,
+} from "./lib/compare_blocks"
 import { sendEth } from "./lib/ethereum"
 import { knownExistingAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
 import { owner } from "./global"
-import { isNetwork } from "./lib/network"
+import { isNetwork, isNetworkOneOf } from "./lib/network"
 
 // Deliberately named so it sorts last: the comparison is most useful once the suite has
 // produced all its blocks. It replaces the former `scripts/compare-blocks.sh`, which had to
@@ -37,51 +45,50 @@ describe("Compare blocks", function () {
     const result = await compareBlocksWithRpc(resolved.range, timeoutMs)
 
     expect(result.exitCode, `'fireeth tools compare-blocks-rpc' failed, output:\n${result.output}`).to.equal(0)
-    if (isNetwork("monad-dev")) {
-      expect(
-        unacceptedMonadDifferences(result.output),
-        `Firehose blocks differ from RPC blocks in range #${start}-#${stop}, output:\n${result.output}`,
-      ).to.deep.equal([])
-      expect(result.identicalCount + result.differences.length).to.be.greaterThan(0)
-      return
-    }
 
+    const unaccepted = parseDifferences(result.output)
+      .filter((difference) => !isAcceptedDifference(difference))
+      .map(formatDifference)
     expect(
-      result.differences.filter((difference) => !isAcceptedDifference(difference)),
+      unaccepted,
       `Firehose blocks differ from RPC blocks in range #${start}-#${stop}, output:\n${result.output}`,
     ).to.deep.equal([])
-    expect(
-      result.identicalCount,
-      `No block was compared in range #${start}-#${stop}, output:\n${result.output}`,
-    ).to.be.greaterThan(0)
+
+    // Monad Firehose blocks never match RPC on `size`, so every block is reported as different there.
+    const compared = isNetwork("monad-dev") ? result.identicalCount + result.differences.length : result.identicalCount
+    expect(compared, `No block was compared in range #${start}-#${stop}, output:\n${result.output}`).to.be.greaterThan(
+      0,
+    )
   })
 })
 
-// BSC Firehose blocks, from geth-BSC and reth-bsc alike, treat the zero base fee as absent, so a
-// dynamic-fee transaction's gas price is its fee cap where RPC reports the effective price. The
-// per-transaction snapshots pin the Firehose value.
-function isAcceptedDifference(difference: string): boolean {
-  return isNetwork("bnb-dev") && /^different \[@ \["transaction_traces",\d+,"gas_price"\]$/.test(difference.trim())
-}
+function isAcceptedDifference(difference: Difference): boolean {
+  const { path, rpc, firehose } = difference
 
-function unacceptedMonadDifferences(output: string): string[] {
-  const unaccepted: string[] = []
-  const lines = output.split("\n")
-
-  for (let i = 0; i < lines.length; i++) {
-    const path = lines[i].match(/@ (\[.*\])$/)?.[1]
-    if (path === undefined) {
-      continue
-    }
-
-    const rpc = lines[i + 1]?.match(/^- "(.*)"$/)?.[1]
-    const firehose = lines[i + 2]?.match(/^\+ "(.*)"$/)?.[1]
-    if (!isAcceptedMonadDifference(path, rpc, firehose)) {
-      unaccepted.push(`${path}: rpc=${rpc} firehose=${firehose}`)
-    }
+  // BSC Firehose blocks, from geth-BSC and reth-bsc alike, treat the zero base fee as absent, so a
+  // dynamic-fee transaction's gas price is its fee cap where RPC reports the effective price. The
+  // per-transaction snapshots pin the Firehose value.
+  if (isNetwork("bnb-dev")) {
+    return /^\["transaction_traces",\d+,"gas_price"\]$/.test(path)
   }
 
-  return unaccepted
+  // From Jovian on, OP-stack receipts report the transaction's data availability footprint as
+  // `blobGasUsed`. `compare-blocks-rpc` reads that as EIP-4844 blob gas and fills both blob gas
+  // fields with it, while the Firehose transaction (not a blob transaction, OP has none) has no
+  // blob gas. The header's `blob_gas_used`, which Jovian also repurposes, matches on both sides.
+  if (isNetworkOneOf("op-reth-devnet", "op-geth-devnet", "world-chain-devnet")) {
+    return (
+      /^\["transaction_traces",\d+,("blob_gas"|"receipt","blob_gas_used")\]$/.test(path) &&
+      rpc !== undefined &&
+      firehose === undefined
+    )
+  }
+
+  if (isNetwork("monad-dev")) {
+    return isAcceptedMonadDifference(path, rpc, firehose)
+  }
+
+  return false
 }
 
 function isAcceptedMonadDifference(path: string, rpc?: string, firehose?: string): boolean {

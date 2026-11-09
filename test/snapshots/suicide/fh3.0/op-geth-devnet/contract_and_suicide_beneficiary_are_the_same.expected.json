@@ -15,7 +15,7 @@
   "returnData": "",
   "publicKey": "",
   "beginOrdinal": "0",
-  "endOrdinal": "23",
+  "endOrdinal": "21",
   "status": "SUCCEEDED",
   "calls": [
     {
@@ -44,28 +44,28 @@
         {
           "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
           "reason": "REASON_GAS_REFUND",
-          "ordinal": "18",
+          "ordinal": "16",
           "oldValue": "",
           "newValue": "8b96d1e52c5400"
         },
         {
           "address": "$coinbase",
           "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "18",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "19",
+          "oldValue": "",
+          "newValue": "01"
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
           "ordinal": "20",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "21",
-          "oldValue": "",
-          "newValue": "01"
-        },
-        {
-          "address": "$coinbase",
-          "reason": "REASON_REWARD_TRANSACTION_FEE",
-          "ordinal": "22",
           "oldValue": "",
           "newValue": "01"
         }
@@ -109,19 +109,19 @@
           "oldValue": "13724",
           "newValue": "873211",
           "reason": "REASON_REFUND_AFTER_EXECUTION",
-          "ordinal": "15"
+          "ordinal": "13"
         },
         {
           "oldValue": "873130",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "16"
+          "ordinal": "14"
         },
         {
           "oldValue": "873130",
           "newValue": "0",
           "reason": "REASON_TX_LEFT_OVER_RETURNED",
-          "ordinal": "19"
+          "ordinal": "17"
         }
       ],
       "statusFailed": false,
@@ -129,7 +129,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "5",
-      "endOrdinal": "17",
+      "endOrdinal": "15",
       "accountCreations": []
     },
     {
@@ -147,22 +147,7 @@
       "suicide": true,
       "keccakPreimages": {},
       "storageChanges": [],
-      "balanceChanges": [
-        {
-          "address": "$createdContract",
-          "reason": "REASON_SUICIDE_WITHDRAW",
-          "ordinal": "11",
-          "oldValue": "01",
-          "newValue": ""
-        },
-        {
-          "address": "$createdContract",
-          "reason": "REASON_SUICIDE_REFUND",
-          "ordinal": "12",
-          "newValue": "01",
-          "oldValue": ""
-        }
-      ],
+      "balanceChanges": [],
       "nonceChanges": [],
       "logs": [],
       "codeChanges": [],
@@ -183,7 +168,7 @@
           "oldValue": "859487",
           "newValue": "0",
           "reason": "REASON_CALL_LEFT_OVER_RETURNED",
-          "ordinal": "13"
+          "ordinal": "11"
         }
       ],
       "statusFailed": false,
@@ -191,7 +176,7 @@
       "failureReason": "",
       "stateReverted": false,
       "beginOrdinal": "8",
-      "endOrdinal": "14",
+      "endOrdinal": "12",
       "accountCreations": []
     }
   ],

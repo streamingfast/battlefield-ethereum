@@ -167,6 +167,57 @@ export async function compareBlocksWithRpc(range: BlockRange, timeoutMs: number)
   return { exitCode, output, identicalCount, differences }
 }
 
+// One differing field of a block, as `fireeth tools compare-blocks-rpc` reports it: the JSON path,
+// then the RPC value on a `-` line and the Firehose value on a `+` line. A side that has no value
+// for the field has no line.
+export type Difference = { path: string; rpc?: string; firehose?: string }
+
+// Parses every `different` report of the comparison output. A report is its `different [@ <path>`
+// line followed by one `@ <path>` line per other differing field, each followed by its values.
+// A report with no field we can read is returned as an unreadable difference, never dropped.
+export function parseDifferences(output: string): Difference[] {
+  const differences: Difference[] = []
+  const lines = output.split("\n")
+
+  for (let i = 0; i < lines.length; i++) {
+    if (!lines[i].startsWith("different")) {
+      continue
+    }
+
+    const before = differences.length
+    for (let j = i; j < lines.length && (j === i || !lines[j].startsWith("different")); j++) {
+      const path = lines[j].match(/@ (\[.*\])$/)?.[1]
+      if (path === undefined) {
+        continue
+      }
+
+      const difference: Difference = { path }
+      for (let k = j + 1; k < lines.length && !lines[k].includes("@ [") && !isReportBoundary(lines[k]); k++) {
+        const rpc = lines[k].match(/^- "?(.*?)"?$/)?.[1]
+        const firehose = lines[k].match(/^\+ "?(.*?)"?$/)?.[1]
+        if (rpc !== undefined) difference.rpc = rpc
+        if (firehose !== undefined) difference.firehose = firehose
+      }
+      differences.push(difference)
+    }
+
+    if (differences.length === before) {
+      differences.push({ path: `unreadable report: ${lines[i]}` })
+    }
+  }
+
+  return differences
+}
+
+export function formatDifference(difference: Difference): string {
+  return `${difference.path}: rpc=${difference.rpc ?? "<none>"} firehose=${difference.firehose ?? "<none>"}`
+}
+
+// A report ends at the next report or at the next compared block.
+function isReportBoundary(line: string): boolean {
+  return line.startsWith("different") || /^\d+ identical$/.test(line.trim())
+}
+
 export async function isFireethAvailable(): Promise<boolean> {
   try {
     const { exitCode } = await runProcess(fireethBinary(), ["--version"], 10_000)

@@ -17,6 +17,16 @@
 
 ### Changed
 
+- `scripts/optimism/run_optimism_devnet.sh` (`op-reth-devnet`, `op-geth-devnet`):
+  - Runs Jovian at genesis (`--enable-latest-fork=0`) with 1s L2 blocks. Firehose op-reth reports head - 200 as its last irreversible block, so Firehose only serves from L2 block 300: about 5 minutes after the devnet starts instead of 10, and every test waits half as long for its blocks.
+  - Drops the external op-rbuilder and flashblocks (`--external-builder op-rbuilder --flashblocks`). The suite does not use them, and bproxy failed to start on a race with op-rbuilder.
+  - Funds the test account on the sequencer op-geth (8547) and waits for the funds. The funding transaction used to go to a hard-coded port 8548 with a JWT header, where it was dropped in the chain-update runs.
+  - Starts the local op-node only once the Firehose EL answers on `:28551`, so the EL can be started at any time instead of within about 60 seconds, and names both EL launchers.
+  - Stops when the sequencer op-geth is not published on 8547, the port `hardhat.config.ts` uses, and no longer waits 60 seconds on an op-node port that no longer exists.
+  - Tears down a previous devnet with `docker compose -f` instead of `cd`-ing into the directory builder-playground deletes and recreates.
+- `op-reth-devnet` genesis snapshot regenerated for the Jovian genesis (fee vault predeploy storage and implementation addresses), and the `op-geth-devnet` suicide snapshots refreshed with op-geth `optimism-v1.101702.1-fh3.0-2`, which reports the code and nonce clearing of a contract destroyed in its creation transaction like every other target does.
+- The `Compare blocks` test checks every differing field of a block against the accepted differences, with its RPC and Firehose values, instead of only the first field of each report. It accepts the OP-stack Jovian `blob_gas`/`receipt.blob_gas_used` difference on `op-reth-devnet`, `op-geth-devnet` and `world-chain-devnet`: the receipts report the data availability footprint as `blobGasUsed`, which `compare-blocks-rpc` reads as EIP-4844 blob gas.
+
 - `scripts/ethereum_devnet/run_playground_devnet.sh` measures the L1 block time once the devnet is up and stops with install instructions for the StreamingFast builder-playground fork when it is more than twice `--block-time` (upstream runs 12s slots whatever the flag says, which stretches the `reth-devnet`/`geth-devnet` suites from 5 to about 25 minutes). `PLAYGROUND_ALLOW_SLOW_L1=1` skips the check.
 - The same script tears down a previous devnet with `docker compose -f` instead of `cd`-ing into the directory builder-playground deletes and recreates, which left the rest of the script running in a deleted working directory.
 
