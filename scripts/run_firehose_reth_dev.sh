@@ -31,8 +31,9 @@ usage() {
   echo ""
   echo "Runs a Reth dev with the Firehose tracer activated using version 3.0."
   echo ""
-  echo "You can optionally specify against which fork you want to test by specifying"
-  echo "the <fork-version> which can be one of: 'prague', 'amsterdam'. Defaults to 'amsterdam'."
+  echo "You can optionally specify the <fork-version>, one of: 'prague', 'amsterdam'. Defaults to"
+  echo "'amsterdam', the only fork 'pnpm test:fh3.0:reth-dev' runs on (its snapshots are recorded"
+  echo "on Amsterdam). Use 'prague' for manual experiments only."
 }
 
 main "$@"

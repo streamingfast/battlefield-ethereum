@@ -40,7 +40,7 @@ You need the following tools before running any test cycle. Check each with the 
 # Check
 fireeth --help
 
-# Install (macOS/Linux with Homebrew)
+# Install (macOS/Linux with Homebrew), v2.24.0 or later
 brew install streamingfast/tap/firehose-ethereum
 
 # Or download a release binary
@@ -235,23 +235,21 @@ Strategies:
 
 ## Test Cycle — `reth-dev`
 
-Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Defaults to the Amsterdam fork; pass `prague` to test Prague instead. The test script and snapshots mirror `geth-dev`. Same mine-on-demand behaviour applies — see the section above.
+Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode on the Amsterdam fork. The test script and snapshots mirror `geth-dev`. Same mine-on-demand behaviour applies — see the section above.
+
+**`reth-dev` is Amsterdam-only.** Its snapshots are recorded on Amsterdam (state gas, EIP-7708 logs), so `pnpm test:fh3.0:reth-dev` stops in its global setup when the chain is on another fork. They cannot fall back to the `geth-dev` Prague snapshots either: `geth --dev` mines to the zero address, which is warm under EIP-3651, so every call to `address(0)` costs 2500 gas less there. Reth coverage before Amsterdam is [`reth-devnet`](#test-cycle--reth-devnet). The launcher still accepts `prague` for manual experiments.
 
 ### Step 1 — Start the chain
 
 ```bash
-# Amsterdam fork (default)
 ./scripts/run_firehose_reth_dev.sh
-
-# Prague fork
-./scripts/run_firehose_reth_dev.sh prague
 ```
 
 Wait only until the node's JSON-RPC is accepting connections on port **9545** (same check as geth-dev above, on the reth-dev port). Do not wait for port 8089.
 
 ### Step 2 — Run the tests
 
-Same guidance as `geth-dev`: **always use `--grep` during development**, full suite only for final validation. `test:fh3.0:reth-dev` is reused regardless of which fork the chain was started with — fork-gated suites (e.g. `test/amsterdam.test.ts`) auto-skip if the chain isn't on that fork.
+Same guidance as `geth-dev`: **always use `--grep` during development**, full suite only for final validation. 
 
 ```bash
 pnpm test:fh3.0:reth-dev --grep "Berlin"
@@ -382,9 +380,8 @@ Before computing the range, it waits up to 60 seconds (`COMPARE_BLOCKS_FINALITY_
 A missing `fireeth` binary **fails** the test. Set `SKIP_COMPARE_BLOCKS=1` to skip it while
 iterating.
 
-**Amsterdam:** `fireeth tools compare-blocks-rpc` currently crashes with a nil-pointer panic on
-Amsterdam blocks (a gap in `firehose-ethereum`, not this repo). Always set
-`SKIP_COMPARE_BLOCKS=1` on `reth-dev` until that's fixed upstream.
+**Amsterdam** blocks need `fireeth` v2.24.0 or later: older versions crash with a nil-pointer
+panic or report false differences on them.
 
 ---
 

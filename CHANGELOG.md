@@ -17,6 +17,8 @@
 
 ### Changed
 
+- `pnpm test:fh3.0:reth-dev` stops in its global setup, with an explanation, when the chain is not on Amsterdam. Its snapshots are recorded on Amsterdam, so a Prague chain failed 64 tests on gas values. The docs no longer present Prague as a supported `reth-dev` fork, and no longer ask for `SKIP_COMPARE_BLOCKS=1` on `reth-dev`.
+
 - `arc-dev`: the two `suicide/contract_and_suicide_beneficiary_are_the_same*` snapshots now record `suicide: false` on the self-beneficiary SELFDESTRUCT that Arc rejects (the transaction reverts), as the reth tracer reports a rejected SELFDESTRUCT since `arc-v2.2.0-fh3.1-6`. The EIP-8246 test is skipped on `arc-dev`, where that same SELFDESTRUCT reverts and there is no balance to observe.
 
 - The global setup waits for Firehose to report ready on every network, not only on mine-on-demand chains, and prints its progress every 30 seconds. The wait lasts up to 10 minutes on chains that produce blocks on their own (`FIREHOSE_READY_TIMEOUT_MS` overrides it), so a suite started while the launcher is still syncing waits instead of failing.
@@ -36,4 +38,5 @@
 
 ### Known limitations
 
-- `fireeth tools compare-blocks-rpc` (used by the `Compare blocks` test) crashes with a nil-pointer panic on Amsterdam blocks; use `SKIP_COMPARE_BLOCKS=1` on `reth-dev` until that's fixed upstream in `firehose-ethereum`.
+- The `Compare blocks` test needs `fireeth` v2.24.0 or later on Amsterdam blocks (`reth-dev`): older versions crash with a nil-pointer panic or report false differences there.
+

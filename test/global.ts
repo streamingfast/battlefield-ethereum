@@ -110,6 +110,10 @@ before(async function () {
     provider.estimateGas = (tx) => originalEstimateGas({ ...tx, gasLimit: 16_777_216 })
   }
 
+  if (isNetwork("reth-dev")) {
+    await ensureRethDevOnAmsterdam()
+  }
+
   debug("Initializing owner")
   // first and owner are the same here, but first is of type HardhatSigner and have .address already resolved
   const [first] = await hre.ethers.getSigners()
@@ -177,6 +181,19 @@ before(async function () {
 
   debug("Global setup completed in %d ms", Date.now() - start)
 })
+
+// The reth-dev snapshots are recorded on Amsterdam: on any other fork most snapshot tests fail on
+// gas values, which reads as a tracer regression when it is only the wrong genesis.
+async function ensureRethDevOnAmsterdam() {
+  const latest = await hre.ethers.provider.send("eth_getBlockByNumber", ["latest", false])
+  if (latest?.slotNumber == null) {
+    throw new Error(
+      "reth-dev is not on the Amsterdam fork (no slotNumber in its block header), but its snapshots are recorded on " +
+        "Amsterdam. Start it with './scripts/run_firehose_reth_dev.sh' (no fork argument). Reth coverage before " +
+        "Amsterdam is the reth-devnet target.",
+    )
+  }
+}
 
 function validateFirehoseBlockVersion(block: Block) {
   const globalTag = getGlobalSnapshotsTag()
