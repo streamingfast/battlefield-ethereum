@@ -67,6 +67,7 @@ main() {
     # readable multi-line array above into one space-separated argument string.
     op_reth_args="${op_reth_args_parts[*]}"
 
+    force_devnet_finality
     run_fireeth ${OP_RETH_FIRST_BLOCK:-0} "$op_reth" "$op_reth_args"
   popd > /dev/null
 

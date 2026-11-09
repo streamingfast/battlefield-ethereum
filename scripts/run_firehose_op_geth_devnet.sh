@@ -41,6 +41,7 @@ main() {
       op_geth_args="$op_geth_args --flashblock.address=ws://localhost:1114"
     fi
 
+    force_devnet_finality
     run_fireeth 0 "$op_geth" "$op_geth_args"
   popd > /dev/null
 

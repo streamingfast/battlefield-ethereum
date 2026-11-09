@@ -150,6 +150,8 @@ Set this in your shell before running any `./scripts/run_firehose_*.sh` command.
 
 Every test fetches its trace from Firehose, so the global setup (`test/global.ts`) waits for the Firehose HTTP health endpoint (`http://localhost:8089`) to return `{"is_ready":true}` before any test runs, on every network. It prints a progress line every 30 seconds while it waits. The wait lasts at most 30 seconds on mine-on-demand chains (below) and 10 minutes elsewhere, where Firehose first needs the chain to produce a merged bundle (100 blocks) on its own clock. Override it with `FIREHOSE_READY_TIMEOUT_MS`.
 
+On the op-reth, op-geth and world-chain devnets, the node reports no finality and its tracer falls back to a LIB 200 blocks behind the head. Their launchers set `FORCE_FINALITY_AFTER_BLOCKS=10` for `fireeth`, so Firehose serves from about block 110 and the `Compare blocks` test does not wait 200 blocks for the last one to be final. Never set it for a public network: it marks blocks final that the chain has not finalized.
+
 **Do not poll port 8089 yourself before starting the tests**, and do not re-run the suite because it started "too early": start it as soon as the node's JSON-RPC answers and let the global setup wait.
 
 ## Mine-on-Demand Networks — `geth-dev` and `reth-dev`
