@@ -26,7 +26,7 @@ import { executeTransactions, sendImmediateEth } from "./lib/ethereum"
 import { knownExistingAddress, precompileWithBalanceAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
 import { getGlobalSnapshotsTag, setGlobalSnapshotsTag } from "./lib/snapshots"
-import { fetchFirehoseBlock, waitForFirehoseReady } from "./lib/firehose"
+import { fetchFirehoseBlock, firehoseReadyTimeoutMs, waitForFirehoseReady } from "./lib/firehose"
 import { Block } from "../pb/sf/ethereum/type/v2/type_pb"
 import { isMineOnDemand, isNetwork } from "./lib/network"
 import { registerGlobalExcludedFields } from "./lib/field-exclusion"
@@ -61,9 +61,13 @@ const debug = debugFactory("battlefield:global")
 
 use(addFirehoseEthereumMatchers)
 
-before(async () => {
+before(async function () {
   const start = Date.now()
   console.log("Global setup")
+
+  // The Firehose readiness wait below can outlast Mocha's per-hook timeout on chains that need
+  // minutes to produce their first merged bundle.
+  this.timeout(firehoseReadyTimeoutMs(isMineOnDemand()) + 2 * 60 * 1000)
 
   if (!process.env.SNAPSHOTS_TAG) {
     throw new Error(
@@ -130,12 +134,16 @@ before(async () => {
   ownerAddressBytes = getBytes(ownerAddress)
   debug("Initialized owner")
 
-  if (isMineOnDemand()) {
-    debug("Waiting for Firehose to be ready on mine-on-demand chain")
-    const firehoseReadyStart = Date.now()
-    await waitForFirehoseReady(() => sendImmediateEth(owner, knownExistingAddress, oneWei))
-    debug("Firehose ready in %d ms", Date.now() - firehoseReadyStart)
-  }
+  // Every test fetches its trace from Firehose, so nothing can run before it is ready. Waiting
+  // here turns a launcher that is still starting into a wait instead of a cascade of timeouts.
+  debug("Waiting for Firehose to be ready")
+  const firehoseReadyStart = Date.now()
+  const mineOnDemand = isMineOnDemand()
+  await waitForFirehoseReady(
+    firehoseReadyTimeoutMs(mineOnDemand),
+    mineOnDemand ? () => sendImmediateEth(owner, knownExistingAddress, oneWei) : undefined,
+  )
+  debug("Firehose ready in %d ms", Date.now() - firehoseReadyStart)
 
   // Do not wait for this to finish, other stuff will fail if it's not fast enough of if provider is broken
   const initChainStart = Date.now()

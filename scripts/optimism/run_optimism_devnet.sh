@@ -277,11 +277,6 @@ fund_l2_address() {
   return 1
 }
 
-check_builder_playground() {
-  if ! command -v builder-playground &> /dev/null; then
-    usage_error "builder-playground could not be found, please install it from https://github.com/flashbots/builder-playground"
-  fi
-}
 
 usage_error() {
   message="$1"

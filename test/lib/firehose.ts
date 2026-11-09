@@ -403,18 +403,26 @@ function normalizeCallFailureReason(reason: string): string {
   return reason
 }
 
+// How long the global setup waits for Firehose to report ready. A mine-on-demand chain gets
+// there within seconds because the setup pumps transactions. Other chains have to produce a full
+// merged bundle (100 blocks) on their own clock first, which takes minutes on 1-2s block times.
+export function firehoseReadyTimeoutMs(mineOnDemand: boolean): number {
+  const fromEnv = process.env.FIREHOSE_READY_TIMEOUT_MS
+  if (fromEnv !== undefined) {
+    return Number(fromEnv)
+  }
+
+  return mineOnDemand ? 30_000 : 10 * 60_000
+}
+
 /**
- * Waits for Firehose to become ready on mine-on-demand chains (e.g. reth-dev, geth --dev).
+ * Waits for Firehose to report ready on its HTTP health endpoint (`/` on the gRPC port, which
+ * returns `{"is_ready":true}`).
  *
- * On these chains the node only mines a block when there is a pending transaction. Firehose
- * will not mark itself as ready until it has processed at least one live block. This creates
- * a chicken-and-egg situation at startup: Firehose is waiting for blocks, but no blocks are
- * produced until someone sends a transaction.
- *
- * This function breaks the deadlock by:
- *   1. Continuously sending transactions (via `sendTransaction`) so the chain keeps mining.
- *   2. Polling the Firehose HTTP health endpoint (`/` on the gRPC port, returns
- *      `{"is_ready":true}`) until it reports ready.
+ * On mine-on-demand chains (e.g. reth-dev, geth --dev) the node only mines a block when there is
+ * a pending transaction, and Firehose does not mark itself ready until it has processed live
+ * blocks. Pass `sendTransaction` there: it is called every 200 ms so the chain keeps mining while
+ * we wait. Other chains produce blocks on their own and need no pump.
  *
  * Why HTTP and not gRPC `Block(1)`? The gRPC block-fetch call holds the connection open
  * and waits for the requested block to appear (Firehose server-side streaming behaviour).
@@ -422,16 +430,16 @@ function normalizeCallFailureReason(reason: string): string {
  * been produced yet, and AbortController interactions with the ConnectRPC Node transport
  * are unreliable. The plain HTTP health endpoint responds immediately and is safe to poll.
  *
- * Throws if Firehose does not become ready within `timeoutMs` milliseconds.
+ * Prints progress every 30 seconds so a slow start is visibly a wait, not a hang. Throws if
+ * Firehose does not become ready within `timeoutMs` milliseconds.
  */
-export async function waitForFirehoseReady(sendTransaction: () => Promise<unknown>, timeoutMs = 30_000): Promise<void> {
+export async function waitForFirehoseReady(timeoutMs: number, sendTransaction?: () => Promise<unknown>): Promise<void> {
   let done = false
 
-  // Continuously pump transactions so the chain keeps mining while we wait.
   // Fire-and-forget each send so the 200 ms timer drives the pace regardless
   // of how long the node takes to acknowledge each submission.
   const pump = async () => {
-    while (!done) {
+    while (sendTransaction !== undefined && !done) {
       sendTransaction().catch(() => {})
       await new Promise((resolve) => setTimeout(resolve, 200))
     }
@@ -440,25 +448,37 @@ export async function waitForFirehoseReady(sendTransaction: () => Promise<unknow
   const pumping = pump()
 
   try {
-    const deadline = Date.now() + timeoutMs
+    const start = Date.now()
+    const deadline = start + timeoutMs
+    let nextProgressAt = start + 30_000
+    let lastError = "no answer yet"
 
     while (true) {
       try {
-        // Use the plain HTTP health endpoint rather than the gRPC `firehose` client:
-        // the gRPC Block() call holds the connection open waiting for the block to appear,
-        // so it hangs instead of failing fast when Firehose is not yet ready.
         const response = await fetch(`http://${firehoseEndpoint}`, { signal: AbortSignal.timeout(1_000) })
         const body = (await response.json()) as { is_ready?: boolean }
         if (body.is_ready === true) {
           debug("Firehose ready")
           return
         }
-      } catch {
-        // not ready yet
+        lastError = `health endpoint answered ${JSON.stringify(body)}`
+      } catch (err) {
+        lastError = describeFetchError(err)
       }
 
-      if (Date.now() >= deadline) {
-        throw new Error(`Firehose did not become ready within ${timeoutMs}ms`)
+      const now = Date.now()
+      if (now >= deadline) {
+        throw new Error(
+          `Firehose at ${firehoseEndpoint} did not become ready within ${timeoutMs}ms (${lastError}). ` +
+            `Is the launcher running, and is the node producing blocks? Set FIREHOSE_READY_TIMEOUT_MS to wait longer.`,
+        )
+      }
+
+      if (now >= nextProgressAt) {
+        console.log(
+          `Waiting for Firehose at ${firehoseEndpoint} to be ready (${Math.round((now - start) / 1000)}s, ${lastError})`,
+        )
+        nextProgressAt = now + 30_000
       }
 
       await new Promise((resolve) => setTimeout(resolve, 500))
@@ -467,6 +487,15 @@ export async function waitForFirehoseReady(sendTransaction: () => Promise<unknow
     done = true
     await pumping
   }
+}
+
+// Node's fetch reports every network failure as "fetch failed" and keeps the actual reason in
+// `cause`. A refused connection is an `AggregateError` there, with an empty message but a `code`.
+function describeFetchError(err: unknown): string {
+  const cause = (err as { cause?: unknown }).cause ?? err
+  const { message, code } = cause as { message?: string; code?: string }
+
+  return message || code || String(cause)
 }
 
 // Returns the first block number served by the Firehose endpoint. Launchers pass it to
