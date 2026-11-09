@@ -17,6 +17,9 @@
 
 ### Changed
 
+- `scripts/ethereum_devnet/run_playground_devnet.sh` measures the L1 block time once the devnet is up and stops with install instructions for the StreamingFast builder-playground fork when it is more than twice `--block-time` (upstream runs 12s slots whatever the flag says, which stretches the `reth-devnet`/`geth-devnet` suites from 5 to about 25 minutes). `PLAYGROUND_ALLOW_SLOW_L1=1` skips the check.
+- The same script tears down a previous devnet with `docker compose -f` instead of `cd`-ing into the directory builder-playground deletes and recreates, which left the rest of the script running in a deleted working directory.
+
 - `pnpm test:fh3.0:reth-dev` stops in its global setup, with an explanation, when the chain is not on Amsterdam. Its snapshots are recorded on Amsterdam, so a Prague chain failed 64 tests on gas values. The docs no longer present Prague as a supported `reth-dev` fork, and no longer ask for `SKIP_COMPARE_BLOCKS=1` on `reth-dev`.
 
 - `arc-dev`: the two `suicide/contract_and_suicide_beneficiary_are_the_same*` snapshots now record `suicide: false` on the self-beneficiary SELFDESTRUCT that Arc rejects (the transaction reverts), as the reth tracer reports a rejected SELFDESTRUCT since `arc-v2.2.0-fh3.1-6`. The EIP-8246 test is skipped on `arc-dev`, where that same SELFDESTRUCT reverts and there is no balance to observe.
