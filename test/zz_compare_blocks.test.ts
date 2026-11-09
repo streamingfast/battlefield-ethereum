@@ -88,7 +88,35 @@ function isAcceptedDifference(difference: Difference): boolean {
     return isAcceptedMonadDifference(path, rpc, firehose)
   }
 
+  // Bor commits the next span through a system transaction (from 0xff…fe to the validator
+  // contract) that Firehose records but the block's JSON-RPC transaction list leaves out.
+  if (isNetwork("polygon-dev")) {
+    return path === '["transaction_traces"]' && rpc === undefined && isOnlyBorSystemTransactions(firehose)
+  }
+
   return false
+}
+
+const borSystemAddress = "0xfffffffffffffffffffffffffffffffffffffffe"
+const borValidatorContract = "0x0000000000000000000000000000000000001000"
+
+function isOnlyBorSystemTransactions(firehose?: string): boolean {
+  if (firehose === undefined) {
+    return false
+  }
+
+  let transactions: unknown
+  try {
+    transactions = JSON.parse(firehose)
+  } catch {
+    return false
+  }
+
+  return (
+    Array.isArray(transactions) &&
+    transactions.length > 0 &&
+    transactions.every((trx) => trx?.from === borSystemAddress && trx?.to === borValidatorContract)
+  )
 }
 
 function isAcceptedMonadDifference(path: string, rpc?: string, firehose?: string): boolean {

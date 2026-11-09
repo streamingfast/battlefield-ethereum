@@ -21,6 +21,11 @@
 
 - `scripts/run_firehose_polygon.sh` deploys the validators from `0xPolygon/kurtosis-pos` at a pinned upstream commit, with the bor `v2.11.0` and heimdall-v2 `v0.13.2` images that commit defaults to, published on `ghcr.io`. The previous `0xpolygon/bor:2.8.0-beta` and `0xpolygon/heimdall-v2:0.7.2-beta2` Docker Hub tags no longer exist, and the StreamingFast kurtosis-pos fork it pinned wrote Heimdall config keys that newer Heimdall images reject. `KURTOSIS_POS_REF`, `BOR_IMAGE` and `HEIMDALL_IMAGE` can be overridden from the environment.
 - The same script checks for `envsubst` and `jq`, which it uses, instead of `bats`, which only `./scripts/polygon-bridge` needs, and `exec`s `fireeth` so stopping the launcher stops bor.
+- The same script requires Kurtosis 1.22.2 or later. The pinned kurtosis-pos commit uses an ethereum-package version that older Kurtosis versions cannot interpret (`undefined: GpuConfig`).
+- The same script runs the kurtosis-pos bor validator in archive mode. With pruning, kurtosis-pos's L2 bridge deployment failed with `historical state ... is not available` when its `forge script` compile outlasted the retained state.
+- The same script waits for the validators to pass the last Bor fork block (128 with kurtosis-pos) before starting the local bor. The forks change gas costs, so tests that ran before them did not match the snapshots.
+- The `polygon-dev` snapshots are recorded with every Bor fork kurtosis-pos enables active (up to Uburu), on bor `v2.11.0`.
+- The `Compare blocks` test accepts the span-commit system transaction on `polygon-dev`: Firehose records it, the block's JSON-RPC transaction list leaves it out.
 
 - The two ArbOS-specific selfdestruct finalization assertions in `test/suicide.test.ts` only apply to Firehose block v3 (`fh2.3`). On block v5 (`fh3.0`) Nitro writes the end-of-transaction code removals and nonce resets to the root call like geth, and the canonical assertions run.
 - README and AGENTS.md point Arbitrum testing to `pnpm test:fh3.0:nitro-dev`, explain how to run it on macOS from the release image, and warn against running `geth-dev` with a `geth` built from the Arbitrum go-ethereum fork.
