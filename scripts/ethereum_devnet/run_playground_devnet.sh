@@ -8,6 +8,7 @@ source "$SCRIPT_DIR/lib.sh"
 playground_pid=""
 
 playground_path="$ROOT/.playground/chain"
+block_time_secs=1
 
 # This is el `http` port (container named `playground-reth-1`)
 l1_rpc_url="http://localhost:8545"
@@ -35,7 +36,7 @@ main() {
 
   builder-playground start l1 \
     --output="$playground_path" \
-    --block-time=1s \
+    --block-time=${block_time_secs}s \
     --secondary-el http://host.docker.internal:8552 \
     --prefunded-accounts="$private_key_to_fund" \
     --log-level debug &
@@ -43,6 +44,9 @@ main() {
   echo ""
 
   wait_for_playground_ready
+  echo ""
+
+  check_l1_block_time
   echo ""
 
   echo ""
@@ -62,7 +66,9 @@ main() {
 maybe_cleanup_previous() {
   if [[ -d "$playground_path" && -f "$playground_path/docker-compose.yaml" ]]; then
     echo "Tearing down existing playground at $playground_path"
-    cd "$playground_path" && docker compose down
+    # No `cd`: this runs in the main shell, and builder-playground deletes and recreates this
+    # directory, which would leave everything started afterwards in a deleted working directory.
+    docker compose -f "$playground_path/docker-compose.yaml" down
   fi
 }
 
@@ -96,6 +102,45 @@ wait_for_playground_ready() {
   fi
 }
 
+
+# Upstream builder-playground ignores --block-time on the L1 and runs 12s slots, which makes the
+# reth-devnet/geth-devnet suites take about 25 minutes instead of a few.
+check_l1_block_time() {
+  wait_rpc_block_at_least "$l1_rpc_url" 2 120 || exit 1
+
+  local latest previous
+  latest="$(block_timestamp latest)"
+  previous="$(block_timestamp "$(printf '0x%x' $(( $(block_number) - 1 )))")"
+
+  local slot_secs=$(( latest - previous ))
+  if (( slot_secs > block_time_secs * 2 )); then
+    echo -e "${RED}Error: the L1 produces a block every ${slot_secs}s instead of every ${block_time_secs}s.${NC}"
+    echo "Your builder-playground ignores --block-time, install the StreamingFast fork:"
+    echo ""
+    echo "  git clone -b fix/l1-block-time-not-respected-anymore https://github.com/streamingfast/builder-playground.git"
+    echo "  cd builder-playground && go install ."
+    echo ""
+    echo "Set PLAYGROUND_ALLOW_SLOW_L1=1 to run on the slow L1 anyway."
+    [[ "$PLAYGROUND_ALLOW_SLOW_L1" == "1" ]] || exit 1
+  fi
+  echo "L1 block time: ${slot_secs}s"
+}
+
+block_number() {
+  echo $(( $(rpc_call eth_blockNumber '[]' | sed -n 's/.*"result":"\(0x[0-9a-fA-F]*\)".*/\1/p') ))
+}
+
+# usage: block_timestamp <block_tag_or_hex_number>
+block_timestamp() {
+  local hex
+  hex="$(rpc_call eth_getBlockByNumber "[\"$1\",false]" | sed -n 's/.*"timestamp":"\(0x[0-9a-fA-F]*\)".*/\1/p')"
+  echo $(( hex ))
+}
+
+rpc_call() {
+  curl -s -X POST -H "Content-Type: application/json" \
+    --data "{\"jsonrpc\":\"2.0\",\"method\":\"$1\",\"params\":$2,\"id\":1}" "$l1_rpc_url"
+}
 
 usage_error() {
   message="$1"
