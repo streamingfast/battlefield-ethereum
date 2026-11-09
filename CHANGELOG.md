@@ -4,6 +4,8 @@
 
 ### Added
 
+- `fh3.0/arbitrum-nitro-dev` snapshots, recorded with nitro `v3.12.2-fh3.0` on a fresh `run_firehose_nitro_dev.sh` chain. Nitro emits Firehose block v5 since `v3.12.1-fh3.0`, so `pnpm test:fh3.0:nitro-dev` is its target and it had no snapshots: every snapshot test wrote one and passed.
+
 - `wait_rpc_block_at_least <rpc_url> <block_number> [<timeout_seconds>]` in `scripts/lib.sh`, for launchers that must wait for a fork activation block or a minimum chain height.
 - `pnpm-workspace.yaml` with the build-script approvals that pnpm 11 and later require, so `pnpm install` works there without `pnpm approve-builds`.
 - `AGENTS.md` sections on Firehose readiness, stopping a chain by its launcher PID (instead of `pkill -f`, which matches the calling shell), and reading a test run.
@@ -16,6 +18,9 @@
 - Block comparison between Firehose and the node's JSON-RPC now runs as the last test of every `pnpm test:*` run, resolving the RPC endpoint from the Hardhat network configuration and bounding the range at the chain's last irreversible block.
 
 ### Changed
+
+- The two ArbOS-specific selfdestruct finalization assertions in `test/suicide.test.ts` only apply to Firehose block v3 (`fh2.3`). On block v5 (`fh3.0`) Nitro writes the end-of-transaction code removals and nonce resets to the root call like geth, and the canonical assertions run.
+- README and AGENTS.md point Arbitrum testing to `pnpm test:fh3.0:nitro-dev`, explain how to run it on macOS from the release image, and warn against running `geth-dev` with a `geth` built from the Arbitrum go-ethereum fork.
 
 - `scripts/run_firehose_reth_bsc.sh` and `scripts/run_firehose_bnb.sh` wait for block 8 before starting, where the BSC miner's genesis activates Berlin and London. A suite started earlier failed its first tests on typed transactions the miner rejected.
 - `scripts/run_firehose_reth_bsc.sh` refuses a BSC miner started without `-j`. The `reth-bsc-dev` snapshots come from the Jenner miner, and on the default miner the genesis snapshot fails and the Jenner tests skip.

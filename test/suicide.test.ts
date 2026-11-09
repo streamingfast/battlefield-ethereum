@@ -1,4 +1,5 @@
 import { expect } from "chai"
+import { getGlobalSnapshotsTag } from "./lib/snapshots"
 import {
   Contract,
   contractCall,
@@ -291,7 +292,7 @@ describe("Suicide", function () {
       (nc) => isSameAddress(hexlify(nc.address), childAddress) && nc.newValue === 0n,
     )
 
-    if (isArbitrum()) {
+    if (isArbitrumBlockV3()) {
       // ArbOS (Firehose block v3) does not emit geth-1.17 end-of-tx finalization, so there is
       // no nonce 1→0 cleanup written to the root call. The self-destruct is instead represented
       // by the `suicide` flag on the CREATE subcall (asserted above). Validate that observed
@@ -369,7 +370,7 @@ describe("Suicide", function () {
       (nc) => nc.newValue === 0n && childAddrs.some((a) => isSameAddress(a, hexlify(nc.address))),
     )
 
-    if (isArbitrum()) {
+    if (isArbitrumBlockV3()) {
       // ArbOS (Firehose block v3) does not emit geth-1.17 end-of-tx finalization, so the root
       // call carries no code removals or nonce resets for the suicided children. The three
       // self-destructs are represented by the `suicide` flag on the kill subcalls (asserted
@@ -444,3 +445,9 @@ describe("Suicide - EIP-8246", function () {
     }
   })
 })
+
+// Nitro emits Firehose block v3 (the `fh2.3` tag) before v3.12.1-fh3.0 and block v5 (`fh3.0`) from
+// then on, where it writes the end-of-tx selfdestruct finalization like geth does.
+function isArbitrumBlockV3(): boolean {
+  return isArbitrum() && getGlobalSnapshotsTag().startsWith("fh2.3/")
+}
