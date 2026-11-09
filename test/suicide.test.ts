@@ -407,6 +407,12 @@ describe("Suicide - EIP-8246", function () {
       this.skip()
     }
 
+    // Arc rejects a SELFDESTRUCT whose beneficiary is the contract itself while it holds a balance,
+    // reverting the transaction, so there is no balance burn or keep to observe there.
+    if (isNetwork("arc-dev")) {
+      this.skip()
+    }
+
     // EIP-8246's delayed clearing (nonce/code/storage cleared at finalization, balance kept)
     // only applies when the account was created in the *same* transaction as the SELFDESTRUCT
     // (see EIP-6780: post-Cancun, a SELFDESTRUCT against an account created in an earlier

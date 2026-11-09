@@ -17,6 +17,8 @@
 
 ### Changed
 
+- `arc-dev`: the two `suicide/contract_and_suicide_beneficiary_are_the_same*` snapshots now record `suicide: false` on the self-beneficiary SELFDESTRUCT that Arc rejects (the transaction reverts), as the reth tracer reports a rejected SELFDESTRUCT since `arc-v2.2.0-fh3.1-6`. The EIP-8246 test is skipped on `arc-dev`, where that same SELFDESTRUCT reverts and there is no balance to observe.
+
 - The global setup waits for Firehose to report ready on every network, not only on mine-on-demand chains, and prints its progress every 30 seconds. The wait lasts up to 10 minutes on chains that produce blocks on their own (`FIREHOSE_READY_TIMEOUT_MS` overrides it), so a suite started while the launcher is still syncing waits instead of failing.
 - The `Compare blocks` test waits up to `COMPARE_BLOCKS_FINALITY_TIMEOUT_MS` for finality to reach the suite's last block on every network before computing its range. It used to wait on mine-on-demand chains only, so devnets left their most recent blocks out of the comparison.
 - Stopping a `scripts/run_firehose_*.sh` launcher with `SIGTERM` or `SIGINT` now stops `fireeth` and its reader node too (`run_fireeth` in `scripts/lib.sh` forwards the signal), so a chain stops with `kill <launcher pid>`.
