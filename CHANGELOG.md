@@ -18,6 +18,7 @@
 ### Changed
 
 - `scripts/run_firehose_reth_bsc.sh` and `scripts/run_firehose_bnb.sh` wait for block 8 before starting, where the BSC miner's genesis activates Berlin and London. A suite started earlier failed its first tests on typed transactions the miner rejected.
+- `scripts/run_firehose_reth_bsc.sh` refuses a BSC miner started without `-j`. The `reth-bsc-dev` snapshots come from the Jenner miner, and on the default miner the genesis snapshot fails and the Jenner tests skip.
 - `Dynamic transaction max fee` expects the fee cap as the trace's gas price on `bnb-dev`/`reth-bsc-dev`, the same BSC Firehose behavior the `Compare blocks` test already accepts.
 
 ### Fixed
