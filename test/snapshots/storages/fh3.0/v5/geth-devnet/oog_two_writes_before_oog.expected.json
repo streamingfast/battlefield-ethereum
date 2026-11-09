@@ -1,0 +1,116 @@
+{
+  "to": "$oogStorageContract",
+  "nonce": "$nonce",
+  "gasLimit": "45571",
+  "input": "9a5a9802b2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc9df6b64338919f844529872976787ab91993cff90084b15f256646cde3532e13",
+  "v": "",
+  "r": "",
+  "s": "",
+  "gasUsed": "45571",
+  "type": "TRX_TYPE_LEGACY",
+  "accessList": [],
+  "index": "$index",
+  "hash": "$hash",
+  "from": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+  "returnData": "",
+  "publicKey": "",
+  "beginOrdinal": "0",
+  "endOrdinal": "9",
+  "status": "FAILED",
+  "calls": [
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "depth": 0,
+      "callType": "CALL",
+      "caller": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+      "address": "$oogStorageContract",
+      "gasLimit": "23507",
+      "gasConsumed": "23507",
+      "returnData": "",
+      "input": "9a5a9802b2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc9df6b64338919f844529872976787ab91993cff90084b15f256646cde3532e13",
+      "executedCode": true,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [
+        {
+          "address": "$oogStorageContract",
+          "key": "0000000000000000000000000000000000000000000000000000000000000000",
+          "oldValue": "0000000000000000000000000000000000000000000000000000000000000000",
+          "newValue": "b2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc",
+          "ordinal": "4"
+        }
+      ],
+      "balanceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "reason": "REASON_GAS_BUY",
+          "ordinal": "1",
+          "oldValue": "074918a3048600",
+          "newValue": ""
+        },
+        {
+          "address": "$coinbase",
+          "reason": "REASON_REWARD_TRANSACTION_FEE",
+          "ordinal": "8",
+          "oldValue": "",
+          "newValue": "01"
+        }
+      ],
+      "nonceChanges": [
+        {
+          "address": "821b55d8abe79bc98f05eb675fdc50dfe796b7ab",
+          "oldValue": "0",
+          "newValue": "1",
+          "ordinal": "2"
+        }
+      ],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": true,
+      "statusReverted": false,
+      "failureReason": "out of gas: not enough gas for reentrancy sentry",
+      "stateReverted": true,
+      "beginOrdinal": "3",
+      "endOrdinal": "7",
+      "accountCreations": []
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "depth": 1,
+      "callType": "STATIC",
+      "caller": "$oogStorageContract",
+      "address": "0000000000000000000000000000000000000002",
+      "gasLimit": "1026",
+      "gasConsumed": "72",
+      "returnData": "51b5dfc85e10ff28c83d98a481163e0a3a2e67dee0130a3ce2cd12eb7b361557",
+      "input": "b2300732a65a6fda46d9612e7ae2b0ca9f83d166e38e6d4b723c006f76cbf7dc",
+      "executedCode": false,
+      "suicide": false,
+      "keccakPreimages": {},
+      "storageChanges": [],
+      "balanceChanges": [],
+      "nonceChanges": [],
+      "logs": [],
+      "codeChanges": [],
+      "gasChanges": [],
+      "statusFailed": false,
+      "statusReverted": false,
+      "failureReason": "",
+      "stateReverted": true,
+      "beginOrdinal": "5",
+      "endOrdinal": "6",
+      "accountCreations": []
+    }
+  ],
+  "blobHashes": [],
+  "gasPrice": "0a7a358200",
+  "receipt": {
+    "stateRoot": "",
+    "cumulativeGasUsed": "$cumulativeGasUsed",
+    "logsBloom": "$logsBloom",
+    "logs": []
+  }
+}
