@@ -17,6 +17,14 @@
 
 ### Changed
 
+- `scripts/world_chain/run_world_chain_devnet.sh` gives the devnet 1200 seconds to come up instead of 600 (`WORLD_CHAIN_DEVNET_TIMEOUT_SECS`), prints its progress every minute and the end of `target/devnet/logs/devnet.log` when it gives up. A first boot pulls the 7 GB SP1 image and deploys the proof system, which took longer than 600 seconds even with images cached.
+- The same script stops as soon as the detached devnet process exits, instead of waiting for the endpoints file until the timeout. `just devnet up -d` discards the devnet's error output, so it prints the command that shows it. It also checks the submodules nested in `pkg/contracts/lib/optimism`, whose absence made the devnet exit on a forge compile error.
+- The same script builds world-chain without debug info (`CARGO_PROFILE_DEV_DEBUG=0`, as upstream CI does), which otherwise pushes the binary past the 4 GiB linker limit on Linux, checks for `protoc` and its well-known types up front, and prints the error of the last attempt when a retried command gives up instead of discarding it.
+
+### Fixed
+
+- `find_op_workdir` in the same script tries GNU `stat -c %Y` before BSD `stat -f %m`. On Linux `stat -f` prints the file system status to stdout before failing, so the captured modification time was that text followed by the number, and the comparison that used it aborted the script, tearing the devnet down right after it came up.
+
 - `scripts/optimism/run_optimism_devnet.sh` (`op-reth-devnet`, `op-geth-devnet`):
   - Runs Jovian at genesis (`--enable-latest-fork=0`) with 1s L2 blocks. Firehose op-reth reports head - 200 as its last irreversible block, so Firehose only serves from L2 block 300: about 5 minutes after the devnet starts instead of 10, and every test waits half as long for its blocks.
   - Drops the external op-rbuilder and flashblocks (`--external-builder op-rbuilder --flashblocks`). The suite does not use them, and bproxy failed to start on a race with op-rbuilder.
