@@ -52,14 +52,22 @@ check_dependencies() {
         echo "✅ Polycli is installed"
     fi
 
-    # Check Bats
-    if ! command_exists bats; then
-        missing_deps+=("bats")
-        echo "❌ Bats is not installed"
-        echo "   Install with:"
-        echo "   git clone https://github.com/bats-core/bats-core && cd bats-core && sudo ./install.sh /usr/local"
+    # Check envsubst (gettext), used to render the local bor config
+    if ! command_exists envsubst; then
+        missing_deps+=("envsubst")
+        echo "❌ envsubst is not installed"
+        echo "   Install with: brew install gettext / apt-get install gettext-base"
     else
-        echo "✅ Bats is installed"
+        echo "✅ envsubst is installed"
+    fi
+
+    # Check jq
+    if ! command_exists jq; then
+        missing_deps+=("jq")
+        echo "❌ jq is not installed"
+        echo "   Install with: brew install jq / apt-get install jq"
+    else
+        echo "✅ jq is installed"
     fi
 
     # Check Fireeth
@@ -92,12 +100,15 @@ check_dependencies() {
 }
 
 # Pinned versions. Bump these to roll the kurtosis-deployed validators forward.
-# - KURTOSIS_POS_REF: pinned commit of streamingfast/kurtosis-pos for reproducibility.
+# - KURTOSIS_POS_REF: pinned commit of 0xPolygon/kurtosis-pos for reproducibility. Its config
+#   templates must match HEIMDALL_IMAGE: Heimdall refuses to start on keys it does not know.
+#   Use the images the pinned commit defaults to (src/config/constants.star).
 # - BOR_IMAGE / HEIMDALL_IMAGE: must be compatible with the locally-built `bor` binary
-#   that fireeth peers with. Mismatched bor versions will fail to peer.
-KURTOSIS_POS_REF="a76f5263dfa44ba0f936ad1d9d543368387aa4ce"
-BOR_IMAGE="0xpolygon/bor:2.8.0-beta"
-HEIMDALL_IMAGE="0xpolygon/heimdall-v2:0.7.2-beta2"
+#   that fireeth peers with. Mismatched bor versions will fail to peer. Polygon publishes
+#   them on ghcr.io only, the Docker Hub tags are gone.
+KURTOSIS_POS_REF="${KURTOSIS_POS_REF:-ed2c325ae5d73fc430c7f62c82d42c8aefc441c5}"
+BOR_IMAGE="${BOR_IMAGE:-ghcr.io/0xpolygon/bor:v2.11.0}"
+HEIMDALL_IMAGE="${HEIMDALL_IMAGE:-ghcr.io/0xpolygon/heimdall-v2:v0.13.2}"
 
 # Kurtosis starts its engine in the Docker 'bridge' network, but resolves it through
 # Docker's `name=` filter, which is a *substring* match. Any other network whose name
@@ -180,7 +191,7 @@ EOF
     # Run Kurtosis (pinned to a specific kurtosis-pos commit for reproducibility)
     echo "Starting Kurtosis POS environment (kurtosis-pos@$KURTOSIS_POS_REF, $BOR_IMAGE, $HEIMDALL_IMAGE)..."
     kurtosis run --enclave pos \
-        "github.com/streamingfast/kurtosis-pos@$KURTOSIS_POS_REF" \
+        "github.com/0xPolygon/kurtosis-pos@$KURTOSIS_POS_REF" \
         --args-file "$KURTOSIS_ARGS_FILE"
 
     export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
@@ -256,7 +267,9 @@ run_local_bor() {
     echo "Starting Fireeth with Bor server and Firehose tracing..."
     echo "Running: fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments=\"server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose\" --advertise-chain-name=devnet --firehose-grpc-listen-addr=\"localhost:8089\""
     echo ""
-    fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
+    # `exec` so that stopping this launcher stops fireeth, which stops bor. The Kurtosis enclave
+    # keeps running, remove it with `kurtosis enclave rm pos --force`.
+    exec fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
 }
 
 # Main function

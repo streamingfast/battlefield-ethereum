@@ -19,6 +19,9 @@
 
 ### Changed
 
+- `scripts/run_firehose_polygon.sh` deploys the validators from `0xPolygon/kurtosis-pos` at a pinned upstream commit, with the bor `v2.11.0` and heimdall-v2 `v0.13.2` images that commit defaults to, published on `ghcr.io`. The previous `0xpolygon/bor:2.8.0-beta` and `0xpolygon/heimdall-v2:0.7.2-beta2` Docker Hub tags no longer exist, and the StreamingFast kurtosis-pos fork it pinned wrote Heimdall config keys that newer Heimdall images reject. `KURTOSIS_POS_REF`, `BOR_IMAGE` and `HEIMDALL_IMAGE` can be overridden from the environment.
+- The same script checks for `envsubst` and `jq`, which it uses, instead of `bats`, which only `./scripts/polygon-bridge` needs, and `exec`s `fireeth` so stopping the launcher stops bor.
+
 - The two ArbOS-specific selfdestruct finalization assertions in `test/suicide.test.ts` only apply to Firehose block v3 (`fh2.3`). On block v5 (`fh3.0`) Nitro writes the end-of-transaction code removals and nonce resets to the root call like geth, and the canonical assertions run.
 - README and AGENTS.md point Arbitrum testing to `pnpm test:fh3.0:nitro-dev`, explain how to run it on macOS from the release image, and warn against running `geth-dev` with a `geth` built from the Arbitrum go-ethereum fork.
 
