@@ -11,9 +11,10 @@ const debug = debugFactory("battlefield:compare-blocks")
 // (e.g. a public testnet) where comparing from the first streamable block would never end.
 const defaultMaxSpan = 2_000
 
-// How long we keep mining blocks on a mine-on-demand chain so finality catches up with the
-// blocks the test suite just produced. Those chains only finalize when new blocks arrive, so
-// without this the tail of the run (~30 blocks on geth-dev) would never be compared.
+// How long we wait for finality to catch up with the blocks the test suite just produced. On a
+// mine-on-demand chain we keep mining blocks meanwhile, because those chains only finalize when
+// new blocks arrive; without this the tail of the run (~30 blocks on geth-dev) would never be
+// compared. Other chains finalize on their own clock and we only poll.
 const defaultFinalityTimeoutMs = 60_000
 
 // How long the finality wait is allowed to take, exported so the Mocha timeout can account for
@@ -49,8 +50,9 @@ export type ResolvedRange = { range: BlockRange } | { skipReason: string }
 // with `final_blocks_only`, so a stop block past finality makes it hang instead of finishing.
 // The lower bound is the first streamable block, capped so at most `maxSpan` blocks are compared.
 //
-// On a mine-on-demand chain the blocks the suite just produced are not final yet and no further
-// block is coming, so `mineBlock` is used to push finality past them before the range is frozen.
+// The blocks the suite just produced are usually not final yet, so we first wait for finality to
+// reach the current head. On a mine-on-demand chain no further block is coming on its own, so
+// `mineBlock` is used to push finality past them before the range is frozen.
 export async function resolveCompareRange(options?: {
   maxSpan?: number
   finalityTimeoutMs?: number
@@ -69,8 +71,9 @@ export async function resolveCompareRange(options?: {
     return { skipReason: "Firehose did not report a head block with finality metadata" }
   }
 
-  if (options?.mineBlock !== undefined && isMineOnDemand() && head.libNum < head.num) {
-    head = await advanceFinality(head.num, options.mineBlock, options?.finalityTimeoutMs)
+  if (head.libNum < head.num) {
+    const mineBlock = isMineOnDemand() ? options?.mineBlock : undefined
+    head = await advanceFinality(head.num, mineBlock, options?.finalityTimeoutMs)
   }
 
   // Genesis is deliberately left out: Firehose synthesizes that block (it has no real
@@ -79,7 +82,7 @@ export async function resolveCompareRange(options?: {
   const firstComparable = Math.max(await fetchFirehoseFirstStreamableBlock(), 1)
   if (head.libNum < firstComparable) {
     return {
-      skipReason: `last irreversible block #${head.libNum} is below first comparable block #${firstComparable}, chain has no final block to compare yet`,
+      skipReason: `last irreversible block #${head.libNum} is below first comparable block #${firstComparable}, chain has no final block to compare yet (set COMPARE_BLOCKS_FINALITY_TIMEOUT_MS to wait longer)`,
     }
   }
 
@@ -89,9 +92,9 @@ export async function resolveCompareRange(options?: {
   return { range: { start, stop: head.libNum } }
 }
 
-// Mines blocks until finality reaches `target`, giving up after `timeoutMs` and returning the
-// most recent head seen. Used on mine-on-demand chains only, where finality advances solely as
-// a consequence of new blocks being produced.
+// Waits until finality reaches `target`, giving up after `timeoutMs` and returning the most
+// recent head seen. With `mineBlock` (mine-on-demand chains, where finality advances solely as a
+// consequence of new blocks being produced) a block is mined per iteration, otherwise we poll.
 //
 // `mineBlock` must wait for its transaction to be mined: it both paces the loop and keeps the
 // signer's nonce in sync. A failed send is fatal rather than ignored, because `owner` is an
@@ -99,7 +102,7 @@ export async function resolveCompareRange(options?: {
 // later transaction would queue behind a nonce that is never used and no block would be mined.
 async function advanceFinality(
   target: number,
-  mineBlock: () => Promise<unknown>,
+  mineBlock: (() => Promise<unknown>) | undefined,
   timeoutMs = finalityTimeoutMs(),
 ): Promise<FirehoseHead> {
   const deadline = Date.now() + timeoutMs
@@ -107,7 +110,11 @@ async function advanceFinality(
   let lastKnownHead = head
 
   while (head !== undefined && head.libNum < target && Date.now() < deadline) {
-    await mineBlock()
+    if (mineBlock !== undefined) {
+      await mineBlock()
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, 2_000))
+    }
     head = await fetchFirehoseHead()
     lastKnownHead = head ?? lastKnownHead
   }

@@ -87,7 +87,7 @@
       "returnData": "",
       "input": "41c0e1b5",
       "executedCode": true,
-      "suicide": true,
+      "suicide": false,
       "keccakPreimages": {},
       "storageChanges": [],
       "balanceChanges": [],

@@ -1,0 +1,7 @@
+# pnpm 11 and later read build-script approvals from here and fail the install on any dependency
+# left out. Older pnpm versions read the "pnpm" field of package.json instead: keep both in sync.
+allowBuilds:
+  c-kzg: true
+  keccak: true
+  secp256k1: true
+  "@bufbuild/buf": false

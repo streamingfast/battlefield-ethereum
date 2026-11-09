@@ -146,6 +146,12 @@ Set this in your shell before running any `./scripts/run_firehose_*.sh` command.
 
 ---
 
+## Firehose Readiness
+
+Every test fetches its trace from Firehose, so the global setup (`test/global.ts`) waits for the Firehose HTTP health endpoint (`http://localhost:8089`) to return `{"is_ready":true}` before any test runs, on every network. It prints a progress line every 30 seconds while it waits. The wait lasts at most 30 seconds on mine-on-demand chains (below) and 10 minutes elsewhere, where Firehose first needs the chain to produce a merged bundle (100 blocks) on its own clock. Override it with `FIREHOSE_READY_TIMEOUT_MS`.
+
+**Do not poll port 8089 yourself before starting the tests**, and do not re-run the suite because it started "too early": start it as soon as the node's JSON-RPC answers and let the global setup wait.
+
 ## Mine-on-Demand Networks — `geth-dev` and `reth-dev`
 
 Both `geth-dev` and `reth-dev` use **mine-on-demand** mode: the node produces a new block only when a pending transaction arrives. No transaction → no block → no mining.
@@ -156,13 +162,13 @@ This creates a chicken-and-egg situation at startup: Firehose cannot become read
 1. Pumps lightweight ETH transfer transactions every 200 ms so the chain keeps mining.
 2. Polls the Firehose HTTP health endpoint (`http://localhost:8089`) until it returns `{"is_ready":true}`.
 
-The `waitForFirehoseReady` timeout is 30 seconds. If Firehose is not ready within that window the whole test run aborts with an error.
+On these chains the wait lasts at most 30 seconds. If Firehose is not ready within that window the whole test run aborts with an error.
 
 **Consequences for agents:**
 
 - **Do NOT wait for `http://localhost:8089` to return `is_ready` before launching the tests.** On a cold chain it will never become ready on its own — only the test run's transaction pump can bootstrap it.
 - **Do NOT send transactions manually** to try to pre-warm the chain; the test suite handles it.
-- The only readiness check you need before running tests is that the node's JSON-RPC is accepting connections on port 8545.
+- The only readiness check you need before running tests is that the node's JSON-RPC is accepting connections on the network's port (`url` in `hardhat.config.ts`: 8545 on `geth-dev`, 9545 on `reth-dev`).
 - Keep the chain running between `--grep` runs. There is no need to restart between individual test invocations.
 
 ---
@@ -212,11 +218,7 @@ pnpm test:fh3.0:geth-dev
 
 ### Step 3 — Stop the chain
 
-Stop the chain as soon as you no longer need it. The chain keeps auto-mining blocks indefinitely, consuming CPU and disk even when idle.
-
-```bash
-kill $(ps aux | grep -E "run_firehose_geth_dev|fireeth| geth " | grep -v grep | awk '{print $2}') 2>/dev/null
-```
+Stop the chain as soon as you no longer need it. The chain keeps auto-mining blocks indefinitely, consuming CPU and disk even when idle. See [Stopping a Chain](#stopping-a-chain).
 
 ### Important: Chain lifecycle and the fresh-chain test
 
@@ -245,7 +247,7 @@ Uses the StreamingFast Firehose-instrumented Reth in `--dev` mode. Defaults to t
 ./scripts/run_firehose_reth_dev.sh prague
 ```
 
-Wait only until the node's JSON-RPC is accepting connections on port 8545 (same check as geth-dev above). Do not wait for port 8089.
+Wait only until the node's JSON-RPC is accepting connections on port **9545** (same check as geth-dev above, on the reth-dev port). Do not wait for port 8089.
 
 ### Step 2 — Run the tests
 
@@ -264,9 +266,7 @@ pnpm test:fh3.0:reth-dev
 
 Stop the chain as soon as you no longer need it.
 
-```bash
-kill $(ps aux | grep -E "run_firehose_reth_dev|fireeth|reth" | grep -v grep | awk '{print $2}') 2>/dev/null
-```
+See [Stopping a Chain](#stopping-a-chain).
 
 ---
 
@@ -304,9 +304,7 @@ pnpm test:fh3.0:geth-devnet
 
 ### Step 4 — Stop the chain
 
-```bash
-kill $(ps aux | grep -E "run_firehose_geth_devnet|fireeth| geth " | grep -v grep | awk '{print $2}') 2>/dev/null
-```
+See [Stopping a Chain](#stopping-a-chain).
 
 ---
 
@@ -344,9 +342,30 @@ pnpm test:fh3.0:reth-devnet
 
 ### Step 4 — Stop the chain
 
+See [Stopping a Chain](#stopping-a-chain).
+
+---
+
+## Stopping a Chain
+
+Every `./scripts/run_firehose_*.sh` launcher forwards `SIGTERM` and `SIGINT` to `fireeth`, which stops its reader node. The devnet launchers (`scripts/ethereum_devnet/run_playground_devnet.sh`, `scripts/optimism/run_optimism_devnet.sh`, `scripts/world_chain/run_world_chain_devnet.sh`) tear their containers down on exit. Stop a chain by signalling the launcher you started, nothing else:
+
 ```bash
-kill $(ps aux | grep -E "run_firehose_reth_devnet|fireeth|reth" | grep -v grep | awk '{print $2}') 2>/dev/null
+./scripts/run_firehose_geth_dev.sh 3.0 prague > /tmp/geth-dev.log 2>&1 &
+echo $! > /tmp/geth-dev.pid
+# ...
+kill "$(cat /tmp/geth-dev.pid)"
 ```
+
+**Do not use `pkill -f` or `pgrep -f` with a chain name** (`reth`, `geth`, `fireeth`, ...). The pattern also matches the shell that runs the command, and any other command whose arguments mention the chain, so it kills your own shell or an unrelated build.
+
+---
+
+## Reading a Test Run
+
+A run on a supported target must end with **0 failing**. Differences that are expected on a given chain are encoded in the tests themselves (network-specific expectations, and `isAcceptedDifference` in `test/zz_compare_blocks.test.ts`), so a failing test is a regression or a broken setup, never a "normal failure". Do not compare against earlier runs to decide whether a failure is expected; read the failure.
+
+**Pending** tests are skipped on purpose: fork-gated suites on a chain without that fork (see [Fork-Gated Tests](#fork-gated-tests)), tests that do not apply to the network, and the block comparison when the chain has no final block yet.
 
 ---
 
@@ -359,7 +378,7 @@ suite and runs on every `pnpm test:*` invocation. Do not shell out to
 network configuration (ports differ per network, e.g. `reth-dev` is on 9545) and bounds the
 range at the last irreversible block reported by Firehose.
 
-It reports as **pending** when the chain has no final block yet, and on the public Amoy testnet.
+Before computing the range, it waits up to 60 seconds (`COMPARE_BLOCKS_FINALITY_TIMEOUT_MS`) for finality to reach the blocks the suite produced, mining blocks meanwhile on mine-on-demand chains. It reports as **pending** when the chain still has no final block after that, and on the public Amoy testnet.
 A missing `fireeth` binary **fails** the test. Set `SKIP_COMPARE_BLOCKS=1` to skip it while
 iterating.
 

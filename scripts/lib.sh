@@ -54,7 +54,22 @@ run_fireeth() {
     --reader-node-path="$node_binary" \
     --reader-node-arguments="$node_args" \
     --firehose-grpc-listen-addr="localhost:8089" \
-    --substreams-tier1-block-type="sf.ethereum.type.v2.Block" $@
+    --substreams-tier1-block-type="sf.ethereum.type.v2.Block" $@ &
+  local fireeth_pid=$!
+
+  # Stopping the launcher stops the whole stack: the signal is forwarded to fireeth, which shuts
+  # down its reader node. Without this, `kill <launcher pid>` leaves fireeth and the node running.
+  trap "kill -s TERM $fireeth_pid 2> /dev/null" TERM INT
+
+  local exit_code=0
+  wait "$fireeth_pid" || exit_code=$?
+  # A trapped signal interrupts the first wait, this one lasts until fireeth has shut down.
+  if kill -0 "$fireeth_pid" 2> /dev/null; then
+    exit_code=0
+    wait "$fireeth_pid" || exit_code=$?
+  fi
+
+  return $exit_code
 }
 
 check_docker() {
@@ -68,7 +83,7 @@ check_docker() {
         found_container="$(find_docker_by_name_ends_with "$container_name")"
 
         if [[ "$found_container" == "" ]]; then
-            ERR="You should run the appropriate docker-compose recipe first"
+            ERR="You should run the appropriate Docker Compose recipe first"
             [[ -n "$2" ]] && ERR="$2"
             echo "Docker container '$container_name' is not running. $ERR"
             exit 1
@@ -118,6 +133,36 @@ wait_geth_up() {
     # The leading space is on-purpose
     printf " now up and running\n"
     return 0
+}
+
+# usage: wait_rpc_block_at_least <rpc_url> <block_number> [<timeout_seconds>]
+#
+# Waits until the node at <rpc_url> reports a head block at or past <block_number>. Returns 1
+# after <timeout_seconds> (default 300) so callers fail with a message instead of hanging.
+wait_rpc_block_at_least() {
+  local endpoint="$1" target="$2" timeout="${3:-300}"
+  local deadline=$((SECONDS + timeout)) hex=""
+
+  printf "Waiting for block #%d at %s " "$target" "$endpoint"
+  while true; do
+    hex="$(curl --connect-timeout 1 -sS -X POST -H "content-type: application/json" \
+      --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' "$endpoint" 2> /dev/null \
+      | sed -n 's/.*"result":"\(0x[0-9a-fA-F]*\)".*/\1/p')"
+
+    if [[ -n "$hex" ]] && (( hex >= target )); then
+      printf " reached #%d\n" "$((hex))"
+      return 0
+    fi
+
+    if (( SECONDS >= deadline )); then
+      echo ""
+      echo "Block #$target was not reached at $endpoint within ${timeout}s (last head: ${hex:-no answer})"
+      return 1
+    fi
+
+    sleep 1
+    printf "."
+  done
 }
 
 check_geth() {
@@ -275,7 +320,7 @@ check_besu() {
 
 check_jq() {
   if ! command -v "jq" &> /dev/null; then
-    echo "The 'jw' command is required for this script, please install it"
+    echo "The 'jq' command is required for this script, please install it"
     echo "by following instructions at https://jqlang.github.io/jq/download"
     exit 1
   fi
@@ -300,12 +345,13 @@ check_monad() {
 
 check_builder_playground() {
   if ! command -v builder-playground &> /dev/null; then
-    echo "The 'builder-playground' command is required for this script, please install it"
-    echo "by following instructions at https://github.com/flashbots/builder-playground."
+    echo "The 'builder-playground' command is required for this script."
     echo ""
-    echo "For now 'main' branch is required, you can install it by running:"
+    echo "Install the StreamingFast fork: upstream's L1 ignores '--block-time' and runs 12s slots"
+    echo "(https://github.com/flashbots/builder-playground/pull/417 is not merged yet):"
     echo ""
-    echo "go install github.com/flashbots/builder-playground@main"
+    echo "  git clone -b fix/l1-block-time-not-respected-anymore https://github.com/streamingfast/builder-playground.git"
+    echo "  cd builder-playground && go install ."
     exit 1
   fi
 }

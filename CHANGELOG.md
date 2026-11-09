@@ -4,6 +4,10 @@
 
 ### Added
 
+- `wait_rpc_block_at_least <rpc_url> <block_number> [<timeout_seconds>]` in `scripts/lib.sh`, for launchers that must wait for a fork activation block or a minimum chain height.
+- `pnpm-workspace.yaml` with the build-script approvals that pnpm 11 and later require, so `pnpm install` works there without `pnpm approve-builds`.
+- `AGENTS.md` sections on Firehose readiness, stopping a chain by its launcher PID (instead of `pkill -f`, which matches the calling shell), and reading a test run.
+
 - `pnpm perf:reth-dev` (`scripts/perf/reth_dev_parallel_tracing.sh`): compares the block execution time of the Firehose-instrumented `reth` dev node with its parallel block access list path enabled and disabled, on blocks of 160 contract calls from 20 senders (`scripts/perf/load.ts`, `contracts/perf_counter.sol`), for cheap calls and for calls that hash 300 times. The node mines on a timer for this run, so `scripts/reth_dev/wrapped_reth_dev.sh` takes its mining flags from `RETH_DEV_MINING_ARGS` and extra node flags from `RETH_EXTRA_ARGS`.
 - CAS20 tests on `reth-bsc-dev` that call a token from a contract (`contracts/cas20_caller.sol`): two transfers interleaved with the caller's logs, a transfer whose caller reverts, and a transfer that runs out of gas on a write, which must not report that write.
 - Full Amsterdam (Glamsterdam) fork coverage on `reth-dev`: `test/amsterdam.test.ts` exercises EIP-7708 (ETH transfer logs), EIP-7843 (`SLOTNUM`/`slot_number`), EIP-7928 (block access lists), EIP-8037 (state gas), and EIP-8282 (builder execution requests); EIP-8246 (no-burn SELFDESTRUCT) is covered in its own `describe` in `test/suicide.test.ts`, contrasted against pre-Amsterdam burn behaviour on the same test. Amsterdam is now the default fork for `reth-dev` (`./scripts/run_firehose_reth_dev.sh`, optionally `... prague`), backed by a new `scripts/geth_dev/genesis.amsterdam.json`.
@@ -12,6 +16,14 @@
 - Block comparison between Firehose and the node's JSON-RPC now runs as the last test of every `pnpm test:*` run, resolving the RPC endpoint from the Hardhat network configuration and bounding the range at the chain's last irreversible block.
 
 ### Changed
+
+- `arc-dev`: the two `suicide/contract_and_suicide_beneficiary_are_the_same*` snapshots now record `suicide: false` on the self-beneficiary SELFDESTRUCT that Arc rejects (the transaction reverts), as the reth tracer reports a rejected SELFDESTRUCT since `arc-v2.2.0-fh3.1-6`. The EIP-8246 test is skipped on `arc-dev`, where that same SELFDESTRUCT reverts and there is no balance to observe.
+
+- The global setup waits for Firehose to report ready on every network, not only on mine-on-demand chains, and prints its progress every 30 seconds. The wait lasts up to 10 minutes on chains that produce blocks on their own (`FIREHOSE_READY_TIMEOUT_MS` overrides it), so a suite started while the launcher is still syncing waits instead of failing.
+- The `Compare blocks` test waits up to `COMPARE_BLOCKS_FINALITY_TIMEOUT_MS` for finality to reach the suite's last block on every network before computing its range. It used to wait on mine-on-demand chains only, so devnets left their most recent blocks out of the comparison.
+- Stopping a `scripts/run_firehose_*.sh` launcher with `SIGTERM` or `SIGINT` now stops `fireeth` and its reader node too (`run_fireeth` in `scripts/lib.sh` forwards the signal), so a chain stops with `kill <launcher pid>`.
+- `scripts/bnb` and `scripts/run_monad_devnet.sh` call `docker compose` instead of the retired `docker-compose` v1 binary.
+- `check_builder_playground` points to the StreamingFast fork of builder-playground, which makes the L1 honor `--block-time`.
 
 - Snapshots on tracers that keep only storage slot keccak preimages (reth, op-reth, reth-bsc, world-chain, arc, Nitro) are compared after running both sides through the same filter (`test/lib/keccak-filter.ts`), so the shared snapshots still apply.
 - `test/lib/network.ts`'s `gasLimitOverride`/`dynamicGasLimit` now scale up on Amsterdam, mirroring the existing Arbitrum special-case: EIP-8037 state gas (CPSB = 1530 gas/byte) inflates the cost of anything that grows state (a fresh SSTORE, a new account, a code deposit) well past the canonical-EVM-tuned fixed gas limits used throughout the suite. All `reth-dev` snapshots have been regenerated against an Amsterdam chain to match.

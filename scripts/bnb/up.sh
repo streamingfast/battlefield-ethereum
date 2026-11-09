@@ -37,5 +37,5 @@ if docker ps -a |grep -w bnb-miner-1; then
 fi
 
 pushd "$(dirname "${BASH_SOURCE[0]}")"
-    docker-compose up --build
+    docker compose up --build
 popd
