@@ -19,6 +19,7 @@
 
 ### Changed
 
+- The op-reth, op-geth and world-chain devnet launchers set `FORCE_FINALITY_AFTER_BLOCKS=10` for `fireeth` (`force_devnet_finality` in `scripts/lib.sh`). These nodes report no finality, so their LIB trailed the head by 200 blocks: Firehose served nothing before block 300, and `Compare blocks` waited 200 blocks for the suite's last block, then left most of the range out at its timeout. On the op-reth devnet, Firehose is now ready about 100 seconds after the devnet starts and the comparison covers every block.
 - `scripts/run_firehose_polygon.sh` deploys the validators from `0xPolygon/kurtosis-pos` at a pinned upstream commit, with the bor `v2.11.0` and heimdall-v2 `v0.13.2` images that commit defaults to, published on `ghcr.io`. The previous `0xpolygon/bor:2.8.0-beta` and `0xpolygon/heimdall-v2:0.7.2-beta2` Docker Hub tags no longer exist, and the StreamingFast kurtosis-pos fork it pinned wrote Heimdall config keys that newer Heimdall images reject. `KURTOSIS_POS_REF`, `BOR_IMAGE` and `HEIMDALL_IMAGE` can be overridden from the environment.
 - The same script checks for `envsubst` and `jq`, which it uses, instead of `bats`, which only `./scripts/polygon-bridge` needs, and `exec`s `fireeth` so stopping the launcher stops bor.
 - The same script requires Kurtosis 1.22.2 or later. The pinned kurtosis-pos commit uses an ethereum-package version that older Kurtosis versions cannot interpret (`undefined: GpuConfig`).

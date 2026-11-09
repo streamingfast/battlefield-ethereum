@@ -38,8 +38,8 @@ main() {
 
   trap "cleanup_on_exit" EXIT
   # - Jovian is enabled at genesis (`--enable-latest-fork=0`), the recipe stops at Isthmus otherwise.
-  # - 1s L2 blocks (default 2s): Firehose op-reth reports head - 200 as its last irreversible block,
-  #   so Firehose only serves once L2 reaches block 300, and every test waits for its blocks.
+  # - 1s L2 blocks (default 2s): Firehose serves once the first 100-block bundle is final, which the
+  #   EL launchers make happen 10 blocks later (`force_devnet_finality`).
   # - The sequencer is the recipe's plain op-geth: an external builder (`--external-builder
   #   op-rbuilder --flashblocks`) adds rollup-boost, bproxy and flashblocks-rpc, nothing the suite
   #   needs, and bproxy races op-rbuilder at startup.
@@ -95,7 +95,7 @@ main() {
   echo "  ./scripts/run_firehose_op_reth_devnet.sh   (op-reth)"
   echo "  ./scripts/run_firehose_op_geth_devnet.sh   (op-geth)"
   echo ""
-  echo "Firehose serves once L2 reaches block 300, about 5 minutes after the devnet started. The test"
+  echo "Firehose serves once L2 reaches block 110, about 2 minutes after the devnet started. The test"
   echo "suite waits for it, so start it right after the EL."
   echo ""
   # op-node gives up when the Engine API is not reachable at startup, so it is only started once

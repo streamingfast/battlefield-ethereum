@@ -80,6 +80,7 @@ main() {
 
   world_chain_args="${world_chain_args_parts[*]}"
 
+  force_devnet_finality
   run_fireeth ${WORLD_CHAIN_FIRST_BLOCK:-0} "$world_chain" "$world_chain_args"
 }
 

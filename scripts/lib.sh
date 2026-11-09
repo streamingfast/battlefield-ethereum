@@ -72,6 +72,14 @@ run_fireeth() {
   return $exit_code
 }
 
+# force_devnet_finality makes fireeth keep each block's LIB at most 10 blocks behind it, through
+# firehose-core's FORCE_FINALITY_AFTER_BLOCKS. It is for devnets whose node reports no finality:
+# their LIB trails the head by 200 blocks, so Firehose would serve nothing before block 300 and
+# each block would wait 200 more blocks to become final.
+force_devnet_finality() {
+  export FORCE_FINALITY_AFTER_BLOCKS="${FORCE_FINALITY_AFTER_BLOCKS:-10}"
+}
+
 check_docker() {
     if ! command -v "docker" &> /dev/null; then
         echo "The 'docker' command is required for this script, please install it"
