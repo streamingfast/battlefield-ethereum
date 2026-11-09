@@ -32,6 +32,11 @@ describe("Dynamic Tx", function () {
         true,
         `ArbOS effective gas price must be within 1 wei: trace ${traceGasPrice} vs rpc ${rpcGasPrice}`,
       )
+    } else if (isNetwork("bnb-dev")) {
+      // BSC Firehose blocks (geth-BSC and reth-bsc alike) treat the zero base fee as absent, so a
+      // dynamic-fee transaction's gas price is its fee cap where RPC reports the effective price.
+      // The `Compare blocks` test accepts the same difference.
+      expect(toBigInt(trace.gasPrice)).to.equal(defaultGasPrice)
     } else {
       expect(toBigInt(trace.gasPrice)).to.equal(result.gasPrice)
     }

@@ -427,7 +427,7 @@ Both `geth-devnet` and `reth-devnet` run as a secondary execution layer client a
    ./scripts/run_firehose_reth_bsc.sh
    ```
 
-   The script pulls the genesis and enode from the running miner container, funds the test accounts, and starts `reth-bsc` on non-default ports (HTTP `9545`, authrpc `9551`, p2p `30404`) so it does not conflict with the miner or any other local node.
+   The script waits for block 8, where the miner's genesis activates Berlin and London (typed transactions sent earlier are rejected), pulls the genesis and enode from the running miner container, funds the test accounts, and starts `reth-bsc` on non-default ports (HTTP `9545`, authrpc `9551`, p2p `30404`) so it does not conflict with the miner or any other local node.
 
 3. **Terminal 3 — Run the tests**:
 

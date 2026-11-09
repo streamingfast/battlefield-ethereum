@@ -62,7 +62,8 @@ RUN if [ "$JENNER" = "true" ]; then \
       && mv genesis.json.new genesis.json; \
     fi
 
-RUN uname -i |grep "aarch64" && binary="geth_linux" || binary="geth-linux-arm64"; curl -L -o /usr/local/bin/geth https://github.com/bnb-chain/bsc/releases/download/$GETH_VERSION/$binary && chmod +x /usr/local/bin/geth
+RUN case "$(uname -m)" in aarch64|arm64) binary="geth-linux-arm64";; *) binary="geth_linux";; esac \
+    && curl -fL -o /usr/local/bin/geth https://github.com/bnb-chain/bsc/releases/download/$GETH_VERSION/$binary && chmod +x /usr/local/bin/geth
 
 
 RUN geth init genesis.json

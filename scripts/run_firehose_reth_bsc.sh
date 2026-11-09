@@ -12,6 +12,9 @@ main() {
   check_docker "bnb-miner-1" "You should launch the Binance Smart Chain miner with '${BNB_SCRIPTS_FOLDER}/up.sh -c'"
 
   wait_geth_up "http://localhost:8545"
+  # The miner's genesis activates Berlin and London at block 8 (Dockerfile.miner): typed
+  # transactions sent before that are rejected, which fails the first tests of the suite.
+  wait_rpc_block_at_least "http://localhost:8545" 8 120
   RUNDIR=$(mktemp -d)
 
   pushd "$RUNDIR"

@@ -17,11 +17,16 @@
 
 ### Changed
 
+- `scripts/run_firehose_reth_bsc.sh` and `scripts/run_firehose_bnb.sh` wait for block 8 before starting, where the BSC miner's genesis activates Berlin and London. A suite started earlier failed its first tests on typed transactions the miner rejected.
+- `Dynamic transaction max fee` expects the fee cap as the trace's gas price on `bnb-dev`/`reth-bsc-dev`, the same BSC Firehose behavior the `Compare blocks` test already accepts.
+
+### Fixed
+
+- `scripts/bnb/Dockerfile.miner` downloads the bsc `geth` matching the build architecture. Its check was inverted and fetched the arm64 binary on x86_64 hosts.
+
 - `scripts/world_chain/run_world_chain_devnet.sh` gives the devnet 1200 seconds to come up instead of 600 (`WORLD_CHAIN_DEVNET_TIMEOUT_SECS`), prints its progress every minute and the end of `target/devnet/logs/devnet.log` when it gives up. A first boot pulls the 7 GB SP1 image and deploys the proof system, which took longer than 600 seconds even with images cached.
 - The same script stops as soon as the detached devnet process exits, instead of waiting for the endpoints file until the timeout. `just devnet up -d` discards the devnet's error output, so it prints the command that shows it. It also checks the submodules nested in `pkg/contracts/lib/optimism`, whose absence made the devnet exit on a forge compile error.
 - The same script builds world-chain without debug info (`CARGO_PROFILE_DEV_DEBUG=0`, as upstream CI does), which otherwise pushes the binary past the 4 GiB linker limit on Linux, checks for `protoc` and its well-known types up front, and prints the error of the last attempt when a retried command gives up instead of discarding it.
-
-### Fixed
 
 - `find_op_workdir` in the same script tries GNU `stat -c %Y` before BSD `stat -f %m`. On Linux `stat -f` prints the file system status to stdout before failing, so the captured modification time was that text followed by the number, and the comparison that used it aborted the script, tearing the devnet down right after it came up.
 
