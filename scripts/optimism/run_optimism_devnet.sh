@@ -13,12 +13,12 @@ op_stack_path="$ROOT/op-chain"
 l1_rpc_url="http://localhost:8545"
 # This is beacon 'http' port (container named `op-chain-beacon-1`)
 l1_beacon_rpc_url="http://localhost:3500"
-# This is rollup-boost `authrpc` port (container named `op-chain-rollup-boost-1`)
-l2_sequencer_rpc_url="http://localhost:8548" #8554
-# This is op-geth `http` port (container named `op-chain-op-geth-1`)
+# This is the sequencer op-geth `http` port (container named `op-chain-op-geth-1`), also the
+# `op-*-devnet` RPC url in `hardhat.config.ts`
 l2_geth_rpc_url="http://localhost:8547"
-# This is op-geth address that will be started by the `./scripts/run_firehose_optimism_devnet.sh` script
-local_op_geth_authrpc_url="http://localhost:28551"
+# This is the Engine API of the Firehose EL started by `../run_firehose_op_reth_devnet.sh` or
+# `../run_firehose_op_geth_devnet.sh`, driven by the local op-node this script starts
+local_el_authrpc_url="http://localhost:28551"
 
 main() {
   pushd "$ROOT" &> /dev/null
@@ -37,7 +37,13 @@ main() {
   maybe_cleanup_previous
 
   trap "cleanup_on_exit" EXIT
-  builder-playground cook opstack --output="$op_stack_path" --external-builder op-rbuilder --flashblocks &
+  # - Jovian is enabled at genesis (`--enable-latest-fork=0`), the recipe stops at Isthmus otherwise.
+  # - 1s L2 blocks (default 2s): Firehose op-reth reports head - 200 as its last irreversible block,
+  #   so Firehose only serves once L2 reaches block 300, and every test waits for its blocks.
+  # - The sequencer is the recipe's plain op-geth: an external builder (`--external-builder
+  #   op-rbuilder --flashblocks`) adds rollup-boost, bproxy and flashblocks-rpc, nothing the suite
+  #   needs, and bproxy races op-rbuilder at startup.
+  builder-playground cook opstack --output="$op_stack_path" --enable-latest-fork=0 --block-time=1 &
   playground_pid=$!
   echo ""
 
@@ -66,6 +72,8 @@ main() {
   wait_for_chain_op_geth "$docker_op_geth_name"
   echo ""
 
+  check_op_geth_rpc_port "$docker_op_geth_name"
+
   # The op-stack above always starts from scratch, so we need to do the same here
   if [[ -d "$db_path" ]]; then
     echo "Removing existing op-node-db at $db_path"
@@ -79,16 +87,28 @@ main() {
   op_node_peer_id="$(extract_chain_op_node_peer_id "$docker_op_node_name")"
   op_node_peer="/ip4/127.0.0.1/tcp/9003/p2p/$op_node_peer_id"
 
-  echo "Container op-node is ready, launching local op-node waiting on op-geth..."
-  echo " OP node peer: $op_node_peer"
-  echo ""
+  fund_l2_address
 
-  fund_l2_address &
+  echo ""
+  echo "Op Stack devnet is ready, start the Firehose execution client in another terminal:"
+  echo ""
+  echo "  ./scripts/run_firehose_op_reth_devnet.sh   (op-reth)"
+  echo "  ./scripts/run_firehose_op_geth_devnet.sh   (op-geth)"
+  echo ""
+  echo "Firehose serves once L2 reaches block 300, about 5 minutes after the devnet started. The test"
+  echo "suite waits for it, so start it right after the EL."
+  echo ""
+  # op-node gives up when the Engine API is not reachable at startup, so it is only started once
+  # the Firehose EL answers. There is no time limit: start the EL whenever you are ready.
+  wait_for_local_el_authrpc
+
+  echo "Firehose EL is up, launching local op-node (peer: $op_node_peer)"
+  echo ""
 
   op-node \
     --l1="$l1_rpc_url" \
     --l1.beacon="$l1_beacon_rpc_url" \
-    --l2="$local_op_geth_authrpc_url"  \
+    --l2="$local_el_authrpc_url"  \
     --l2.engine-rpc-timeout=900s \
     --l2.jwt-secret="$op_stack_path/jwtsecret" \
     --log.level=error \
@@ -119,7 +139,9 @@ main() {
 maybe_cleanup_previous() {
   if [[ -d "$op_stack_path" && -f "$op_stack_path/docker-compose.yaml" ]]; then
     echo "Tearing down existing op-stack at $op_stack_path"
-    cd "$op_stack_path" && docker compose down
+    # No `cd`: this runs in the main shell, and builder-playground deletes and recreates this
+    # directory, which would leave everything started afterwards in a deleted working directory.
+    docker compose -f "$op_stack_path/docker-compose.yaml" down
   fi
 }
 
@@ -135,23 +157,10 @@ cleanup_on_exit() {
   kill $(jobs -p) 2>/dev/null
 }
 
+# The sequencer op-node logs its peer ID once its p2p host is up, which is what the local op-node
+# needs to peer with it.
 wait_for_chain_op_node() {
-  wait_for_chain_op_node_rpc "$@"
   wait_for_chain_op_node_peer_id "$@"
-}
-
-wait_for_chain_op_node_rpc() {
-  echo "Waiting for OP node to be ready to accept peers..."
-  local attempts=0
-  local max_attempts=60
-  until curl -sS http://localhost:8556/eth/v1/node/peers &> /dev/null; do
-      sleep 1
-      attempts=$((attempts + 1))
-      if [ $attempts -ge $max_attempts ]; then
-          echo "Failed to connect to OP node after $max_attempts attempts"
-          return 1
-      fi
-  done
 }
 
 wait_for_chain_op_node_peer_id() {
@@ -187,7 +196,7 @@ wait_for_chain_op_geth() {
   wait_for_block="1"
 
   while [ $attempts -lt $max_attempts ]; do
-    imported_block="$(docker logs "$docker_op_geth_name" 2>&1 | grep "Imported new potential chain segment" | grep -oE "number=$wait_for_block")"
+    imported_block="$(docker logs "$docker_op_geth_name" 2>&1 | grep "Imported new potential chain segment" | grep -oE "number=$wait_for_block( |$)" | head -n 1)"
 
     if [ -n "$imported_block" ]; then
       echo "Found imported block: $imported_block"
@@ -202,39 +211,25 @@ wait_for_chain_op_geth() {
   return 1
 }
 
+# builder-playground publishes each port on the next free host port, while `hardhat.config.ts` and
+# this script expect the sequencer op-geth RPC on 8547. It lands elsewhere when 8547 is taken, for
+# instance by a previous devnet that is still shutting down.
+check_op_geth_rpc_port() {
+  local published
+  published="$(docker port "$1" 8545/tcp | head -n 1)"
+  if [[ "$published" != *":${l2_geth_rpc_url##*:}" ]]; then
+    echo "ERROR: op-geth RPC is published on '$published' instead of $l2_geth_rpc_url, which is already taken."
+    echo "Stop whatever listens on it (a previous devnet still shutting down?) and start again."
+    exit 1
+  fi
+}
+
 extract_chain_op_node_peer_id() {
   echo "$(docker logs "$1" 2>&1 | grep "started p2p host" | cut -d ' ' -f 8- | sd 'peerID=' '')"
 }
 
-fund_l2_address() {
-  local pk="0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
-  local attempts=0
-  local max_attempts=15
-
-  echo "Funding the default address with 1,000,000 ETH on L2 (background)..."
-
-  # It seems cast does not like being run from the project's root, it complains about not
-  # finding the project root, probably a wrong heuristic on cast side think he is in a Forge
-  # project. So run it from ROOT folder which is outside of root.
-  pushd "$ROOT" &> /dev/null
-
-  while [ $attempts -lt $max_attempts ]; do
-    if cast send --async --rpc-url="$rpc_url" --private-key "$pk" --value 1000000ether "$address_to_fund" --priority-gas-price=25000000000 --gas-price=250000000000; then
-      echo "Successfully funded address $address_to_fund on L2"
-      return 0
-    fi
-
-    sleep 1
-    attempts=$((attempts + 1))
-  done
-
-  popd &> /dev/null
-
-  echo "ERROR: Failed to fund L2 address after $max_attempts attempts"
-  kill -s SIGTERM $$
-  return 1
-}
-
+# The test account is funded straight on the sequencer op-geth, which is also where the suite
+# sends its transactions.
 fund_l2_address() {
   local pk="0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
 
@@ -243,40 +238,39 @@ fund_l2_address() {
   # project. So run it from ROOT folder which is outside of root.
   pushd "$ROOT" &> /dev/null
 
-  jwt="$(cat "$op_stack_path/jwtsecret")"
-  l2_geth_auth_header="Authorization: Bearer $jwt"
-
-  echo "Funding the default address with 1,000,000 ETH on L2 (background)..."
-  cast send --async --rpc-url="$l2_sequencer_rpc_url" --rpc-headers "$l2_geth_auth_header" --private-key "$pk" --value 1000000ether "$address_to_fund" --priority-gas-price=25000000000 --gas-price=250000000000 > /dev/null
-
-  echo "Waiting for fund to arrive"
+  echo "Funding $address_to_fund with 1,000,000 ETH on L2..."
   local attempts=0
-  local max_attempts=15
-  while [ $attempts -lt $max_attempts ]; do
-    balance=`cast balance --rpc-url "$l2_geth_rpc_url" --rpc-headers "$l2_geth_auth_header" "$address_to_fund"`
-    if [[ $? -eq 0 && $balance != "0" ]]; then
-      # Blank line needed due to builder-playground output that happened before use.
-      echo "L2 address properly funded"
-
-      # We wait a bit to ensure builder-playground output "stopped"
-      sleep 2
-      echo ""
-      echo "*Time Sensitive* You have roughly 60 seconds to perform the action due to op-node"
-      echo "In another terminal launch ./scripts/run_firehose_op_geth_devnet.sh".
-      return 0
-    fi
-
-    sleep 1
+  until cast send --async --rpc-url="$l2_geth_rpc_url" --private-key "$pk" --value 1000000ether "$address_to_fund" \
+      --priority-gas-price=25000000000 --gas-price=250000000000 > /dev/null; do
     attempts=$((attempts + 1))
+    if [[ $attempts -ge 30 ]]; then
+      echo "ERROR: Failed to send the funding transaction to $l2_geth_rpc_url after $attempts attempts"
+      exit 1
+    fi
+    sleep 1
+  done
+
+  attempts=0
+  while [[ "$(cast balance --rpc-url "$l2_geth_rpc_url" "$address_to_fund" 2> /dev/null)" == "0" ]]; do
+    attempts=$((attempts + 1))
+    if [[ $attempts -ge 60 ]]; then
+      echo "ERROR: Funding transaction was not included on L2 after $attempts seconds"
+      exit 1
+    fi
+    sleep 1
   done
 
   popd &> /dev/null
-
-  echo "ERROR: Failed to fund L2 address after $max_attempts attempts"
-  kill -s SIGTERM $$
-  return 1
+  echo "L2 address properly funded"
 }
 
+wait_for_local_el_authrpc() {
+  echo "Waiting for the Firehose EL Engine API at $local_el_authrpc_url..."
+  # Any HTTP answer (401 without a JWT) means the Engine API is listening.
+  until curl -s -o /dev/null --connect-timeout 1 "$local_el_authrpc_url"; do
+    sleep 1
+  done
+}
 
 usage_error() {
   message="$1"
@@ -289,14 +283,14 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: run_op_node.sh <none>"
+  echo "usage: run_optimism_devnet.sh"
   echo ""
-  echo "Run op-node stack connecting to local op-geth instance."
+  echo "Runs a builder-playground Op Stack devnet (Jovian at genesis), funds the test account,"
+  echo "then waits for a Firehose EL on :28551 (run_firehose_op_reth_devnet.sh or"
+  echo "run_firehose_op_geth_devnet.sh) and starts the local op-node that drives it."
   echo ""
   echo "Options"
   echo "    -h          Display help about this script"
-  echo "    -b          Build op-node from source before starting"
-  echo "    -c          Clean the existing database before starting"
 }
 
 main "$@"

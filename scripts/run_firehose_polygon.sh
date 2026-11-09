@@ -2,6 +2,11 @@
 
 set -e
 
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/lib.sh"
+
+# The kurtosis-pos commit pinned below needs this Kurtosis version (its CI version) or later.
+MIN_KURTOSIS_VERSION="1.22.2"
+
 # Function to check if a command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
@@ -28,7 +33,15 @@ check_dependencies() {
         echo "   Install with: brew install kurtosis-tech/tap/kurtosis-cli"
         echo "   Note: You may have to go in the App Store, look for XCode and click Upgrade for that installation to work"
     else
-        echo "✅ Kurtosis is installed"
+        local kurtosis_version
+        kurtosis_version=$(kurtosis version 2>/dev/null | sed -n 's/^CLI Version: *//p')
+        if [[ "$(printf '%s\n%s\n' "$MIN_KURTOSIS_VERSION" "$kurtosis_version" | sort -V | head -n 1)" != "$MIN_KURTOSIS_VERSION" ]]; then
+            missing_deps+=("kurtosis")
+            echo "❌ Kurtosis $kurtosis_version is too old, kurtosis-pos needs $MIN_KURTOSIS_VERSION or later"
+            echo "   Upgrade with: brew upgrade kurtosis-tech/tap/kurtosis-cli && kurtosis engine restart"
+        else
+            echo "✅ Kurtosis $kurtosis_version is installed"
+        fi
     fi
 
     # Check Cast (part of Foundry)
@@ -52,14 +65,22 @@ check_dependencies() {
         echo "✅ Polycli is installed"
     fi
 
-    # Check Bats
-    if ! command_exists bats; then
-        missing_deps+=("bats")
-        echo "❌ Bats is not installed"
-        echo "   Install with:"
-        echo "   git clone https://github.com/bats-core/bats-core && cd bats-core && sudo ./install.sh /usr/local"
+    # Check envsubst (gettext), used to render the local bor config
+    if ! command_exists envsubst; then
+        missing_deps+=("envsubst")
+        echo "❌ envsubst is not installed"
+        echo "   Install with: brew install gettext / apt-get install gettext-base"
     else
-        echo "✅ Bats is installed"
+        echo "✅ envsubst is installed"
+    fi
+
+    # Check jq
+    if ! command_exists jq; then
+        missing_deps+=("jq")
+        echo "❌ jq is not installed"
+        echo "   Install with: brew install jq / apt-get install jq"
+    else
+        echo "✅ jq is installed"
     fi
 
     # Check Fireeth
@@ -92,12 +113,20 @@ check_dependencies() {
 }
 
 # Pinned versions. Bump these to roll the kurtosis-deployed validators forward.
-# - KURTOSIS_POS_REF: pinned commit of streamingfast/kurtosis-pos for reproducibility.
+# - KURTOSIS_POS_REF: pinned commit of 0xPolygon/kurtosis-pos for reproducibility. Its config
+#   templates must match HEIMDALL_IMAGE: Heimdall refuses to start on keys it does not know.
+#   Use the images the pinned commit defaults to (src/config/constants.star).
 # - BOR_IMAGE / HEIMDALL_IMAGE: must be compatible with the locally-built `bor` binary
-#   that fireeth peers with. Mismatched bor versions will fail to peer.
-KURTOSIS_POS_REF="a76f5263dfa44ba0f936ad1d9d543368387aa4ce"
-BOR_IMAGE="0xpolygon/bor:2.8.0-beta"
-HEIMDALL_IMAGE="0xpolygon/heimdall-v2:0.7.2-beta2"
+#   that fireeth peers with. Mismatched bor versions will fail to peer. Polygon publishes
+#   them on ghcr.io only, the Docker Hub tags are gone.
+KURTOSIS_POS_REF="${KURTOSIS_POS_REF:-ed2c325ae5d73fc430c7f62c82d42c8aefc441c5}"
+BOR_IMAGE="${BOR_IMAGE:-ghcr.io/0xpolygon/bor:v2.11.0}"
+HEIMDALL_IMAGE="${HEIMDALL_IMAGE:-ghcr.io/0xpolygon/heimdall-v2:v0.13.2}"
+
+# kurtosis-pos names the validator services after the participant, with an `-archive` suffix
+# because the validator runs in archive mode (see prepare_kurtosis_environment).
+POS_EL_SERVICE="l2-el-1-bor-heimdall-v2-validator-archive"
+POS_CL_SERVICE="l2-cl-1-heimdall-v2-bor-validator-archive"
 
 # Kurtosis starts its engine in the Docker 'bridge' network, but resolves it through
 # Docker's `name=` filter, which is a *substring* match. Any other network whose name
@@ -166,13 +195,16 @@ prepare_kurtosis_environment() {
 
     # Write a kurtosis args file overriding the bor/heimdall images so the
     # kurtosis-deployed validators run versions compatible with the local
-    # fireeth-driven bor binary.
+    # fireeth-driven bor binary. The validator keeps every state (archive mode): the L2 bridge
+    # deployment runs `forge script` against it, which reads state at the block it started on
+    # and fails with `historical state ... is not available` once that block has been pruned.
     KURTOSIS_ARGS_FILE=$(mktemp -t kurtosis-pos-args.XXXXXX.yaml)
     cat > "$KURTOSIS_ARGS_FILE" <<EOF
 polygon_pos_package:
   participants:
     - el_type: bor
       el_image: $BOR_IMAGE
+      el_bor_archive_mode: true
       cl_type: heimdall-v2
       cl_image: $HEIMDALL_IMAGE
 EOF
@@ -180,10 +212,10 @@ EOF
     # Run Kurtosis (pinned to a specific kurtosis-pos commit for reproducibility)
     echo "Starting Kurtosis POS environment (kurtosis-pos@$KURTOSIS_POS_REF, $BOR_IMAGE, $HEIMDALL_IMAGE)..."
     kurtosis run --enclave pos \
-        "github.com/streamingfast/kurtosis-pos@$KURTOSIS_POS_REF" \
+        "github.com/0xPolygon/kurtosis-pos@$KURTOSIS_POS_REF" \
         --args-file "$KURTOSIS_ARGS_FILE"
 
-    export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
+    export ETH_RPC_URL=$(kurtosis port print pos "$POS_EL_SERVICE" rpc)
     pk="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea"
 
     echo "sending private funds to" $address_to_fund
@@ -211,16 +243,23 @@ prepare_local_node() {
     # Extract genesis file
     kurtosis files inspect pos l2-el-genesis genesis.json | jq > localconfig/genesis.json
 
+    # kurtosis-pos activates the recent Bor forks at block 128, not at genesis, and they change
+    # gas costs. The polygon-dev snapshots are recorded with every fork active, so the suite
+    # must not send transactions before the last fork block.
+    local last_fork_block
+    last_fork_block=$(jq '[.config.bor | to_entries[] | select(.key | endswith("Block")) | .value] | max' localconfig/genesis.json)
+    wait_rpc_block_at_least "$ETH_RPC_URL" "$((last_fork_block + 1))" 600
+
     # Set environment variables
     export DATADIR=$(pwd)/localdata
     export CONFIGDIR=$(pwd)/localconfig
-    export CLHTTPADDR=$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator http)
+    export CLHTTPADDR=$(kurtosis port print pos "$POS_CL_SERVICE" http)
     # `kurtosis port print` reports the CometBFT RPC port as http://; bor rejects that
     # with `malformed ws or wss URL` and never subscribes to Heimdall. It wants the
     # CometBFT websocket endpoint: ws://<host>:<port>/websocket
-    export CLWSADDR="ws://$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator rpc | sed -E 's@^[a-z]+://@@')/websocket"
-    export ELP2PADDR=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator discovery)
-    export ENODE=$(kurtosis service exec pos l2-el-1-bor-heimdall-v2-validator "echo admin.nodeInfo | bor attach /var/lib/bor/bor.ipc" |awk '/enode/ {print $2}' | sed 's@.*"\(enode://.*\)127.0.0.1:30303.*@\1@')$(echo $ELP2PADDR|sed 's@http://@@')
+    export CLWSADDR="ws://$(kurtosis port print pos "$POS_CL_SERVICE" rpc | sed -E 's@^[a-z]+://@@')/websocket"
+    export ELP2PADDR=$(kurtosis port print pos "$POS_EL_SERVICE" discovery)
+    export ENODE=$(kurtosis service exec pos "$POS_EL_SERVICE" "echo admin.nodeInfo | bor attach /var/lib/bor/bor.ipc" |awk '/enode/ {print $2}' | sed 's@.*"\(enode://.*\)127.0.0.1:30303.*@\1@')$(echo $ELP2PADDR|sed 's@http://@@')
 
     # Generate config file from template
     envsubst < "$SCRIPTS_FOLDER/config_polygon.template" > localconfig/config.toml
@@ -256,7 +295,9 @@ run_local_bor() {
     echo "Starting Fireeth with Bor server and Firehose tracing..."
     echo "Running: fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments=\"server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose\" --advertise-chain-name=devnet --firehose-grpc-listen-addr=\"localhost:8089\""
     echo ""
-    fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
+    # `exec` so that stopping this launcher stops fireeth, which stops bor. The Kurtosis enclave
+    # keeps running, remove it with `kurtosis enclave rm pos --force`.
+    exec fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
 }
 
 # Main function

@@ -427,4 +427,4 @@ Two additional requirements specific to EIP-4844 blob tests:
 
 ## Other Chains
 
-For all other supported chains (Sei, BNB, Polygon, Besu, Optimism, Arbitrum, Amoy), refer to the **README.md** in the root of this repository. It contains the correct launcher/test command pairings, required binaries, and chain-specific notes for each.
+For all other supported chains (Sei, BNB, Polygon, Besu, Optimism, Arbitrum, Amoy), refer to the **README.md** in the root of this repository. For Arbitrum, the target is `pnpm test:fh3.0:nitro-dev` against `./scripts/run_firehose_nitro_dev.sh`, never `geth-dev` with an Arbitrum-fork `geth`. It contains the correct launcher/test command pairings, required binaries, and chain-specific notes for each.

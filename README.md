@@ -42,13 +42,13 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Sei                      | `./scripts/run_firehose_sei.sh parallel`                                                      | `pnpm test:fh3.0:sei-dev`                                  | The `parallel` tag refers to transaction execution algorithm, test both        |
 | BNB                      | Docker miner: `./scripts/bnb/up.sh`, then `./scripts/run_firehose_bnb.sh`                     | `pnpm test:fh3.0:bnb-dev`                                  | None                                                                           |
 | BNB Reth (fh 3.0, v5)    | Docker miner: `./scripts/bnb/up.sh -c -j`, then `./scripts/run_firehose_reth_bsc.sh`          | `pnpm test:fh3.0:reth-bsc-dev`                             | Requires [reth-bsc](#get-reth-bsc). Own goldens tag, see [BNB Reth](#bnb-reth-reth-bsc) |
-| Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, bats...)                       |
+| Polygon (fh 3.0)         | `./scripts/run_firehose_polygon.sh`                                                           | `pnpm test:fh3.0:polygon-dev`, ` ./scripts/polygon-bridge` | Heavy on dependencies (kurtosis, cast, polycli, envsubst, jq; bats for `./scripts/polygon-bridge` only) |
 | Geth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_geth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:geth-devnet` | Requires [geth](#build-firehose-geth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Reth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_reth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:reth-devnet` | Requires [reth](#get-reth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Geth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_geth_devnet.sh`. | `pnpm test:fh3.0:op-geth-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Reth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_reth_devnet.sh`. | `pnpm test:fh3.0:op-reth-devnet`                          | Requires [op-reth](#get-reth) (firehose-instrumented Op Stack Reth on PATH as `op-reth`), and [builder-playground](https://github.com/flashbots/builder-playground) |
-| Nitro Dev (fh 2.3 because block version == 3)       | `./scripts/run_firehose_nitro_dev.sh`                                   | `pnpm test:fh2.3:nitro-dev`                               | Standalone mine-on-demand Arbitrum chain. Requires [nitro](#get-nitro) and [fireeth](#get-fireeth) |
+| Nitro Dev (fh 3.0, nitro v3.12.1-fh3.0 and later)   | `./scripts/run_firehose_nitro_dev.sh`                                   | `pnpm test:fh3.0:nitro-dev` (`test:fh2.3:nitro-dev` for older releases, which emit block version 3) | Standalone mine-on-demand Arbitrum chain. Requires [nitro](#get-nitro) and [fireeth](#get-fireeth) |
 | Monad (fh 3.0)           | `./scripts/run_monad_devnet.sh`                                                               | `pnpm test:fh3.0:monad-dev`                                | Requires Monad node with event ring enabled                                  |
 
 ### Block Comparison
@@ -312,10 +312,14 @@ Find the correct pre-built binary for your architecture on the Firehose chains o
 Download the binary, rename it to `nitro`, make it executable, and place it on your `PATH`. You can also override the binary path without renaming it:
 
 ```bash
-export NITRO_BINARY../nitro/target/bin/nitro
+export NITRO_BINARY=../nitro/target/bin/nitro
 ```
 
-`run_firehose_nitro_dev.sh` launches a standalone mine-on-demand Nitro chain (`--dev`) with the Firehose tracer (`--node.firehose`) wrapped by `fireeth`. Like `geth-dev`/`reth-dev`, it only mines when a transaction arrives — the test suite bootstraps Firehose readiness on its own, so launch the chain then run `pnpm test:fh2.3:nitro-dev` (wait only for JSON-RPC on `http://127.0.0.1:8547`, do not wait for port 8089).
+StreamingFast publishes Linux builds only. On macOS, run the launcher inside the release image (`ghcr.io/streamingfast/nitro:<tag>`, which has `nitro` on its `PATH`) with a Linux `fireeth`, publishing ports 8547 and 8089, and make Firehose listen on `0.0.0.0:8089` instead of `localhost:8089` (`run_fireeth` in `scripts/lib.sh`) so the published port reaches it.
+
+`run_firehose_nitro_dev.sh` launches a standalone mine-on-demand Nitro chain (`--dev`) with the Firehose tracer (`--node.firehose`) wrapped by `fireeth`. Like `geth-dev`/`reth-dev`, it only mines when a transaction arrives — the test suite bootstraps Firehose readiness on its own, so launch the chain then run `pnpm test:fh3.0:nitro-dev` (wait only for JSON-RPC on `http://127.0.0.1:8547`, do not wait for port 8089).
+
+Arbitrum tracing is tested with this target only. Do not run `geth-dev` with a `geth` built from the Arbitrum go-ethereum fork (`release/arbitrum-3.x`): that tracer keeps only the keccak preimages of storage keys and differs from the L1 `geth` on gas, so the `geth-dev` snapshots do not apply to it. `test:fh2.3:arbitrum-geth-dev` is a legacy target with no launcher.
 
 ### Build Firehose `geth`
 
@@ -427,7 +431,7 @@ Both `geth-devnet` and `reth-devnet` run as a secondary execution layer client a
    ./scripts/run_firehose_reth_bsc.sh
    ```
 
-   The script pulls the genesis and enode from the running miner container, funds the test accounts, and starts `reth-bsc` on non-default ports (HTTP `9545`, authrpc `9551`, p2p `30404`) so it does not conflict with the miner or any other local node.
+   The script waits for block 8, where the miner's genesis activates Berlin and London (typed transactions sent earlier are rejected), pulls the genesis and enode from the running miner container, funds the test accounts, and starts `reth-bsc` on non-default ports (HTTP `9545`, authrpc `9551`, p2p `30404`) so it does not conflict with the miner or any other local node.
 
 3. **Terminal 3 — Run the tests**:
 
