@@ -243,17 +243,40 @@ check_bor() {
   fi
 }
 
+# Karst (the OP devnet's fork) needs op-node v1.19.1 or later.
+op_node_min_version="1.19.1"
+op_node_install_version="v1.19.11"
+
 check_op_node() {
+  local problem=""
   if ! command -v "$op_node" &> /dev/null; then
-    echo "The '$op_node' binary could not be found, you can install it with"
+    problem="The '$op_node' binary could not be found."
+  else
+    local version
+    version="$("$op_node" --version 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -n1)"
+    if [[ -z "$version" ]] || ! version_at_least "${version#v}" "$op_node_min_version"; then
+      problem="The '$op_node' binary reports version '${version:-unknown}', v$op_node_min_version or later is required for Karst."
+    fi
+  fi
+
+  if [[ -n "$problem" ]]; then
+    echo "$problem Install op-node $op_node_install_version on your PATH (or set OP_NODE_BINARY):"
     echo ""
-    echo "- brew install just"
-    echo "- git clone https://github.com/ethereum-optimism/optimism.git"
-    echo "- cd optimism/op-node"
-    echo "- just"
-    echo "- cp ./bin/op-node \"\`go env GOPATH\`/bin/\""
+    echo "- Linux (amd64), copy it out of the official image:"
+    echo "    docker create --name op-node-bin us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:$op_node_install_version"
+    echo "    docker cp op-node-bin:/usr/local/bin/op-node \"\$(go env GOPATH)/bin/op-node\" && docker rm op-node-bin"
+    echo ""
+    echo "- macOS or other platforms, build it from source (needs 'just' and 'yq'):"
+    echo "    git clone --depth 1 --branch op-node/$op_node_install_version https://github.com/ethereum-optimism/optimism.git"
+    echo "    cd optimism && just build-superchain-go"
+    echo "    cd op-node && just op-node && cp ./bin/op-node \"\$(go env GOPATH)/bin/\""
     exit 1
   fi
+}
+
+# usage: version_at_least <version> <minimum>, both as MAJOR.MINOR.PATCH without a leading 'v'
+version_at_least() {
+  [[ "$(printf '%s\n%s\n' "$2" "$1" | sort -t. -k1,1n -k2,2n -k3,3n | head -n1)" == "$2" ]]
 }
 
 check_op_geth() {
@@ -351,14 +374,26 @@ check_monad() {
   fi
 }
 
+# usage: check_builder_playground [opstack]
+#
+# With 'opstack', also checks that the Op Stack recipe can run op-reth as the sequencer and
+# activate Karst, which only the StreamingFast fork does.
 check_builder_playground() {
+  local problem=""
   if ! command -v builder-playground &> /dev/null; then
-    echo "The 'builder-playground' command is required for this script."
+    problem="The 'builder-playground' command is required for this script."
+  elif [[ "$1" == "opstack" ]] && ! builder-playground cook opstack --help 2>&1 | grep -q -- "--enable-karst"; then
+    problem="The 'builder-playground' on your PATH has no '--enable-karst' flag on its 'opstack' recipe."
+  fi
+
+  if [[ -n "$problem" ]]; then
+    echo "$problem"
     echo ""
     echo "Install the StreamingFast fork: upstream's L1 ignores '--block-time' and runs 12s slots"
-    echo "(https://github.com/flashbots/builder-playground/pull/417 is not merged yet):"
+    echo "(https://github.com/flashbots/builder-playground/pull/417), and its Op Stack recipe cannot"
+    echo "run op-reth as the sequencer nor activate Karst:"
     echo ""
-    echo "  git clone -b fix/l1-block-time-not-respected-anymore https://github.com/streamingfast/builder-playground.git"
+    echo "  git clone -b v0.3.3-sf2 https://github.com/streamingfast/builder-playground.git"
     echo "  cd builder-playground && go install ."
     exit 1
   fi

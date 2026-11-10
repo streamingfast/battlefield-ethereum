@@ -15,7 +15,14 @@ op_stack_path="$ROOT/optimism/op-chain"
 main() {
   check_fireeth
   check_op_geth
-  check_docker "$chain_docker_op_node_suffix" "You should launch the Op Stack chain with './scripts/optimism/run_optimism_devnet.sh'"
+  check_docker "$chain_docker_op_node_suffix" "You should launch the Op Stack chain with './scripts/optimism/run_optimism_devnet.sh -n'"
+
+  if [[ "$(jq -r '.config.karstTime // empty' "$op_stack_path/l2-genesis.json")" != "" ]]; then
+    echo "The Op Stack devnet activates Karst, which op-geth cannot run. Restart it without Karst:"
+    echo ""
+    echo "  ./scripts/optimism/run_optimism_devnet.sh -n"
+    exit 1
+  fi
 
   run_dir=$(mktemp -d)
 
@@ -61,7 +68,7 @@ add_peer() {
 usage() {
   echo "Usage: $0"
   echo ""
-  echo "Runs op-geth with Firehose tracer activated via 'fireeth'. Your Op Stack chain should be running (./optimism/run_optimism_devnet.sh) and your op-geth binary should be a firehose-enabled Op Stack execution client."
+  echo "Runs op-geth with Firehose tracer activated via 'fireeth'. Your Op Stack chain should be running without Karst (./optimism/run_optimism_devnet.sh -n) and your op-geth binary should be a firehose-enabled Op Stack execution client."
   echo ""
 }
 

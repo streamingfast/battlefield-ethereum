@@ -46,8 +46,8 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Geth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_geth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:geth-devnet` | Requires [geth](#build-firehose-geth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Reth Devnet (fh 3.0)     | Terminal 1: `./scripts/ethereum_devnet/run_playground_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_reth_devnet.sh` | Terminal 3: `pnpm test:fh3.0:reth-devnet` | Requires [reth](#get-reth), [fireeth](#get-fireeth), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Besu (fh 3.0)            | `./scripts/run_firehose_besu_devnet.sh`                                                       | `pnpm test:fh3.0:besu-devnet`                              | Requires [besu](https://besu.hyperledger.org/) binary, [builder-playground](https://github.com/flashbots/builder-playground) |
-| Optimism Geth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_geth_devnet.sh`. | `pnpm test:fh3.0:op-geth-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
-| Optimism Reth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_reth_devnet.sh`. | `pnpm test:fh3.0:op-reth-devnet`                          | Requires [op-reth](#get-reth) (firehose-instrumented Op Stack Reth on PATH as `op-reth`), and [builder-playground](https://github.com/flashbots/builder-playground) |
+| Optimism Geth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh -n` then `./scripts/run_firehose_op_geth_devnet.sh`. | `pnpm test:fh3.0:op-geth-devnet`                          | Jovian only (op-geth cannot run Karst). Requires [builder-playground and op-node](#op-stack-devnet) |
+| Optimism Reth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_reth_devnet.sh`. | `pnpm test:fh3.0:op-reth-devnet`                          | Karst at block 10. Requires [op-reth](#get-reth) (firehose-instrumented Op Stack Reth on PATH as `op-reth`), [builder-playground and op-node](#op-stack-devnet) |
 | Nitro Dev (fh 3.0, nitro v3.12.1-fh3.0 and later)   | `./scripts/run_firehose_nitro_dev.sh`                                   | `pnpm test:fh3.0:nitro-dev` (`test:fh2.3:nitro-dev` for older releases, which emit block version 3) | Standalone mine-on-demand Arbitrum chain. Requires [nitro](#get-nitro) and [fireeth](#get-fireeth) |
 | Monad (fh 3.0)           | `./scripts/run_monad_devnet.sh`                                                               | `pnpm test:fh3.0:monad-dev`                                | Requires Monad node with event ring enabled                                  |
 
@@ -353,6 +353,29 @@ rm -rf node_modules && pnpm install
 sudo apt-get install -y node-gyp
 cd node_modules/.pnpm/c-kzg@4.1.0/node_modules/c-kzg && npx node-gyp rebuild
 ```
+
+### Op Stack Devnet
+
+`./scripts/optimism/run_optimism_devnet.sh` runs a [builder-playground](https://github.com/flashbots/builder-playground) Op Stack devnet with Jovian at genesis and the [Karst](https://specs.optimism.io/protocol/karst/overview.html) network upgrade at L2 block 10, sequenced by op-reth since op-geth cannot run Karst. `test/karst.test.ts` covers the Karst changes on `op-reth-devnet`. With `-n`, the devnet stays on Jovian with an op-geth sequencer, which `op-geth-devnet` needs.
+
+It needs, on your `PATH`:
+
+- The StreamingFast builder-playground fork, whose Op Stack recipe has `--sequencer-el` and `--enable-karst` (upstream also ignores the L1 `--block-time`):
+
+  ```bash
+  git clone -b v0.3.3-sf2 https://github.com/streamingfast/builder-playground.git
+  cd builder-playground && go install .
+  ```
+
+- `op-node` v1.19.1 or later, which drives the Firehose EL. On Linux (amd64), copy it out of the official image `us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:v1.19.11` (`/usr/local/bin/op-node`). Elsewhere, build it from the `op-node/v1.19.11` tag of [ethereum-optimism/optimism](https://github.com/ethereum-optimism/optimism), which needs `just` and `yq`:
+
+  ```bash
+  git clone --depth 1 --branch op-node/v1.19.11 https://github.com/ethereum-optimism/optimism.git
+  cd optimism && just build-superchain-go
+  cd op-node && just op-node && cp ./bin/op-node "$(go env GOPATH)/bin/"
+  ```
+
+The launcher checks both and prints these instructions when one is missing or too old.
 
 ### Geth Devnet and Reth Devnet
 
