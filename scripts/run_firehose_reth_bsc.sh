@@ -22,6 +22,7 @@ main() {
     echo "Running reth-bsc with Firehose tracing via 'fireeth' (BSC miner must be running)"
     echo "Working directory: '$RUNDIR'"
     "$BNB_SCRIPTS_FOLDER/get-funds.sh"
+    force_devnet_finality
     run_fireeth 0 "bash" "$SCRIPTS_FOLDER/reth_bsc/wrapped_reth_bsc.sh"
   popd > /dev/null
 }

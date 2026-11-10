@@ -321,6 +321,8 @@ StreamingFast publishes Linux builds only. On macOS, run the launcher inside the
 
 Arbitrum tracing is tested with this target only. Do not run `geth-dev` with a `geth` built from the Arbitrum go-ethereum fork (`release/arbitrum-3.x`): that tracer keeps only the keccak preimages of storage keys and differs from the L1 `geth` on gas, so the `geth-dev` snapshots do not apply to it. `test:fh2.3:arbitrum-geth-dev` is a legacy target with no launcher.
 
+Besides the shared EVM suites, `test/arbos.test.ts` calls the ArbOS precompiles (ArbSys `withdrawEth` from an account and from a contract, ArbAddressTable `register`) and `test/zy_arbos_upgrade.test.ts` upgrades ArbOS by one version through ArbDebug and ArbOwner, then checks the version change in the next block's internal transaction. The upgrade runs after every other suite and before `Compare blocks`, so the other suites keep the genesis ArbOS version. The `withdrawEth` snapshots hold only for the first two L2 to L1 messages of a chain: run them on a fresh chain, or skip them with `SKIP_FRESH_CHAIN_ONLY_TESTS=1`. A dev chain has no parent chain, so retryables, deposits and other L1 to L2 messages are not covered.
+
 ### Build Firehose `geth`
 
 - Clone https://github.com/streamingfast/go-ethereum/tree/firehose-fh3.0

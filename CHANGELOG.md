@@ -4,6 +4,7 @@
 
 ### Added
 
+- ArbOS tests on `arbitrum-nitro-dev`: ArbSys `withdrawEth` called from an account and from a contract (`contracts/arbsys_caller.sol`), ArbAddressTable `register`, and an ArbOS version upgrade whose version change must appear in the next block's internal transaction. Retryables and other L1 to L2 messages need a parent chain and stay uncovered.
 - OP Stack Karst coverage on `op-reth-devnet` (`test/karst.test.ts`): the activation block's 31 network upgrade deposits (traces against snapshots, transactions matching RPC) and its one-time upgrade gas, the CLZ opcode (EIP-7939), MODEXP bounds and gas floor (EIP-7823, EIP-7883), P256VERIFY gas (EIP-7951), the 2^24 transaction gas limit cap and the deposits that bypass it (EIP-7825), and the bn256 pairing input limit lowered to 300 pairs. Each probe sits where the pre-Karst and Karst rules disagree. The tests skip on chains without Karst.
 
 - `fh3.0/arbitrum-nitro-dev` snapshots, recorded with nitro `v3.12.2-fh3.0` on a fresh `run_firehose_nitro_dev.sh` chain. Nitro emits Firehose block v5 since `v3.12.1-fh3.0`, so `pnpm test:fh3.0:nitro-dev` is its target and it had no snapshots: every snapshot test wrote one and passed.
@@ -21,6 +22,7 @@
 
 ### Changed
 
+- The reth-bsc launcher (`run_firehose_reth_bsc.sh`) also sets `FORCE_FINALITY_AFTER_BLOCKS=10`. reth-bsc reports no finality on the dockerized BSC miner either, so `Compare blocks` reached only block 46 of 190 before its 60-second timeout. It now compares every block in about 7 seconds.
 - `scripts/optimism/run_optimism_devnet.sh` activates Karst at L2 block 10 with an op-reth sequencer, since op-geth cannot run Karst, so the whole `op-reth-devnet` suite runs on Karst. `-n` keeps the former Jovian-only devnet with an op-geth sequencer, which `op-geth-devnet` needs; `scripts/run_firehose_op_geth_devnet.sh` refuses a Karst devnet. The launcher requires the StreamingFast builder-playground fork at `v0.3.3-sf2` (`--sequencer-el`, `--enable-karst`) and `op-node` v1.19.1 or later, and prints how to install either when it is missing or too old.
 - The `Compare blocks` test counts a block whose differences are all accepted as compared. The op-reth sequencer reports a data availability footprint on every receipt, deposits included, so no block of the op-reth devnet is identical to its Firehose version anymore.
 
