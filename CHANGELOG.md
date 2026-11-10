@@ -4,6 +4,8 @@
 
 ### Added
 
+- OP Stack Karst coverage on `op-reth-devnet` (`test/karst.test.ts`): the activation block's 31 network upgrade deposits (traces against snapshots, transactions matching RPC) and its one-time upgrade gas, the CLZ opcode (EIP-7939), MODEXP bounds and gas floor (EIP-7823, EIP-7883), P256VERIFY gas (EIP-7951), the 2^24 transaction gas limit cap and the deposits that bypass it (EIP-7825), and the bn256 pairing input limit lowered to 300 pairs. Each probe sits where the pre-Karst and Karst rules disagree. The tests skip on chains without Karst.
+
 - `fh3.0/arbitrum-nitro-dev` snapshots, recorded with nitro `v3.12.2-fh3.0` on a fresh `run_firehose_nitro_dev.sh` chain. Nitro emits Firehose block v5 since `v3.12.1-fh3.0`, so `pnpm test:fh3.0:nitro-dev` is its target and it had no snapshots: every snapshot test wrote one and passed.
 
 - `wait_rpc_block_at_least <rpc_url> <block_number> [<timeout_seconds>]` in `scripts/lib.sh`, for launchers that must wait for a fork activation block or a minimum chain height.
@@ -18,6 +20,9 @@
 - Block comparison between Firehose and the node's JSON-RPC now runs as the last test of every `pnpm test:*` run, resolving the RPC endpoint from the Hardhat network configuration and bounding the range at the chain's last irreversible block.
 
 ### Changed
+
+- `scripts/optimism/run_optimism_devnet.sh` activates Karst at L2 block 10 with an op-reth sequencer, since op-geth cannot run Karst, so the whole `op-reth-devnet` suite runs on Karst. `-n` keeps the former Jovian-only devnet with an op-geth sequencer, which `op-geth-devnet` needs; `scripts/run_firehose_op_geth_devnet.sh` refuses a Karst devnet. The launcher requires the StreamingFast builder-playground fork at `v0.3.3-sf2` (`--sequencer-el`, `--enable-karst`) and `op-node` v1.19.1 or later, and prints how to install either when it is missing or too old.
+- The `Compare blocks` test counts a block whose differences are all accepted as compared. The op-reth sequencer reports a data availability footprint on every receipt, deposits included, so no block of the op-reth devnet is identical to its Firehose version anymore.
 
 - The op-reth, op-geth and world-chain devnet launchers set `FORCE_FINALITY_AFTER_BLOCKS=10` for `fireeth` (`force_devnet_finality` in `scripts/lib.sh`). These nodes report no finality, so their LIB trailed the head by 200 blocks: Firehose served nothing before block 300, and `Compare blocks` waited 200 blocks for the suite's last block, then left most of the range out at its timeout. On the op-reth devnet, Firehose is now ready about 100 seconds after the devnet starts and the comparison covers every block.
 - `scripts/run_firehose_polygon.sh` deploys the validators from `0xPolygon/kurtosis-pos` at a pinned upstream commit, with the bor `v2.11.0` and heimdall-v2 `v0.13.2` images that commit defaults to, published on `ghcr.io`. The previous `0xpolygon/bor:2.8.0-beta` and `0xpolygon/heimdall-v2:0.7.2-beta2` Docker Hub tags no longer exist, and the StreamingFast kurtosis-pos fork it pinned wrote Heimdall config keys that newer Heimdall images reject. `KURTOSIS_POS_REF`, `BOR_IMAGE` and `HEIMDALL_IMAGE` can be overridden from the environment.
