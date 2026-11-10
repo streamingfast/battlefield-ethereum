@@ -55,8 +55,8 @@ describe("Compare blocks", function () {
     ).to.deep.equal([])
 
     // Every difference left is accepted, so the blocks reported as different were compared too. On
-    // some chains no block is identical: Monad blocks never match RPC on `size`, and every Base
-    // block has deposits with a Jovian data availability footprint.
+    // some chains no block is identical: Monad blocks never match RPC on `size`, every Base block has
+    // deposits with a Jovian data availability footprint, and every op-reth devnet receipt reports one.
     const compared = result.identicalCount + result.differences.length
     expect(compared, `No block was compared in range #${start}-#${stop}, output:\n${result.output}`).to.be.greaterThan(
       0,

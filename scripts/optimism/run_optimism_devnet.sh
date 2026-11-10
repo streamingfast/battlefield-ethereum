@@ -13,22 +13,31 @@ op_stack_path="$ROOT/op-chain"
 l1_rpc_url="http://localhost:8545"
 # This is beacon 'http' port (container named `op-chain-beacon-1`)
 l1_beacon_rpc_url="http://localhost:3500"
-# This is the sequencer op-geth `http` port (container named `op-chain-op-geth-1`), also the
-# `op-*-devnet` RPC url in `hardhat.config.ts`
-l2_geth_rpc_url="http://localhost:8547"
+# This is the sequencer EL `http` port (container named `op-chain-op-reth-1`, or
+# `op-chain-op-geth-1` with `-n`), also the `op-*-devnet` RPC url in `hardhat.config.ts`
+l2_rpc_url="http://localhost:8547"
 # This is the Engine API of the Firehose EL started by `../run_firehose_op_reth_devnet.sh` or
 # `../run_firehose_op_geth_devnet.sh`, driven by the local op-node this script starts
 local_el_authrpc_url="http://localhost:28551"
+
+# L2 block at which Karst activates. Early enough that the whole suite runs on Karst, after
+# genesis so the Jovian genesis (and the snapshots taken from it) stays the same and the
+# activation block carries the network upgrade transactions.
+karst_block=10
 
 main() {
   pushd "$ROOT" &> /dev/null
 
   check_sd
-  check_builder_playground
+  check_jq
+  check_builder_playground opstack
+  check_op_node
 
-  while getopts "h" opt; do
+  karst=true
+  while getopts "hn" opt; do
     case $opt in
       h) usage && exit 0;;
+      n) karst=false;;
       \?) usage_error "Invalid option: -$OPTARG";;
     esac
   done
@@ -38,12 +47,21 @@ main() {
 
   trap "cleanup_on_exit" EXIT
   # - Jovian is enabled at genesis (`--enable-latest-fork=0`), the recipe stops at Isthmus otherwise.
+  # - Karst activates at `karst_block`. op-geth cannot run Karst, so the sequencer is op-reth;
+  #   `-n` keeps the recipe's op-geth sequencer and leaves Karst out.
   # - 1s L2 blocks (default 2s): Firehose serves once the first 100-block bundle is final, which the
   #   EL launchers make happen 10 blocks later (`force_devnet_finality`).
-  # - The sequencer is the recipe's plain op-geth: an external builder (`--external-builder
-  #   op-rbuilder --flashblocks`) adds rollup-boost, bproxy and flashblocks-rpc, nothing the suite
-  #   needs, and bproxy races op-rbuilder at startup.
-  builder-playground cook opstack --output="$op_stack_path" --enable-latest-fork=0 --block-time=1 &
+  # - No external builder: `--external-builder op-rbuilder --flashblocks` adds rollup-boost, bproxy
+  #   and flashblocks-rpc, nothing the suite needs, and bproxy races op-rbuilder at startup.
+  local fork_flags=(--enable-latest-fork=0)
+  if [[ "$karst" == "true" ]]; then
+    sequencer_el="op-reth"
+    fork_flags+=(--sequencer-el=op-reth "--enable-karst=$karst_block")
+  else
+    sequencer_el="op-geth"
+  fi
+
+  builder-playground cook opstack --output="$op_stack_path" "${fork_flags[@]}" --block-time=1 &
   playground_pid=$!
   echo ""
 
@@ -56,23 +74,25 @@ main() {
   done
 
   docker_op_node_name="$(find_docker_by_name_ends_with "op-node-1")"
-  docker_op_geth_name="$(find_docker_by_name_ends_with "op-geth-1")"
 
   # An extra blank line is required it seems otherwise there no separation between builder-playground output and ours
   echo ""
   echo "Container op-node started, waiting for it to be ready..."
   echo " DB path: $db_path"
   echo " Docker OP node name: $docker_op_node_name"
-  echo " Docker OP geth name: $docker_op_geth_name"
+  echo " Sequencer EL: $sequencer_el"
+  if [[ "$karst" == "true" ]]; then
+    echo " Karst activation block: $karst_block"
+  fi
   echo ""
 
   wait_for_chain_op_node "$docker_op_node_name"
   echo ""
 
-  wait_for_chain_op_geth "$docker_op_geth_name"
-  echo ""
+  check_sequencer_rpc_port "$(find_docker_by_name_ends_with "$sequencer_el-1")"
 
-  check_op_geth_rpc_port "$docker_op_geth_name"
+  wait_for_sequencer_el
+  echo ""
 
   # The op-stack above always starts from scratch, so we need to do the same here
   if [[ -d "$db_path" ]]; then
@@ -92,8 +112,15 @@ main() {
   echo ""
   echo "Op Stack devnet is ready, start the Firehose execution client in another terminal:"
   echo ""
-  echo "  ./scripts/run_firehose_op_reth_devnet.sh   (op-reth)"
-  echo "  ./scripts/run_firehose_op_geth_devnet.sh   (op-geth)"
+  if [[ "$karst" == "true" ]]; then
+    echo "  ./scripts/run_firehose_op_reth_devnet.sh"
+    echo ""
+    echo "Karst activates at block $karst_block, op-geth cannot follow it: start this script with -n"
+    echo "for ./scripts/run_firehose_op_geth_devnet.sh."
+  else
+    echo "  ./scripts/run_firehose_op_reth_devnet.sh   (op-reth)"
+    echo "  ./scripts/run_firehose_op_geth_devnet.sh   (op-geth)"
+  fi
   echo ""
   echo "Firehose serves once L2 reaches block 110, about 2 minutes after the devnet started. The test"
   echo "suite waits for it, so start it right after the EL."
@@ -105,7 +132,7 @@ main() {
   echo "Firehose EL is up, launching local op-node (peer: $op_node_peer)"
   echo ""
 
-  op-node \
+  "$op_node" \
     --l1="$l1_rpc_url" \
     --l1.beacon="$l1_beacon_rpc_url" \
     --l2="$local_el_authrpc_url"  \
@@ -186,20 +213,20 @@ wait_for_chain_op_node_peer_id() {
   return 1
 }
 
-wait_for_chain_op_geth() {
-  docker_op_geth_name="$1"
-
-  echo "Waiting for OP geth from ($docker_op_geth_name)..."
+# The sequencer EL serves blocks on the `op-*-devnet` RPC url once op-node drives it.
+wait_for_sequencer_el() {
+  echo "Waiting for the sequencer $sequencer_el to produce block 1..."
   local attempts=0
-  local max_attempts=30
-
-  wait_for_block="1"
+  local max_attempts=60
 
   while [ $attempts -lt $max_attempts ]; do
-    imported_block="$(docker logs "$docker_op_geth_name" 2>&1 | grep "Imported new potential chain segment" | grep -oE "number=$wait_for_block( |$)" | head -n 1)"
+    local number
+    number="$(curl -s -X POST -H "Content-Type: application/json" \
+      --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' "$l2_rpc_url" 2>/dev/null |
+      jq -r '.result // empty' 2>/dev/null)"
 
-    if [ -n "$imported_block" ]; then
-      echo "Found imported block: $imported_block"
+    if [[ -n "$number" && "$((number))" -ge 1 ]]; then
+      echo "Sequencer is at block $((number))"
       return 0
     fi
 
@@ -207,18 +234,18 @@ wait_for_chain_op_geth() {
     attempts=$((attempts + 1))
   done
 
-  echo "Failed to find Op Geth imported block after $max_attempts attempts"
-  return 1
+  echo "Sequencer $sequencer_el did not produce block 1 after $max_attempts attempts"
+  exit 1
 }
 
 # builder-playground publishes each port on the next free host port, while `hardhat.config.ts` and
-# this script expect the sequencer op-geth RPC on 8547. It lands elsewhere when 8547 is taken, for
+# this script expect the sequencer EL RPC on 8547. It lands elsewhere when 8547 is taken, for
 # instance by a previous devnet that is still shutting down.
-check_op_geth_rpc_port() {
+check_sequencer_rpc_port() {
   local published
   published="$(docker port "$1" 8545/tcp | head -n 1)"
-  if [[ "$published" != *":${l2_geth_rpc_url##*:}" ]]; then
-    echo "ERROR: op-geth RPC is published on '$published' instead of $l2_geth_rpc_url, which is already taken."
+  if [[ "$published" != *":${l2_rpc_url##*:}" ]]; then
+    echo "ERROR: $sequencer_el RPC is published on '$published' instead of $l2_rpc_url, which is already taken."
     echo "Stop whatever listens on it (a previous devnet still shutting down?) and start again."
     exit 1
   fi
@@ -228,8 +255,8 @@ extract_chain_op_node_peer_id() {
   echo "$(docker logs "$1" 2>&1 | grep "started p2p host" | cut -d ' ' -f 8- | sd 'peerID=' '')"
 }
 
-# The test account is funded straight on the sequencer op-geth, which is also where the suite
-# sends its transactions.
+# The test account is funded straight on the sequencer EL, which is also where the suite sends
+# its transactions.
 fund_l2_address() {
   local pk="0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
 
@@ -240,18 +267,18 @@ fund_l2_address() {
 
   echo "Funding $address_to_fund with 1,000,000 ETH on L2..."
   local attempts=0
-  until cast send --async --rpc-url="$l2_geth_rpc_url" --private-key "$pk" --value 1000000ether "$address_to_fund" \
+  until cast send --async --rpc-url="$l2_rpc_url" --private-key "$pk" --value 1000000ether "$address_to_fund" \
       --priority-gas-price=25000000000 --gas-price=250000000000 > /dev/null; do
     attempts=$((attempts + 1))
     if [[ $attempts -ge 30 ]]; then
-      echo "ERROR: Failed to send the funding transaction to $l2_geth_rpc_url after $attempts attempts"
+      echo "ERROR: Failed to send the funding transaction to $l2_rpc_url after $attempts attempts"
       exit 1
     fi
     sleep 1
   done
 
   attempts=0
-  while [[ "$(cast balance --rpc-url "$l2_geth_rpc_url" "$address_to_fund" 2> /dev/null)" == "0" ]]; do
+  while [[ "$(cast balance --rpc-url "$l2_rpc_url" "$address_to_fund" 2> /dev/null)" == "0" ]]; do
     attempts=$((attempts + 1))
     if [[ $attempts -ge 60 ]]; then
       echo "ERROR: Funding transaction was not included on L2 after $attempts seconds"
@@ -283,13 +310,16 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: run_optimism_devnet.sh"
+  echo "usage: run_optimism_devnet.sh [-n]"
   echo ""
-  echo "Runs a builder-playground Op Stack devnet (Jovian at genesis), funds the test account,"
-  echo "then waits for a Firehose EL on :28551 (run_firehose_op_reth_devnet.sh or"
-  echo "run_firehose_op_geth_devnet.sh) and starts the local op-node that drives it."
+  echo "Runs a builder-playground Op Stack devnet (Jovian at genesis, Karst at block $karst_block,"
+  echo "op-reth sequencer), funds the test account, then waits for a Firehose EL on :28551"
+  echo "(run_firehose_op_reth_devnet.sh or run_firehose_op_geth_devnet.sh) and starts the local"
+  echo "op-node that drives it."
   echo ""
   echo "Options"
+  echo "    -n          No Karst: Jovian only with an op-geth sequencer, required by"
+  echo "                run_firehose_op_geth_devnet.sh since op-geth cannot run Karst"
   echo "    -h          Display help about this script"
 }
 

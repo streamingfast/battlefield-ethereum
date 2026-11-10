@@ -346,6 +346,26 @@ See [Stopping a Chain](#stopping-a-chain).
 
 ---
 
+## Test Cycle — `op-reth-devnet` and `op-geth-devnet`
+
+Both run a Firehose EL alongside the builder-playground Op Stack devnet of `scripts/optimism/run_optimism_devnet.sh`, which also starts the local `op-node` that drives the EL once it answers. The devnet needs the StreamingFast builder-playground fork and `op-node` v1.19.1 or later on the `PATH`; the launcher stops with install instructions otherwise (see "Op Stack Devnet" in README.md).
+
+By default the devnet activates Karst at L2 block 10 and its sequencer is op-reth, since op-geth cannot run Karst. The whole suite therefore runs on Karst, and `test/karst.test.ts` checks the activation block (network upgrade deposits, upgrade gas) and the Karst EVM changes. `op-geth-devnet` needs the devnet started with `-n` (Jovian only, op-geth sequencer); `run_firehose_op_geth_devnet.sh` refuses a Karst devnet.
+
+```bash
+./scripts/optimism/run_optimism_devnet.sh > /tmp/op-devnet.log 2>&1 &   # add -n for op-geth-devnet
+echo $! > /tmp/op-devnet.pid
+# Once it prints "Op Stack devnet is ready":
+./scripts/run_firehose_op_reth_devnet.sh > /tmp/op-reth.log 2>&1 &
+echo $! > /tmp/op-reth.pid
+# Once http://localhost:28545 answers eth_blockNumber:
+pnpm test:fh3.0:op-reth-devnet
+```
+
+Both launchers use fixed host ports: 8545 (L1), 8547 (sequencer EL, the Hardhat url), 28545/28551 (Firehose EL) and 19545 (local op-node, which `test/karst.test.ts` asks for the rollup config). Check they are free before starting.
+
+---
+
 ## Test Cycle — `base-devnet`
 
 Uses the StreamingFast Firehose-instrumented `base-reth-node` (`streamingfast/base`, branch `release/1.x`) on Base's Docker devnet, which runs Base's own forks (Azul through Denim at blocks 20 to 25, Everest at block 30) with 200 ms blocks from Denim on. Build `base-reth-node` and `base-consensus` and see the prerequisites in the README's [Base Devnet](README.md#base-devnet) section.
@@ -453,6 +473,7 @@ Some test suites are gated on a specific fork being active. If the fork is not a
 | `test/prague.test.ts` | Prague (`requestsHash` in block header) | `run_firehose_geth_dev.sh 3.0 prague` |
 | `test/cancun.test.ts` | Cancun (`blobGasUsed` in block header) | Any Cancun or Prague chain |
 | `test/amsterdam.test.ts` | Amsterdam (`slotNumber` in block header) | `run_firehose_reth_dev.sh` (default) |
+| `test/karst.test.ts` | OP Stack Karst (`karst_time` in the devnet op-node's rollup config, reached by the chain) | `scripts/optimism/run_optimism_devnet.sh` (default, Karst at block 10) |
 | `test/berlin.test.ts` | None (Berlin is universal on all supported chains) | Always runs |
 | `test/base.test.ts` | `base-devnet` network | `./scripts/base/run_base_devnet.sh` (Denim at block 25, Everest at block 30) |
 
