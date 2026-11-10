@@ -25,6 +25,7 @@ scripts/.perf-*.log
 scripts/ethereum_devnet/.playground
 scripts/optimism/op-chain
 scripts/optimism/op-node-db
+scripts/base/.devnet
 scripts/polygon/data
 
 # E2E test repository (cloned by polygon-bridge script)

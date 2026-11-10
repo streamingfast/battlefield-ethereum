@@ -25,7 +25,7 @@ import { getReceiptForTransactionTrace, TransactionReceiptResult } from "./ether
 import debugFactory from "debug"
 import { toProtoJsonString } from "./proto"
 import { EIP } from "./chain_eips"
-import { isArbitrum, isNetwork, isNetworkOneOf, networkName } from "./network"
+import { isArbitrum, isNetwork, isOpStack, networkName } from "./network"
 import { excludeFieldsFromObject, getGlobalExcludedFields } from "./field-exclusion"
 import { retainStorageSlotPreimages, tracerFiltersKeccakPreimages } from "./keccak-filter"
 
@@ -344,7 +344,7 @@ export function addFirehoseEthereumMatchers(chai: Chai) {
 
               return trxReceipt.cumulativeGasUsed.toString()
             case "$coinbase":
-              if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")) {
+              if (isOpStack()) {
                 // Optimism have more than one receive for the transaction fee making it hard for use to
                 // map the correct one to the correct address. The code below essentially remove validation
                 // of $coinbase value in the template.
@@ -477,7 +477,7 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
         change.oldValue = zeroWeiF
         change.newValue = oneWeiF
 
-        if (isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")) {
+        if (isOpStack()) {
           // Optimism have more than one receive for the transaction fee making it hard for use to
           // map the correct one to the correct address. The code below essentially remove validation
           // of $coinbase value in the template
@@ -489,10 +489,7 @@ function normalizeTrace(trace: TransactionTrace): TransactionTrace {
 
       // It seems gas buy changes over multiple runs and based on previous transactions sent, so
       // we just "fix" them to a static value to avoid diff on this field
-      if (
-        change.reason === BalanceChange_Reason.GAS_BUY &&
-        isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet")
-      ) {
+      if (change.reason === BalanceChange_Reason.GAS_BUY && isOpStack()) {
         change.oldValue = zeroWeiF
         change.newValue = oneWeiF
       }
