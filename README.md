@@ -49,6 +49,7 @@ Battlefield supports testing across various forks of Ethereum. Usually, you need
 | Optimism Geth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_geth_devnet.sh`. | `pnpm test:fh3.0:op-geth-devnet`                          | Requires [builder-playground](https://github.com/flashbots/builder-playground) |
 | Optimism Reth Devnet (fh 3.0) | `./scripts/optimism/run_optimism_devnet.sh` then `./scripts/run_firehose_op_reth_devnet.sh`. | `pnpm test:fh3.0:op-reth-devnet`                          | Requires [op-reth](#get-reth) (firehose-instrumented Op Stack Reth on PATH as `op-reth`), and [builder-playground](https://github.com/flashbots/builder-playground) |
 | Nitro Dev (fh 3.0, nitro v3.12.1-fh3.0 and later)   | `./scripts/run_firehose_nitro_dev.sh`                                   | `pnpm test:fh3.0:nitro-dev` (`test:fh2.3:nitro-dev` for older releases, which emit block version 3) | Standalone mine-on-demand Arbitrum chain. Requires [nitro](#get-nitro) and [fireeth](#get-fireeth) |
+| Base Devnet (fh 3.1, v5) | Terminal 1: `BASE_REPO=<path> ./scripts/base/run_base_devnet.sh`<br>Terminal 2: `./scripts/run_firehose_base_devnet.sh` | Terminal 3: `pnpm test:fh3.1:base-devnet` | Requires Docker, `cast`, [base-reth-node and base-consensus](#base-devnet) and [fireeth](#get-fireeth) |
 | Monad (fh 3.0)           | `./scripts/run_monad_devnet.sh`                                                               | `pnpm test:fh3.0:monad-dev`                                | Requires Monad node with event ring enabled                                  |
 
 ### Block Comparison
@@ -166,7 +167,7 @@ Field paths support:
 
 #### Keccak Preimage Filtering
 
-The Firehose tracers built on evm-firehose-tracer-rs (reth, op-reth, reth-bsc, world-chain, arc) and Nitro keep only the `keccakPreimages` entries that explain a storage change key of the transaction. On those networks, both the actual and the expected traces go through the same filter before comparison ([./test/lib/keccak-filter.ts](./test/lib/keccak-filter.ts)), so the shared snapshots, which hold every preimage, still apply. Filtering an already filtered trace changes nothing, so nodes running a tracer from before the filter pass too. The list of networks is `tracerFiltersKeccakPreimages()` in the same file.
+The Firehose tracers built on evm-firehose-tracer-rs (reth, op-reth, reth-bsc, world-chain, arc, base) and Nitro keep only the `keccakPreimages` entries that explain a storage change key of the transaction. On those networks, both the actual and the expected traces go through the same filter before comparison ([./test/lib/keccak-filter.ts](./test/lib/keccak-filter.ts)), so the shared snapshots, which hold every preimage, still apply. Filtering an already filtered trace changes nothing, so nodes running a tracer from before the filter pass too. The list of networks is `tracerFiltersKeccakPreimages()` in the same file.
 
 ## Development
 
@@ -453,6 +454,79 @@ To stop everything:
 kill $(ps aux | grep -E "run_firehose_reth_bsc|fireeth|reth-bsc" | grep -v grep | awk '{print $2}') 2>/dev/null
 ./scripts/bnb/down.sh
 ```
+
+### Base Devnet
+
+`base-devnet` tests the Firehose-instrumented `base-reth-node` of
+[streamingfast/base](https://github.com/streamingfast/base) on Base's own forks. Base runs its own
+consensus client instead of op-node, so the target uses Base's Docker devnet: an L1 (reth and
+lighthouse), a Base sequencer and `op-batcher`. The Firehose node runs on the host under `fireeth`
+and gets the sequencer's blocks from `base-consensus` in follow mode, which reads them from the
+sequencer RPC and inserts them through the Engine API.
+
+#### Prerequisites
+
+- Docker, with Compose 2.24.4 or later (the devnet overlay uses `!override` and `!reset`)
+- `cast` ([Foundry](https://getfoundry.sh)) and `jq`
+- A checkout of `streamingfast/base` on branch `release/1.x`. The devnet launcher builds its setup
+  and `op-batcher` images from it (`etc/docker`) and runs the sequencer on the published
+  `ghcr.io/base/node` image of the same Base release (`BASE_NODE_IMAGE`, default
+  `ghcr.io/base/node:v1.5.4`).
+- `base-reth-node` and `base-consensus` built from that checkout, the way `Dockerfile.sf` builds
+  them (about 5 minutes on 16 cores):
+
+  ```bash
+  git clone -b release/1.x https://github.com/streamingfast/base.git && cd base
+  cargo build --release --package base-reth-node --bin base-reth-node --package base-consensus --bin base-consensus
+  ```
+
+  Put `target/release` on your `PATH`, or set `BASE_RETH_NODE_BINARY` and `BASE_CONSENSUS_BINARY`.
+
+#### Setup
+
+1. **Terminal 1 — Start the devnet** (keep it running, Ctrl-C tears it down):
+
+   ```bash
+   BASE_REPO=/path/to/base ./scripts/base/run_base_devnet.sh
+   ```
+
+   It always starts a new chain, funds the test account with 1,000 ETH and publishes the L1 RPC
+   (4545), the beacon API (4052) and the sequencer RPC (7545) only. Fork blocks can be moved with
+   `L2_BASE_AZUL_BLOCK`, `L2_BASE_BERYL_BLOCK`, `L2_BASE_COBALT_BLOCK`, `L2_BASE_DENIM_BLOCK` and
+   `L2_BASE_EVEREST_BLOCK` (an empty value leaves a fork unscheduled).
+
+2. **Terminal 2 — Start the Firehose node** once the devnet prints that it is ready:
+
+   ```bash
+   ./scripts/run_firehose_base_devnet.sh
+   ```
+
+   Its RPC listens on 9645 and forwards transactions to the sequencer. Extra arguments go to
+   `fireeth start`, for instance other listen addresses when another Firehose stack uses the default
+   ones.
+
+3. **Terminal 3 — Run the tests**, without waiting for Firehose:
+
+   ```bash
+   pnpm test:fh3.1:base-devnet
+   ```
+
+#### What `test/base.test.ts` covers
+
+| Fork | Test |
+| --- | --- |
+| Denim | The activation block carries the BaseTime predeploy install, which Base writes outside the EVM: a block-level code change for the implementation `0xc0D3…0030` and a system call to the proxy `0x4200…0030` writing its EIP-1967 implementation slot. |
+| Denim | Every block has the BaseTime deposit at index 1, whose millisecond part matches the Firehose block time, and blocks 200 ms apart get distinct Firehose times while they share their header timestamp. |
+| Cobalt, Denim | The B-20 precompiles: the admin activates the asset feature, a token is created with two mints, transferred, transferred above its balance, and called twice from a contract and from a contract that reverts. |
+| Everest | The activation block carries the nonce manager code install as a block-level code change, and EIP-8130 (type `0x79`) transactions are traced as `TRX_TYPE_ACCOUNT_ABSTRACTION`, with two committed phases, and with a reverted second phase that keeps the first. |
+
+`Compare blocks` accepts two differences on `base-devnet`: the Jovian data availability footprint
+that RPC reports as blob gas, as on the other OP Stack devnets, and the `r`, `s` and `v` of
+EIP-8130 transactions, whose signature RPC reports in `senderAuth` only.
+
+A token creation that reverts in the factory is pending: the Base Firehose tracer reads a
+precompile's writes when the call ends, so a precompile call that reverts itself carries none.
+Zenith is not scheduled, so the Keystore account changes are not covered.
 
 ### Alternative: Use Besu
 

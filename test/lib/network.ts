@@ -37,6 +37,12 @@ export function isMineOnDemand(): boolean {
   return isNetworkOneOf("geth-dev", "reth-dev", "arbitrum-nitro-dev")
 }
 
+// Returns true on OP Stack networks. Their transactions pay fees to several vaults, and their
+// devnets reject blob transactions.
+export function isOpStack(): boolean {
+  return isNetworkOneOf("op-geth-devnet", "op-reth-devnet", "world-chain-devnet", "base-devnet")
+}
+
 // Returns true on Arbitrum/Nitro networks. These run ArbOS rather than a vanilla EVM, so
 // several Firehose trace behaviors legitimately differ from the canonical model and need
 // dedicated handling (gas model, account-creation ordinals, fee recipient, selfdestruct).

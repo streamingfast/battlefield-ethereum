@@ -120,6 +120,18 @@ async function fetchFirehoseBlockNoLogging(
   throw new ConnectError(`Block not found in Firehose after ${attempts} attempts, last errors: ${lastErrors}`)
 }
 
+// The Firehose block time in milliseconds, read from the block metadata. It can have a finer
+// precision than the block header's timestamp, which is in seconds.
+export async function fetchFirehoseBlockTimeMs(tag: { hash: string; num: number | bigint }): Promise<bigint> {
+  const response = await firehose.block({ reference: firehoseBlockTagToRef(tag) })
+  const time = response.metadata?.time
+  if (time === undefined) {
+    throw new Error(`Firehose returned no metadata time for block ${firehoseBlockTagToString(tag)}`)
+  }
+
+  return time.seconds * 1000n + BigInt(Math.floor(time.nanos / 1_000_000))
+}
+
 export async function fetchFirehoseTransactionAndBlock(
   receipt: TransactionReceipt,
 ): Promise<{ block: Block; trace: TransactionTrace }> {

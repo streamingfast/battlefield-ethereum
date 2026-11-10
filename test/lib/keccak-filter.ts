@@ -34,6 +34,7 @@ export function tracerFiltersKeccakPreimages(): boolean {
       "op-reth-devnet",
       "world-chain-devnet",
       "arc-dev",
+      "base-devnet",
       "arbitrum-nitro-dev",
     ) ||
     // reth-bsc runs on the `bnb-dev` network, only its snapshots tag tells it apart from geth-BSC

@@ -150,7 +150,7 @@ Set this in your shell before running any `./scripts/run_firehose_*.sh` command.
 
 Every test fetches its trace from Firehose, so the global setup (`test/global.ts`) waits for the Firehose HTTP health endpoint (`http://localhost:8089`) to return `{"is_ready":true}` before any test runs, on every network. It prints a progress line every 30 seconds while it waits. The wait lasts at most 30 seconds on mine-on-demand chains (below) and 10 minutes elsewhere, where Firehose first needs the chain to produce a merged bundle (100 blocks) on its own clock. Override it with `FIREHOSE_READY_TIMEOUT_MS`.
 
-On the op-reth, op-geth, world-chain and reth-bsc devnets, the node reports no finality and its tracer falls back to a LIB 200 blocks behind the head. Their launchers set `FORCE_FINALITY_AFTER_BLOCKS=10` for `fireeth`, so Firehose serves from about block 110 and the `Compare blocks` test does not wait 200 blocks for the last one to be final. Never set it for a public network: it marks blocks final that the chain has not finalized.
+On the op-reth, op-geth, world-chain, reth-bsc and Base devnets, the node reports no finality and its tracer falls back to a LIB 200 blocks behind the head. Their launchers set `FORCE_FINALITY_AFTER_BLOCKS=10` for `fireeth`, so Firehose serves from about block 110 and the `Compare blocks` test does not wait 200 blocks for the last one to be final. Never set it for a public network: it marks blocks final that the chain has not finalized.
 
 **Do not poll port 8089 yourself before starting the tests**, and do not re-run the suite because it started "too early": start it as soon as the node's JSON-RPC answers and let the global setup wait.
 
@@ -346,9 +346,48 @@ See [Stopping a Chain](#stopping-a-chain).
 
 ---
 
+## Test Cycle — `base-devnet`
+
+Uses the StreamingFast Firehose-instrumented `base-reth-node` (`streamingfast/base`, branch `release/1.x`) on Base's Docker devnet, which runs Base's own forks (Azul through Denim at blocks 20 to 25, Everest at block 30) with 200 ms blocks from Denim on. Build `base-reth-node` and `base-consensus` and see the prerequisites in the README's [Base Devnet](README.md#base-devnet) section.
+
+### Step 1 — Start the devnet
+
+```bash
+BASE_REPO=/path/to/streamingfast/base ./scripts/base/run_base_devnet.sh > /tmp/base-devnet.log 2>&1 &
+echo $! > /tmp/base-devnet.pid
+```
+
+Wait until its log prints `Base devnet is ready`. It always starts a new chain.
+
+### Step 2 — Start the Firehose node
+
+```bash
+./scripts/run_firehose_base_devnet.sh > /tmp/base-firehose.log 2>&1 &
+echo $! > /tmp/base-firehose.pid
+```
+
+Wait only until the node's JSON-RPC answers on port **9645**. Do not wait for port 8089: Firehose serves once the chain reaches block 110, about a minute after the devnet started, and the global setup waits for it.
+
+If another Firehose stack already listens on the default `fireeth` ports, pass other listen addresses to the launcher (`--firehose-grpc-listen-addr=localhost:18089`, `--reader-node-grpc-listen-addr`, `--relayer-grpc-listen-addr`, ...) and set `BATTLEFIELD_FIREHOSE_ENDPOINT` for the tests.
+
+### Step 3 — Run the tests
+
+```bash
+pnpm test:fh3.1:base-devnet --grep "Base"
+
+# Full suite (final validation only, against a fresh chain)
+pnpm test:fh3.1:base-devnet
+```
+
+### Step 4 — Stop the chain
+
+Stop the Firehose launcher first, then the devnet launcher (`kill "$(cat /tmp/base-firehose.pid)"`, `kill "$(cat /tmp/base-devnet.pid)"`).
+
+---
+
 ## Stopping a Chain
 
-Every `./scripts/run_firehose_*.sh` launcher forwards `SIGTERM` and `SIGINT` to `fireeth`, which stops its reader node. The devnet launchers (`scripts/ethereum_devnet/run_playground_devnet.sh`, `scripts/optimism/run_optimism_devnet.sh`, `scripts/world_chain/run_world_chain_devnet.sh`) tear their containers down on exit. Stop a chain by signalling the launcher you started, nothing else:
+Every `./scripts/run_firehose_*.sh` launcher forwards `SIGTERM` and `SIGINT` to `fireeth`, which stops its reader node. The devnet launchers (`scripts/ethereum_devnet/run_playground_devnet.sh`, `scripts/optimism/run_optimism_devnet.sh`, `scripts/world_chain/run_world_chain_devnet.sh`, `scripts/base/run_base_devnet.sh`) tear their containers down on exit. Stop a chain by signalling the launcher you started, nothing else:
 
 ```bash
 ./scripts/run_firehose_geth_dev.sh 3.0 prague > /tmp/geth-dev.log 2>&1 &
@@ -415,6 +454,7 @@ Some test suites are gated on a specific fork being active. If the fork is not a
 | `test/cancun.test.ts` | Cancun (`blobGasUsed` in block header) | Any Cancun or Prague chain |
 | `test/amsterdam.test.ts` | Amsterdam (`slotNumber` in block header) | `run_firehose_reth_dev.sh` (default) |
 | `test/berlin.test.ts` | None (Berlin is universal on all supported chains) | Always runs |
+| `test/base.test.ts` | `base-devnet` network | `./scripts/base/run_base_devnet.sh` (Denim at block 25, Everest at block 30) |
 
 ---
 

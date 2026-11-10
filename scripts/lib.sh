@@ -21,6 +21,8 @@ op_reth="${OP_RETH_BINARY:-op-reth}"
 world_chain="${WORLD_CHAIN_BINARY:-world-chain}"
 besu="${BESU_BINARY:-besu}"
 arc_node="${ARC_NODE_BINARY:-arc-node-execution}"
+base_reth_node="${BASE_RETH_NODE_BINARY:-base-reth-node}"
+base_consensus="${BASE_CONSENSUS_BINARY:-base-consensus}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -211,6 +213,26 @@ check_arc_node() {
   fi
   if ! "$arc_node" node --help | grep -q -- "--firehose"; then
     echo "Your '$arc_node' binary has no '--firehose' flag, it is not a Firehose-instrumented build"
+    exit 1
+  fi
+}
+
+check_base_reth_node() {
+  if ! command -v "$base_reth_node" &> /dev/null; then
+    echo "The '$base_reth_node' binary could not be found, build it from our fork:"
+    echo ""
+    echo "- git clone -b release/1.x https://github.com/streamingfast/base.git"
+    echo "- cd base && cargo build --release --package base-reth-node --bin base-reth-node --package base-consensus --bin base-consensus"
+    echo ""
+    echo "Then put target/release on your PATH or set BASE_RETH_NODE_BINARY and BASE_CONSENSUS_BINARY."
+    exit 1
+  fi
+}
+
+check_base_consensus() {
+  if ! command -v "$base_consensus" &> /dev/null; then
+    echo "The '$base_consensus' binary could not be found, it is built with base-reth-node, see"
+    echo "'./scripts/run_firehose_base_devnet.sh --help'. Set BASE_CONSENSUS_BINARY to its path."
     exit 1
   fi
 }

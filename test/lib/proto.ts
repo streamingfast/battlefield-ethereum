@@ -23,6 +23,12 @@ function protoJsonReplacer(this: any, key: string, value: any): any {
     return undefined
   }
 
+  // The suite never produces a truncated call, and the snapshots predate these two flags, so they
+  // are left out unless set.
+  if ((key === "inputTruncated" || key === "returnDataTruncated") && value === false) {
+    return undefined
+  }
+
   if (typeof value === "object" && value["type"] === "Buffer" && value["data"]) {
     // Not sure where this came from but some fields looked like wrapped Buffer objects,
     // unclear if it comes from bufbuild/protobuf, Node.js or something else. For now
