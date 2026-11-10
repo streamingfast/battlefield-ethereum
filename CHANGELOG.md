@@ -4,6 +4,7 @@
 
 ### Added
 
+- ArbOS tests on `arbitrum-nitro-dev`: ArbSys `withdrawEth` called from an account and from a contract (`contracts/arbsys_caller.sol`), ArbAddressTable `register`, and an ArbOS version upgrade whose version change must appear in the next block's internal transaction. Retryables and other L1 to L2 messages need a parent chain and stay uncovered.
 - `fh3.0/arbitrum-nitro-dev` snapshots, recorded with nitro `v3.12.2-fh3.0` on a fresh `run_firehose_nitro_dev.sh` chain. Nitro emits Firehose block v5 since `v3.12.1-fh3.0`, so `pnpm test:fh3.0:nitro-dev` is its target and it had no snapshots: every snapshot test wrote one and passed.
 
 - `wait_rpc_block_at_least <rpc_url> <block_number> [<timeout_seconds>]` in `scripts/lib.sh`, for launchers that must wait for a fork activation block or a minimum chain height.

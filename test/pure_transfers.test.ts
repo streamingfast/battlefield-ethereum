@@ -14,6 +14,7 @@ import { getBalance, sendEth } from "./lib/ethereum"
 import { oneWei } from "./lib/money"
 import { owner, ownerAddress } from "./global"
 import { isArbitrum, isNetworkOneOf } from "./lib/network"
+import { canSkipFreshChainOnlyTests } from "./lib/mocha"
 
 describe("Pure transfers", function () {
   it("Existing address", async function () {
@@ -119,21 +120,3 @@ describe("Pure transfers", function () {
     })
   })
 })
-
-function canSkipFreshChainOnlyTests(): boolean {
-  if (!process.env.SKIP_FRESH_CHAIN_ONLY_TESTS || process.env.SKIP_FRESH_CHAIN_ONLY_TESTS === "false") {
-    return false
-  }
-
-  if (process.env.SNAPSHOTS_UPDATE && process.env.SNAPSHOTS_UPDATE !== "false") {
-    throw new Error(
-      `You are running with snapshots update enabled, you cannot skip tests that require a fresh chain to run as it wouldn't update the snapshot.`,
-    )
-  }
-
-  console.warn(
-    "[Skipped] You are skipping a test that requires a fresh chain to run, ensure you are not validating your Firehose tracer while skipping any tests!",
-  )
-
-  return true
-}

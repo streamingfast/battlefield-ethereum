@@ -29,3 +29,21 @@ function bailAll(suite: Suite) {
   suite.bail(true)
   suite.suites.forEach(bailAll)
 }
+
+export function canSkipFreshChainOnlyTests(): boolean {
+  if (!process.env.SKIP_FRESH_CHAIN_ONLY_TESTS || process.env.SKIP_FRESH_CHAIN_ONLY_TESTS === "false") {
+    return false
+  }
+
+  if (process.env.SNAPSHOTS_UPDATE && process.env.SNAPSHOTS_UPDATE !== "false") {
+    throw new Error(
+      `You are running with snapshots update enabled, you cannot skip tests that require a fresh chain to run as it wouldn't update the snapshot.`,
+    )
+  }
+
+  console.warn(
+    "[Skipped] You are skipping a test that requires a fresh chain to run, ensure you are not validating your Firehose tracer while skipping any tests!",
+  )
+
+  return true
+}
