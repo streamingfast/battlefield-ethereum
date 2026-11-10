@@ -12,7 +12,7 @@ import { sendEth } from "./lib/ethereum"
 import { knownExistingAddress } from "./lib/addresses"
 import { oneWei } from "./lib/money"
 import { owner } from "./global"
-import { isNetwork, isNetworkOneOf } from "./lib/network"
+import { isNetwork, isOpStack } from "./lib/network"
 
 // Deliberately named so it sorts last: the comparison is most useful once the suite has
 // produced all its blocks. It replaces the former `scripts/compare-blocks.sh`, which had to
@@ -54,8 +54,10 @@ describe("Compare blocks", function () {
       `Firehose blocks differ from RPC blocks in range #${start}-#${stop}, output:\n${result.output}`,
     ).to.deep.equal([])
 
-    // Monad Firehose blocks never match RPC on `size`, so every block is reported as different there.
-    const compared = isNetwork("monad-dev") ? result.identicalCount + result.differences.length : result.identicalCount
+    // Every difference left is accepted, so the blocks reported as different were compared too. On
+    // some chains no block is identical: Monad blocks never match RPC on `size`, and every Base
+    // block has deposits with a Jovian data availability footprint.
+    const compared = result.identicalCount + result.differences.length
     expect(compared, `No block was compared in range #${start}-#${stop}, output:\n${result.output}`).to.be.greaterThan(
       0,
     )
@@ -72,11 +74,22 @@ function isAcceptedDifference(difference: Difference): boolean {
     return /^\["transaction_traces",\d+,"gas_price"\]$/.test(path)
   }
 
+  // An EIP-8130 transaction (type 0x79) signed by an EOA has its signature in `senderAuth` on RPC,
+  // and no `r`, `s` and `v`. The Firehose transaction splits that signature into `r`, `s` and `v`.
+  if (
+    isNetwork("base-devnet") &&
+    /^\["transaction_traces",\d+,"(r|s|v)"\]$/.test(path) &&
+    rpc === "0x" &&
+    firehose !== undefined
+  ) {
+    return true
+  }
+
   // From Jovian on, OP-stack receipts report the transaction's data availability footprint as
   // `blobGasUsed`. `compare-blocks-rpc` reads that as EIP-4844 blob gas and fills both blob gas
   // fields with it, while the Firehose transaction (not a blob transaction, OP has none) has no
   // blob gas. The header's `blob_gas_used`, which Jovian also repurposes, matches on both sides.
-  if (isNetworkOneOf("op-reth-devnet", "op-geth-devnet", "world-chain-devnet")) {
+  if (isOpStack()) {
     return (
       /^\["transaction_traces",\d+,("blob_gas"|"receipt","blob_gas_used")\]$/.test(path) &&
       rpc !== undefined &&

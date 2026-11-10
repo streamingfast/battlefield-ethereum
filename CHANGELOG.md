@@ -5,6 +5,9 @@
 ### Added
 
 - ArbOS tests on `arbitrum-nitro-dev`: ArbSys `withdrawEth` called from an account and from a contract (`contracts/arbsys_caller.sol`), ArbAddressTable `register`, and an ArbOS version upgrade whose version change must appear in the next block's internal transaction. Retryables and other L1 to L2 messages need a parent chain and stay uncovered.
+- `base-devnet` target (`pnpm test:fh3.1:base-devnet`, snapshots tag `fh3.1/v5/base-devnet`) for the Firehose `base-reth-node` of `streamingfast/base` (`release/1.x`). `scripts/base/run_base_devnet.sh` runs Base's Docker devnet with Azul, Beryl, Cobalt and Denim at blocks 20 to 25 and Everest at block 30; `scripts/run_firehose_base_devnet.sh` runs `base-reth-node` through `fireeth`, driven by `base-consensus` in follow mode from the devnet's sequencer. `test/base.test.ts` covers the Denim BaseTime predeploy install and per-block deposit, millisecond Firehose block times, the B-20 precompiles and the Everest nonce manager install and EIP-8130 transactions.
+- Protobuf types regenerated from `firehose-ethereum` `develop`, for the EIP-8130 fields (`TRX_TYPE_ACCOUNT_ABSTRACTION`, `account_abstraction_trx_input`, `account_abstraction_trx_output`). Snapshots leave out the new `input_truncated` and `return_data_truncated` call flags unless they are set.
+
 - `fh3.0/arbitrum-nitro-dev` snapshots, recorded with nitro `v3.12.2-fh3.0` on a fresh `run_firehose_nitro_dev.sh` chain. Nitro emits Firehose block v5 since `v3.12.1-fh3.0`, so `pnpm test:fh3.0:nitro-dev` is its target and it had no snapshots: every snapshot test wrote one and passed.
 
 - `wait_rpc_block_at_least <rpc_url> <block_number> [<timeout_seconds>]` in `scripts/lib.sh`, for launchers that must wait for a fork activation block or a minimum chain height.
@@ -20,6 +23,7 @@
 
 ### Changed
 
+- The `Compare blocks` test counts the blocks whose differences are all accepted as compared, on every network instead of Monad only. On `base-devnet` every block has deposits with a Jovian data availability footprint, so no block is identical.
 - The reth-bsc launcher (`run_firehose_reth_bsc.sh`) also sets `FORCE_FINALITY_AFTER_BLOCKS=10`. reth-bsc reports no finality on the dockerized BSC miner either, so `Compare blocks` reached only block 46 of 190 before its 60-second timeout. It now compares every block in about 7 seconds.
 - The op-reth, op-geth and world-chain devnet launchers set `FORCE_FINALITY_AFTER_BLOCKS=10` for `fireeth` (`force_devnet_finality` in `scripts/lib.sh`). These nodes report no finality, so their LIB trailed the head by 200 blocks: Firehose served nothing before block 300, and `Compare blocks` waited 200 blocks for the suite's last block, then left most of the range out at its timeout. On the op-reth devnet, Firehose is now ready about 100 seconds after the devnet starts and the comparison covers every block.
 - `scripts/run_firehose_polygon.sh` deploys the validators from `0xPolygon/kurtosis-pos` at a pinned upstream commit, with the bor `v2.11.0` and heimdall-v2 `v0.13.2` images that commit defaults to, published on `ghcr.io`. The previous `0xpolygon/bor:2.8.0-beta` and `0xpolygon/heimdall-v2:0.7.2-beta2` Docker Hub tags no longer exist, and the StreamingFast kurtosis-pos fork it pinned wrote Heimdall config keys that newer Heimdall images reject. `KURTOSIS_POS_REF`, `BOR_IMAGE` and `HEIMDALL_IMAGE` can be overridden from the environment.

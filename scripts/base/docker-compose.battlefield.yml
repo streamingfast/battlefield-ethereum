@@ -1,0 +1,24 @@
+# Layered over Base's `etc/docker/docker-compose.yml` by `run_base_devnet.sh`. The Base services
+# run the published node image instead of a local build, and only the ports the Firehose node
+# and the test suite use are published, so the devnet can run next to the other battlefield
+# devnets.
+services:
+  l1-el:
+    ports: !override
+      - "${L1_HTTP_PORT}:${L1_HTTP_PORT}"
+
+  l1-cl:
+    ports: !override
+      - "${L1_CL_HTTP_PORT}:${L1_CL_HTTP_PORT}"
+
+  base-bootnode:
+    image: ${BASE_NODE_IMAGE}
+    ports: !reset []
+
+  base-builder:
+    image: ${BASE_NODE_IMAGE}
+    ports: !override
+      - "${L2_BUILDER_HTTP_PORT}:${L2_BUILDER_HTTP_PORT}"
+
+  op-batcher:
+    ports: !reset []

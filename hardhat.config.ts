@@ -31,6 +31,7 @@ const config: HardhatUserConfig = {
     "arbitrum-geth-dev": firehoseNetwork([]),
     "arc-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:9545" },
     "arbitrum-nitro-dev": { ...firehoseNetwork([]), url: "http://127.0.0.1:8547" },
+    "base-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:9645" },
     "besu-devnet": { ...firehoseNetwork([]), url: "http://127.0.0.1:8545" },
     "monad-dev": {
       ...firehoseNetwork([]),

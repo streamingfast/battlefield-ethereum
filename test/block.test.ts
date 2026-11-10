@@ -13,7 +13,7 @@ import { owner } from "./global"
 import { hexlify } from "ethers"
 import { toBigInt } from "./lib/numbers"
 import { BalanceChange_Reason, Block, Call } from "../pb/sf/ethereum/type/v2/type_pb"
-import { isArbitrum, isNetwork } from "./lib/network"
+import { isArbitrum, isNetwork, isOpStack } from "./lib/network"
 
 describe("Blocks", function () {
   it("Header corresponds to RPC", async function () {
@@ -103,7 +103,7 @@ describe("Blocks", function () {
 
     // Optimism has different rules of transaction fee rewards distribution as such computation
     // would need to be adjusted and a specific test created, for now simply skip the test.
-    if (isNetwork("op-geth-devnet") || isNetwork("op-reth-devnet") || isNetwork("world-chain-devnet")) {
+    if (isOpStack()) {
       this.skip()
     }
 
