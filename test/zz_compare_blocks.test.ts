@@ -54,8 +54,9 @@ describe("Compare blocks", function () {
       `Firehose blocks differ from RPC blocks in range #${start}-#${stop}, output:\n${result.output}`,
     ).to.deep.equal([])
 
-    // Monad Firehose blocks never match RPC on `size`, so every block is reported as different there.
-    const compared = isNetwork("monad-dev") ? result.identicalCount + result.differences.length : result.identicalCount
+    // A block whose differences are all accepted was compared too: Monad blocks never match RPC on
+    // `size`, and on the op-reth devnet every receipt reports a data availability footprint.
+    const compared = result.identicalCount + result.differences.length
     expect(compared, `No block was compared in range #${start}-#${stop}, output:\n${result.output}`).to.be.greaterThan(
       0,
     )
