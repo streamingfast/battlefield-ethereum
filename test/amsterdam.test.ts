@@ -6,12 +6,13 @@ import {
   deployContract,
   getStableCreate2Data,
   defaultGasPrice,
+  getBalance,
 } from "./lib/ethereum"
 import { fetchFirehoseBlock, fetchFirehoseTransactionAndBlock } from "./lib/firehose"
 import { isBlockOnAmsterdamOrLater } from "./lib/chain_eips"
 import { waitForTransaction } from "./lib/ethers"
 import { stopRunOnFailure } from "./lib/mocha"
-import { Log, TransactionTrace, TransactionTraceStatus } from "../pb/sf/ethereum/type/v2/type_pb"
+import { BalanceChange_Reason, Log, TransactionTrace, TransactionTraceStatus } from "../pb/sf/ethereum/type/v2/type_pb"
 import { owner, ownerAddress, ContractEmptyFactory, SuicidalFactory, TransfersFactory } from "./global"
 import { eth, oneWei } from "./lib/money"
 import { systemAddress, isSameAddress, knownExistingAddress } from "./lib/addresses"
@@ -294,6 +295,25 @@ describe("Amsterdam", function () {
         STATE_GAS_FOR_FRESH_SSTORE,
         "header.gas_used must equal max(regular, state) = the state gas component",
       )
+    })
+
+    it("value sent to an empty account without the gas for its new-account state gas reports no transfer", async function () {
+      // Value sent to an empty account owes the EIP-2780 new-account state gas before it moves.
+      // 3,000 gas above the 21,000 intrinsic cannot pay it, so the transaction is included as an
+      // out-of-gas failure and the value never leaves the sender.
+      const recipient = Wallet.createRandom().address
+      const response = await sendEth(owner, recipient, oneWei, { gasLimit: 24_000, shouldRevert: true })
+      const { trace } = await fetchFirehoseTransactionAndBlock(response)
+
+      expect(trace.status).to.equal(TransactionTraceStatus.FAILED)
+      expect(trace.gasUsed).to.equal(24_000n, "an out-of-gas failure uses the whole gas limit")
+      expect(trace.calls[0].statusFailed, "the root call fails").to.be.true
+
+      const transfers = trace.calls
+        .flatMap((call) => call.balanceChanges)
+        .filter((change) => change.reason === BalanceChange_Reason.TRANSFER)
+      expect(transfers, "the value never moved, so no transfer is reported").to.be.empty
+      expect(await getBalance(recipient)).to.equal(0n, "the recipient never received the value")
     })
   })
 
