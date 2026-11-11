@@ -54,7 +54,7 @@
           "address": "$sender",
           "oldValue": "0",
           "newValue": "1",
-          "ordinal": "2"
+          "ordinal": "3"
         }
       ],
       "logs": [],
@@ -64,7 +64,7 @@
       "statusReverted": false,
       "failureReason": "contract creation code storage out of gas",
       "stateReverted": true,
-      "beginOrdinal": "3",
+      "beginOrdinal": "2",
       "endOrdinal": "4",
       "accountCreations": []
     }
