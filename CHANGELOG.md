@@ -25,6 +25,7 @@
 
 ### Changed
 
+- `monad-dev` runs the `v0.16.6-fh3.1` images of `monad-execution`, `monad-node`, `monad-rpc` and `monad-firehose-tracer`.
 - The `Compare blocks` test counts the blocks whose differences are all accepted as compared, on every network instead of Monad only. On `base-devnet` every block has deposits with a Jovian data availability footprint, and on `op-reth-devnet` the op-reth sequencer reports one on every receipt, deposits included, so no block is identical on either.
 - The reth-bsc launcher (`run_firehose_reth_bsc.sh`) also sets `FORCE_FINALITY_AFTER_BLOCKS=10`. reth-bsc reports no finality on the dockerized BSC miner either, so `Compare blocks` reached only block 46 of 190 before its 60-second timeout. It now compares every block in about 7 seconds.
 - `scripts/optimism/run_optimism_devnet.sh` activates Karst at L2 block 10 with an op-reth sequencer, since op-geth cannot run Karst, so the whole `op-reth-devnet` suite runs on Karst. `-n` keeps the former Jovian-only devnet with an op-geth sequencer, which `op-geth-devnet` needs; `scripts/run_firehose_op_geth_devnet.sh` refuses a Karst devnet. The launcher requires the StreamingFast builder-playground fork at `v0.3.3-sf2` (`--sequencer-el`, `--enable-karst`) and `op-node` v1.19.1 or later, and prints how to install either when it is missing or too old.
