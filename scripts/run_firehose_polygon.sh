@@ -291,13 +291,24 @@ run_local_bor() {
     bor version
     echo ""
 
+    # Opt-in: run bor with `--precompile-cache` (PRECOMPILE_CACHE=true), off by default
+    BOR_EXTRA_ARGS=""
+    case "${PRECOMPILE_CACHE:-false}" in
+        true) BOR_EXTRA_ARGS=" --precompile-cache" ;;
+        false) ;;
+        *)
+            echo "❌ PRECOMPILE_CACHE must be 'true' or 'false', got '${PRECOMPILE_CACHE}'"
+            exit 1
+            ;;
+    esac
+
     # Run fireeth with bor server
     echo "Starting Fireeth with Bor server and Firehose tracing..."
-    echo "Running: fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments=\"server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose\" --advertise-chain-name=devnet --firehose-grpc-listen-addr=\"localhost:8089\""
+    echo "Running: fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments=\"server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose${BOR_EXTRA_ARGS}\" --advertise-chain-name=devnet --firehose-grpc-listen-addr=\"localhost:8089\""
     echo ""
     # `exec` so that stopping this launcher stops fireeth, which stops bor. The Kurtosis enclave
     # keeps running, remove it with `kurtosis enclave rm pos --force`.
-    exec fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
+    exec fireeth start reader-node,relayer,merger,firehose -c '' --reader-node-path=bor --reader-node-arguments="server --config localconfig/config.toml --parallelevm.enable=false --vmtrace=firehose${BOR_EXTRA_ARGS}" --advertise-chain-name=devnet --firehose-grpc-listen-addr="localhost:8089"
 }
 
 # Main function
